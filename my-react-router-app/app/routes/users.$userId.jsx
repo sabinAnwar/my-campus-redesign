@@ -276,9 +276,9 @@ export default function UserDetail() {
                             ? 'bg-yellow-100 text-yellow-800'
                             : 'bg-blue-100 text-blue-800'
                         }`}>
-                          {user.role === 'ADMIN' && 'Ì±ë '}
+                          {user.role === 'ADMIN' && 'ÔøΩÔøΩÔøΩ '}
                           {user.role === 'EDITOR' && '‚úèÔ∏è '}
-                          {user.role === 'USER' && 'Ì±§ '}
+                          {user.role === 'USER' && 'ÔøΩÔøΩÔøΩ '}
                           {typeof user.role === 'string' ? user.role.toLowerCase() : user.role}
                         </span>
                       </dd>

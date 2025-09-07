@@ -100,7 +100,7 @@ export default function Users() {
                 Create Your First User
               </Link>
               <div className="text-sm text-gray-500">
-                <p>�� Tip: You can create different types of users with various roles.</p>
+                <p>💡 Tip: You can create different types of users with various roles.</p>
               </div>
             </div>
           </div>
@@ -144,9 +144,9 @@ export default function Users() {
                         ? 'bg-yellow-100 text-yellow-800'
                         : 'bg-blue-100 text-blue-800'
                     }`}>
-                      {user.role === 'ADMIN' && '��� '}
+                      {user.role === 'ADMIN' && '👑 '}
                       {user.role === 'EDITOR' && '✏️ '}
-                      {user.role === 'USER' && '��� '}
+                      {user.role === 'USER' && '👤 '}
                       {typeof user.role === 'string' ? user.role.toLowerCase() : user.role}
                     </span>
                     <span className="text-xs text-gray-500">
