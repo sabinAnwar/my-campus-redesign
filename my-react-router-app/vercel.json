@@ -2,13 +2,10 @@
   "framework": null,
   "buildCommand": "npm run build",
   "installCommand": "npm install && npx prisma generate",
+  "outputDirectory": "build/client",
+  "functions": { "api/index.js": { "runtime": "nodejs18.x" } },
   "routes": [
-    {
-      "handle": "filesystem"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js"
-    }
+    { "handle": "filesystem" },
+    { "src": "/(.*)", "dest": "/api/index.js" }
   ]
 }
