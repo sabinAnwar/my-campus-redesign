@@ -1,22 +1,11 @@
 {
-  "version": 2,
+  "framework": null,
   "buildCommand": "npm run build",
   "outputDirectory": "build/client",
   "installCommand": "npm install && npx prisma generate",
-  "builds": [
-    {
-      "src": "build/server/index.js",
-      "use": "@vercel/node"
-    },
-    {
-      "src": "build/client/**",
-      "use": "@vercel/static"
-    }
-  ],
   "routes": [
     {
-      "src": "/build/client/(.*)",
-      "dest": "/build/client/$1"
+      "handle": "filesystem"
     },
     {
       "src": "/(.*)",
