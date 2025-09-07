@@ -1,7 +1,7 @@
 {
   "framework": null,
   "buildCommand": "npm run build",
-  "outputDirectory": "build/client",
+  "outputDirectory": "build/client", 
   "installCommand": "npm install && npx prisma generate",
   "routes": [
     {
