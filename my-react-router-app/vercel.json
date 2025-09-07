@@ -2,11 +2,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": "build/client",
   "devCommand": "npm run dev",
-  "installCommand": "npm install && npx prisma generate && npx prisma db push",
+  "installCommand": "npm install && npx prisma generate",
   "framework": null,
   "functions": {
     "build/server/index.js": {
-      "runtime": "nodejs18.x"
+      "runtime": "nodejs20.x"
     }
   },
   "routes": [
@@ -18,8 +18,5 @@
       "src": "/(.*)",
       "dest": "/build/server/index.js"
     }
-  ],
-  "env": {
-    "DATABASE_URL": "@database_url"
-  }
+  ]
 }
