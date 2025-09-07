@@ -1,5 +1,9 @@
+// react-router.config.js
+import { vercelPreset } from "@vercel/react-router/vite";
+
+/** @type {import('@react-router/dev/config').Config} */
 export default {
-  // Config options...
-  // Server-side render by default, to enable SPA mode set this to `false`
+  // SSR ist hier richtig, weil du kein index.html hast
   ssr: true,
+  presets: [vercelPreset()],
 };
