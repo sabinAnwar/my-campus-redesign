@@ -1,6 +1,6 @@
 import express from "express";
 import { createRequestHandler } from '@react-router/express';
-import * as build from '../build/server/index.js';
+import * as build from "../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js";
 
 const app = express();
 
