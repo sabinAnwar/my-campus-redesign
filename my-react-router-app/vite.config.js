@@ -9,4 +9,26 @@ export default defineConfig({
   ssrBuild: {
     outDir: "build/server", // <--- force static output
   },
+  server: {
+    middlewares: [
+      {
+        apply: "serve",
+        use: (req, res, next) => {
+          // Block special browser requests from reaching React Router
+          if (
+            req.url.startsWith("/.well-known/") ||
+            req.url === "/robots.txt" ||
+            req.url === "/sitemap.xml" ||
+            req.url.includes("devtools") ||
+            (req.url.includes(".json") && !req.url.includes("/api/"))
+          ) {
+            res.statusCode = 404;
+            res.end("Not found");
+            return;
+          }
+          next();
+        },
+      },
+    ],
+  },
 });

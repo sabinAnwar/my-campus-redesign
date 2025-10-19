@@ -6,11 +6,12 @@ import {
   Outlet,
   useRouteError,
   Form,
-  Scripts,
 } from "react-router";
 import { useState, useEffect } from "react";
 
-export const links = () => [{ rel: "icon", href: "/favicon.ico" }];
+export const links = () => [
+  { rel: "icon", href: "/favicon.ico" },
+];
 
 // HTML Document wrapper
 export function Layout() {
@@ -23,9 +24,7 @@ export function Layout() {
         <script src="https://cdn.tailwindcss.com"></script>
       </head>
       <body>
-        <div id="root">
-          <Outlet />
-        </div>
+        <Outlet />
         <ToastContainer
           position="top-right"
           autoClose={5000}
@@ -39,7 +38,6 @@ export function Layout() {
           theme="light"
           limit={3}
         />
-        <Scripts />
       </body>
     </html>
   );
@@ -121,7 +119,9 @@ export default function Root() {
       {/* Footer */}
       <footer className="bg-gray-50 border-t border-gray-200 py-6 mt-auto">
         <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 text-center">
-          <p className="text-sm text-gray-600">IU Student Portal © 2025</p>
+          <p className="text-sm text-gray-600">
+            IU Student Portal © 2025
+          </p>
         </div>
       </footer>
     </div>

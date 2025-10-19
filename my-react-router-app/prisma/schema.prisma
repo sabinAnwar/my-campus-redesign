@@ -11,11 +11,51 @@ datasource db {
 }
 
 model User {
+  id              Int       @id @default(autoincrement())
+  email           String    @unique
+  username        String    @unique
+  password        String
+  name            String?
+  role            String    @default("STUDENT")
+  resetToken      String?
+  resetTokenExpiry DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @updatedAt
+  marks           Mark[]
+  files           File[]
+  studienplan     Studienplan?
+}
+
+model Teacher {
   id        Int      @id @default(autoincrement())
+  name      String
   email     String   @unique
-  username  String   @unique
-  name      String?
-  role      String   @default("USER")
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  marks     Mark[]
+}
+
+model Mark {
+  id        Int      @id @default(autoincrement())
+  value     Float
+  course    String
+  date      DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+  teacher   Teacher  @relation(fields: [teacherId], references: [id])
+  teacherId Int
+}
+
+model File {
+  id        Int      @id @default(autoincrement())
+  name      String
+  url       String
+  uploadedAt DateTime @default(now())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int
+}
+
+model Studienplan {
+  id        Int      @id @default(autoincrement())
+  plan      String   // JSON or text representation
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int @unique
 }

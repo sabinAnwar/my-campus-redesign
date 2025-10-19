@@ -1,71 +1,105 @@
-import { Link } from "react-router";
-
-export function meta() {
-  return [
-    { title: "UserManager - Home" },
-    { name: "description", content: "Welcome to UserManager - Manage your users beautifully!" },
-  ];
-}
+import { useState, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { getUser } from "../lib/auth";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const checkAuth = async () => {
+      const currentUser = await getUser();
+      if (!currentUser) {
+        navigate("/login");
+        return;
+      }
+      setUser(currentUser);
+    };
+    checkAuth();
+  }, [navigate]);
+
+  if (!user) {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
+
   return (
-    <div className="max-w-6xl mx-auto">
-      {/* Hero Section */}
-      <div className="text-center py-16 bg-black/20 rounded-3xl backdrop-blur-sm border border-white/20 mb-12">
-        <h1 className="text-6xl font-bold text-white mb-6 drop-shadow-2xl">
-          Welcome to{" "}
-          <span className="bg-gradient-to-r from-yellow-400 via-pink-400 to-blue-400 bg-clip-text text-transparent">
-            UserManager
-          </span>
+    <div className="max-w-6xl mx-auto px-4 py-8">
+      {/* Welcome Section */}
+      <div className="text-center py-16 bg-gray-50 rounded-3xl shadow-md mb-12">
+        <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          Welcome back, {user.name || user.username}!
         </h1>
-        <p className="text-xl text-white font-medium mb-12 max-w-2xl mx-auto leading-relaxed drop-shadow-lg">
-          A beautiful and modern user management system built with React Router v7 and Tailwind CSS. 
-          Manage your users with style and efficiency.
+        <p className="text-xl text-gray-600 mb-8 max-w-2xl mx-auto">
+          Access your academic resources, view your marks, and manage your
+          student profile all in one place.
         </p>
-        
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-          <Link 
-            to="/users" 
-            className="group bg-gradient-to-r from-blue-600 to-purple-700 hover:from-blue-700 hover:to-purple-800 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl flex items-center space-x-2 border border-white/20"
+
+        <div className="flex flex-wrap justify-center gap-4">
+          <Link
+            to="/marks"
+            className="bg-blue-600 text-white font-medium px-6 py-3 rounded-lg hover:bg-blue-700 transition-colors"
           >
-            <span className="text-2xl">👥</span>
-            <span>View All Users</span>
+            View Your Marks
           </Link>
-          
-          <Link 
-            to="/users/new" 
-            className="group bg-gradient-to-r from-green-600 to-teal-700 hover:from-green-700 hover:to-teal-800 text-white font-bold px-8 py-4 rounded-xl transition-all duration-300 transform hover:scale-105 shadow-2xl hover:shadow-3xl flex items-center space-x-2 border border-white/20"
+          <Link
+            to="/profile"
+            className="bg-white text-blue-600 font-medium px-6 py-3 rounded-lg border border-blue-600 hover:bg-blue-50 transition-colors"
           >
-            <span className="text-2xl">➕</span>
-            <span>Add New User</span>
+            Manage Profile
           </Link>
         </div>
       </div>
-      
-      {/* Features Section */}
-      <div className="grid md:grid-cols-3 gap-8 py-16">
-        <div className="bg-black/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 hover:bg-black/40 transition-all duration-300 transform hover:scale-105 shadow-xl">
-          <div className="text-4xl mb-4">🎨</div>
-          <h3 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">Beautiful Design</h3>
-          <p className="text-gray-200 font-medium">
-            Modern glassmorphism design with beautiful gradients and smooth animations.
+
+      {/* Quick Actions */}
+      <div className="grid md:grid-cols-3 gap-8">
+        <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div className="text-3xl mb-4">📚</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Course Materials
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Access your study materials, assignments, and course resources.
           </p>
+          <Link
+            to="/courses"
+            className="text-blue-600 font-medium hover:text-blue-700"
+          >
+            Browse Courses →
+          </Link>
         </div>
-        
-        <div className="bg-black/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 hover:bg-black/40 transition-all duration-300 transform hover:scale-105 shadow-xl">
-          <div className="text-4xl mb-4">⚡</div>
-          <h3 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">Fast & Efficient</h3>
-          <p className="text-gray-200 font-medium">
-            Built with React Router v7 for lightning-fast navigation and optimal performance.
+
+        <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div className="text-3xl mb-4">📊</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">
+            Academic Progress
+          </h3>
+          <p className="text-gray-600 mb-4">
+            Track your grades, attendance, and overall academic performance.
           </p>
+          <Link
+            to="/progress"
+            className="text-blue-600 font-medium hover:text-blue-700"
+          >
+            View Progress →
+          </Link>
         </div>
-        
-        <div className="bg-black/30 backdrop-blur-lg rounded-2xl p-8 border border-white/30 hover:bg-black/40 transition-all duration-300 transform hover:scale-105 shadow-xl">
-          <div className="text-4xl mb-4">📱</div>
-          <h3 className="text-2xl font-bold text-white mb-4 drop-shadow-lg">Responsive</h3>
-          <p className="text-gray-200 font-medium">
-            Fully responsive design that works perfectly on all devices and screen sizes.
+
+        <div className="bg-white rounded-xl p-6 shadow-md hover:shadow-lg transition-shadow">
+          <div className="text-3xl mb-4">📅</div>
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">Schedule</h3>
+          <p className="text-gray-600 mb-4">
+            Check your class schedule, exams, and important academic dates.
           </p>
+          <Link
+            to="/schedule"
+            className="text-blue-600 font-medium hover:text-blue-700"
+          >
+            View Schedule →
+          </Link>
         </div>
       </div>
     </div>
