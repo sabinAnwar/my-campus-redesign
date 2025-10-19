@@ -1,42 +1,11 @@
-import { useState, useEffect, useRef } from 'react';
-import { Link, useNavigate, useFetcher } from 'react-router-dom';
+import { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { showSuccessToast, showErrorToast } from '../lib/toast';
 
 export default function Login() {
   const navigate = useNavigate();
-  const fetcher = useFetcher();
   const [error, setError] = useState(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const lastResponseRef = useRef(null);
-
-  // Monitor fetcher for any response
-  useEffect(() => {
-    if (fetcher.data) {
-      const hasProcessed = lastResponseRef.current?.id === fetcher.data?.id;
-      
-      if (!hasProcessed) {
-        lastResponseRef.current = fetcher.data;
-        
-        console.log('📨 Fetcher data received:', fetcher.data);
-        console.log('📨 Fetcher state:', fetcher.state);
-        
-        if (fetcher.data.success) {
-          console.log('✅ SUCCESS DETECTED! Showing toast now...');
-          showSuccessToast('✅ Login successful! Redirecting...');
-          // Use a longer timeout to ensure toast is visible
-          setTimeout(() => {
-            console.log('🔄 Navigating to home page...');
-            navigate('/');
-          }, 2000);
-        } else if (fetcher.data.error) {
-          console.log('❌ ERROR DETECTED:', fetcher.data.error);
-          setError(fetcher.data.error);
-          showErrorToast(fetcher.data.error);
-          setIsSubmitting(false);
-        }
-      }
-    }
-  }, [fetcher.data, navigate]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -47,33 +16,46 @@ export default function Login() {
     const email = formData.get('email');
     const password = formData.get('password');
 
+    console.log('📝 Submitting login form:', { email, passwordLength: password?.length });
+
     try {
-      // Send as form-encoded data to match React Router action expectations
+      // Send as form-encoded data
       const response = await fetch('/api/login', {
         method: 'POST',
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded',
+        },
         body: new URLSearchParams({ email, password }),
+        credentials: 'include', // Include cookies in request
       });
 
-      const data = await response.json();
+      console.log('📨 API response status:', response.status);
 
-      console.log('📨 API response:', data);
+      const data = await response.json();
+      console.log('📨 API response data:', data);
 
       if (data.success) {
-        console.log('✅ SUCCESS DETECTED! Showing toast now...');
+        console.log('✅ Login successful!');
         showSuccessToast('✅ Login successful! Redirecting...');
-        // Use a longer timeout to ensure toast is visible
+        
+        // Wait for toast to show, then redirect
         setTimeout(() => {
-          console.log('🔄 Navigating to home page...');
-          navigate('/');
-        }, 2000);
+          console.log('🔄 Redirecting to home...');
+          window.location.href = '/';
+        }, 1500);
       } else if (data.error) {
-        console.log('❌ ERROR DETECTED:', data.error);
+        console.log('❌ Login failed:', data.error);
         setError(data.error);
         showErrorToast(data.error);
         setIsSubmitting(false);
+      } else {
+        console.log('❌ Unexpected response format:', data);
+        setError('An unexpected error occurred');
+        showErrorToast('An unexpected error occurred');
+        setIsSubmitting(false);
       }
     } catch (err) {
-      console.error('❌ Login error:', err);
+      console.error('❌ Fetch error:', err);
       const errorMsg = err.message || 'An error occurred during login';
       setError(errorMsg);
       showErrorToast(errorMsg);
