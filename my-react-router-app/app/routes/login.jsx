@@ -70,11 +70,11 @@ export default function Login() {
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
       {/* Left side - Premium professional section with IU students background */}
       <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8" style={{ backgroundImage: 'url(/iu-students-football.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
-        {/* Premium dark overlay with IU brand color accents */}
-        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/70 to-slate-950/85"></div>
+        {/* Dark overlay for strong readability */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90"></div>
         
-        {/* Accent overlay with IU colors for premium look */}
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 via-transparent to-orange-600/10"></div>
+        {/* Accent overlay with IU colors */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/5 via-transparent to-orange-600/5"></div>
 
         {/* Professional Content */}
         <div className="relative z-10 text-center text-white max-w-md">
@@ -104,14 +104,14 @@ export default function Login() {
           <div className="space-y-4 mb-12">
             {/* Quote 1: Nelson Mandela (IU Cyan) */}
             <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
-              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-cyan-500/30 to-cyan-600/20 border-2 border-cyan-400/70 hover:border-cyan-300 transition-all duration-300 hover:bg-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/50 backdrop-blur-sm">
-                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-lg">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-cyan-500/40 to-cyan-600/30 border-2 border-cyan-400/80 hover:border-cyan-300 transition-all duration-300 hover:bg-cyan-500/50 hover:shadow-2xl hover:shadow-cyan-500/50 backdrop-blur-md">
+                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-2xl">
                   "
                 </div>
-                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
                   Education is the most powerful weapon which you can use to change the world.
                 </p>
-                <p className="text-xs text-cyan-100 font-semibold">
+                <p className="text-xs text-cyan-100 font-semibold drop-shadow-md">
                   — Nelson Mandela
                 </p>
               </div>
@@ -119,14 +119,14 @@ export default function Login() {
 
             {/* Quote 2: Winston Churchill (IU Orange) */}
             <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
-              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-orange-500/30 to-orange-600/20 border-2 border-orange-400/70 hover:border-orange-300 transition-all duration-300 hover:bg-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 backdrop-blur-sm">
-                <div className="text-5xl text-orange-200 mb-2 leading-none drop-shadow-lg">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-orange-500/40 to-orange-600/30 border-2 border-orange-400/80 hover:border-orange-300 transition-all duration-300 hover:bg-orange-500/50 hover:shadow-2xl hover:shadow-orange-500/50 backdrop-blur-md">
+                <div className="text-5xl text-orange-200 mb-2 leading-none drop-shadow-2xl">
                   "
                 </div>
-                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
                   Success is not final, failure is not fatal. It is the courage to continue that counts.
                 </p>
-                <p className="text-xs text-orange-100 font-semibold">
+                <p className="text-xs text-orange-100 font-semibold drop-shadow-md">
                   — Winston Churchill
                 </p>
               </div>
@@ -134,14 +134,14 @@ export default function Login() {
 
             {/* Quote 3: Eleanor Roosevelt (Cyan + Orange blend) */}
             <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
-              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-r from-cyan-500/25 via-purple-500/10 to-orange-500/25 border-2 border-cyan-400/60 hover:border-cyan-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-500/35 hover:via-purple-500/15 hover:to-orange-500/35 hover:shadow-2xl hover:shadow-cyan-500/40 backdrop-blur-sm">
-                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-lg">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-r from-cyan-500/35 via-purple-500/15 to-orange-500/35 border-2 border-cyan-400/70 hover:border-cyan-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-500/45 hover:via-purple-500/20 hover:to-orange-500/45 hover:shadow-2xl hover:shadow-cyan-500/40 backdrop-blur-md">
+                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-2xl">
                   "
                 </div>
-                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
                   The future belongs to those who believe in the beauty of their dreams.
                 </p>
-                <p className="text-xs text-cyan-100 font-semibold">
+                <p className="text-xs text-cyan-100 font-semibold drop-shadow-md">
                   — Eleanor Roosevelt
                 </p>
               </div>
@@ -151,21 +151,21 @@ export default function Login() {
           {/* Hamburg Locations - Enhanced */}
           <div className="grid grid-cols-2 gap-3 pt-8 border-t border-cyan-400/30">
             <div className="group cursor-pointer transform hover:scale-110 transition-transform">
-              <div className="p-3 rounded-lg bg-cyan-500/20 border border-cyan-400/50 hover:bg-cyan-500/30 hover:border-cyan-300 transition-all">
-                <p className="text-2xl mb-1">📍</p>
-                <p className="text-xs font-bold text-cyan-100">
+              <div className="p-3 rounded-lg bg-cyan-500/35 border-2 border-cyan-400/70 hover:bg-cyan-500/45 hover:border-cyan-300 transition-all backdrop-blur-md">
+                <p className="text-2xl mb-1 drop-shadow-lg">📍</p>
+                <p className="text-xs font-bold text-white drop-shadow-lg">
                   Hammerbrook
                 </p>
-                <p className="text-xs text-slate-400">Hamburg</p>
+                <p className="text-xs text-cyan-100 drop-shadow-md">Hamburg</p>
               </div>
             </div>
             <div className="group cursor-pointer transform hover:scale-110 transition-transform">
-              <div className="p-3 rounded-lg bg-orange-500/20 border border-orange-400/50 hover:bg-orange-500/30 hover:border-orange-300 transition-all">
-                <p className="text-2xl mb-1">📍</p>
-                <p className="text-xs font-bold text-orange-100">
+              <div className="p-3 rounded-lg bg-orange-500/35 border-2 border-orange-400/70 hover:bg-orange-500/45 hover:border-orange-300 transition-all backdrop-blur-md">
+                <p className="text-2xl mb-1 drop-shadow-lg">📍</p>
+                <p className="text-xs font-bold text-white drop-shadow-lg">
                   Waterloohain
                 </p>
-                <p className="text-xs text-slate-400">Hamburg</p>
+                <p className="text-xs text-orange-100 drop-shadow-md">Hamburg</p>
               </div>
             </div>
           </div>
