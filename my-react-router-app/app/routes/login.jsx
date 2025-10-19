@@ -68,165 +68,166 @@ export default function Login() {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
-      {/* Left side - Premium professional section - SMALLER WIDTH */}
-      <div className="hidden lg:flex lg:w-1/3 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 relative overflow-hidden items-center justify-center p-8">
-        {/* Animated background with professional effect */}
-        <div className="absolute inset-0">
-          <div className="absolute -top-40 -right-40 w-96 h-96 bg-blue-900/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-pulse"></div>
-          <div className="absolute -bottom-40 -left-40 w-96 h-96 bg-slate-700/20 rounded-full mix-blend-screen filter blur-3xl opacity-50 animate-pulse" style={{animationDelay: '2s'}}></div>
-        </div>
-
-        {/* Tech grid pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <svg width="100%" height="100%">
-            <defs>
-              <pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse">
-                <path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" strokeWidth="0.5"/>
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill="url(#grid)" />
-          </svg>
-        </div>
+      {/* Left side - Premium professional section with IU students background */}
+      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8" style={{ backgroundImage: 'url(/iu-students-football.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+        {/* Premium dark overlay with IU brand color accents */}
+        <div className="absolute inset-0 bg-gradient-to-br from-slate-900/80 via-slate-900/70 to-slate-950/85"></div>
+        
+        {/* Accent overlay with IU colors for premium look */}
+        <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/10 via-transparent to-orange-600/10"></div>
 
         {/* Professional Content */}
         <div className="relative z-10 text-center text-white max-w-md">
           {/* Premium Badge - Student Portal */}
-          <div className="mb-8 inline-flex">
-            <div className="px-4 py-2.5 rounded-xl bg-white/10 border border-white/30 backdrop-blur-md hover:bg-white/15 transition-all">
-              <span className="text-sm font-bold text-white">🚀 IU Student Portal</span>
+          <div className="mb-8 inline-flex animate-fade-in">
+            <div className="px-5 py-3 rounded-full bg-gradient-to-r from-cyan-500/30 to-orange-500/30 border-2 border-cyan-400/60 backdrop-blur-lg hover:from-cyan-500/40 hover:to-orange-500/40 hover:border-cyan-300 transition-all shadow-lg">
+              <span className="text-xs font-extrabold text-cyan-100 tracking-wider uppercase">
+                ⭐ IU Excellence
+              </span>
             </div>
           </div>
 
-          {/* Main heading - Professional */}
-          <h2 className="text-5xl font-black mb-4 leading-tight text-white">
-            Your Academic <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-blue-300 to-slate-300">Command Center</span>
+          {/* Main heading - More impressive */}
+          <h2 className="text-5xl font-black mb-2 leading-tight text-white drop-shadow-lg">
+            Achieve Your{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-200 to-orange-300 animate-pulse">
+              Goals
+            </span>
           </h2>
-
-          <p className="text-lg text-slate-300 mb-12 font-semibold leading-relaxed">
-            Designed by IU students for IU students. Centralize your marks, applications, and module management in one professional workspace.
+          
+          {/* Subheading */}
+          <p className="text-lg text-cyan-100 font-semibold mb-10 drop-shadow-md">
+            Join 500+ IU Dual Degree Students
           </p>
 
-          {/* Feature cards - Professional */}
+          {/* Motivational Quotes - Enhanced */}
           <div className="space-y-4 mb-12">
-            {/* Feature 1: Marks */}
-            <div className="group cursor-pointer">
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-white/8 border border-white/20 hover:border-cyan-400/60 transition-all duration-300 backdrop-blur-sm hover:bg-cyan-500/10">
-                <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-cyan-500 to-blue-600 flex items-center justify-center shadow-lg">
-                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
-                  </svg>
+            {/* Quote 1: Nelson Mandela (IU Cyan) */}
+            <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-cyan-500/30 to-cyan-600/20 border-2 border-cyan-400/70 hover:border-cyan-300 transition-all duration-300 hover:bg-cyan-500/40 hover:shadow-2xl hover:shadow-cyan-500/50 backdrop-blur-sm">
+                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-lg">
+                  "
                 </div>
-                <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold group-hover:text-cyan-300 transition-colors">Unified Marks</h3>
-                  <p className="text-slate-400 text-sm">Track grades from both IU institutions</p>
-                </div>
-                <svg className="h-5 w-5 text-slate-500 group-hover:text-cyan-400 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                  Education is the most powerful weapon which you can use to change the world.
+                </p>
+                <p className="text-xs text-cyan-100 font-semibold">
+                  — Nelson Mandela
+                </p>
               </div>
             </div>
 
-            {/* Feature 2: Applications */}
-            <div className="group cursor-pointer">
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-white/8 border border-white/20 hover:border-indigo-400/60 transition-all duration-300 backdrop-blur-sm hover:bg-indigo-500/10">
-                <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-indigo-500 to-purple-600 flex items-center justify-center shadow-lg">
-                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                  </svg>
+            {/* Quote 2: Winston Churchill (IU Orange) */}
+            <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-br from-orange-500/30 to-orange-600/20 border-2 border-orange-400/70 hover:border-orange-300 transition-all duration-300 hover:bg-orange-500/40 hover:shadow-2xl hover:shadow-orange-500/50 backdrop-blur-sm">
+                <div className="text-5xl text-orange-200 mb-2 leading-none drop-shadow-lg">
+                  "
                 </div>
-                <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold group-hover:text-indigo-300 transition-colors">Submit Anträge</h3>
-                  <p className="text-slate-400 text-sm">Manage formal applications professionally</p>
-                </div>
-                <svg className="h-5 w-5 text-slate-500 group-hover:text-indigo-400 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                  Success is not final, failure is not fatal. It is the courage to continue that counts.
+                </p>
+                <p className="text-xs text-orange-100 font-semibold">
+                  — Winston Churchill
+                </p>
               </div>
             </div>
 
-            {/* Feature 3: Modules */}
-            <div className="group cursor-pointer">
-              <div className="flex items-start gap-4 p-4 rounded-xl bg-white/8 border border-white/20 hover:border-purple-400/60 transition-all duration-300 backdrop-blur-sm hover:bg-purple-500/10">
-                <div className="flex-shrink-0 h-12 w-12 rounded-lg bg-gradient-to-br from-purple-500 to-pink-600 flex items-center justify-center shadow-lg">
-                  <svg className="h-6 w-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
-                  </svg>
+            {/* Quote 3: Eleanor Roosevelt (Cyan + Orange blend) */}
+            <div className="group cursor-pointer transform hover:-translate-y-1 transition-transform">
+              <div className="flex flex-col p-5 rounded-2xl bg-gradient-to-r from-cyan-500/25 via-purple-500/10 to-orange-500/25 border-2 border-cyan-400/60 hover:border-cyan-300 transition-all duration-300 hover:bg-gradient-to-r hover:from-cyan-500/35 hover:via-purple-500/15 hover:to-orange-500/35 hover:shadow-2xl hover:shadow-cyan-500/40 backdrop-blur-sm">
+                <div className="text-5xl text-cyan-200 mb-2 leading-none drop-shadow-lg">
+                  "
                 </div>
-                <div className="flex-1 text-left">
-                  <h3 className="text-lg font-bold group-hover:text-purple-300 transition-colors">Module Planning</h3>
-                  <p className="text-slate-400 text-sm">Organize and plan your curriculum</p>
-                </div>
-                <svg className="h-5 w-5 text-slate-500 group-hover:text-purple-400 transition-colors transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                </svg>
+                <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow">
+                  The future belongs to those who believe in the beauty of their dreams.
+                </p>
+                <p className="text-xs text-cyan-100 font-semibold">
+                  — Eleanor Roosevelt
+                </p>
               </div>
             </div>
           </div>
 
-          {/* Stats - Professional metrics with Hamburg locations */}
-          <div className="grid grid-cols-2 gap-6 pt-8 border-t border-slate-700">
-            <div className="text-center">
-              <p className="text-3xl font-black text-cyan-300">🏢</p>
-              <p className="text-sm text-slate-300 font-bold mt-2">Hammerbrook</p>
-              <p className="text-xs text-slate-500">Hamburg Campus</p>
+          {/* Hamburg Locations - Enhanced */}
+          <div className="grid grid-cols-2 gap-3 pt-8 border-t border-cyan-400/30">
+            <div className="group cursor-pointer transform hover:scale-110 transition-transform">
+              <div className="p-3 rounded-lg bg-cyan-500/20 border border-cyan-400/50 hover:bg-cyan-500/30 hover:border-cyan-300 transition-all">
+                <p className="text-2xl mb-1">📍</p>
+                <p className="text-xs font-bold text-cyan-100">
+                  Hammerbrook
+                </p>
+                <p className="text-xs text-slate-400">Hamburg</p>
+              </div>
             </div>
-            <div className="text-center">
-              <p className="text-3xl font-black text-blue-300">🏢</p>
-              <p className="text-sm text-slate-300 font-bold mt-2">Waterloohain</p>
-              <p className="text-xs text-slate-500">Hamburg Campus</p>
+            <div className="group cursor-pointer transform hover:scale-110 transition-transform">
+              <div className="p-3 rounded-lg bg-orange-500/20 border border-orange-400/50 hover:bg-orange-500/30 hover:border-orange-300 transition-all">
+                <p className="text-2xl mb-1">📍</p>
+                <p className="text-xs font-bold text-orange-100">
+                  Waterloohain
+                </p>
+                <p className="text-xs text-slate-400">Hamburg</p>
+              </div>
             </div>
           </div>
 
-          {/* Additional info */}
-          <div className="mt-6 text-center">
-            <p className="text-2xl font-black text-purple-300">500+</p>
-            <p className="text-xs text-slate-400 font-medium mt-1">Active Dual Degree Students</p>
+          {/* Active Students Count - Enhanced */}
+          <div className="mt-8 text-center">
+            <div className="inline-block">
+              <p className="text-5xl font-black text-cyan-300 drop-shadow-lg">500+</p>
+              <p className="text-xs text-cyan-100 font-semibold mt-2 uppercase tracking-wider">
+                Active Dual Degree Students
+              </p>
+              <div className="mt-3 inline-flex items-center gap-2 bg-green-500/30 px-4 py-2 rounded-full border border-green-400/60 backdrop-blur-sm">
+                <span className="h-2.5 w-2.5 rounded-full bg-green-300 block animate-pulse" />
+                <span className="text-xs text-green-100 font-bold">Currently online</span>
+              </div>
+            </div>
           </div>
-
-          {/* Footer info */}
-          <p className="text-xs text-slate-400 mt-10 font-semibold border-t border-slate-700 pt-8">
-            💡 Built by IU students • Managed professionally • Enterprise-grade security
-          </p>
         </div>
       </div>
 
-      {/* Right side - Premium Professional Login form - LARGER WIDTH */}
-      <div className="w-full lg:w-2/3 flex items-center justify-center p-6 lg:p-8 bg-white min-h-screen">
+      {/* Right side - Premium Professional Login form */}
+      <div className="w-full lg:w-1/2 flex items-center justify-center p-6 lg:p-8 bg-white min-h-screen">
         <div className="w-full max-w-2xl">
           {/* Premium Card - Much Bigger */}
-          <div className="bg-white rounded-3xl p-12 shadow-2xl border border-slate-200">
+          <div className="bg-white rounded-3xl p-12 shadow-2xl border border-slate-200 backdrop-blur-xl bg-white/95">
             {/* Header - Professional */}
             <div className="mb-12 text-center">
               {/* IU Logo - visible on mobile */}
               <div className="mb-8 flex justify-center lg:hidden">
                 <div className="relative h-24 w-24">
                   <div className="absolute inset-0 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl blur opacity-20"></div>
-                  <div className="relative h-24 w-24 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl flex items-center justify-center shadow-lg">
+                  <div className="relative h-24 w-24 bg-gradient-to-br from-slate-900 to-slate-800 rounded-xl flex items-center justify-center shadow-lg hover:shadow-xl transition-shadow">
                     <span className="text-white font-black text-3xl">IU</span>
                   </div>
                 </div>
               </div>
 
               {/* Title - Professional */}
+              <div className="inline-block mb-4">
+                <span className="px-4 py-1.5 rounded-full bg-gradient-to-r from-slate-100 to-slate-50 text-slate-700 text-xs font-bold border border-slate-300">
+                  STUDENT PORTAL
+                </span>
+              </div>
               <h1 className="text-4xl font-black text-slate-900 mb-2">
                 Welcome
               </h1>
               <p className="text-slate-600 text-base font-semibold mb-2">
-                IU Student Portal
+                IU Dual Degree Platform
               </p>
               <p className="text-slate-500 text-sm font-medium">
-                For currently enrolled dual degree students
+                Manage marks, applications & modules in one place
               </p>
             </div>
 
             {/* Form */}
-            <form 
-              onSubmit={handleSubmit} 
+            <form
+              onSubmit={handleSubmit}
               method="post"
               action="javascript:void(0)"
               className="space-y-7"
             >
-              {/* Email Input - Bigger */}
+              {/* Email Input - Professional with icon box */}
               <div>
                 <label
                   htmlFor="email"
@@ -235,6 +236,21 @@ export default function Login() {
                   Email Address
                 </label>
                 <div className="relative group">
+                  <div className="absolute left-0 top-0 h-full w-14 bg-gradient-to-r from-slate-100 to-slate-50 rounded-l-lg flex items-center justify-center border-r border-slate-300 group-focus-within:border-slate-900 transition-colors">
+                    <svg
+                      className="w-6 h-6 text-slate-600 group-focus-within:text-slate-900 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                      />
+                    </svg>
+                  </div>
                   <input
                     id="email"
                     name="email"
@@ -242,15 +258,12 @@ export default function Login() {
                     autoComplete="email"
                     required
                     placeholder="your.email@iu-study.org"
-                    className="w-full px-5 py-4 pl-13 rounded-lg bg-slate-50 border-2 border-slate-300 text-slate-900 text-base placeholder-slate-400 focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition duration-300"
+                    className="w-full px-5 py-4 pl-16 rounded-lg bg-slate-50 border-2 border-slate-300 text-slate-900 text-base placeholder-slate-400 focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition duration-300"
                   />
-                  <svg className="absolute left-4 top-4.5 w-6 h-6 text-slate-600 group-focus-within:text-slate-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                  </svg>
                 </div>
               </div>
 
-              {/* Password Input - Bigger */}
+              {/* Password Input - Professional with icon box */}
               <div>
                 <label
                   htmlFor="password"
@@ -259,6 +272,21 @@ export default function Login() {
                   Password
                 </label>
                 <div className="relative group">
+                  <div className="absolute left-0 top-0 h-full w-14 bg-gradient-to-r from-slate-100 to-slate-50 rounded-l-lg flex items-center justify-center border-r border-slate-300 group-focus-within:border-slate-900 transition-colors">
+                    <svg
+                      className="w-6 h-6 text-slate-600 group-focus-within:text-slate-900 transition-colors"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"
+                      />
+                    </svg>
+                  </div>
                   <input
                     id="password"
                     name="password"
@@ -266,11 +294,8 @@ export default function Login() {
                     autoComplete="current-password"
                     required
                     placeholder="Enter your password"
-                    className="w-full px-5 py-4 pl-13 rounded-lg bg-slate-50 border-2 border-slate-300 text-slate-900 text-base placeholder-slate-400 focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition duration-300"
+                    className="w-full px-5 py-4 pl-16 rounded-lg bg-slate-50 border-2 border-slate-300 text-slate-900 text-base placeholder-slate-400 focus:bg-white focus:border-slate-900 focus:outline-none focus:ring-2 focus:ring-slate-900/10 transition duration-300"
                   />
-                  <svg className="absolute left-4 top-4.5 w-6 h-6 text-slate-600 group-focus-within:text-slate-900 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
-                  </svg>
                 </div>
               </div>
 
@@ -302,8 +327,16 @@ export default function Login() {
               {error && (
                 <div className="rounded-lg bg-red-50 border-2 border-red-200 p-5 backdrop-blur-sm">
                   <div className="flex gap-4">
-                    <svg className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5" fill="currentColor" viewBox="0 0 20 20">
-                      <path fillRule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clipRule="evenodd" />
+                    <svg
+                      className="w-6 h-6 text-red-600 flex-shrink-0 mt-0.5"
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z"
+                        clipRule="evenodd"
+                      />
                     </svg>
                     <p className="text-base font-semibold text-red-700">
                       {error}
@@ -316,21 +349,47 @@ export default function Login() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 to-slate-800 hover:from-slate-800 hover:to-slate-900 text-white font-bold text-lg rounded-lg shadow-lg hover:shadow-xl transition duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3"
+                className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 via-slate-800 to-slate-900 hover:from-slate-800 hover:via-slate-700 hover:to-slate-800 text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl transition duration-300 transform hover:scale-105 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed disabled:transform-none flex items-center justify-center gap-3 border border-slate-700"
               >
                 {isSubmitting ? (
                   <>
-                    <svg className="animate-spin h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-                      <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
-                      <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                    <svg
+                      className="animate-spin h-6 w-6"
+                      xmlns="http://www.w3.org/2000/svg"
+                      fill="none"
+                      viewBox="0 0 24 24"
+                    >
+                      <circle
+                        className="opacity-25"
+                        cx="12"
+                        cy="12"
+                        r="10"
+                        stroke="currentColor"
+                        strokeWidth="4"
+                      ></circle>
+                      <path
+                        className="opacity-75"
+                        fill="currentColor"
+                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                      ></path>
                     </svg>
                     <span>Signing in...</span>
                   </>
                 ) : (
                   <>
                     <span>Sign In</span>
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M13 7l5 5m0 0l-5 5m5-5H6"
+                      />
                     </svg>
                   </>
                 )}
@@ -342,7 +401,9 @@ export default function Login() {
                   <div className="w-full border-t border-slate-300"></div>
                 </div>
                 <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white text-slate-600 font-medium text-base">Need Help?</span>
+                  <span className="px-3 bg-white text-slate-600 font-medium text-base">
+                    Need Help?
+                  </span>
                 </div>
               </div>
 
@@ -352,19 +413,39 @@ export default function Login() {
                   href="https://iu.de"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-center justify-center gap-3 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold rounded-lg transition duration-200 text-base"
+                  className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-br from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 text-slate-900 font-semibold rounded-lg transition duration-200 text-base border border-slate-200 hover:border-slate-400 hover:shadow-lg"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
                   </svg>
                   <span>IU Website</span>
                 </a>
                 <a
                   href="mailto:support@iu-study.org"
-                  className="flex items-center justify-center gap-3 px-6 py-3 bg-slate-100 hover:bg-slate-200 text-slate-900 font-semibold rounded-lg transition duration-200 text-base"
+                  className="flex items-center justify-center gap-3 px-6 py-3 bg-gradient-to-br from-slate-100 to-slate-50 hover:from-slate-200 hover:to-slate-100 text-slate-900 font-semibold rounded-lg transition duration-200 text-base border border-slate-200 hover:border-slate-400 hover:shadow-lg"
                 >
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                  <svg
+                    className="w-5 h-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                    />
                   </svg>
                   <span>Support</span>
                 </a>
