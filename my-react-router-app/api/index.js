@@ -4,7 +4,13 @@ import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 import bcryptjs from "bcryptjs";
+import path from "path";
+import { fileURLToPath } from "url";
 import * as build from "../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+const clientBuildPath = path.join(__dirname, '../build/client');
 
 const prisma = new PrismaClient();
 const app = express();
@@ -383,7 +389,7 @@ app.post("/api/reset-password", async (req, res) => {
 });
 
 // Serve static files from build/client BEFORE React Router handler
-app.use(express.static('build/client', {
+app.use(express.static(clientBuildPath, {
   maxAge: '1d',
   etag: false,
 }));

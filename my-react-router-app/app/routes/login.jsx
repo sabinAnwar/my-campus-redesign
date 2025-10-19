@@ -8,7 +8,10 @@ export default function Login() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e) => {
+    console.log('🔵 handleSubmit called');
     e.preventDefault();
+    e.stopPropagation();
+    
     setIsSubmitting(true);
     setError(null);
 
@@ -79,7 +82,12 @@ export default function Login() {
             </p>
           </div>
 
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form 
+            onSubmit={handleSubmit} 
+            method="post"
+            action="javascript:void(0)"
+            className="space-y-6"
+          >
             <div>
               <label
                 htmlFor="email"
