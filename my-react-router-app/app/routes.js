@@ -81,4 +81,12 @@ export default [
     path: "api/request-password-reset",
     file: "routes/api/request-password-reset.jsx",
   },
+  {
+    path: "api/verify-reset-token",
+    file: "routes/api/verify-reset-token.jsx",
+  },
+  {
+    path: "api/reset-password",
+    file: "routes/api/reset-password.jsx",
+  },
 ];
