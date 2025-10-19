@@ -11,6 +11,7 @@ const app = express();
 
 // Middleware
 app.use(express.json());
+app.use(express.urlencoded({ extended: true })); // Handle form data
 
 // Catch special browser/devtools requests BEFORE React Router
 app.use((req, res, next) => {
@@ -54,8 +55,16 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
+    
+    // Debug logging
+    console.log("📝 Login request received:");
+    console.log("   Content-Type:", req.headers["content-type"]);
+    console.log("   Body:", req.body);
+    console.log("   Email type:", typeof email, "Value:", email);
+    console.log("   Password type:", typeof password);
 
     if (!email || typeof email !== "string") {
+      console.log("❌ Invalid email:", { email, type: typeof email });
       return res
         .status(400)
         .json({ error: "Please provide a valid email address" });
@@ -65,8 +74,8 @@ app.post("/api/login", async (req, res) => {
       return res.status(400).json({ error: "Please provide a password" });
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Find user by email (case-insensitive)
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -80,13 +89,16 @@ app.post("/api/login", async (req, res) => {
 
     // Create session cookie
     const sessionId = crypto.randomUUID();
+    const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+    
     res.cookie("auth_session", sessionId, {
       httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
+      secure: isProduction, // Only HTTPS in production
+      sameSite: isProduction ? "strict" : "lax",
       maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
     });
 
+    console.log("✅ Login successful for:", email);
     return res.json({
       success: true,
       user: {
@@ -97,7 +109,7 @@ app.post("/api/login", async (req, res) => {
       },
     });
   } catch (error) {
-    console.error("Error during login:", error);
+    console.error("❌ Error during login:", error);
     return res.status(500).json({ error: "Failed to process login" });
   }
 });
@@ -107,17 +119,27 @@ app.post("/api/request-password-reset", async (req, res) => {
   try {
     const { email } = req.body;
 
+    console.log("📝 Password reset request for:", email);
+    console.log("   req.body:", req.body);
+    console.log("   Content-Type:", req.headers["content-type"]);
+
     if (!email || typeof email !== "string") {
+      console.log("❌ Invalid email:", { email, type: typeof email });
       return res
         .status(400)
         .json({ error: "Please provide a valid email address" });
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({ where: { email } });
+    console.log("🔍 Looking up user with email:", email.toLowerCase());
+
+    // Find user by email (case-insensitive)
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+
+    console.log("👤 User found:", user ? user.email : "none");
 
     // Always return success even if user doesn't exist (security best practice)
     if (!user) {
+      console.log("⚠️  No user found for email:", email);
       return res.json({
         success: true,
         message:
@@ -129,16 +151,22 @@ app.post("/api/request-password-reset", async (req, res) => {
     const resetToken = crypto.randomUUID();
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
+    console.log("🔐 Generated reset token, updating user...");
+
     // Update user with reset token
     await prisma.user.update({
       where: { id: user.id },
       data: { resetToken, resetTokenExpiry },
     });
 
+    console.log("📧 Sending password reset email...");
+
     // Send email
     const resetLink = `${process.env.APP_URL || "http://localhost:5174"}/reset-password/${resetToken}`;
 
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
+
+    console.log("✅ Password reset email sent to:", email);
 
     return res.json({
       success: true,
@@ -148,10 +176,11 @@ app.post("/api/request-password-reset", async (req, res) => {
       ...(process.env.NODE_ENV === "development" && { resetLink, resetToken }),
     });
   } catch (error) {
-    console.error("Error requesting password reset:", error);
+    console.error("❌ Error requesting password reset:", error);
+    console.error("   Error stack:", error.stack);
     return res
       .status(500)
-      .json({ error: "Failed to process password reset request" });
+      .json({ error: "Failed to process password reset request", details: error.message });
   }
 });
 
@@ -258,12 +287,108 @@ async function sendPasswordResetEmail(email, resetLink) {
     console.log("Password reset email sent:", info.messageId);
     return true;
   } catch (error) {
-    console.error("Error sending password reset email:", error);
+    console.log("Error sending password reset email:", error);
     return false;
   }
 }
 
-// React Router SSR handler
+// Verify password reset token endpoint
+app.post("/api/verify-reset-token", async (req, res) => {
+  try {
+    const { token } = req.body;
+
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    // Find user with this reset token
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date(), // Token must not be expired
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired reset token" });
+    }
+
+    return res.json({ success: true, valid: true });
+  } catch (error) {
+    console.error("❌ Error verifying reset token:", error);
+    return res.status(500).json({ error: "Failed to verify token" });
+  }
+});
+
+// Reset password endpoint
+app.post("/api/reset-password", async (req, res) => {
+  try {
+    const { token, password } = req.body;
+
+    console.log("📝 Password reset attempt with token:", token?.substring(0, 8) + "...");
+
+    if (!token || typeof token !== "string") {
+      return res.status(400).json({ error: "Invalid token" });
+    }
+
+    if (!password || typeof password !== "string") {
+      return res.status(400).json({ error: "Please provide a new password" });
+    }
+
+    if (password.length < 8) {
+      return res
+        .status(400)
+        .json({ error: "Password must be at least 8 characters long" });
+    }
+
+    // Find user with this reset token
+    const user = await prisma.user.findFirst({
+      where: {
+        resetToken: token,
+        resetTokenExpiry: {
+          gt: new Date(), // Token must not be expired
+        },
+      },
+    });
+
+    if (!user) {
+      return res.status(400).json({ error: "Invalid or expired reset token" });
+    }
+
+    // Hash the new password
+    const hashedPassword = await bcryptjs.hash(password, 10);
+
+    // Update user password and clear reset token
+    await prisma.user.update({
+      where: { id: user.id },
+      data: {
+        password: hashedPassword,
+        resetToken: null,
+        resetTokenExpiry: null,
+      },
+    });
+
+    console.log("✅ Password reset successfully for user:", user.email);
+
+    return res.json({
+      success: true,
+      message: "Password reset successfully!",
+    });
+  } catch (error) {
+    console.error("❌ Error resetting password:", error);
+    return res.status(500).json({ error: "Failed to reset password" });
+  }
+});
+
+// Serve static files from build/client BEFORE React Router handler
+app.use(express.static('build/client', {
+  maxAge: '1d',
+  etag: false,
+}));
+
+// React Router handler (catches everything else)
 app.use(createRequestHandler({
   build,
   mode: 'production',

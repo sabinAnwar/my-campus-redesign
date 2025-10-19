@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { validatePasswordResetToken, hashPassword } from '../lib/auth';
-import { prisma } from '../lib/prisma';
 import { showSuccessToast, showErrorToast } from '../lib/toast';
 
 export default function ResetPassword() {
@@ -15,14 +13,22 @@ export default function ResetPassword() {
   useEffect(() => {
     const validateToken = async () => {
       try {
-        const user = await validatePasswordResetToken(token);
-        if (!user) {
+        const response = await fetch('/api/verify-reset-token', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ token }),
+        });
+
+        const data = await response.json();
+
+        if (!response.ok || !data.valid) {
           setError('Invalid or expired reset token');
           setIsValidToken(false);
         } else {
           setIsValidToken(true);
         }
       } catch (err) {
+        console.error('❌ Error validating token:', err);
         setError('An error occurred while validating the token');
         setIsValidToken(false);
       }
@@ -59,32 +65,32 @@ export default function ResetPassword() {
     }
 
     try {
-      const user = await validatePasswordResetToken(token);
-      if (!user) {
-        const errMsg = 'Invalid or expired reset token';
+      const response = await fetch('/api/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ token, password }),
+      });
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        const errMsg = data.error || 'Failed to reset password';
         setError(errMsg);
         showErrorToast(errMsg);
         setIsSubmitting(false);
         return;
       }
 
-      const hashedPassword = await hashPassword(password);
-
-      await prisma.user.update({
-        where: { id: user.id },
-        data: {
-          password: hashedPassword,
-          resetToken: null,
-          resetTokenExpiry: null,
-        },
-      });
-
-      showSuccessToast('Password reset successfully! Redirecting to login...');
-      setTimeout(() => navigate('/login'), 1500);
+      console.log('✅ Password reset successfully');
+      showSuccessToast('✅ Password reset successfully! Redirecting to login...');
+      setTimeout(() => navigate('/login'), 2000);
     } catch (err) {
-      setError('An error occurred while resetting your password');
+      console.error('❌ Error resetting password:', err);
+      const errMsg = err.message || 'An error occurred while resetting your password';
+      setError(errMsg);
+      showErrorToast(errMsg);
+      setIsSubmitting(false);
     }
-    setIsSubmitting(false);
   };
 
   if (isValidating) {

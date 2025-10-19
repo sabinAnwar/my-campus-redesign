@@ -6,6 +6,7 @@ export default function Login() {
   const navigate = useNavigate();
   const fetcher = useFetcher();
   const [error, setError] = useState(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const lastResponseRef = useRef(null);
 
   // Monitor fetcher for any response
@@ -31,10 +32,54 @@ export default function Login() {
           console.log('❌ ERROR DETECTED:', fetcher.data.error);
           setError(fetcher.data.error);
           showErrorToast(fetcher.data.error);
+          setIsSubmitting(false);
         }
       }
     }
   }, [fetcher.data, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setIsSubmitting(true);
+    setError(null);
+
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get('email');
+    const password = formData.get('password');
+
+    try {
+      // Send as form-encoded data to match React Router action expectations
+      const response = await fetch('/api/login', {
+        method: 'POST',
+        body: new URLSearchParams({ email, password }),
+      });
+
+      const data = await response.json();
+
+      console.log('📨 API response:', data);
+
+      if (data.success) {
+        console.log('✅ SUCCESS DETECTED! Showing toast now...');
+        showSuccessToast('✅ Login successful! Redirecting...');
+        // Use a longer timeout to ensure toast is visible
+        setTimeout(() => {
+          console.log('🔄 Navigating to home page...');
+          navigate('/');
+        }, 2000);
+      } else if (data.error) {
+        console.log('❌ ERROR DETECTED:', data.error);
+        setError(data.error);
+        showErrorToast(data.error);
+        setIsSubmitting(false);
+      }
+    } catch (err) {
+      console.error('❌ Login error:', err);
+      const errorMsg = err.message || 'An error occurred during login';
+      setError(errorMsg);
+      showErrorToast(errorMsg);
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">
@@ -52,7 +97,7 @@ export default function Login() {
             </p>
           </div>
 
-          <fetcher.Form method="post" action="/api/login" className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label
                 htmlFor="email"
@@ -127,12 +172,12 @@ export default function Login() {
 
             <button
               type="submit"
-              disabled={fetcher.state !== 'idle'}
+              disabled={isSubmitting}
               className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:bg-blue-400"
             >
-              {fetcher.state !== 'idle' ? 'Signing in...' : 'Sign in'}
+              {isSubmitting ? 'Signing in...' : 'Sign in'}
             </button>
-          </fetcher.Form>
+          </form>
         </div>
       </div>
     </div>

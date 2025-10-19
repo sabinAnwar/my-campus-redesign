@@ -118,19 +118,44 @@ export async function action({ request }) {
   }
 
   try {
-    // Get form data from the request
-    const formData = await request.formData();
-    const email = formData.get('email');
+    console.log('📝 Password reset action called');
+    console.log('   Content-Type:', request.headers.get('content-type'));
+    
+    let email;
+
+    // Try to parse as form data
+    try {
+      const formData = await request.formData();
+      email = formData.get('email');
+      console.log('✅ Parsed as formData');
+    } catch (formError) {
+      console.log('⚠️  formData() failed:', formError.message);
+      
+      // Fallback: try to parse as JSON
+      try {
+        const json = await request.json();
+        email = json.email;
+        console.log('✅ Parsed as JSON');
+      } catch (jsonError) {
+        console.log('❌ Both formData and JSON parsing failed');
+        throw new Error('Could not parse request body');
+      }
+    }
+
+    console.log('📧 Email:', email, 'Type:', typeof email);
 
     if (!email || typeof email !== 'string') {
+      console.log('❌ Invalid email');
       return Response.json({ id: `${Date.now()}`, error: 'Please provide a valid email address' }, { status: 400 });
     }
 
-    // Find user by email
-    const user = await prisma.user.findUnique({ where: { email } });
+    // Find user by email (case-insensitive)
+    console.log('🔍 Looking up user with email:', email.toLowerCase());
+    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     
     // Always return success even if user doesn't exist (security best practice)
     if (!user) {
+      console.log('⚠️  No user found for email:', email);
       return Response.json({ 
         id: `${Date.now()}`,
         success: true, 
@@ -138,9 +163,13 @@ export async function action({ request }) {
       });
     }
 
+    console.log('👤 User found:', user.email);
+
     // Generate reset token
     const resetToken = crypto.randomUUID();
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+    console.log('🔐 Generated reset token');
 
     // Update user with reset token
     await prisma.user.update({
@@ -148,10 +177,14 @@ export async function action({ request }) {
       data: { resetToken, resetTokenExpiry },
     });
 
+    console.log('📧 Sending password reset email...');
+
     // Send email
-    const resetLink = `${process.env.APP_URL || 'http://localhost:5173'}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.APP_URL || 'http://localhost:5175'}/reset-password/${resetToken}`;
     
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
+    
+    console.log('✅ Password reset email sent');
     
     return Response.json({ 
       id: `${Date.now()}`,
@@ -161,8 +194,9 @@ export async function action({ request }) {
       ...(process.env.NODE_ENV === 'development' && { resetLink, resetToken })
     });
   } catch (error) {
-    console.error('Error requesting password reset:', error);
-    return Response.json({ id: `${Date.now()}`, error: 'Failed to process password reset request' }, { status: 500 });
+    console.error('❌ Error requesting password reset:', error);
+    console.error('   Stack:', error.stack);
+    return Response.json({ id: `${Date.now()}`, error: 'Failed to process password reset request', details: error.message }, { status: 500 });
   }
 }
 
