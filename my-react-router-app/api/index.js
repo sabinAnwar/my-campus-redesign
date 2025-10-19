@@ -168,7 +168,7 @@ app.post("/api/request-password-reset", async (req, res) => {
     console.log("📧 Sending password reset email...");
 
     // Send email
-    const resetLink = `${process.env.APP_URL || "http://localhost:5174"}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
 
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
 

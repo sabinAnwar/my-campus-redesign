@@ -180,7 +180,7 @@ export async function action({ request }) {
     console.log('📧 Sending password reset email...');
 
     // Send email
-    const resetLink = `${process.env.APP_URL || 'http://localhost:5175'}/reset-password/${resetToken}`;
+    const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
     
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
     
