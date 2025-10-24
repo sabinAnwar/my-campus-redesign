@@ -146,23 +146,21 @@ The user wanted to improve the dashboard after login and add additional features
 
 All routes are properly configured in `app/routes.js`:
 
-```javascript
-- / (Home)
-- /login
-- /logout
-- /dashboard
-- /events
-- /room-booking
-- /files
-- /contact
-- /teacher-upload
-- /api/login
-- /api/user
-- /api/health
-- /api/request-password-reset
-- /api/verify-reset-token
-- /api/reset-password
-```
+- `/` - Home
+- `/login` - Login page
+- `/logout` - Logout
+- `/dashboard` - Main dashboard
+- `/events` - Events and appointments
+- `/room-booking` - Room booking
+- `/files` - File management
+- `/contact` - Contact and support
+- `/teacher-upload` - Teacher upload
+- `/api/login` - Login API
+- `/api/user` - User data API
+- `/api/health` - Health check
+- `/api/request-password-reset` - Password reset request
+- `/api/verify-reset-token` - Token verification
+- `/api/reset-password` - Password reset
 
 ## API Endpoints
 
