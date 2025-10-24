@@ -18,9 +18,6 @@ UPDATE "public"."User"
 ALTER TABLE "public"."User" 
     ALTER COLUMN "password" SET NOT NULL,
     ALTER COLUMN "role" SET DEFAULT 'STUDENT';
-ADD COLUMN     "resetToken" TEXT,
-ADD COLUMN     "resetTokenExpiry" TIMESTAMP(3),
-ALTER COLUMN "role" SET DEFAULT 'STUDENT';
 
 -- CreateTable
 CREATE TABLE "public"."Teacher" (
@@ -67,9 +64,7 @@ CREATE TABLE "public"."Studienplan" (
 CREATE UNIQUE INDEX "Teacher_email_key" ON "public"."Teacher"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "Studienplan_userId_key" ON "public"."Studienplan"("userId");
-
--- AddForeignKey
+CREATE UNIQUE INDEX "Studienplan_userId_key" ON "public"."Studienplan"("userId");-- AddForeignKey
 ALTER TABLE "public"."Mark" ADD CONSTRAINT "Mark_userId_fkey" FOREIGN KEY ("userId") REFERENCES "public"."User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey

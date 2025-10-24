@@ -51,6 +51,18 @@ export default [
     file: "routes/dashboard.jsx",
   },
   {
+    path: "room-booking",
+    file: "routes/room-booking.jsx",
+  },
+  {
+    path: "events",
+    file: "routes/events.jsx",
+  },
+  {
+    path: "files",
+    file: "routes/files.jsx",
+  },
+  {
     path: "users",
     file: "routes/users.jsx",
     children: [
@@ -76,6 +88,10 @@ export default [
   {
     path: "api/login",
     file: "routes/api/login.jsx",
+  },
+  {
+    path: "api/user",
+    file: "routes/api/user.jsx",
   },
   {
     path: "api/request-password-reset",

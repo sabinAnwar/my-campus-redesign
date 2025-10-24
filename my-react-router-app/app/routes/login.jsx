@@ -39,12 +39,12 @@ export default function Login() {
 
       if (data.success) {
         console.log('✅ Login successful!');
-        showSuccessToast('✅ Login successful! Redirecting...');
+        showSuccessToast('✅ Login successful! Redirecting to dashboard...');
         
-        // Wait for toast to show, then redirect
+        // Wait for toast to show, then redirect to dashboard
         setTimeout(() => {
-          console.log('🔄 Redirecting to home...');
-          window.location.href = '/';
+          console.log('🔄 Redirecting to dashboard...');
+          navigate('/dashboard');
         }, 1500);
       } else if (data.error) {
         console.log('❌ Login failed:', data.error);

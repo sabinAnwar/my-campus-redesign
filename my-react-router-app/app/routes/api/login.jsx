@@ -63,11 +63,19 @@ export async function action({ request }) {
       );
     }
 
-    // Create a session cookie
+    // Create and store session in database
     const sessionToken = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    // In development, we don't store the session in the database
-    // It's just used for the cookie
+    // Save session to database
+    await prisma.session.create({
+      data: {
+        token: sessionToken,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
     console.log("✅ Login successful for:", user.email);
 
     // Return success with session token
