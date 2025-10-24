@@ -268,23 +268,38 @@ export default function Dashboard() {
                       </h3>
                       <div className="space-y-3">
                         {[
-                          "Wirtschaftsinformatik",
-                          "Webentwicklung",
-                          "Datenbankdesign",
-                          "Cloud Computing",
-                          "UI/UX Design",
-                          "Project Management",
+                          { name: "Wirtschaftsinformatik", progress: 85, credits: 6 },
+                          { name: "Webentwicklung", progress: 70, credits: 5 },
+                          { name: "Datenbankdesign", progress: 60, credits: 5 },
+                          { name: "Cloud Computing", progress: 45, credits: 6 },
+                          { name: "UI/UX Design", progress: 30, credits: 4 },
+                          { name: "Project Management", progress: 20, credits: 5 },
                         ].map((module, idx) => (
                           <div
                             key={idx}
-                            className="flex items-center justify-between p-3 bg-white rounded-lg border border-slate-200 hover:border-slate-400 hover:shadow-md transition"
+                            className="p-4 bg-white rounded-lg border-2 border-slate-200 hover:border-slate-400 hover:shadow-md transition"
                           >
-                            <span className="font-semibold text-slate-900">
-                              {module}
-                            </span>
-                            <span className="text-xs font-bold bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full">
-                              Aktiv
-                            </span>
+                            <div className="flex items-center justify-between mb-2">
+                              <span className="font-bold text-slate-900">
+                                {module.name}
+                              </span>
+                              <span className="text-xs font-bold bg-cyan-100 text-cyan-700 px-3 py-1 rounded-full">
+                                {module.credits} ECTS
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="flex-1">
+                                <div className="w-full bg-slate-200 rounded-full h-2">
+                                  <div
+                                    className="bg-gradient-to-r from-cyan-500 to-blue-500 h-2 rounded-full transition-all duration-500"
+                                    style={{ width: `${module.progress}%` }}
+                                  ></div>
+                                </div>
+                              </div>
+                              <span className="text-sm font-bold text-slate-700 min-w-[40px]">
+                                {module.progress}%
+                              </span>
+                            </div>
                           </div>
                         ))}
                       </div>
@@ -307,7 +322,7 @@ export default function Dashboard() {
                         </div>
                         <div className="w-full bg-slate-300 rounded-full h-3">
                           <div
-                            className="bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full"
+                            className="bg-gradient-to-r from-cyan-500 to-blue-500 h-3 rounded-full transition-all duration-500"
                             style={{ width: "62%" }}
                           ></div>
                         </div>
@@ -323,8 +338,95 @@ export default function Dashboard() {
                           8% bis zur nächsten Stufe
                         </p>
                       </div>
+                      <div className="bg-white rounded-lg p-3 border border-slate-200">
+                        <p className="text-xs text-slate-600 mb-1">
+                          ECTS Credits
+                        </p>
+                        <p className="font-bold text-slate-900 text-lg">
+                          19 / 31 erworben
+                        </p>
+                        <p className="text-xs text-slate-600 mt-1">
+                          12 Credits verbleibend
+                        </p>
+                      </div>
                     </div>
                   </div>
+                </div>
+
+                {/* Study Calendar */}
+                <div className="bg-white rounded-xl p-6 border-2 border-slate-200 mb-6">
+                  <h3 className="text-xl font-bold text-slate-900 mb-4">📅 Studienkalender</h3>
+                  <div className="grid grid-cols-7 gap-2">
+                    {['Mo', 'Di', 'Mi', 'Do', 'Fr', 'Sa', 'So'].map(day => (
+                      <div key={day} className="text-center font-bold text-slate-700 py-2">{day}</div>
+                    ))}
+                    {Array.from({ length: 35 }, (_, i) => {
+                      const date = new Date(2025, 9, 1 + i - 2); // October 2025
+                      const today = new Date();
+                      const isToday = date.toDateString() === today.toDateString();
+                      const hasEvent = [27, 28, 29].includes(date.getDate());
+                      const hasDeadline = [31].includes(date.getDate());
+                      
+                      return (
+                        <div
+                          key={i}
+                          className={`p-2 rounded-lg text-center font-semibold transition hover:scale-105 cursor-pointer ${
+                            isToday
+                              ? 'bg-red-600 text-white shadow-lg'
+                              : hasDeadline
+                              ? 'bg-orange-500 text-white'
+                              : hasEvent
+                              ? 'bg-blue-600 text-white'
+                              : date.getMonth() === 9
+                              ? 'bg-slate-100 text-slate-900 hover:bg-slate-200'
+                              : 'bg-slate-50 text-slate-400'
+                          }`}
+                          title={hasEvent ? 'Vorlesung' : hasDeadline ? 'Deadline' : ''}
+                        >
+                          {date.getDate()}
+                        </div>
+                      );
+                    })}
+                  </div>
+                  <div className="flex gap-4 mt-4 text-sm">
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-red-600 rounded"></div>
+                      <span className="text-slate-700 font-semibold">Heute</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-blue-600 rounded"></div>
+                      <span className="text-slate-700 font-semibold">Vorlesung</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <div className="w-4 h-4 bg-orange-500 rounded"></div>
+                      <span className="text-slate-700 font-semibold">Deadline</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Quick Actions */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <Link
+                    to="/events"
+                    className="bg-gradient-to-br from-blue-50 to-cyan-50 rounded-lg p-4 border-2 border-blue-300 hover:border-blue-400 hover:shadow-lg transition text-center"
+                  >
+                    <div className="text-3xl mb-2">📅</div>
+                    <h4 className="font-bold text-slate-900">Alle Termine</h4>
+                    <p className="text-sm text-slate-600">Vorlesungsplan anzeigen</p>
+                  </Link>
+                  <Link
+                    to="/files"
+                    className="bg-gradient-to-br from-green-50 to-emerald-50 rounded-lg p-4 border-2 border-green-300 hover:border-green-400 hover:shadow-lg transition text-center"
+                  >
+                    <div className="text-3xl mb-2">📁</div>
+                    <h4 className="font-bold text-slate-900">Materialien</h4>
+                    <p className="text-sm text-slate-600">Dateien herunterladen</p>
+                  </Link>
+                  <button className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-lg p-4 border-2 border-purple-300 hover:border-purple-400 hover:shadow-lg transition text-center">
+                    <div className="text-3xl mb-2">📊</div>
+                    <h4 className="font-bold text-slate-900">Leistungsübersicht</h4>
+                    <p className="text-sm text-slate-600">Noten und Credits</p>
+                  </button>
                 </div>
               </div>
             )}
