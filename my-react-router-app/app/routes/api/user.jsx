@@ -62,16 +62,6 @@ export async function loader({ request }) {
       },
       { status: 200 }
     );
-    return Response.json(
-      {
-        user: {
-          id: session.user.id,
-          name: session.user.name || "Student",
-          email: session.user.email,
-        },
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("❌ Error fetching user:", error);
     return Response.json(

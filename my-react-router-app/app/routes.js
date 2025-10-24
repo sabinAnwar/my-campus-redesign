@@ -63,6 +63,14 @@ export default [
     file: "routes/files.jsx",
   },
   {
+    path: "contact",
+    file: "routes/contact.jsx",
+  },
+  {
+    path: "teacher-upload",
+    file: "routes/teacher-upload.jsx",
+  },
+  {
     path: "users",
     file: "routes/users.jsx",
     children: [
