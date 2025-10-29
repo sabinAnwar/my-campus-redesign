@@ -77,6 +77,12 @@ export default [
   {
     path: "courses",
     file: "routes/courses.jsx",
+    path: "contact",
+    file: "routes/contact.jsx",
+  },
+  {
+    path: "teacher-upload",
+    file: "routes/teacher-upload.jsx",
   },
   {
     path: "users",
