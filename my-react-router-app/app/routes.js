@@ -63,6 +63,22 @@ export default [
     file: "routes/files.jsx",
   },
   {
+    path: "messages",
+    file: "routes/messages.jsx",
+  },
+  {
+    path: "tasks",
+    file: "routes/tasks.jsx",
+  },
+  {
+    path: "settings",
+    file: "routes/settings.jsx",
+  },
+  {
+    path: "courses",
+    file: "routes/courses.jsx",
+  },
+  {
     path: "users",
     file: "routes/users.jsx",
     children: [
@@ -88,6 +104,10 @@ export default [
   {
     path: "api/login",
     file: "routes/api/login.jsx",
+  },
+  {
+    path: "api/logout",
+    file: "routes/api/logout.jsx",
   },
   {
     path: "api/user",

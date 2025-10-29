@@ -1,3 +1,7 @@
+export const loader = async () => {
+  return null;
+};
+
 export default function BasicTest() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-gray-50">

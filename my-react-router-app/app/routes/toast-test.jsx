@@ -2,6 +2,10 @@ import { useState } from 'react';
 import { toast } from 'react-toastify';
 import { showSuccessToast, showErrorToast, showInfoToast, showWarningToast } from '../lib/toast';
 
+export const loader = async () => {
+  return null;
+};
+
 export default function ToastTest() {
   const [lastLog, setLastLog] = useState('');
 

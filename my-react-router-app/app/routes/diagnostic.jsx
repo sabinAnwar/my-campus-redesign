@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+export const loader = async () => {
+  return null;
+};
+
 export default function DiagnosticPage() {
   const [diagnostics, setDiagnostics] = useState({
     toastifyLoaded: false,

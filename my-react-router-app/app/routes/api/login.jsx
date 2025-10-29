@@ -79,19 +79,27 @@ export async function action({ request }) {
     console.log("✅ Login successful for:", user.email);
 
     // Return success with session token
-    return Response.json(
+    const response = Response.json(
       {
         success: true,
         message: "Login successful!",
         user: { id: user.id, email: user.email, name: user.name },
+        sessionToken: sessionToken,
       },
       {
         status: 200,
-        headers: {
-          "Set-Cookie": `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`,
-        },
       }
     );
+    
+    // Set cookie with proper headers for localhost
+    response.headers.set(
+      "Set-Cookie",
+      `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict`
+    );
+    
+    console.log("🍪 Set-Cookie header:", `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Strict`);
+    
+    return response;
   } catch (error) {
     console.error("❌ Login error:", error);
     return Response.json(

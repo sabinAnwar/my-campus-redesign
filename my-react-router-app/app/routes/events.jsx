@@ -52,6 +52,10 @@ const EVENTS = [
   }
 ];
 
+export const loader = async () => {
+  return null;
+};
+
 export default function Events() {
   const [selectedType, setSelectedType] = useState('All');
   const types = ['All', 'Lecture', 'Seminar', 'Lab', 'Office Hours'];

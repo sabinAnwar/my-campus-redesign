@@ -49,6 +49,10 @@ export async function action({ request }) {
   }
 }
 
+export const loader = async () => {
+  return null;
+};
+
 export default function NewUser() {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({

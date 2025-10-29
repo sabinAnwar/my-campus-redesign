@@ -1,6 +1,10 @@
 // Teacher Course Upload Page
 import React, { useState } from "react";
 
+export const loader = async () => {
+  return null;
+};
+
 export default function TeacherUpload() {
   const [file, setFile] = useState(null);
   const [course, setCourse] = useState("");

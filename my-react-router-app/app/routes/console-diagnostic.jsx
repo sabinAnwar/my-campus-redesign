@@ -1,5 +1,9 @@
 import { useState } from "react";
 
+export const loader = async () => {
+  return null;
+};
+
 export default function ConsoleDiagnostic() {
   const [logs, setLogs] = useState([]);
 

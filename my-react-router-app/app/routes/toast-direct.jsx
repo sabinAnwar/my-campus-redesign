@@ -1,6 +1,10 @@
 import { useEffect, useState } from 'react';
 import { toast } from 'react-toastify';
 
+export const loader = async () => {
+  return null;
+};
+
 export default function ToastDirect() {
   const [mounted, setMounted] = useState(false);
   const [toastContainer, setToastContainer] = useState(null);

@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function loader({ request }) {
+async function handleRequest({ request }) {
   if (request.method !== "GET") {
     return Response.json(
       { error: "Method not allowed" },
@@ -11,15 +11,31 @@ export async function loader({ request }) {
   }
 
   try {
-    // Get session from cookies
+    // Get session from cookies or header
+    let sessionToken = null;
+    
+    // First try to get from cookies
     const cookieHeader = request.headers.get("Cookie") || "";
-    const sessionToken = cookieHeader
+    console.log("🍪 Cookie header:", cookieHeader);
+    
+    sessionToken = cookieHeader
       .split("; ")
       .find((c) => c.startsWith("session="))
       ?.split("=")[1];
 
+    // If not in cookies, try to get from X-Session-Token header
+    if (!sessionToken) {
+      sessionToken = request.headers.get("X-Session-Token");
+      if (sessionToken) {
+        console.log("📤 Got session token from header");
+      }
+    }
+
+    console.log("🔑 Session token:", sessionToken);
+
     if (!sessionToken) {
       console.log("❌ No session token found");
+      console.log("📝 Available cookies:", cookieHeader.split("; "));
       return Response.json(
         { error: "Not authenticated" },
         { status: 401 }
@@ -62,16 +78,6 @@ export async function loader({ request }) {
       },
       { status: 200 }
     );
-    return Response.json(
-      {
-        user: {
-          id: session.user.id,
-          name: session.user.name || "Student",
-          email: session.user.email,
-        },
-      },
-      { status: 200 }
-    );
   } catch (error) {
     console.error("❌ Error fetching user:", error);
     return Response.json(
@@ -79,4 +85,12 @@ export async function loader({ request }) {
       { status: 500 }
     );
   }
+}
+
+export async function loader({ request }) {
+  return handleRequest({ request });
+}
+
+export async function action({ request }) {
+  return handleRequest({ request });
 }

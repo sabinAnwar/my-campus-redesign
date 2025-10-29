@@ -29,6 +29,10 @@ const MODULES = [
   }
 ];
 
+export const loader = async () => {
+  return null;
+};
+
 export default function FileManagement() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);

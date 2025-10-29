@@ -2,6 +2,10 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { showSuccessToast, showErrorToast } from '../lib/toast';
 
+export const loader = async () => {
+  return null;
+};
+
 export default function ResetPassword() {
   const { token } = useParams();
   const navigate = useNavigate();
