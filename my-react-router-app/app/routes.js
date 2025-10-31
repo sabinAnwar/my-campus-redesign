@@ -63,10 +63,6 @@ export default [
     file: "routes/courses.schedule.jsx",
   },
   {
-    path: "files",
-    file: "routes/files.jsx",
-  },
-  {
     path: "files/recent",
     file: "routes/files.recent.jsx",
   },

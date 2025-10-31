@@ -4,10 +4,6 @@ import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
-export async function loader({ request }) {
-  return handleLoginRequest(request);
-}
-
 export async function action({ request }) {
   return handleLoginRequest(request);
 }

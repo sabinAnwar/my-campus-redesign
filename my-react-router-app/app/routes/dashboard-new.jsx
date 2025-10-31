@@ -298,7 +298,7 @@ export default function Dashboard() {
               🏛️ {t.rooms}
             </Link>
             <Link
-              to="/files"
+              to="/files/recent"
               className="px-4 py-3 text-sm font-semibold text-slate-600 hover:text-blue-600 border-b-2 border-transparent hover:border-blue-200 transition whitespace-nowrap"
             >
               📁 {t.files}

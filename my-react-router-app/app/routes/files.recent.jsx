@@ -1,6 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AppShell from "../components/AppShell";
 import { Search, Clock, File as FileIcon, Trash2, ExternalLink, FolderOpen } from "lucide-react";
+import { getRecentFiles, clearRecentFiles } from "../lib/recentFiles";
 
 export const loader = async () => null;
 
@@ -50,9 +51,10 @@ export default function RecentFiles() {
   useEffect(() => {
     try {
       const t = JSON.parse(localStorage.getItem(LS_KEYS.recentTerms) || "[]");
-      const f = JSON.parse(localStorage.getItem(LS_KEYS.recentFiles) || "[]");
       setRecentTerms(Array.isArray(t) ? t : []);
-      setRecentFiles(Array.isArray(f) ? f : []);
+      // Use utility function to get recent files
+      const files = getRecentFiles();
+      setRecentFiles(files);
     } catch {
       // ignore
     }
@@ -83,7 +85,10 @@ export default function RecentFiles() {
   };
 
   const clearTerms = () => { setRecentTerms([]); try { localStorage.setItem(LS_KEYS.recentTerms, "[]"); } catch {} };
-  const clearFiles = () => { setRecentFiles([]); try { localStorage.setItem(LS_KEYS.recentFiles, "[]"); } catch {} };
+  const clearFiles = () => { 
+    clearRecentFiles(); 
+    setRecentFiles([]); 
+  };
 
   return (
     <AppShell>
@@ -135,18 +140,40 @@ export default function RecentFiles() {
               <p className="text-sm text-slate-500">Noch keine Dateien geöffnet.</p>
             ) : (
               <ul className="divide-y divide-slate-100">
-                {recentFiles.map((f) => (
-                  <li key={f.id} className="py-2 flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <FileIcon className="h-4 w-4 text-slate-600" />
-                      <div>
-                        <div className="text-sm font-semibold text-slate-900">{f.name}</div>
-                        <div className="text-xs text-slate-500">{f.moduleName} • <Clock className="inline h-3.5 w-3.5 mr-1" /> {new Date(f.at).toLocaleString()}</div>
+                {recentFiles.map((f) => {
+                  // Get file type icon/badge
+                  const getFileTypeBadge = () => {
+                    const fileType = f.fileType?.toLowerCase();
+                    if (fileType === 'pdf') {
+                      return <span className="text-xs px-1.5 py-0.5 rounded bg-red-100 text-red-700 font-semibold">PDF</span>;
+                    } else if (fileType === 'excel' || fileType === 'xlsx' || fileType === 'xls') {
+                      return <span className="text-xs px-1.5 py-0.5 rounded bg-green-100 text-green-700 font-semibold">Excel</span>;
+                    } else if (fileType === 'podcast' || fileType === 'mp3' || fileType === 'mp4') {
+                      return <span className="text-xs px-1.5 py-0.5 rounded bg-purple-100 text-purple-700 font-semibold">Podcast</span>;
+                    } else if (fileType === 'video') {
+                      return <span className="text-xs px-1.5 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">Video</span>;
+                    }
+                    return null;
+                  };
+                  
+                  return (
+                    <li key={f.id} className="py-2 flex items-center justify-between">
+                      <div className="flex items-center gap-3 flex-1 min-w-0">
+                        <FileIcon className="h-4 w-4 text-slate-600 flex-shrink-0" />
+                        <div className="flex-1 min-w-0">
+                          <div className="flex items-center gap-2 flex-wrap">
+                            <div className="text-sm font-semibold text-slate-900 truncate">{f.name}</div>
+                            {getFileTypeBadge()}
+                          </div>
+                          <div className="text-xs text-slate-500">
+                            {f.moduleName || 'Unbekannter Kurs'} • <Clock className="inline h-3.5 w-3.5 mr-1" /> {new Date(f.at).toLocaleString('de-DE', { day: '2-digit', month: '2-digit', year: 'numeric', hour: '2-digit', minute: '2-digit' })}
+                          </div>
+                        </div>
                       </div>
-                    </div>
-                    <a href="/files" className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800"><ExternalLink className="h-3.5 w-3.5"/>Öffnen</a>
-                  </li>
-                ))}
+                      <a href={`/courses`} className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 ml-2 flex-shrink-0"><ExternalLink className="h-3.5 w-3.5"/>Öffnen</a>
+                    </li>
+                  );
+                })}
               </ul>
             )}
           </section>
