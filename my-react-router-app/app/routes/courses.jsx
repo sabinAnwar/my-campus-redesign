@@ -191,14 +191,14 @@ export default function Courses() {
           type: "script",
           title: "React Handbook.pdf",
           size: "3.2 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/skript/React_Handbook.pdf",
         },
         {
           id: 4,
           type: "script",
           title: "Best Practices.pdf",
           size: "1.8 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/skript/Best_Practices.pdf",
         },
         {
           id: 5,
@@ -206,28 +206,35 @@ export default function Courses() {
           title: "Projektvorlagen.zip",
           size: "12 MB",
           teacher: "Prof. Schmidt",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/foliensaetze/Projektvorlagen.zip",
         },
         {
           id: 6,
           type: "onlineTest",
           title: "Quiz 1 - React Grundlagen.pdf",
           size: "1.2 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Quiz_1_React_Grundlagen.pdf",
         },
         {
           id: 7,
           type: "evaluation",
           title: "Selbstevaluation Modul 1.pdf",
           size: "0.8 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Selbstevaluation_Modul_1.pdf",
         },
         {
           id: 8,
           type: "test",
           title: "Online Test - JavaScript.pdf",
           size: "2.1 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Online_Test_JavaScript.pdf",
+        },
+        {
+          id: 11,
+          type: "podcast",
+          title: "Web Dev Podcast - Episode 1",
+          duration: "35 min",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/podcasts/Web_Dev_Podcast_Episode_1.mp3",
         },
       ],
       assignments: [
@@ -361,7 +368,7 @@ export default function Courses() {
           type: "script",
           title: "SQL Reference.pdf",
           size: "2.5 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/skript/SQL_Reference.pdf",
         },
         {
           id: 4,
@@ -369,21 +376,28 @@ export default function Courses() {
           title: "Sample Database.sql",
           size: "5.3 MB",
           teacher: "Prof. Müller",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/foliensaetze/Sample_Database.sql",
         },
         {
           id: 9,
           type: "onlineTest",
           title: "SQL Quiz - Grundlagen.pdf",
           size: "1.5 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/tests/SQL_Quiz_Grundlagen.pdf",
         },
         {
           id: 10,
           type: "evaluation",
           title: "Bewertungsbogen Normalisierung.pdf",
           size: "0.9 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/tests/Bewertungsbogen_Normalisierung.pdf",
+        },
+        {
+          id: 12,
+          type: "podcast",
+          title: "Database Design Podcast",
+          duration: "42 min",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/podcasts/Database_Design_Podcast.mp3",
         },
       ],
       assignments: [
@@ -564,42 +578,121 @@ export default function Courses() {
           duration: "38 min",
           url: "#",
         },
-        // Scripts/PDFs
+        // Scripts/PDFs - from public folder
         {
           id: 118,
           type: "script",
-          title: "Mathematik Skript 1 - Grundlagen.pdf",
+          title: "001-2024-0730_IMT102-01_Course_Book.pdf",
           size: "3.5 MB",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/skript/001-2024-0730_IMT102-01_Course_Book.pdf",
         },
-        {
-          id: 119,
-          type: "script",
-          title: "Lineare Algebra Übungen.pdf",
-          size: "2.8 MB",
-          url: "#",
-        },
-        {
-          id: 120,
-          type: "script",
-          title: "Analysis Formelsammlung.pdf",
-          size: "1.9 MB",
-          url: "#",
-        },
-        // Podcasts
+
+        // Podcasts - from public folder
         {
           id: 121,
           type: "podcast",
-          title: "Mathematik Podcast - Episode 1",
-          duration: "25 min",
-          url: "#",
+          title: "IMT102-01_Podcast_00.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_00.mp3",
         },
         {
           id: 122,
           type: "podcast",
-          title: "Mathematik Podcast - Episode 2",
-          duration: "30 min",
-          url: "#",
+          title: "IMT102-01_Podcast_01.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_01.mp3",
+        },
+        {
+          id: 123,
+          type: "podcast",
+          title: "IMT102-01_Podcast_02.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_02.mp3",
+        },
+        {
+          id: 124,
+          type: "podcast",
+          title: "IMT102-01_Podcast_03.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_03.mp3",
+        },
+        {
+          id: 125,
+          type: "podcast",
+          title: "IMT102-01_Podcast_04.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_04.mp3",
+        },
+        {
+          id: 126,
+          type: "podcast",
+          title: "IMT102-01_Podcast_05.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_05.mp3",
+        },
+        {
+          id: 127,
+          type: "podcast",
+          title: "IMT102-01_Podcast_06.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_06.mp3",
+        },
+        {
+          id: 128,
+          type: "podcast",
+          title: "IMT102-01_Podcast_07.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_07.mp3",
+        },
+        {
+          id: 129,
+          type: "podcast",
+          title: "IMT102-01_Podcast_08.mp3",
+          duration: "Podcast",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_08.mp3",
+        },
+        // Musterklausuren - from public folder
+        {
+          id: 133,
+          type: "musterklausur",
+          title: "IMT102-01.pdf",
+          size: "1.2 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01.pdf",
+        },
+        {
+          id: 134,
+          type: "musterklausur",
+          title: "IMT102-01 Musterklausur 2.pdf",
+          size: "1.3 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterklausur 2.pdf",
+        },
+        {
+          id: 135,
+          type: "musterklausur",
+          title: "IMT102-01 MK3.pdf",
+          size: "1.1 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 MK3.pdf",
+        },
+        {
+          id: 136,
+          type: "musterklausur",
+          title: "IMT102-01 Musterlösung.pdf",
+          size: "1.4 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterlösung.pdf",
+        },
+        {
+          id: 137,
+          type: "musterklausur",
+          title: "IMT102-01 Musterlösung 2.pdf",
+          size: "1.2 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterlösung 2.pdf",
+        },
+        {
+          id: 138,
+          type: "musterklausur",
+          title: "IMT102-01 MK3 Musterlösung.pdf",
+          size: "1.5 MB",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 MK3 Musterlösung.pdf",
         },
         // Online Tests (Lektion 01-08)
         {
@@ -658,105 +751,174 @@ export default function Courses() {
           size: "1.4 MB",
           url: "#",
         },
-        // Foliensätze
+        // Foliensätze - from public folder
         {
           id: 131,
           type: "file",
-          title: "Lineare Algebra.xlsx",
-          size: "0.8 MB",
+          title: "20220623_IMT102-01_Einheit2.pdf",
+          size: "2.1 MB",
           teacher: "Prof. Dr. König",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/20220623_IMT102-01_Einheit2.pdf",
         },
         {
           id: 132,
           type: "file",
-          title: "Analysis Präsentation.pdf",
-          size: "2.1 MB",
+          title: "IMT102-01_Einheit1.pdf",
+          size: "1.8 MB",
           teacher: "Prof. Dr. König",
-          url: "#",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit1.pdf",
+        },
+        {
+          id: 140,
+          type: "file",
+          title: "IMT102-01_Einheit3.pdf",
+          size: "1.9 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit3.pdf",
+        },
+        {
+          id: 141,
+          type: "file",
+          title: "IMT102-01_Einheit4.pdf",
+          size: "2.0 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit4.pdf",
+        },
+        {
+          id: 142,
+          type: "file",
+          title: "IMT102-01_Einheit5.pdf",
+          size: "1.7 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit5.pdf",
+        },
+        {
+          id: 143,
+          type: "file",
+          title: "IMT102-01_Einheit6.pdf",
+          size: "2.2 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit6.pdf",
+        },
+        {
+          id: 144,
+          type: "file",
+          title: "IMT102-01_Sechsteilung.pdf",
+          size: "1.5 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Sechsteilung.pdf",
+        },
+        {
+          id: 145,
+          type: "file",
+          title: "Lineare Algebra.xlsx",
+          size: "0.8 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/Lineare Algebra.xlsx",
+        },
+        // Tutorium Dokumente - from public folder
+        {
+          id: 146,
+          type: "file",
+          title: "IMT102-01_Vorlesung_Lektion 1_Einführung in Matrizen.pdf",
+          size: "1.3 MB",
+          teacher: "Prof. Dr. König",
+          url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/toturium/IMT102-01_Vorlesung_Lektion 1_Einführung in Matrizen.pdf",
         },
         // Further Literature (existing)
         {
           id: 100,
           type: "furtherLiterature",
-          title: "Ballard, G. et al. (2014): Communication Costs of Strassen's Matrix Multiplication. In: Communications of the ACM, 57. Jg., Heft 2, S. 107–114.",
+          title:
+            "Ballard, G. et al. (2014): Communication Costs of Strassen's Matrix Multiplication. In: Communications of the ACM, 57. Jg., Heft 2, S. 107–114.",
           url: "#",
           isExternal: true,
         },
         {
           id: 101,
           type: "furtherLiterature",
-          title: "Schramm, T. (2003): Mathematik lernen mit Computer und Algebrasystemen. In: c't – Magazin für Computertechnik, Heft 3, S. 170–172.",
+          title:
+            "Schramm, T. (2003): Mathematik lernen mit Computer und Algebrasystemen. In: c't – Magazin für Computertechnik, Heft 3, S. 170–172.",
           url: "#",
           isExternal: true,
         },
         {
           id: 102,
           type: "furtherLiterature",
-          title: "Sparks, D. (2010): A method for Matrix Inversion. In: Civil Engineering, 18. Jg., Heft 6, S. 10–13.",
+          title:
+            "Sparks, D. (2010): A method for Matrix Inversion. In: Civil Engineering, 18. Jg., Heft 6, S. 10–13.",
           url: "#",
           isExternal: true,
         },
         {
           id: 103,
           type: "furtherLiterature",
-          title: "Eich-Soellner, E. (2010): Formelsammlung Wirtschaftsmathematik. 2. Auflage, Rudolf Haufe, Planegg.",
+          title:
+            "Eich-Soellner, E. (2010): Formelsammlung Wirtschaftsmathematik. 2. Auflage, Rudolf Haufe, Planegg.",
           url: "#",
           isExternal: true,
         },
         {
           id: 104,
           type: "furtherLiterature",
-          title: "Kasyanov, V. N./Kasyanova, E. V. (2013): Information visualisation based on graph models. In: Enterprise Information Systems, 7. Jg., Heft 2, S. 187–197.",
+          title:
+            "Kasyanov, V. N./Kasyanova, E. V. (2013): Information visualisation based on graph models. In: Enterprise Information Systems, 7. Jg., Heft 2, S. 187–197.",
           url: "#",
           isExternal: true,
         },
         {
           id: 105,
           type: "furtherLiterature",
-          title: "Adelson-Velsky, G. M./Levner, E. (2002): Project Scheduling In And–Or Graphs. A Generalization of Dijkstra's Algorithm. In: Mathematics of Operations Research, 27. Jg., Heft 3, S. 504–517.",
+          title:
+            "Adelson-Velsky, G. M./Levner, E. (2002): Project Scheduling In And–Or Graphs. A Generalization of Dijkstra's Algorithm. In: Mathematics of Operations Research, 27. Jg., Heft 3, S. 504–517.",
           url: "#",
           isExternal: true,
         },
         {
           id: 106,
           type: "furtherLiterature",
-          title: "Al-Naymat, G./Sakr, S. (2010): Graph indexing and querying. A review. In: International Journal of Web Information Systems, 6. Jg., Heft 2, S. 101–120.",
+          title:
+            "Al-Naymat, G./Sakr, S. (2010): Graph indexing and querying. A review. In: International Journal of Web Information Systems, 6. Jg., Heft 2, S. 101–120.",
           url: "#",
           isExternal: true,
         },
         {
           id: 107,
           type: "furtherLiterature",
-          title: "Stewart Jr., W. R. (2001): Chinese Postman problem. In: Gass, S. I./Harris, C. M. (Hrsg.): Encyclopedia of Operations Research & Management Science. Kluwer Academic Publishers, Boston, MA, S. 84–87.",
+          title:
+            "Stewart Jr., W. R. (2001): Chinese Postman problem. In: Gass, S. I./Harris, C. M. (Hrsg.): Encyclopedia of Operations Research & Management Science. Kluwer Academic Publishers, Boston, MA, S. 84–87.",
           url: "#",
           isExternal: true,
         },
         {
           id: 108,
           type: "furtherLiterature",
-          title: "Schönberger, J. (2015): Synchronisation in Transportsystemen. Fahrzeugübergreifende Ablaufplanung für die Erfüllung komplexer Serviceanforderungen im Straßengüterverkehr. In: Industrie Management, 31. Jg., Heft 2, S. 15–18.",
+          title:
+            "Schönberger, J. (2015): Synchronisation in Transportsystemen. Fahrzeugübergreifende Ablaufplanung für die Erfüllung komplexer Serviceanforderungen im Straßengüterverkehr. In: Industrie Management, 31. Jg., Heft 2, S. 15–18.",
           url: "#",
           isExternal: true,
         },
         {
           id: 109,
           type: "furtherLiterature",
-          title: "Svestka, J. A./Huckfeldt, V. E. (1973): Computational Experience with an M-Salesman Traveling Salesman Algorithm. In: Management Science, 19. Jg., Heft 7, S. 790–799.",
+          title:
+            "Svestka, J. A./Huckfeldt, V. E. (1973): Computational Experience with an M-Salesman Traveling Salesman Algorithm. In: Management Science, 19. Jg., Heft 7, S. 790–799.",
           url: "#",
           isExternal: true,
         },
         {
           id: 110,
           type: "furtherLiterature",
-          title: "Goyal, S. K. (1971): The tree development method for solving the travelling-salesman problem. In: International Journal of Production Research, 9. Jg., Heft 2, S. 239–246.",
+          title:
+            "Goyal, S. K. (1971): The tree development method for solving the travelling-salesman problem. In: International Journal of Production Research, 9. Jg., Heft 2, S. 239–246.",
           url: "#",
           isExternal: true,
         },
         {
           id: 111,
           type: "furtherLiterature",
-          title: "Markl, V./Ramsak, F. (2001): Datenbanktechnik. Datenbankindexe in mehreren Dimensionen. In: c't – Magazin für Computertechnik, Heft 1, S. 174–179.",
+          title:
+            "Markl, V./Ramsak, F. (2001): Datenbanktechnik. Datenbankindexe in mehreren Dimensionen. In: c't – Magazin für Computertechnik, Heft 1, S. 174–179.",
           url: "#",
           isExternal: true,
         },
@@ -1016,7 +1178,21 @@ export default function Courses() {
                 { id: "overview", icon: ClipboardList, label: t.overview },
                 { id: "resources", icon: FolderOpen, label: t.resources },
                 { id: "videos", icon: Video, label: t.videos },
-                { id: "assignments", icon: PencilLine, label: t.assignments },
+                { id: "coursefeed", icon: Rss, label: "Course Feed®" },
+                {
+                  id: "abgabe",
+                  icon: PencilLine,
+                  label: language === "de" ? "Abgabe" : "Submissions",
+                },
+                {
+                  id: "online-tests",
+                  icon: ClipboardCheck,
+                  label:
+                    language === "de"
+                      ? "Online Tests & Evaluationen"
+                      : "Online Tests & Evaluations",
+                },
+                { id: "notes", icon: FileText, label: "Notizen" },
                 { id: "forum", icon: MessageSquare, label: t.forum },
               ].map((tab) => (
                 <button
@@ -1041,6 +1217,45 @@ export default function Courses() {
           {/* Overview Tab */}
           {activeTab === "overview" && (
             <div className="space-y-6">
+              {/* Exam Information Alert */}
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border-2 border-red-300 p-6">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="text-3xl">🔴</span>
+                  <h3 className="text-lg font-black text-red-900">
+                    {language === "de"
+                      ? "Wichtig: Prüfungsinformation"
+                      : "Important: Exam Information"}
+                  </h3>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div className="bg-white rounded-lg p-4 border border-red-200">
+                    <p className="text-sm font-semibold text-slate-700 mb-1">
+                      {language === "de" ? "Prüfungsdatum" : "Exam Date"}
+                    </p>
+                    <p className="text-xl font-black text-red-700">
+                      {course.examDate || "15. Feb 2025"}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-red-200">
+                    <p className="text-sm font-semibold text-slate-700 mb-1">
+                      {language === "de" ? "Uhrzeit" : "Time"}
+                    </p>
+                    <p className="text-xl font-black text-red-700">
+                      {course.examTime || "09:00 Uhr"}
+                    </p>
+                  </div>
+                  <div className="bg-white rounded-lg p-4 border border-red-200">
+                    <p className="text-sm font-semibold text-slate-700 mb-1">
+                      {language === "de" ? "Ort" : "Location"}
+                    </p>
+                    <p className="text-xl font-black text-red-700">
+                      {course.examLocation || "Hörsaal H1"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {/* Quick Stats */}
               <div className="grid grid-cols-3 gap-4">
                 <div className="bg-white rounded-lg p-4 border border-blue-200 shadow-sm">
                   <p className="text-slate-600 text-sm font-semibold mb-1">
@@ -1063,6 +1278,49 @@ export default function Courses() {
                     {t.semester}
                   </p>
                   <p className="text-lg font-black text-orange-600">W24/25</p>
+                </div>
+              </div>
+
+              {/* Tutor Information */}
+              <div className="bg-white rounded-xl shadow-md border border-blue-100 p-6">
+                <h3 className="text-lg font-black text-slate-900 mb-4 flex items-center gap-2">
+                  👨‍🏫 {language === "de" ? "Dozent" : "Instructor"}
+                </h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center text-white font-black text-xl">
+                    {course.instructor?.charAt(0) || "?"}
+                  </div>
+                  <div>
+                    <p className="text-lg font-bold text-slate-900">
+                      {course.instructor}
+                    </p>
+                    <p className="text-sm text-slate-600">
+                      {language === "de" ? "Kursleiter" : "Course Instructor"}
+                    </p>
+                  </div>
+                </div>
+
+                {/* Contact Information */}
+                <div className="bg-slate-50 rounded-lg p-4 border border-slate-200">
+                  <p className="text-sm font-semibold text-slate-900 mb-2">
+                    {language === "de" ? "Kontakt" : "Contact"}
+                  </p>
+                  {course.instructorEmail && (
+                    <a
+                      href={`mailto:${course.instructorEmail}`}
+                      className="flex items-center gap-2 text-blue-600 hover:text-blue-800 hover:underline text-sm mb-2"
+                    >
+                      ✉️ {course.instructorEmail}
+                    </a>
+                  )}
+                  {!course.instructorEmail && (
+                    <p className="flex items-center gap-2 text-slate-500 text-sm">
+                      ✉️{" "}
+                      {language === "de"
+                        ? "E-Mail nicht verfügbar"
+                        : "Email not available"}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -1090,237 +1348,275 @@ export default function Courses() {
           {/* Resources Tab - Expandable Sections */}
           {activeTab === "resources" && (
             <div className="bg-white rounded-lg border border-slate-200 divide-y divide-slate-200">
-            {(() => {
-              const courseSections = [
-                {
-                  id: "skripte",
-                  label: "Skripte",
-                  icon: FileText,
-                  items: course.resources?.filter(r => r.type === "script").map(s => ({
-                    id: s.id,
-                    title: s.title,
-                    url: s.url,
-                    size: s.size,
-                    type: "script"
-                  })) || [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "basisliteratur",
-                  label: "Basisliteratur",
-                  icon: Book,
-                  items: [
-                    { id: 1, title: "Hartmann, Peter (2019): Mathematik für Informatiker. Ein praxisbezogenes Lehrbuch", type: "book", url: "#" }
-                  ],
-                  defaultExpanded: true // Expanded by default as shown in image
-                },
-                {
-                  id: "weiterfuehrende-literatur",
-                  label: "Weiterführende Literatur",
-                  icon: BookOpen,
-                  items: course.resources?.filter(r => r.type === "furtherLiterature").map(lit => ({
-                    id: lit.id,
-                    title: lit.title,
-                    url: lit.url,
-                    isExternal: lit.isExternal || false,
-                    type: "literature"
-                  })) || [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "repetitorium",
-                  label: "Repetitorium",
-                  icon: GraduationCap,
-                  items: [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "foliensaetze",
-                  label: "Foliensätze",
-                  icon: Presentation,
-                  items: course.resources?.filter(r => r.type === "file" && r.teacher).map(file => ({
-                    id: file.id,
-                    title: file.title,
-                    url: file.url,
-                    size: file.size,
-                    type: "file",
-                    teacher: file.teacher
-                  })) || [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "course-feed",
-                  label: "Course Feed®",
-                  icon: Rss,
-                  items: [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "musterklausur",
-                  label: "Musterklausur",
-                  icon: ClipboardCheck,
-                  items: [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "podcasts",
-                  label: "Podcasts",
-                  icon: Headphones,
-                  items: course.resources?.filter(r => r.type === "podcast").map(podcast => ({
-                    id: podcast.id,
-                    title: podcast.title,
-                    url: podcast.url,
-                    duration: podcast.duration,
-                    type: "podcast"
-                  })) || [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "dokumente-tutorium",
-                  label: "Dokumente Tutorium",
-                  icon: Users,
-                  items: [],
-                  defaultExpanded: false
-                },
-                {
-                  id: "online-tests",
-                  label: "Online Tests und Evaluation",
-                  icon: ClipboardList,
-                  items: (() => {
-                    // Get all test/evaluation resources from course
-                    const testResources = course?.resources?.filter(r => 
-                      r.type === "onlineTest" || 
-                      r.type === "test" || 
-                      r.type === "evaluation"
-                    ) || [];
-                    return testResources.map(test => ({
-                      id: test.id,
-                      title: test.title,
-                      url: test.url || "#",
-                      size: test.size,
-                      type: test.type || "test"
-                    }));
-                  })(),
-                  defaultExpanded: false
-                }
-              ];
+              {(() => {
+                const courseSections = [
+                  {
+                    id: "skripte",
+                    label: "Skripte",
+                    icon: FileText,
+                    items:
+                      course.resources
+                        ?.filter((r) => r.type === "script")
+                        .map((s) => ({
+                          id: s.id,
+                          title: s.title,
+                          url: s.url,
+                          size: s.size,
+                          type: "script",
+                        })) || [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "basisliteratur",
+                    label: "Basisliteratur",
+                    icon: Book,
+                    items: [
+                      {
+                        id: 1,
+                        title:
+                          "Hartmann, Peter (2019): Mathematik für Informatiker. Ein praxisbezogenes Lehrbuch",
+                        type: "book",
+                        url: "#",
+                      },
+                    ],
+                    defaultExpanded: true, // Expanded by default as shown in image
+                  },
+                  {
+                    id: "weiterfuehrende-literatur",
+                    label: "Weiterführende Literatur",
+                    icon: BookOpen,
+                    items:
+                      course.resources
+                        ?.filter((r) => r.type === "furtherLiterature")
+                        .map((lit) => ({
+                          id: lit.id,
+                          title: lit.title,
+                          url: lit.url,
+                          isExternal: lit.isExternal || false,
+                          type: "literature",
+                        })) || [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "repetitorium",
+                    label: "Repetitorium",
+                    icon: GraduationCap,
+                    items: [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "foliensaetze",
+                    label: "Foliensätze",
+                    icon: Presentation,
+                    items:
+                      course.resources
+                        ?.filter((r) => r.type === "file" && r.teacher)
+                        .map((file) => ({
+                          id: file.id,
+                          title: file.title,
+                          url: file.url,
+                          size: file.size,
+                          type: "file",
+                          teacher: file.teacher,
+                        })) || [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "musterklausur",
+                    label: "Musterklausur",
+                    icon: ClipboardCheck,
+                    items:
+                      course.resources
+                        ?.filter((r) => r.type === "musterklausur")
+                        .map((mk) => ({
+                          id: mk.id,
+                          title: mk.title,
+                          url: mk.url,
+                          size: mk.size,
+                          type: "musterklausur",
+                        })) || [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "podcasts",
+                    label: "Podcasts",
+                    icon: Headphones,
+                    items:
+                      course.resources
+                        ?.filter((r) => r.type === "podcast")
+                        .map((podcast) => ({
+                          id: podcast.id,
+                          title: podcast.title,
+                          url: podcast.url,
+                          duration: podcast.duration,
+                          type: "podcast",
+                        })) || [],
+                    defaultExpanded: false,
+                  },
+                  {
+                    id: "dokumente-tutorium",
+                    label: "Dokumente Tutorium",
+                    icon: Users,
+                    items: [],
+                    defaultExpanded: false,
+                  },
+                ];
 
-              return courseSections.map((section) => {
-                const isExpanded = expandedSections[section.id] !== undefined 
-                  ? expandedSections[section.id] 
-                  : section.defaultExpanded;
+                return courseSections.map((section) => {
+                  const isExpanded =
+                    expandedSections[section.id] !== undefined
+                      ? expandedSections[section.id]
+                      : section.defaultExpanded;
 
-                return (
-                  <div key={section.id} className="p-0">
-                    <button
-                      onClick={() => toggleSection(section.id)}
-                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition text-left"
-                    >
-                      <span className="text-sm font-medium text-slate-900">
-                        {section.label}
-                      </span>
-                      <div className="flex items-center gap-2">
-                        {isExpanded ? (
-                          <Minus className="h-4 w-4 text-slate-500" />
-                        ) : (
-                          <Plus className="h-4 w-4 text-slate-500" />
-                        )}
-                      </div>
-                    </button>
-                    {isExpanded && (
-                      <div className="px-4 pb-3 bg-slate-50">
-                        {section.items.length > 0 ? (
-                          <div className="space-y-1 mt-2">
-                            {section.items.map((item) => {
-                              const handleFileClick = (e) => {
-                                e.preventDefault();
-                                
-                                // Detect file type from name and section
-                                let fileType = item.type;
-                                if (!fileType) {
-                                  const fileName = item.title.toLowerCase();
-                                  if (fileName.endsWith('.pdf')) {
-                                    fileType = 'pdf';
-                                  } else if (fileName.endsWith('.xlsx') || fileName.endsWith('.xls')) {
-                                    fileType = 'excel';
-                                  } else if (fileName.endsWith('.mp3') || fileName.endsWith('.mp4') || fileName.endsWith('.wav')) {
-                                    fileType = 'podcast';
-                                  } else if (section.id === "podcasts") {
-                                    fileType = 'podcast';
-                                  } else if (section.id === "skripte") {
-                                    fileType = 'pdf';
-                                  } else if (section.id === "foliensaetze") {
-                                    fileType = fileName.endsWith('.xlsx') || fileName.endsWith('.xls') ? 'excel' : 'pdf';
-                                  } else if (section.id === "online-tests") {
-                                    // Online Tests section - usually PDFs
-                                    fileType = fileName.endsWith('.pdf') ? 'pdf' : fileName.endsWith('.xlsx') || fileName.endsWith('.xls') ? 'excel' : 'test';
-                                  } else {
-                                    fileType = 'file';
+                  return (
+                    <div key={section.id} className="p-0">
+                      <button
+                        onClick={() => toggleSection(section.id)}
+                        className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition text-left"
+                      >
+                        <span className="text-sm font-medium text-slate-900">
+                          {section.label}
+                        </span>
+                        <div className="flex items-center gap-2">
+                          {isExpanded ? (
+                            <Minus className="h-4 w-4 text-slate-500" />
+                          ) : (
+                            <Plus className="h-4 w-4 text-slate-500" />
+                          )}
+                        </div>
+                      </button>
+                      {isExpanded && (
+                        <div className="px-4 pb-3 bg-slate-50">
+                          {section.items.length > 0 ? (
+                            <div className="space-y-1 mt-2">
+                              {section.items.map((item) => {
+                                const handleFileClick = (e) => {
+                                  e.preventDefault();
+
+                                  // Detect file type from name and section
+                                  let fileType = item.type;
+                                  if (!fileType) {
+                                    const fileName = item.title.toLowerCase();
+                                    if (fileName.endsWith(".pdf")) {
+                                      fileType = "pdf";
+                                    } else if (
+                                      fileName.endsWith(".xlsx") ||
+                                      fileName.endsWith(".xls")
+                                    ) {
+                                      fileType = "excel";
+                                    } else if (
+                                      fileName.endsWith(".mp3") ||
+                                      fileName.endsWith(".mp4") ||
+                                      fileName.endsWith(".wav")
+                                    ) {
+                                      fileType = "podcast";
+                                    } else if (section.id === "podcasts") {
+                                      fileType = "podcast";
+                                    } else if (section.id === "skripte") {
+                                      fileType = "pdf";
+                                    } else if (section.id === "foliensaetze") {
+                                      fileType =
+                                        fileName.endsWith(".xlsx") ||
+                                        fileName.endsWith(".xls")
+                                          ? "excel"
+                                          : "pdf";
+                                    } else {
+                                      fileType = "file";
+                                    }
                                   }
-                                }
-                                
-                                // Track file as recently opened
-                                saveRecentFile(
-                                  {
-                                    id: item.id,
-                                    name: item.title,
-                                    type: fileType,
-                                    url: item.url
-                                  },
-                                  course.title, // course name
-                                  null // studiengang
-                                );
-                                
-                                // Open file
-                                if (item.url && item.url !== "#") {
-                                  window.open(item.url, "_blank", "noopener,noreferrer");
-                                }
-                              };
 
-                              return (
-                                <div
-                                  key={item.id}
-                                  className="flex items-start gap-2 py-2 px-3 hover:bg-white rounded cursor-pointer"
-                                  onClick={handleFileClick}
-                                >
-                                  {item.type === "podcast" ? (
-                                    <Play className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                                  ) : (
-                                    <FileText className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
-                                  )}
-                                  <div className="flex-1">
-                                    <a
-                                      href={item.url || "#"}
-                                      onClick={(e) => e.stopPropagation()}
-                                      className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
-                                    >
-                                      {item.title}
-                                    </a>
-                                    {item.duration && (
-                                      <span className="ml-2 text-xs text-slate-500">⏱️ {item.duration}</span>
+                                  // Track file as recently opened
+                                  saveRecentFile(
+                                    {
+                                      id: item.id,
+                                      name: item.title,
+                                      type: fileType,
+                                      url: item.url,
+                                    },
+                                    course.title, // course name
+                                    null // studiengang
+                                  );
+
+                                  // Open file
+                                  if (item.url && item.url !== "#") {
+                                    window.open(
+                                      item.url,
+                                      "_blank",
+                                      "noopener,noreferrer"
+                                    );
+                                  }
+                                };
+
+                                return (
+                                  <div
+                                    key={item.id}
+                                    className="flex items-start gap-2 py-3 px-3 hover:bg-white rounded cursor-pointer border-b border-slate-200 last:border-b-0"
+                                    onClick={handleFileClick}
+                                  >
+                                    {item.type === "podcast" ? (
+                                      <Play className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                                    ) : (
+                                      <FileText className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
                                     )}
-                                    {item.size && (
-                                      <span className="ml-2 text-xs text-slate-500">{item.size}</span>
-                                    )}
-                                    {item.isExternal && (
-                                      <span className="ml-2 text-xs text-slate-500">External tool</span>
-                                    )}
+                                    <div className="flex-1">
+                                      <a
+                                        href={item.url || "#"}
+                                        onClick={(e) => e.stopPropagation()}
+                                        className="text-sm text-blue-600 hover:text-blue-800 hover:underline font-semibold"
+                                      >
+                                        {item.title}
+                                      </a>
+                                      <div className="flex items-center gap-4 mt-1">
+                                        {item.duration && (
+                                          <span className="text-xs text-slate-500">
+                                            ⏱️ {item.duration}
+                                          </span>
+                                        )}
+                                        {item.size && (
+                                          <span className="text-xs text-slate-500">
+                                            📦 {item.size}
+                                          </span>
+                                        )}
+                                        {item.updatedDate && (
+                                          <span className="text-xs text-slate-500">
+                                            🔄{" "}
+                                            {language === "de"
+                                              ? "Aktualisiert:"
+                                              : "Updated:"}{" "}
+                                            {item.updatedDate}
+                                          </span>
+                                        )}
+                                        {item.lastUpdated && (
+                                          <span className="text-xs text-slate-500">
+                                            ⏰{" "}
+                                            {language === "de"
+                                              ? "Zuletzt:"
+                                              : "Last:"}{" "}
+                                            {item.lastUpdated}
+                                          </span>
+                                        )}
+                                      </div>
+                                      {item.isExternal && (
+                                        <span className="ml-2 text-xs text-slate-500">
+                                          External tool
+                                        </span>
+                                      )}
+                                    </div>
                                   </div>
-                                </div>
-                              );
-                            })}
-                          </div>
-                        ) : (
-                          <p className="text-sm text-slate-500 mt-2 py-2">
-                            Noch keine Einträge
-                          </p>
-                        )}
-                      </div>
-                    )}
-                  </div>
-                );
-              });
-            })()}
+                                );
+                              })}
+                            </div>
+                          ) : (
+                            <p className="text-sm text-slate-500 mt-2 py-2">
+                              Noch keine Einträge
+                            </p>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  );
+                });
+              })()}
             </div>
           )}
 
@@ -1342,18 +1638,22 @@ export default function Courses() {
                           name: resource.title,
                           type: "video",
                           url: resource.url,
-                          duration: resource.duration
+                          duration: resource.duration,
                         },
                         course.title, // course name
                         null // studiengang
                       );
-                      
+
                       // Open video
                       if (resource.url && resource.url !== "#") {
-                        window.open(resource.url, "_blank", "noopener,noreferrer");
+                        window.open(
+                          resource.url,
+                          "_blank",
+                          "noopener,noreferrer"
+                        );
                       }
                     };
-                    
+
                     return (
                       <div
                         key={resource.id}
@@ -1368,7 +1668,7 @@ export default function Courses() {
                             ⏱️ {resource.duration}
                           </p>
                         </div>
-                        <button 
+                        <button
                           className="px-3 py-1 bg-blue-100 text-blue-700 font-semibold rounded hover:bg-blue-200"
                           onClick={(e) => {
                             e.stopPropagation();
@@ -1380,7 +1680,9 @@ export default function Courses() {
                       </div>
                     );
                   })}
-                {(!course.resources || course.resources.filter((r) => r.type === "video").length === 0) && (
+                {(!course.resources ||
+                  course.resources.filter((r) => r.type === "video").length ===
+                    0) && (
                   <p className="text-slate-500 text-center py-8">
                     Noch keine Videos verfügbar
                   </p>
@@ -1389,11 +1691,49 @@ export default function Courses() {
             </div>
           )}
 
-          {/* Assignments Tab */}
-          {activeTab === "assignments" && (
+          {/* Course Feed Tab */}
+          {activeTab === "coursefeed" && (
+            <div className="space-y-4">
+              <div className="flex items-center justify-between mb-6">
+                <h3 className="text-lg font-black text-slate-900">
+                  📰 Course Feed®
+                </h3>
+              </div>
+
+              <div className="bg-white rounded-lg p-8 border border-slate-200 text-center max-w-md mx-auto">
+                <h3 className="text-sm font-semibold text-slate-600 mb-4">
+                  Course Feed®
+                </h3>
+
+                {/* Course Feed Image */}
+                <div className="mb-6 flex justify-center">
+                  <img
+                    src="/course-feed.png"
+                    alt="Course Feed"
+                    className="w-48 h-40 object-contain"
+                  />
+                </div>
+
+                {/* Description */}
+                <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+                  {language === "de"
+                    ? "Interagieren Sie mit Ihren Online-Tutoren und Mitstudierenden, stellen Sie Fragen und nehmen Sie an Live-Lehrveranstaltungen teil."
+                    : "Interact with your online tutors and fellow students, ask questions and participate in live teaching events."}
+                </p>
+
+                {/* Sign Up Button */}
+                <button className="w-full px-6 py-3 bg-slate-900 text-white font-semibold rounded hover:bg-slate-800 transition">
+                  {language === "de" ? "Anmelden" : "Sign up"}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* Abgabe (Submissions) Tab */}
+          {activeTab === "abgabe" && (
             <div className="space-y-4">
               <h3 className="text-xl font-black text-slate-900 mb-6">
-                ✍️ {t.assignments}
+                ✍️ {language === "de" ? "Abgabe" : "Submissions"}
               </h3>
               {course.assignments.map((assignment) => (
                 <div
@@ -1471,6 +1811,197 @@ export default function Courses() {
                   )}
                 </div>
               ))}
+            </div>
+          )}
+
+          {/* Online Tests & Evaluationen Tab */}
+          {activeTab === "online-tests" && (
+            <div className="space-y-6">
+              <h3 className="text-xl font-black text-slate-900 mb-6">
+                📋{" "}
+                {language === "de"
+                  ? "Online Tests & Evaluationen"
+                  : "Online Tests & Evaluations"}
+              </h3>
+
+              {/* Exam Date Information Card */}
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border-2 border-red-200 p-6 mb-6">
+                <div className="flex items-start gap-4">
+                  <div className="text-3xl">📅</div>
+                  <div className="flex-1">
+                    <h4 className="text-lg font-black text-red-900 mb-2">
+                      {language === "de" ? "Prüfungstermin" : "Exam Date"}
+                    </h4>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <p className="text-sm font-semibold text-slate-700">
+                          {language === "de" ? "Datum" : "Date"}
+                        </p>
+                        <p className="text-lg font-black text-red-700">
+                          {course.examDate || "15. Februar 2025"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm font-semibold text-slate-700">
+                          {language === "de" ? "Uhrzeit" : "Time"}
+                        </p>
+                        <p className="text-lg font-black text-red-700">
+                          {course.examTime || "09:00 - 11:00 Uhr"}
+                        </p>
+                      </div>
+                    </div>
+                    <div className="mt-4 p-3 bg-white rounded border border-red-200">
+                      <p className="text-sm text-slate-700">
+                        <span className="font-semibold">
+                          ⚠️ {language === "de" ? "Ort:" : "Location:"}
+                        </span>{" "}
+                        {course.examLocation || "Hörsaal H1, Hauptgebäude"}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Online Tests Section */}
+              {(() => {
+                const onlineTests =
+                  course.resources?.filter(
+                    (r) => r.type === "onlineTest" || r.type === "test"
+                  ) || [];
+                return (
+                  <div className="bg-white rounded-lg border border-slate-200">
+                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                      <h4 className="font-black text-slate-900">
+                        🧪 {language === "de" ? "Online Tests" : "Online Tests"}
+                      </h4>
+                    </div>
+                    {onlineTests.length > 0 ? (
+                      <div className="divide-y divide-slate-200">
+                        {onlineTests.map((test) => (
+                          <div
+                            key={test.id}
+                            className="p-6 hover:bg-slate-50 transition"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h5 className="font-bold text-slate-900 mb-1">
+                                  {test.title}
+                                </h5>
+                                <p className="text-sm text-slate-600">
+                                  ⏱️ {test.duration || "45 Minuten"}
+                                </p>
+                              </div>
+                              <span className="text-xs font-semibold px-3 py-1 bg-blue-100 text-blue-700 rounded-full">
+                                {language === "de" ? "Verfügbar" : "Available"}
+                              </span>
+                            </div>
+                            <a
+                              href={test.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                            >
+                              ▶️{" "}
+                              {language === "de"
+                                ? "Test starten"
+                                : "Start Test"}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-6 text-center text-slate-500">
+                        <p>
+                          {language === "de"
+                            ? "Keine Online Tests verfügbar"
+                            : "No online tests available"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+
+              {/* Evaluations Section */}
+              {(() => {
+                const evaluations =
+                  course.resources?.filter((r) => r.type === "evaluation") ||
+                  [];
+                return (
+                  <div className="bg-white rounded-lg border border-slate-200 mt-6">
+                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
+                      <h4 className="font-black text-slate-900">
+                        ⭐ {language === "de" ? "Evaluationen" : "Evaluations"}
+                      </h4>
+                    </div>
+                    {evaluations.length > 0 ? (
+                      <div className="divide-y divide-slate-200">
+                        {evaluations.map((evaluation) => (
+                          <div
+                            key={evaluation.id}
+                            className="p-6 hover:bg-slate-50 transition"
+                          >
+                            <div className="flex items-start justify-between mb-3">
+                              <div>
+                                <h5 className="font-bold text-slate-900 mb-1">
+                                  {evaluation.title}
+                                </h5>
+                                <p className="text-sm text-slate-600">
+                                  {evaluation.description || language === "de"
+                                    ? "Bitte bewerten Sie diesen Kurs"
+                                    : "Please rate this course"}
+                                </p>
+                              </div>
+                              <span className="text-xs font-semibold px-3 py-1 bg-purple-100 text-purple-700 rounded-full">
+                                {language === "de" ? "Umfrage" : "Survey"}
+                              </span>
+                            </div>
+                            <a
+                              href={evaluation.url}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition"
+                            >
+                              📝{" "}
+                              {language === "de" ? "Teilnehmen" : "Participate"}
+                            </a>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="p-6 text-center text-slate-500">
+                        <p>
+                          {language === "de"
+                            ? "Keine Evaluationen verfügbar"
+                            : "No evaluations available"}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                );
+              })()}
+            </div>
+          )}
+
+          {/* Notes Tab */}
+          {activeTab === "notes" && (
+            <div className="space-y-4">
+              <div
+                className="bg-white rounded-lg border border-blue-100 overflow-hidden"
+                style={{ height: "800px" }}
+              >
+                <iframe
+                  src="https://study-scribe-83.lovable.app/"
+                  title="Study Scribe - Note Taking"
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    border: "none",
+                  }}
+                  allow="camera; microphone; clipboard-read; clipboard-write"
+                  loading="lazy"
+                />
+              </div>
             </div>
           )}
 

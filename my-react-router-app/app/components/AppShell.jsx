@@ -24,9 +24,18 @@ export default function AppShell({ children }) {
     { to: "/dashboard", label: "Dashboard", icon: Home },
     { to: "/courses/schedule", label: "Course schedule", icon: CalendarDays },
     { to: "/courses", label: "Courses", icon: BookOpen },
-    { to: "/files/recent", label: "Zuletzt geöffnete Dateien", icon: FileSearch },
+    {
+      to: "/files/recent",
+      label: "Zuletzt geöffnete Dateien",
+      icon: FileSearch,
+    },
     { to: "/news", label: "News", icon: Newspaper },
-    { to: "/study-organization", label: "Study organization", icon: GraduationCap },
+    { to: "/praxisbericht", label: "Praxisbericht", icon: FolderOpen },
+    {
+      to: "/study-organization",
+      label: "Study organization",
+      icon: GraduationCap,
+    },
     { to: "/info-center", label: "Info center", icon: Info },
     { to: "/faq", label: "FAQ", icon: HelpCircle },
   ];

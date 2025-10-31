@@ -87,6 +87,10 @@ export default [
     file: "routes/contact.jsx",
   },
   {
+    path: "praxisbericht",
+    file: "routes/praxisbericht.jsx",
+  },
+  {
     path: "teacher-upload",
     file: "routes/teacher-upload.jsx",
   },
