@@ -104,103 +104,90 @@ export default function Home() {
 
   if (!user) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-white via-blue-50 to-slate-50">
-        {/* Professional Header */}
-        <header className="bg-white shadow-sm border-b border-blue-100">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+      <div className="min-h-screen grid grid-cols-1 lg:grid-cols-2">
+        {/* Left Panel */}
+        <div className="relative flex flex-col bg-slate-50">
+          {/* Top Row: Logo + Language */}
+          <div className="flex items-center justify-between px-8 pt-6">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-blue-700 rounded-lg flex items-center justify-center shadow-md">
-                <span className="text-white font-bold text-sm">IU</span>
+              <div className="h-10 w-10 rounded bg-slate-900 text-white flex items-center justify-center font-black">
+                iu
               </div>
-              <div>
-                <span className="font-bold text-lg text-blue-900">
-                  IU Portal
-                </span>
-                <p className="text-xs text-blue-600">👔 Dual Degree</p>
+              <div className="text-[10px] leading-tight text-slate-800">
+                <div className="font-extrabold tracking-wide">
+                  INTERNATIONALE
+                </div>
+                <div className="-mt-1 font-extrabold tracking-wide">
+                  HOCHSCHULE
+                </div>
               </div>
             </div>
-            <select
-              value={language}
-              onChange={(e) => setLanguage(e.target.value)}
-              className="px-3 py-2 border border-blue-200 rounded-lg bg-white text-slate-700 font-medium hover:border-blue-400 transition cursor-pointer"
-            >
-              <option value="de">DE</option>
-              <option value="en">EN</option>
-            </select>
+            <div className="flex items-center gap-4 text-xs font-semibold text-slate-700">
+              <button
+                onClick={() => setLanguage("de")}
+                className={`${language === "de" ? "underline" : "opacity-70 hover:opacity-100"}`}
+              >
+                DE
+              </button>
+              <button
+                onClick={() => setLanguage("en")}
+                className={`${language === "en" ? "underline" : "opacity-70 hover:opacity-100"}`}
+              >
+                EN
+              </button>
+            </div>
           </div>
-        </header>
 
-        {/* Login Section */}
-        <div className="flex items-center justify-center min-h-[calc(100vh-80px)] px-4">
-          <div className="w-full max-w-md">
-            {/* Login Card */}
-            <div className="bg-white rounded-2xl shadow-xl p-8 border border-blue-100 mb-8">
-              <h2 className="text-3xl font-black text-blue-900 mb-2 text-center">
-                {t.login}
-              </h2>
-              <p className="text-slate-600 text-center mb-8">
+          {/* Centered Content */}
+          <div className="flex-1 flex items-center">
+            <div className="px-8 md:px-16 lg:px-20 w-full">
+              <h1 className="text-4xl md:text-5xl font-black text-slate-900 tracking-tight mb-6">
+                {language === "de" ? "Los geht's." : "Let's go."}
+              </h1>
+              <p className="text-xl md:text-2xl text-slate-700 font-semibold mb-10">
                 {language === "de"
-                  ? "Melden Sie sich an, um auf Ihr Dashboard zuzugreifen"
-                  : "Sign in to access your dashboard"}
+                  ? "Willkommen bei myCampus!"
+                  : "Welcome to myCampus!"}
               </p>
-
               <Link
                 to="/login"
-                className="w-full block text-center bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold py-3 px-4 rounded-lg hover:from-blue-700 hover:to-blue-800 transition shadow-md mb-4"
+                className="inline-flex items-center justify-center px-8 py-3 rounded-full bg-black text-white font-bold text-base hover:opacity-90 transition"
               >
-                {t.login}
+                {language === "de" ? "Anmelden" : "Sign in"}
               </Link>
-
-              <p className="text-center text-xs text-slate-600">
-                {language === "de"
-                  ? "Verwenden Sie Ihre IU-Anmeldedaten"
-                  : "Use your IU credentials"}
-              </p>
             </div>
+          </div>
 
-            {/* Info Cards */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white rounded-xl p-5 shadow-md border border-blue-100 text-center hover:shadow-lg transition">
-                <div className="text-3xl mb-2">📚</div>
-                <h3 className="font-bold text-blue-900 mb-1">
-                  {language === "de" ? "Kurse" : "Courses"}
-                </h3>
-                <p className="text-xs text-slate-600">
-                  {language === "de"
-                    ? "Verwalte deine Kurse"
-                    : "Manage your courses"}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl p-5 shadow-md border border-blue-100 text-center hover:shadow-lg transition">
-                <div className="text-3xl mb-2">📤</div>
-                <h3 className="font-bold text-blue-900 mb-1">
-                  {language === "de" ? "Anträge" : "Submissions"}
-                </h3>
-                <p className="text-xs text-slate-600">
-                  {language === "de" ? "Deine Abgaben" : "Your submissions"}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl p-5 shadow-md border border-blue-100 text-center hover:shadow-lg transition">
-                <div className="text-3xl mb-2">✅</div>
-                <h3 className="font-bold text-blue-900 mb-1">
-                  {language === "de" ? "Turnitin" : "Turnitin"}
-                </h3>
-                <p className="text-xs text-slate-600">
-                  {language === "de" ? "Plagiat-Prüfung" : "Plagiarism check"}
-                </p>
-              </div>
-              <div className="bg-white rounded-xl p-5 shadow-md border border-blue-100 text-center hover:shadow-lg transition">
-                <div className="text-3xl mb-2">🌐</div>
-                <h3 className="font-bold text-blue-900 mb-1">
-                  {language === "de" ? "Sprachen" : "Languages"}
-                </h3>
-                <p className="text-xs text-slate-600">
-                  {language === "de" ? "DE & EN" : "DE & EN"}
-                </p>
-              </div>
+          {/* Footer Links */}
+          <div className="px-8 md:px-16 lg:px-20 pb-8 text-[11px] text-slate-600 space-x-6">
+            <a href="#" className="hover:underline">
+              Cookies
+            </a>
+            <a href="#" className="hover:underline">
+              Datenschutz
+            </a>
+            <a href="#" className="hover:underline">
+              Impressum
+            </a>
+            <a href="#" className="hover:underline">
+              Login für Mitarbeiter
+            </a>
+            <div className="mt-4 text-[10px]">
+              Copyright © 2025 IU International University – Alle Rechte
+              vorbehalten.
             </div>
           </div>
         </div>
+
+        {/* Right Image */}
+        <div
+          className="hidden lg:block relative"
+          style={{
+            backgroundImage: "url(/iu-students-football.png)",
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+          }}
+        />
       </div>
     );
   }

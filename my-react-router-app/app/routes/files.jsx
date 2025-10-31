@@ -1,5 +1,6 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { File as FileIcon, Download, Trash2, Clock, ArrowLeft } from 'lucide-react';
 
 const MODULES = [
   {
@@ -37,6 +38,29 @@ export default function FileManagement() {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [selectedModule, setSelectedModule] = useState(null);
   const [dragActive, setDragActive] = useState(false);
+  const [recentFiles, setRecentFiles] = useState([]);
+
+  const LS_KEYS = { recentFiles: 'recentFilesList' };
+
+  useEffect(() => {
+    try {
+      const f = JSON.parse(localStorage.getItem(LS_KEYS.recentFiles) || '[]');
+      if (Array.isArray(f)) setRecentFiles(f);
+    } catch {}
+  }, []);
+
+  const saveRecentFile = (file, moduleLabel) => {
+    const entry = {
+      id: file.id ?? `${file.name}-${Date.now()}`,
+      name: file.name,
+      moduleName: moduleLabel ?? (selectedModule ? MODULES.find(m => m.id === selectedModule)?.name : 'Eigene Dateien'),
+      at: Date.now(),
+    };
+    const dedup = recentFiles.filter((f) => f.id !== entry.id);
+    const next = [entry, ...dedup].slice(0, 15);
+    setRecentFiles(next);
+    try { localStorage.setItem(LS_KEYS.recentFiles, JSON.stringify(next)); } catch {}
+  };
 
   const handleDrag = (e) => {
     e.preventDefault();
@@ -88,25 +112,31 @@ export default function FileManagement() {
     setUploadedFiles(uploadedFiles.filter(f => f.id !== id));
   };
 
-  const downloadFile = (fileName) => {
-    alert(`📥 Downloading: ${fileName}`);
+  const downloadModuleFile = (file, moduleLabel) => {
+    saveRecentFile(file, moduleLabel);
+    alert(`Download: ${file.name}`);
+  };
+
+  const downloadUploadedFile = (file) => {
+    saveRecentFile(file, 'Eigene Dateien');
+    alert(`Download: ${file.name}`);
   };
 
   const getFileIcon = (fileName) => {
     const ext = fileName.split('.').pop().toLowerCase();
     const icons = {
-      'pdf': '📄',
-      'docx': '📝',
-      'doc': '📝',
-      'xlsx': '📊',
-      'xls': '📊',
-      'zip': '📦',
-      'tar': '📦',
-      'gz': '📦',
-      'ppt': '🎯',
-      'pptx': '🎯'
+      'pdf': 'pdf',
+      'docx': 'doc',
+      'doc': 'doc',
+      'xlsx': 'xls',
+      'xls': 'xls',
+      'zip': 'zip',
+      'tar': 'zip',
+      'gz': 'zip',
+      'ppt': 'ppt',
+      'pptx': 'ppt'
     };
-    return icons[ext] || '📄';
+    return icons[ext] || 'file';
   };
 
   return (
@@ -115,9 +145,9 @@ export default function FileManagement() {
       <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white px-8 py-8 shadow-xl">
         <div className="container mx-auto">
           <Link to="/dashboard" className="inline-flex items-center gap-2 text-blue-200 hover:text-white mb-4 font-semibold">
-            ← Zurück zum Dashboard
+            <ArrowLeft className="h-4 w-4"/> Zurück zum Dashboard
           </Link>
-          <h1 className="text-4xl font-black mb-2">📁 Dateien & Materialien</h1>
+          <h1 className="text-4xl font-black mb-2 flex items-center gap-2"><FileIcon className="h-7 w-7"/> Dateien & Materialien</h1>
           <p className="text-slate-200 text-lg">Verwalte deine Unterrichtsmaterialien und Dokumente</p>
         </div>
       </div>
@@ -138,7 +168,7 @@ export default function FileManagement() {
                   : 'border-slate-300 bg-white hover:border-cyan-400'
               }`}
             >
-              <div className="text-6xl mb-4">📤</div>
+              <div className="text-6xl mb-4"><Download className="inline h-10 w-10 text-slate-700"/></div>
               <h3 className="text-2xl font-black text-slate-900 mb-2">Datei hochladen</h3>
               <p className="text-slate-600 font-semibold mb-6">
                 Ziehe Dateien hier hin oder klicke zum Auswählen
@@ -163,7 +193,7 @@ export default function FileManagement() {
                     ? 'bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white'
                     : 'bg-slate-300 text-slate-600 cursor-not-allowed'
                 }`}>
-                  📂 Dateien auswählen
+                  Datei auswählen
                 </span>
               </label>
 
@@ -185,7 +215,7 @@ export default function FileManagement() {
                   {uploadedFiles.map(file => (
                     <div key={file.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border-2 border-slate-200 hover:border-slate-400 transition">
                       <div className="flex items-center gap-4">
-                        <span className="text-3xl">{getFileIcon(file.name)}</span>
+                        <span className="text-3xl"><FileIcon className="h-6 w-6"/></span>
                         <div>
                           <p className="font-bold text-slate-900">{file.name}</p>
                           <p className="text-sm text-slate-600">{file.size} • {new Date(file.date).toLocaleDateString('de-DE')}</p>
@@ -193,16 +223,16 @@ export default function FileManagement() {
                       </div>
                       <div className="flex gap-2">
                         <button
-                          onClick={() => downloadFile(file.name)}
-                          className="bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition"
+                          onClick={() => downloadUploadedFile(file)}
+                          className="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-4 py-2 rounded-lg transition"
                         >
-                          📥 Download
+                          <Download className="h-4 w-4"/> Download
                         </button>
                         <button
                           onClick={() => deleteFile(file.id)}
-                          className="bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition"
+                          className="inline-flex items-center gap-2 bg-red-600 hover:bg-red-700 text-white font-bold px-4 py-2 rounded-lg transition"
                         >
-                          🗑️
+                          <Trash2 className="h-4 w-4"/>
                         </button>
                       </div>
                     </div>
@@ -214,8 +244,29 @@ export default function FileManagement() {
 
           {/* Module Selection */}
           <div className="space-y-6">
+            {/* Last opened */}
+            {recentFiles?.length > 0 && (
+              <div className="bg-white rounded-2xl shadow-xl border-2 border-slate-200 p-6">
+                <h3 className="text-xl font-black text-slate-900 mb-2">Zuletzt geöffnet</h3>
+                <div className="flex items-start gap-3">
+                  <FileIcon className="h-5 w-5 text-slate-700 mt-1"/>
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <p className="font-bold text-slate-900">{recentFiles[0].name}</p>
+                      {(() => {
+                        const ext = recentFiles[0].name.split('.').pop()?.toLowerCase();
+                        const isScript = ['pdf','doc','docx','ppt','pptx'].includes(ext || '');
+                        return isScript ? <span className="text-xs px-2 py-0.5 rounded-full bg-indigo-100 text-indigo-700 font-semibold">Skript</span> : null;
+                      })()}
+                    </div>
+                    <p className="text-sm text-slate-600">{recentFiles[0].moduleName}</p>
+                    <p className="text-xs text-slate-500 flex items-center gap-1 mt-1"><Clock className="h-3.5 w-3.5"/> {new Date(recentFiles[0].at).toLocaleString()}</p>
+                  </div>
+                </div>
+              </div>
+            )}
             <div className="bg-white rounded-2xl shadow-xl border-2 border-slate-200 p-6">
-              <h3 className="text-xl font-black text-slate-900 mb-4">📚 Module</h3>
+              <h3 className="text-xl font-black text-slate-900 mb-4">Module</h3>
               <div className="space-y-3">
                 {MODULES.map(module => (
                   <button
@@ -238,7 +289,7 @@ export default function FileManagement() {
             {selectedModule && (
               <div className="bg-white rounded-2xl shadow-xl border-2 border-slate-200 p-6">
                 <h3 className="text-xl font-black text-slate-900 mb-4">
-                  📄 {MODULES.find(m => m.id === selectedModule)?.name}
+                  {MODULES.find(m => m.id === selectedModule)?.name}
                 </h3>
                 <div className="space-y-2">
                   {MODULES.find(m => m.id === selectedModule)?.files.map(file => (
@@ -251,10 +302,10 @@ export default function FileManagement() {
                         <p className="text-xs text-slate-600">{file.size}</p>
                       </div>
                       <button
-                        onClick={() => downloadFile(file.name)}
-                        className="ml-2 bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 rounded text-sm transition"
+                        onClick={() => downloadModuleFile(file, MODULES.find(m => m.id === selectedModule)?.name)}
+                        className="ml-2 inline-flex items-center gap-1 bg-blue-600 hover:bg-blue-700 text-white font-bold px-3 py-1 rounded text-sm transition"
                       >
-                        📥
+                        <Download className="h-4 w-4"/>
                       </button>
                     </div>
                   ))}

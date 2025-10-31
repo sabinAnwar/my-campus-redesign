@@ -59,8 +59,16 @@ export default [
     file: "routes/events.jsx",
   },
   {
+    path: "courses/schedule",
+    file: "routes/courses.schedule.jsx",
+  },
+  {
     path: "files",
     file: "routes/files.jsx",
+  },
+  {
+    path: "files/recent",
+    file: "routes/files.recent.jsx",
   },
   {
     path: "messages",
@@ -77,6 +85,8 @@ export default [
   {
     path: "courses",
     file: "routes/courses.jsx",
+  },
+  {
     path: "contact",
     file: "routes/contact.jsx",
   },

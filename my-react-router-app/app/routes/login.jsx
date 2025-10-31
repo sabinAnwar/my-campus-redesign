@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useFetcher } from "react-router";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 
 export const loader = async () => {
@@ -8,77 +8,28 @@ export const loader = async () => {
 
 export default function Login() {
   const navigate = useNavigate();
+  const fetcher = useFetcher();
   const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmitting = fetcher.state === "submitting";
 
-  const handleSubmit = async (e) => {
-    console.log("🔵 handleSubmit called");
-    e.preventDefault();
-    e.stopPropagation();
+  // React to fetcher responses
+  useEffect(() => {
+    if (!fetcher.data) return;
 
-    setIsSubmitting(true);
-    setError(null);
-
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get("email");
-    const password = formData.get("password");
-
-    console.log("📝 Submitting login form:", {
-      email,
-      passwordLength: password?.length,
-    });
-
-    try {
-      // Send as form-encoded data
-      const response = await fetch("/api/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({ email, password }),
-        credentials: "include", // Include cookies in request
-      });
-
-      console.log("📨 API response status:", response.status);
-
-      const data = await response.json();
-      console.log("📨 API response data:", data);
-
-      if (data.success) {
-        console.log("✅ Login successful!");
-        showSuccessToast("✅ Login successful! Redirecting...");
-
-        // Store session token in localStorage as backup
-        if (data.sessionToken) {
-          localStorage.setItem("sessionToken", data.sessionToken);
-          console.log("💾 Stored session token in localStorage");
-        }
-
-        // Redirect using client-side navigation only
-        setTimeout(() => {
-          console.log("🔄 Redirecting to dashboard...");
-          // Use absolute path with leading slash
-          navigate("/dashboard");
-        }, 1000);
-      } else if (data.error) {
-        console.log("❌ Login failed:", data.error);
-        setError(data.error);
-        showErrorToast(data.error);
-        setIsSubmitting(false);
-      } else {
-        console.log("❌ Unexpected response format:", data);
-        setError("An unexpected error occurred");
-        showErrorToast("An unexpected error occurred");
-        setIsSubmitting(false);
+    if (fetcher.data.success) {
+      showSuccessToast("✅ Login successful! Redirecting...");
+      if (fetcher.data.sessionToken) {
+        localStorage.setItem("sessionToken", fetcher.data.sessionToken);
       }
-    } catch (err) {
-      console.error("❌ Fetch error:", err);
-      const errorMsg = err.message || "An error occurred during login";
-      setError(errorMsg);
-      showErrorToast(errorMsg);
-      setIsSubmitting(false);
+      const t = setTimeout(() => navigate("/dashboard"), 800);
+      return () => clearTimeout(t);
     }
-  };
+
+    if (fetcher.data.error) {
+      setError(fetcher.data.error);
+      showErrorToast(fetcher.data.error);
+    }
+  }, [fetcher.data, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
@@ -252,10 +203,9 @@ export default function Login() {
             </div>
 
             {/* Form */}
-            <form
-              onSubmit={handleSubmit}
+            <fetcher.Form
               method="post"
-              action="javascript:void(0)"
+              action="/api/login"
               className="space-y-7"
             >
               {/* Email Input - Professional with icon box */}
@@ -481,7 +431,7 @@ export default function Login() {
                   <span>Support</span>
                 </a>
               </div>
-            </form>
+            </fetcher.Form>
           </div>
 
           {/* Footer - Professional */}
