@@ -25,6 +25,8 @@ model User {
   files           File[]
   studienplan     Studienplan?
   sessions        Session[]
+  studiengang     Studiengang? @relation(fields: [studiengangId], references: [id])
+  studiengangId   Int?
 }
 
 model Teacher {
@@ -45,13 +47,54 @@ model Mark {
   teacherId Int
 }
 
-model File {
+model Studiengang {
   id        Int      @id @default(autoincrement())
-  name      String
-  url       String
-  uploadedAt DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
+  name      String   @unique
+  description String?
+  createdAt DateTime @default(now())
+  courses   Course[]
+  files     File[]
+}
+
+model Course {
+  id           Int      @id @default(autoincrement())
+  code         String   // e.g., "WEB101"
+  name         String
+  description  String?
+  studiengang  Studiengang @relation(fields: [studiengangId], references: [id])
+  studiengangId Int
+  createdAt    DateTime @default(now())
+  files        File[]
+}
+
+model File {
+  id          Int      @id @default(autoincrement())
+  name        String
+  url         String
+  fileType    String?  // "pdf", "doc", etc.
+  size        String?  // e.g., "2.5 MB"
+  uploadedAt  DateTime @default(now())
+  lastOpenedAt DateTime?
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int
+  course      Course?  @relation(fields: [courseId], references: [id])
+  courseId    Int?
+  studiengang Studiengang? @relation(fields: [studiengangId], references: [id])
+  studiengangId Int?
+  readingState FileReadingState?
+}
+
+model FileReadingState {
+  id          Int      @id @default(autoincrement())
+  file        File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
+  fileId      Int      @unique
+  lastPage    Int?     // Last page number opened in PDF
+  totalPages  Int?     // Total pages in PDF
+  scrollPosition Float? // Scroll position in document
+  bookmarks   String?  // JSON array of bookmarked pages/sections
+  annotations String?  // JSON array of annotations
+  readingProgress Float? // Percentage read (0-100)
+  lastUpdated DateTime @default(now()) @updatedAt
 }
 
 model Studienplan {

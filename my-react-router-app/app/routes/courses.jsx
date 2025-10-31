@@ -9,6 +9,19 @@ import {
   FolderOpen,
   PencilLine,
   MessageSquare,
+  BookOpen,
+  Book,
+  GraduationCap,
+  Presentation,
+  Rss,
+  FileText,
+  Headphones,
+  Users,
+  ClipboardCheck,
+  Plus,
+  Minus,
+  Play,
+  Video,
 } from "lucide-react";
 
 const TRANSLATIONS = {
@@ -112,9 +125,17 @@ export default function Courses() {
   const [language, setLanguage] = useState("de");
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [activeTab, setActiveTab] = useState("overview");
+  const [expandedSections, setExpandedSections] = useState({});
   const [listFilter, setListFilter] = useState("active"); // active | completed
   const navigate = useNavigate();
   const t = TRANSLATIONS[language];
+
+  const toggleSection = (sectionId) => {
+    setExpandedSections(prev => ({
+      ...prev,
+      [sectionId]: !prev[sectionId]
+    }));
+  };
 
   const courses = [
     {
@@ -717,8 +738,8 @@ export default function Courses() {
             <div className="flex overflow-x-auto space-x-1">
               {[
                 { id: "overview", icon: ClipboardList, label: t.overview },
-                { id: "modules", icon: Layers, label: t.modules },
                 { id: "resources", icon: FolderOpen, label: t.resources },
+                { id: "videos", icon: Video, label: t.videos },
                 { id: "assignments", icon: PencilLine, label: t.assignments },
                 { id: "forum", icon: MessageSquare, label: t.forum },
               ].map((tab) => (
@@ -790,155 +811,178 @@ export default function Courses() {
             </div>
           )}
 
-          {/* Modules Tab */}
-          {activeTab === "modules" && (
-            <div className="space-y-4">
-              <h3 className="text-xl font-black text-slate-900 mb-6">
-                📚 {t.modules}
-              </h3>
-              {course.modules.map((module) => (
-                <div
-                  key={module.id}
-                  className="bg-white rounded-lg p-6 border border-blue-100 hover:shadow-md transition"
-                >
-                  <div className="flex items-center justify-between mb-3">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 rounded-full flex items-center justify-center bg-blue-100">
-                        <span
-                          className={`text-lg ${
-                            module.status === "completed"
-                              ? "✅"
-                              : module.status === "inProgress"
-                                ? "⏳"
-                                : "⭕"
-                          }`}
-                        ></span>
-                      </div>
-                      <div>
-                        <h4 className="font-bold text-slate-900">
-                          {module.title}
-                        </h4>
-                        <p className="text-xs text-slate-500">
-                          {module.topics} {t.topics}
-                        </p>
-                      </div>
-                    </div>
-                    <span
-                      className={`text-xs font-semibold px-3 py-1 rounded-full ${
-                        module.status === "completed"
-                          ? "bg-green-100 text-green-700"
-                          : module.status === "inProgress"
-                            ? "bg-blue-100 text-blue-700"
-                            : "bg-slate-100 text-slate-700"
-                      }`}
+          {/* Resources Tab - Expandable Sections */}
+          {activeTab === "resources" && (
+            <div className="bg-white rounded-lg border border-slate-200 divide-y divide-slate-200">
+            {(() => {
+              const courseSections = [
+                {
+                  id: "skripte",
+                  label: "Skripte",
+                  icon: FileText,
+                  items: course.resources?.filter(r => r.type === "script").map(s => ({
+                    id: s.id,
+                    title: s.title,
+                    url: s.url,
+                    size: s.size,
+                    type: "script"
+                  })) || [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "basisliteratur",
+                  label: "Basisliteratur",
+                  icon: Book,
+                  items: [
+                    { id: 1, title: "Hartmann, Peter (2019): Mathematik für Informatiker. Ein praxisbezogenes Lehrbuch", type: "book", url: "#" }
+                  ],
+                  defaultExpanded: true // Expanded by default as shown in image
+                },
+                {
+                  id: "weiterfuehrende-literatur",
+                  label: "Weiterführende Literatur",
+                  icon: BookOpen,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "repetitorium",
+                  label: "Repetitorium",
+                  icon: GraduationCap,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "foliensaetze",
+                  label: "Foliensätze",
+                  icon: Presentation,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "course-feed",
+                  label: "Course Feed®",
+                  icon: Rss,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "musterklausur",
+                  label: "Musterklausur",
+                  icon: ClipboardCheck,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "podcasts",
+                  label: "Podcasts",
+                  icon: Headphones,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "dokumente-tutorium",
+                  label: "Dokumente Tutorium",
+                  icon: Users,
+                  items: [],
+                  defaultExpanded: false
+                },
+                {
+                  id: "online-tests",
+                  label: "Online Tests und Evaluation",
+                  icon: ClipboardList,
+                  items: [],
+                  defaultExpanded: false
+                }
+              ];
+
+              return courseSections.map((section) => {
+                const isExpanded = expandedSections[section.id] !== undefined 
+                  ? expandedSections[section.id] 
+                  : section.defaultExpanded;
+
+                return (
+                  <div key={section.id} className="p-0">
+                    <button
+                      onClick={() => toggleSection(section.id)}
+                      className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-50 transition text-left"
                     >
-                      {module.status === "completed"
-                        ? t.completed
-                        : module.status === "inProgress"
-                          ? t.inProgress
-                          : t.notStarted}
-                    </span>
+                      <span className="text-sm font-medium text-slate-900">
+                        {section.label}
+                      </span>
+                      <div className="flex items-center gap-2">
+                        {isExpanded ? (
+                          <Minus className="h-4 w-4 text-slate-500" />
+                        ) : (
+                          <Plus className="h-4 w-4 text-slate-500" />
+                        )}
+                      </div>
+                    </button>
+                    {isExpanded && (
+                      <div className="px-4 pb-3 bg-slate-50">
+                        {section.items.length > 0 ? (
+                          <div className="space-y-1 mt-2">
+                            {section.items.map((item) => (
+                              <div
+                                key={item.id}
+                                className="flex items-start gap-2 py-2 px-3 hover:bg-white rounded cursor-pointer"
+                              >
+                                <FileText className="h-4 w-4 text-slate-400 mt-0.5 flex-shrink-0" />
+                                <a
+                                  href={item.url || "#"}
+                                  className="text-sm text-blue-600 hover:text-blue-800 hover:underline"
+                                >
+                                  {item.title}
+                                </a>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <p className="text-sm text-slate-500 mt-2 py-2">
+                            Noch keine Einträge
+                          </p>
+                        )}
+                      </div>
+                    )}
                   </div>
-                </div>
-              ))}
+                );
+              });
+            })()}
             </div>
           )}
 
-          {/* Resources Tab */}
-          {activeTab === "resources" && (
+          {/* Videos Tab */}
+          {activeTab === "videos" && (
             <div className="space-y-6">
               <h3 className="text-xl font-black text-slate-900 mb-6">
-                📁 {t.resources}
+                🎥 {t.videos}
               </h3>
-
-              {/* Videos */}
-              <div>
-                <h4 className="font-bold text-lg text-slate-900 mb-4">
-                  🎥 {t.videos}
-                </h4>
-                <div className="space-y-2">
-                  {course.resources
-                    .filter((r) => r.type === "video")
-                    .map((resource) => (
-                      <div
-                        key={resource.id}
-                        className="bg-white rounded-lg p-4 border border-blue-100 hover:shadow-md transition cursor-pointer flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            {resource.title}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            ⏱️ {resource.duration}
-                          </p>
-                        </div>
-                        <button className="px-3 py-1 bg-blue-100 text-blue-700 font-semibold rounded hover:bg-blue-200">
-                          ▶️ {language === "de" ? "Abspielen" : "Play"}
-                        </button>
+              <div className="space-y-2">
+                {course.resources
+                  ?.filter((r) => r.type === "video")
+                  .map((resource) => (
+                    <div
+                      key={resource.id}
+                      className="bg-white rounded-lg p-4 border border-blue-100 hover:shadow-md transition cursor-pointer flex items-center justify-between"
+                    >
+                      <div>
+                        <p className="font-semibold text-slate-900">
+                          {resource.title}
+                        </p>
+                        <p className="text-sm text-slate-500">
+                          ⏱️ {resource.duration}
+                        </p>
                       </div>
-                    ))}
-                </div>
-              </div>
-
-              {/* Scripts */}
-              <div>
-                <h4 className="font-bold text-lg text-slate-900 mb-4">
-                  📄 {t.scripts}
-                </h4>
-                <div className="space-y-2">
-                  {course.resources
-                    .filter((r) => r.type === "script")
-                    .map((resource) => (
-                      <div
-                        key={resource.id}
-                        className="bg-white rounded-lg p-4 border border-blue-100 hover:shadow-md transition cursor-pointer flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            {resource.title}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            📦 {resource.size}
-                          </p>
-                        </div>
-                        <button className="px-3 py-1 bg-green-100 text-green-700 font-semibold rounded hover:bg-green-200">
-                          ⬇️ {t.downloadFile}
-                        </button>
-                      </div>
-                    ))}
-                </div>
-              </div>
-
-              {/* Files from Teachers */}
-              <div>
-                <h4 className="font-bold text-lg text-slate-900 mb-4">
-                  📥{" "}
-                  {language === "de"
-                    ? "Dateien von Lehrenden"
-                    : "Files from Teachers"}
-                </h4>
-                <div className="space-y-2">
-                  {course.resources
-                    .filter((r) => r.type === "file")
-                    .map((resource) => (
-                      <div
-                        key={resource.id}
-                        className="bg-white rounded-lg p-4 border border-orange-100 hover:shadow-md transition cursor-pointer flex items-center justify-between"
-                      >
-                        <div>
-                          <p className="font-semibold text-slate-900">
-                            {resource.title}
-                          </p>
-                          <p className="text-sm text-slate-500">
-                            👨‍🏫 {resource.teacher} • 📦 {resource.size}
-                          </p>
-                        </div>
-                        <button className="px-3 py-1 bg-orange-100 text-orange-700 font-semibold rounded hover:bg-orange-200">
-                          ⬇️ {t.downloadFile}
-                        </button>
-                      </div>
-                    ))}
-                </div>
+                      <button className="px-3 py-1 bg-blue-100 text-blue-700 font-semibold rounded hover:bg-blue-200">
+                        ▶️ {language === "de" ? "Abspielen" : "Play"}
+                      </button>
+                    </div>
+                  ))}
+                {(!course.resources || course.resources.filter((r) => r.type === "video").length === 0) && (
+                  <p className="text-slate-500 text-center py-8">
+                    Noch keine Videos verfügbar
+                  </p>
+                )}
               </div>
             </div>
           )}
