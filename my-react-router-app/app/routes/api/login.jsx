@@ -5,9 +5,13 @@ import crypto from "crypto";
 const prisma = new PrismaClient();
 
 export async function action({ request }) {
+  return handleLoginRequest(request);
+}
+
+async function handleLoginRequest(request) {
   if (request.method !== "POST") {
     return Response.json(
-      { error: "Method not allowed" },
+      { error: "Method not allowed. Use POST." },
       { status: 405 }
     );
   }
@@ -15,23 +19,37 @@ export async function action({ request }) {
   try {
     let email, password;
 
-    // Try to parse as form data
-    try {
-      const formData = await request.formData();
-      email = formData.get("email");
-      password = formData.get("password");
-    } catch (formError) {
-      // Fallback: try to parse as JSON
+    // Get content type from headers
+    const contentType = request.headers.get("content-type") || "";
+
+    if (contentType.includes("application/json")) {
+      // Parse as JSON
       try {
         const json = await request.json();
         email = json.email;
         password = json.password;
       } catch (jsonError) {
-        return Response.json(
-          { error: "Could not parse request body" },
-          { status: 400 }
-        );
+        console.error("❌ JSON parse error:", jsonError);
+        return Response.json({ error: "Invalid JSON body" }, { status: 400 });
       }
+    } else if (contentType.includes("application/x-www-form-urlencoded")) {
+      // Parse as form data
+      try {
+        const formData = await request.formData();
+        email = formData.get("email");
+        password = formData.get("password");
+      } catch (formError) {
+        console.error("❌ Form parse error:", formError);
+        return Response.json({ error: "Invalid form data" }, { status: 400 });
+      }
+    } else {
+      return Response.json(
+        {
+          error:
+            "Content-Type must be application/json or application/x-www-form-urlencoded",
+        },
+        { status: 400 }
+      );
     }
 
     if (!email || !password) {
@@ -63,32 +81,54 @@ export async function action({ request }) {
       );
     }
 
-    // Create a session cookie
+    // Create and store session in database
     const sessionToken = crypto.randomUUID();
+    const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
-    // In development, we don't store the session in the database
-    // It's just used for the cookie
+    // Save session to database
+    await prisma.session.create({
+      data: {
+        token: sessionToken,
+        userId: user.id,
+        expiresAt,
+      },
+    });
+
     console.log("✅ Login successful for:", user.email);
 
     // Return success with session token
-    return Response.json(
+    const response = Response.json(
       {
         success: true,
         message: "Login successful!",
         user: { id: user.id, email: user.email, name: user.name },
+        sessionToken: sessionToken,
       },
       {
         status: 200,
-        headers: {
-          "Set-Cookie": `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; HttpOnly; SameSite=Lax`,
-        },
       }
     );
+
+    // Set cookie with proper headers
+    response.headers.set(
+      "Set-Cookie",
+      `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Lax; HttpOnly`
+    );
+
+    console.log("🍪 Set-Cookie header set successfully");
+
+    return response;
   } catch (error) {
     console.error("❌ Login error:", error);
+    console.error("❌ Stack:", error.stack);
     return Response.json(
-      { error: "An error occurred during login" },
+      { error: "An error occurred during login", details: error.message },
       { status: 500 }
     );
   }
+}
+
+// Default export for React Router (not used, but required)
+export default function LoginAPI() {
+  return null;
 }

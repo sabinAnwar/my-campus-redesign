@@ -1,78 +1,51 @@
-import { useState } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
-import { showSuccessToast, showErrorToast } from '../lib/toast';
+import { useEffect, useState } from "react";
+import { Link, useNavigate, useFetcher } from "react-router";
+import { showSuccessToast, showErrorToast } from "../lib/toast";
+
+export const loader = async () => {
+  return null;
+};
 
 export default function Login() {
   const navigate = useNavigate();
+  const fetcher = useFetcher();
   const [error, setError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const isSubmitting = fetcher.state === "submitting";
 
-  const handleSubmit = async (e) => {
-    console.log('🔵 handleSubmit called');
-    e.preventDefault();
-    e.stopPropagation();
-    
-    setIsSubmitting(true);
-    setError(null);
+  // React to fetcher responses
+  useEffect(() => {
+    if (!fetcher.data) return;
 
-    const formData = new FormData(e.currentTarget);
-    const email = formData.get('email');
-    const password = formData.get('password');
-
-    console.log('📝 Submitting login form:', { email, passwordLength: password?.length });
-
-    try {
-      // Send as form-encoded data
-      const response = await fetch('/api/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded',
-        },
-        body: new URLSearchParams({ email, password }),
-        credentials: 'include', // Include cookies in request
-      });
-
-      console.log('📨 API response status:', response.status);
-
-      const data = await response.json();
-      console.log('📨 API response data:', data);
-
-      if (data.success) {
-        console.log('✅ Login successful!');
-        showSuccessToast('✅ Login successful! Redirecting...');
-        
-        // Wait for toast to show, then redirect
-        setTimeout(() => {
-          console.log('🔄 Redirecting to home...');
-          window.location.href = '/';
-        }, 1500);
-      } else if (data.error) {
-        console.log('❌ Login failed:', data.error);
-        setError(data.error);
-        showErrorToast(data.error);
-        setIsSubmitting(false);
-      } else {
-        console.log('❌ Unexpected response format:', data);
-        setError('An unexpected error occurred');
-        showErrorToast('An unexpected error occurred');
-        setIsSubmitting(false);
+    if (fetcher.data.success) {
+      showSuccessToast("✅ Login successful! Redirecting...");
+      if (fetcher.data.sessionToken) {
+        localStorage.setItem("sessionToken", fetcher.data.sessionToken);
       }
-    } catch (err) {
-      console.error('❌ Fetch error:', err);
-      const errorMsg = err.message || 'An error occurred during login';
-      setError(errorMsg);
-      showErrorToast(errorMsg);
-      setIsSubmitting(false);
+      const t = setTimeout(() => navigate("/dashboard"), 800);
+      return () => clearTimeout(t);
     }
-  };
+
+    if (fetcher.data.error) {
+      setError(fetcher.data.error);
+      showErrorToast(fetcher.data.error);
+    }
+  }, [fetcher.data, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
       {/* Left side - Premium professional section with IU students background */}
-      <div className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8" style={{ backgroundImage: 'url(/iu-students-football.png)', backgroundSize: 'cover', backgroundPosition: 'center', backgroundAttachment: 'fixed' }}>
+      <div
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8"
+        style={{
+          backgroundImage: "url(/iu-students-football.png)",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundAttachment: "fixed",
+        }}
+      >
         {/* Dark overlay for strong readability */}
         <div className="absolute inset-0 bg-gradient-to-br from-slate-950/90 via-slate-900/85 to-slate-950/90"></div>
-        
+
         {/* Accent overlay with IU colors */}
         <div className="absolute inset-0 bg-gradient-to-r from-cyan-600/5 via-transparent to-orange-600/5"></div>
 
@@ -94,7 +67,7 @@ export default function Login() {
               Goals
             </span>
           </h2>
-          
+
           {/* Subheading */}
           <p className="text-lg text-cyan-100 font-semibold mb-10 drop-shadow-md">
             Join 500+ IU Dual Degree Students
@@ -109,7 +82,8 @@ export default function Login() {
                   "
                 </div>
                 <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
-                  Education is the most powerful weapon which you can use to change the world.
+                  Education is the most powerful weapon which you can use to
+                  change the world.
                 </p>
                 <p className="text-xs text-cyan-100 font-semibold drop-shadow-md">
                   — Nelson Mandela
@@ -124,7 +98,8 @@ export default function Login() {
                   "
                 </div>
                 <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
-                  Success is not final, failure is not fatal. It is the courage to continue that counts.
+                  Success is not final, failure is not fatal. It is the courage
+                  to continue that counts.
                 </p>
                 <p className="text-xs text-orange-100 font-semibold drop-shadow-md">
                   — Winston Churchill
@@ -139,7 +114,8 @@ export default function Login() {
                   "
                 </div>
                 <p className="text-base font-bold text-white mb-2 leading-snug drop-shadow-lg">
-                  The future belongs to those who believe in the beauty of their dreams.
+                  The future belongs to those who believe in the beauty of their
+                  dreams.
                 </p>
                 <p className="text-xs text-cyan-100 font-semibold drop-shadow-md">
                   — Eleanor Roosevelt
@@ -165,7 +141,9 @@ export default function Login() {
                 <p className="text-xs font-bold text-white drop-shadow-lg">
                   Waterloohain
                 </p>
-                <p className="text-xs text-orange-100 drop-shadow-md">Hamburg</p>
+                <p className="text-xs text-orange-100 drop-shadow-md">
+                  Hamburg
+                </p>
               </div>
             </div>
           </div>
@@ -173,13 +151,17 @@ export default function Login() {
           {/* Active Students Count - Enhanced */}
           <div className="mt-8 text-center">
             <div className="inline-block">
-              <p className="text-5xl font-black text-cyan-300 drop-shadow-lg">500+</p>
+              <p className="text-5xl font-black text-cyan-300 drop-shadow-lg">
+                500+
+              </p>
               <p className="text-xs text-cyan-100 font-semibold mt-2 uppercase tracking-wider">
                 Active Dual Degree Students
               </p>
               <div className="mt-3 inline-flex items-center gap-2 bg-green-500/30 px-4 py-2 rounded-full border border-green-400/60 backdrop-blur-sm">
                 <span className="h-2.5 w-2.5 rounded-full bg-green-300 block animate-pulse" />
-                <span className="text-xs text-green-100 font-bold">Currently online</span>
+                <span className="text-xs text-green-100 font-bold">
+                  Currently online
+                </span>
               </div>
             </div>
           </div>
@@ -221,10 +203,9 @@ export default function Login() {
             </div>
 
             {/* Form */}
-            <form
-              onSubmit={handleSubmit}
+            <fetcher.Form
               method="post"
-              action="javascript:void(0)"
+              action="/api/login"
               className="space-y-7"
             >
               {/* Email Input - Professional with icon box */}
@@ -450,7 +431,7 @@ export default function Login() {
                   <span>Support</span>
                 </a>
               </div>
-            </form>
+            </fetcher.Form>
           </div>
 
           {/* Footer - Professional */}

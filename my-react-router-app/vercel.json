@@ -5,5 +5,11 @@
   "routes": [
     { "handle": "filesystem" },
     { "src": "/(.*)", "dest": "/api/index.js" }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/praxisbericht-reminder",
+      "schedule": "0 17 * * FRI"
+    }
   ]
 }

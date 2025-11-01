@@ -2,6 +2,10 @@ import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { logout } from "../lib/auth";
 
+export const loader = async () => {
+  return null;
+};
+
 export default function Logout() {
   const navigate = useNavigate();
 

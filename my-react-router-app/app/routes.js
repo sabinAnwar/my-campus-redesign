@@ -7,30 +7,6 @@ export default [
     file: "routes/home.jsx",
   },
   {
-    path: "toast-test",
-    file: "routes/toast-test.jsx",
-  },
-  {
-    path: "toast-direct",
-    file: "routes/toast-direct.jsx",
-  },
-  {
-    path: "basic-test",
-    file: "routes/basic-test.jsx",
-  },
-  {
-    path: "form-test",
-    file: "routes/form-test.jsx",
-  },
-  {
-    path: "diagnostic",
-    file: "routes/diagnostic.jsx",
-  },
-  {
-    path: "console-diagnostic",
-    file: "routes/console-diagnostic.jsx",
-  },
-  {
     path: "login",
     file: "routes/login.jsx",
   },
@@ -51,16 +27,56 @@ export default [
     file: "routes/dashboard.jsx",
   },
   {
+    path: "room-booking",
+    file: "routes/room-booking.jsx",
+  },
+  {
+    path: "events",
+    file: "routes/events.jsx",
+  },
+  {
+    path: "courses/schedule",
+    file: "routes/courses.schedule.jsx",
+  },
+  {
+    path: "files/recent",
+    file: "routes/files.recent.jsx",
+  },
+  {
+    path: "messages",
+    file: "routes/messages.jsx",
+  },
+  {
+    path: "tasks",
+    file: "routes/tasks.jsx",
+  },
+  {
+    path: "settings",
+    file: "routes/settings.jsx",
+  },
+  {
+    path: "courses",
+    file: "routes/courses.jsx",
+  },
+  {
+    path: "contact",
+    file: "routes/contact.jsx",
+  },
+  {
+    path: "praxisbericht",
+    file: "routes/praxisbericht2.jsx",
+  },
+  {
+    path: "teacher-upload",
+    file: "routes/teacher-upload.jsx",
+  },
+  {
     path: "users",
     file: "routes/users.jsx",
     children: [
       {
         index: true,
         file: "routes/users._index.jsx",
-      },
-      {
-        path: "new",
-        file: "routes/users.new.jsx",
       },
       {
         path: ":userId",
@@ -74,8 +90,24 @@ export default [
     file: "routes/api/health.jsx",
   },
   {
+    path: "api/praxisberichte",
+    file: "routes/api/praxisberichte.jsx",
+  },
+  {
+    path: "api/praxisberichte/:weekKey",
+    file: "routes/api/praxisberichte.$weekKey.jsx",
+  },
+  {
     path: "api/login",
     file: "routes/api/login.jsx",
+  },
+  {
+    path: "api/logout",
+    file: "routes/api/logout.jsx",
+  },
+  {
+    path: "api/user",
+    file: "routes/api/user.jsx",
   },
   {
     path: "api/request-password-reset",

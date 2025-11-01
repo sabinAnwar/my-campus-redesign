@@ -61,7 +61,7 @@ app.get("/api/health", (req, res) => res.json({ ok: true }));
 app.post("/api/login", async (req, res) => {
   try {
     const { email, password } = req.body;
-    
+
     // Debug logging
     console.log("📝 Login request received:");
     console.log("   Content-Type:", req.headers["content-type"]);
@@ -81,7 +81,9 @@ app.post("/api/login", async (req, res) => {
     }
 
     // Find user by email (case-insensitive)
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
 
     if (!user) {
       return res.status(401).json({ error: "Invalid email or password" });
@@ -95,8 +97,18 @@ app.post("/api/login", async (req, res) => {
 
     // Create session cookie
     const sessionId = crypto.randomUUID();
-    const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
-    
+    const isProduction =
+      process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+
+    // Store session in database
+    await prisma.session.create({
+      data: {
+        token: sessionId,
+        userId: user.id,
+        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
+      },
+    });
+
     res.cookie("auth_session", sessionId, {
       httpOnly: true,
       secure: isProduction, // Only HTTPS in production
@@ -139,7 +151,9 @@ app.post("/api/request-password-reset", async (req, res) => {
     console.log("🔍 Looking up user with email:", email.toLowerCase());
 
     // Find user by email (case-insensitive)
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
 
     console.log("👤 User found:", user ? user.email : "none");
 
@@ -184,9 +198,10 @@ app.post("/api/request-password-reset", async (req, res) => {
   } catch (error) {
     console.error("❌ Error requesting password reset:", error);
     console.error("   Error stack:", error.stack);
-    return res
-      .status(500)
-      .json({ error: "Failed to process password reset request", details: error.message });
+    return res.status(500).json({
+      error: "Failed to process password reset request",
+      details: error.message,
+    });
   }
 });
 
@@ -333,7 +348,10 @@ app.post("/api/reset-password", async (req, res) => {
   try {
     const { token, password } = req.body;
 
-    console.log("📝 Password reset attempt with token:", token?.substring(0, 8) + "...");
+    console.log(
+      "📝 Password reset attempt with token:",
+      token?.substring(0, 8) + "..."
+    );
 
     if (!token || typeof token !== "string") {
       return res.status(400).json({ error: "Invalid token" });
@@ -388,11 +406,262 @@ app.post("/api/reset-password", async (req, res) => {
   }
 });
 
+// Email reminder cron job - sends reminders to students who haven't submitted this week
+app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
+  try {
+    // Verify cron secret
+    const cronSecret = process.env.CRON_SECRET;
+    const secret = req.query.secret;
+
+    if (!cronSecret || secret !== cronSecret) {
+      console.warn("⚠️  Unauthorized cron request");
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const dryRun = req.query.dryRun === "1";
+
+    // Get current ISO week
+    const now = new Date();
+    const d = new Date(now.getTime());
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay() || 7;
+    d.setDate(d.getDate() + 4 - day);
+    const isoYear = d.getFullYear();
+    const yearStart = new Date(isoYear, 0, 1);
+    const week = Math.ceil(
+      ((d - yearStart) / 86400000 + (yearStart.getDay() || 7)) / 7
+    );
+    const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
+
+    console.log(`📧 Cron: Checking reminders for week ${currentWeekKey}`);
+
+    // Get all students
+    const students = await prisma.user.findMany({
+      where: { role: "STUDENT" },
+      select: { id: true, email: true, name: true },
+    });
+
+    console.log(`👥 Found ${students.length} students`);
+
+    // Find students who haven't submitted for current week
+    const submitted = await prisma.praxisReport.findMany({
+      where: {
+        isoWeekKey: currentWeekKey,
+        status: { in: ["SUBMITTED", "APPROVED"] },
+      },
+      select: { userId: true },
+    });
+
+    const submittedIds = new Set(submitted.map((r) => r.userId));
+    const targets = students.filter((s) => !submittedIds.has(s.id));
+
+    console.log(`📬 Targeting ${targets.length} students for reminders`);
+
+    if (dryRun) {
+      return res.json({
+        success: true,
+        dryRun: true,
+        currentWeekKey,
+        targetCount: targets.length,
+        targets: targets.map((t) => t.email),
+      });
+    }
+
+    // Setup email transporter
+    const emailService = process.env.EMAIL_SERVICE || "test";
+    let transporter;
+
+    if (emailService === "gmail") {
+      transporter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+    } else if (emailService === "sendgrid") {
+      transporter = nodemailer.createTransport({
+        host: "smtp.sendgrid.net",
+        port: 587,
+        auth: {
+          user: "apikey",
+          pass: process.env.SENDGRID_API_KEY,
+        },
+      });
+    } else {
+      // Test mode - create test account
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: {
+          user: testAccount.user,
+          pass: testAccount.pass,
+        },
+      });
+    }
+
+    let sent = 0;
+    for (const student of targets) {
+      try {
+        const appUrl = process.env.APP_URL || "http://localhost:5174";
+        const portalLink = `${appUrl}/praxisbericht`;
+
+        const mailOptions = {
+          from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+          to: student.email,
+          subject: `📝 Reminder: Submit your Practical Report for Week ${week}`,
+          html: `
+            <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+              <h2 style="margin: 0 0 12px;">Hi ${student.name || "Student"},</h2>
+              
+              <p>This is a friendly reminder to submit your Practical Report for the current week.</p>
+              
+              <p>You can submit it from the portal:</p>
+              
+              <p>
+                <a href="${portalLink}" style="display: inline-block; background: #111827; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                  Open Praxisberichte
+                </a>
+              </p>
+              
+              <p style="color: #999; font-size: 12px;">
+                Sent on ${new Date().toISOString()}
+              </p>
+            </div>
+          `,
+          text: `Hi ${student.name || "Student"},\n\nThis is a reminder to submit your Practical Report for Week ${week}.\n\nVisit: ${portalLink}\n\nBest regards,\nIU Portal Team`,
+        };
+
+        const info = await transporter.sendMail(mailOptions);
+        console.log(
+          `✅ Email sent to ${student.email}`,
+          emailService === "test"
+            ? `Preview: ${nodemailer.getTestMessageUrl(info)}`
+            : ""
+        );
+        sent++;
+      } catch (err) {
+        console.error(
+          `❌ Failed to send email to ${student.email}:`,
+          err.message
+        );
+      }
+    }
+
+    console.log(`📊 Sent ${sent}/${targets.length} reminder emails`);
+
+    return res.json({
+      success: true,
+      sent,
+      currentWeekKey,
+    });
+  } catch (error) {
+    console.error("❌ Error in cron reminder:", error);
+    return res.status(500).json({ error: "Failed to send reminders" });
+  }
+});
+
+// Praxisbericht endpoints
+app.get("/api/praxisberichte", async (req, res) => {
+  try {
+    const sessionToken = req.cookies.auth_session;
+    if (!sessionToken) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      include: { user: true },
+    });
+
+    if (!session || !session.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Get all praxisbericht reports for this user
+    const reports = await prisma.praxisReport.findMany({
+      where: { userId: session.user.id },
+      orderBy: { isoWeekKey: "asc" },
+    });
+
+    return res.json({ reports });
+  } catch (error) {
+    console.error("❌ Error fetching praxisberichte:", error);
+    return res.status(500).json({ error: "Failed to fetch reports" });
+  }
+});
+
+app.put("/api/praxisberichte/:weekKey", async (req, res) => {
+  try {
+    const sessionToken = req.cookies.auth_session;
+    if (!sessionToken) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      include: { user: true },
+    });
+
+    if (!session || !session.user) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    const { weekKey } = req.params;
+    const { days, tasks, grade, status } = req.body;
+
+    if (!tasks || tasks.length < 10) {
+      return res
+        .status(400)
+        .json({ error: "Tasks must be at least 10 characters" });
+    }
+
+    const report = await prisma.praxisReport.upsert({
+      where: {
+        isoWeekKey_userId: {
+          isoWeekKey: weekKey,
+          userId: session.user.id,
+        },
+      },
+      create: {
+        isoWeekKey: weekKey,
+        userId: session.user.id,
+        days: days || {},
+        tasks,
+        grade: grade || 0,
+        status: (status || "DUE").toUpperCase(),
+        editedAt: new Date(),
+      },
+      update: {
+        days: days || {},
+        tasks,
+        grade: grade || 0,
+        status: (status || "DUE").toUpperCase(),
+        editedAt: new Date(),
+      },
+    });
+
+    return res.json(report);
+  } catch (error) {
+    console.error("❌ Error updating praxisbericht:", error);
+    return res.status(500).json({ error: "Failed to update report" });
+  }
+});
+
 // Serve static files from build/client BEFORE React Router handler
-app.use(express.static(clientBuildPath, {
-  maxAge: '1d',
-  etag: false,
-}));
+app.use(
+  express.static(clientBuildPath, {
+    maxAge: "1d",
+    etag: false,
+  })
+);
+
+// IMPORTANT: Return 404 for any unhandled API routes BEFORE React Router sees them
+app.all("/api/*", (req, res) => {
+  res.status(404).json({ error: "API endpoint not found" });
+});
 
 // React Router handler (catches everything else)
 app.use(createRequestHandler({

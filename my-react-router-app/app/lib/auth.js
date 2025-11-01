@@ -29,14 +29,18 @@ export async function login({ email, password }) {
 }
 
 export async function logout() {
-  const cookies = document.cookie.split('; ');
-  const sessionCookie = cookies.find(cookie => cookie.startsWith(SESSION_NAME));
-  if (sessionCookie) {
-    const sessionId = sessionCookie.split('=')[1];
-    sessions.delete(sessionId);
-    document.cookie = `${SESSION_NAME}=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT`;
+  try {
+    const response = await fetch("/api/logout", {
+      method: "POST",
+      credentials: "include",
+    });
+    const data = await response.json();
+    console.log("✅ Logout response:", data);
+    return data;
+  } catch (err) {
+    console.error("❌ Logout error:", err);
+    return null;
   }
-  return null;
 }
 
 export async function getCurrentSession() {

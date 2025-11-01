@@ -2,6 +2,10 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 
+export const loader = async () => {
+  return null;
+};
+
 export default function RequestReset() {
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);

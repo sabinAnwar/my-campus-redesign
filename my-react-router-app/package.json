@@ -5,15 +5,18 @@
   "scripts": {
     "build": "react-router build",
     "dev": "react-router dev",
-    "start": "react-router-serve ./build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js"
+    "start": "react-router-serve ./build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+    "seed": "node --loader tsx prisma/seed.js"
   },
   "dependencies": {
     "@prisma/client": "^6.15.0",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",
+    "@splinetool/react-spline": "^4.1.0",
     "@vercel/react-router": "^1.2.3",
     "bcryptjs": "^3.0.2",
     "isbot": "^5.1.27",
+    "lucide-react": "^0.462.0",
     "nodemailer": "^7.0.9",
     "prisma": "^6.15.0",
     "react": "^19.1.0",
