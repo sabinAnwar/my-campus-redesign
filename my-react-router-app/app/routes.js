@@ -7,30 +7,6 @@ export default [
     file: "routes/home.jsx",
   },
   {
-    path: "toast-test",
-    file: "routes/toast-test.jsx",
-  },
-  {
-    path: "toast-direct",
-    file: "routes/toast-direct.jsx",
-  },
-  {
-    path: "basic-test",
-    file: "routes/basic-test.jsx",
-  },
-  {
-    path: "form-test",
-    file: "routes/form-test.jsx",
-  },
-  {
-    path: "diagnostic",
-    file: "routes/diagnostic.jsx",
-  },
-  {
-    path: "console-diagnostic",
-    file: "routes/console-diagnostic.jsx",
-  },
-  {
     path: "login",
     file: "routes/login.jsx",
   },
@@ -88,7 +64,7 @@ export default [
   },
   {
     path: "praxisbericht",
-    file: "routes/praxisbericht.jsx",
+    file: "routes/praxisbericht2.jsx",
   },
   {
     path: "teacher-upload",
@@ -103,10 +79,6 @@ export default [
         file: "routes/users._index.jsx",
       },
       {
-        path: "new",
-        file: "routes/users.new.jsx",
-      },
-      {
         path: ":userId",
         file: "routes/users.$userId.jsx",
       },
@@ -116,6 +88,14 @@ export default [
   {
     path: "api/health",
     file: "routes/api/health.jsx",
+  },
+  {
+    path: "api/praxisberichte",
+    file: "routes/api/praxisberichte.jsx",
+  },
+  {
+    path: "api/praxisberichte/:weekKey",
+    file: "routes/api/praxisberichte.$weekKey.jsx",
   },
   {
     path: "api/login",

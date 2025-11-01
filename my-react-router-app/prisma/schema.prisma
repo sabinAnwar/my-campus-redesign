@@ -27,6 +27,7 @@ model User {
   sessions        Session[]
   studiengang     Studiengang? @relation(fields: [studiengangId], references: [id])
   studiengangId   Int?
+  praxisReports   PraxisReport[]
 }
 
 model Teacher {
@@ -54,6 +55,7 @@ model Studiengang {
   createdAt DateTime @default(now())
   courses   Course[]
   files     File[]
+  users     User[]
 }
 
 model Course {
@@ -111,4 +113,31 @@ model Session {
   userId    Int
   expiresAt DateTime
   createdAt DateTime @default(now())
+}
+
+// Weekly practical report per user and ISO week
+enum PraxisStatus {
+  DUE
+  SUBMITTED
+  APPROVED
+  KLAUSUR
+  DRAFT
+  KLAUSURPHASE
+}
+
+model PraxisReport {
+  id         Int           @id @default(autoincrement())
+  isoWeekKey String
+  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId     Int
+  // JSON object with keys Mon..Sun or similar shape
+  days       Json
+  tasks      String
+  grade      Int           @default(0)
+  status     PraxisStatus  @default(DUE)
+  editedAt   DateTime      @default(now())
+  approvedAt DateTime?
+  createdAt  DateTime      @default(now())
+
+  @@unique([isoWeekKey, userId], name: "isoWeekKey_userId")
 }

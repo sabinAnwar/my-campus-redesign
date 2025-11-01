@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router";
+import { useNavigate } from "react-router";
 import AppShell from "../components/AppShell";
 
 export async function loader() {
@@ -54,10 +54,47 @@ export default function Dashboard() {
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
         {/* Main column */}
         <div className="lg:col-span-8 space-y-8 min-w-0">
-          <div>
-            <h1 className="text-[34px] md:text-[36px] font-semibold leading-tight text-slate-900">
-              Hi, {user?.name?.split(" ")[0] || "Student"}
-            </h1>
+          {/* Greeting section with aligned robot */}
+          <div className="flex flex-col md:flex-row items-center md:items-start justify-start md:justify-between gap-8 mt-6">
+            {/* Text Section */}
+            <div className="flex-1">
+              <h1 className="text-[36px] font-semibold text-slate-900 leading-tight">
+                Hi, {user?.name?.split(" ")[0] || "Student"}
+              </h1>
+              <p className="text-slate-600 text-sm mt-2">
+                Welcome back! Here’s what’s new today.
+              </p>
+            </div>
+
+            {/* Robot Section */}
+            <div className="flex justify-center md:justify-end w-full md:w-auto">
+              <div className="relative w-[180px] h-[180px] md:w-[230px] md:h-[230px] animate-float">
+                <iframe
+                  src="https://my.spline.design/genkubgreetingrobot-CBmqahXcuk8nIjmKWGDo53mA/"
+                  frameBorder="0"
+                  width="100%"
+                  height="100%"
+                  allow="autoplay; fullscreen"
+                  title="Spline robot"
+                  className="rounded-full pointer-events-none"
+                  style={{
+                    background: "transparent",
+                    transform: "scale(1.05)",
+                    overflow: "hidden",
+                  }}
+                ></iframe>
+                {/* Hide watermark */}
+                <style>
+                  {`
+                    iframe::-webkit-media-controls-enclosure { display: none !important; }
+                    iframe + div,
+                    iframe ~ div {
+                      display: none !important;
+                    }
+                  `}
+                </style>
+              </div>
+            </div>
           </div>
 
           {/* News */}
@@ -67,7 +104,7 @@ export default function Dashboard() {
               {[1, 2].map((i) => (
                 <div
                   key={i}
-                  className="relative rounded-2xl p-5 border bg-slate-50 border-slate-200"
+                  className="relative rounded-2xl p-5 border bg-white border-slate-200 hover:shadow-md transition-shadow duration-300"
                 >
                   <div className="absolute top-3 right-4 hidden md:flex flex-col gap-1.5 opacity-70">
                     <span className="bg-slate-300 h-[2px] w-10 rounded"></span>
@@ -88,7 +125,7 @@ export default function Dashboard() {
             </div>
           </div>
 
-          {/* Three cards row (FAQ larger) */}
+          {/* Cards Row */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
             <div className="bg-[#0b0b10] text-white rounded-2xl p-6 md:col-span-2 border border-slate-900/20">
               <div className="text-sm font-semibold">FAQ</div>
@@ -127,7 +164,7 @@ export default function Dashboard() {
               ].map((m, idx) => (
                 <div
                   key={idx}
-                  className="rounded-2xl border overflow-hidden bg-white border-slate-200"
+                  className="rounded-2xl border overflow-hidden bg-white border-slate-200 hover:shadow-md transition-shadow duration-300"
                 >
                   <div className="h-40 w-full bg-gradient-to-br from-slate-200 to-slate-300" />
                   <div className="p-4">
@@ -141,7 +178,7 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Right rail */}
+        {/* Right Sidebar */}
         <div className="lg:col-span-4 space-y-6">
           <div className="rounded-2xl p-6 border bg-white border-slate-200">
             <div className="flex items-start gap-4">
@@ -175,4 +212,3 @@ export default function Dashboard() {
     </AppShell>
   );
 }
- 
