@@ -1,4 +1,5 @@
 import express from "express";
+import cookieParser from "cookie-parser";
 import { createRequestHandler } from '@react-router/express';
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
@@ -18,6 +19,7 @@ const app = express();
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Handle form data
+app.use(cookieParser()); // Populate req.cookies for auth/session
 
 // Catch special browser/devtools requests BEFORE React Router
 app.use((req, res, next) => {
