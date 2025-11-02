@@ -689,6 +689,153 @@ app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
   }
 });
 
+// -----------------------------
+// News API (public)
+// -----------------------------
+// IMPORTANT: Must be registered BEFORE the React Router handler below.
+
+// Helper to safely parse ints with default
+function toInt(value, def) {
+  const n = parseInt(value, 10);
+  return Number.isFinite(n) && n > 0 ? n : def;
+}
+
+app.get("/api/news", async (req, res) => {
+  const page = toInt(req.query.page, 1);
+  const pageSize = Math.min(toInt(req.query.pageSize, 12), 50);
+  const search = (req.query.search || "").toString().trim();
+  const category = (req.query.category || "").toString().trim();
+  const tag = (req.query.tag || "").toString().trim();
+  const skip = (page - 1) * pageSize;
+
+  try {
+    const where = {
+      status: "PUBLISHED",
+      ...(search && {
+        OR: [
+          { title: { contains: search, mode: "insensitive" } },
+          { excerpt: { contains: search, mode: "insensitive" } },
+          { content: { contains: search, mode: "insensitive" } },
+        ],
+      }),
+      ...(category && { category: { equals: category, mode: "insensitive" } }),
+    };
+
+    const [items, total] = await Promise.all([
+      prisma.news.findMany({
+        where,
+        orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
+        take: pageSize,
+        skip,
+        select: {
+          id: true,
+          slug: true,
+          title: true,
+          excerpt: true,
+          category: true,
+          tags: true,
+          author: true,
+          coverImageUrl: true,
+          featured: true,
+          publishedAt: true,
+        },
+      }),
+      prisma.news.count({ where }),
+    ]);
+
+    // optional tag filter on result set (tags stored as JSON string)
+    const filtered = tag
+      ? items.filter((n) => {
+          try {
+            const arr = JSON.parse(n.tags || "[]");
+            return Array.isArray(arr) && arr.some((t) => String(t).toLowerCase() === tag.toLowerCase());
+          } catch (_) {
+            return false;
+          }
+        })
+      : items;
+
+    return res.json({ items: filtered, total, page, pageSize });
+  } catch (err) {
+    console.warn("/api/news fallback due to error:", err.message);
+    // Fallback: multiple static samples when DB not migrated, with filtering + pagination
+    const now = new Date();
+    const daysAgo = (d) => {
+      const t = new Date(now);
+      t.setDate(now.getDate() - d);
+      return t.toISOString();
+    };
+    const all = [
+      { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", excerpt: "Meet employers, attend workshops, and grow your network.", content: "Career fair details", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", coverImageUrl: undefined, featured: true, publishedAt: daysAgo(0) },
+      { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", excerpt: "Enroll now for the upcoming semester to learn modern analytics.", content: "Module details", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", coverImageUrl: undefined, featured: true, publishedAt: daysAgo(2) },
+      { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", excerpt: "Everything you need in one place: marks, applications, modules, and more.", content: "Welcome content", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(3) },
+      { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", excerpt: "Check the dates and registration deadlines for the winter term.", content: "Exam schedule details", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(4) },
+      { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", excerpt: "Short downtimes may occur on selected services next weekend.", content: "Maintenance details", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(5) },
+      { id: 5, slug: "scholarship-opportunities-2025", title: "Scholarship Opportunities 2025", excerpt: "Multiple scholarships for outstanding students now available.", content: "Scholarship details", category: "Scholarships", tags: JSON.stringify(["scholarship","finance"]), author: "Student Office", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(7) },
+      { id: 6, slug: "library-extended-hours", title: "Library Extends Opening Hours", excerpt: "From next month, the library will be open until midnight.", content: "Library details", category: "Library", tags: JSON.stringify(["library","hours"]), author: "Library Team", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(9) },
+    ];
+    const q = (search || "").toLowerCase();
+    let filtered = all;
+    if (q) {
+      filtered = filtered.filter((n) =>
+        [n.title, n.excerpt, n.content].some((t) => (t || "").toLowerCase().includes(q))
+      );
+    }
+    if (category) {
+      filtered = filtered.filter((n) => (n.category || "").toLowerCase() === category.toLowerCase());
+    }
+    if (tag) {
+      filtered = filtered.filter((n) => {
+        try {
+          const arr = JSON.parse(n.tags || "[]");
+          return Array.isArray(arr) && arr.some((t) => String(t).toLowerCase() === tag.toLowerCase());
+        } catch {
+          return false;
+        }
+      });
+    }
+    // Sort featured first, then by publishedAt desc
+    filtered = filtered.sort((a, b) => {
+      if (a.featured === b.featured) {
+        return new Date(b.publishedAt) - new Date(a.publishedAt);
+      }
+      return a.featured ? -1 : 1;
+    });
+    const total = filtered.length;
+    const items = filtered.slice(skip, skip + pageSize).map(({ content, ...rest }) => rest);
+    return res.json({ items, total, page, pageSize });
+  }
+});
+
+app.get("/api/news/:slug", async (req, res) => {
+  const { slug } = req.params;
+  try {
+    let item = await prisma.news.findUnique({ where: { slug } });
+    if (!item && /^\d+$/.test(slug)) {
+      item = await prisma.news.findUnique({ where: { id: Number(slug) } });
+    }
+    if (!item) {
+      return res.status(404).json({ error: "News not found" });
+    }
+    return res.json({ item });
+  } catch (err) {
+    console.warn("/api/news/:slug fallback due to error:", err.message);
+    const now = new Date().toISOString();
+    const samples = [
+      { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", content: "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
+      { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", content: "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", coverImageUrl: undefined, featured: false, publishedAt: now },
+      { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", content: "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", coverImageUrl: undefined, featured: false, publishedAt: now },
+      { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", content: "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", coverImageUrl: undefined, featured: true, publishedAt: now },
+      { id: 5, slug: "scholarship-opportunities-2025", title: "Scholarship Opportunities 2025", content: "Applications are open for various scholarships for the 2025 academic year. Submit your application before December 15.", category: "Scholarships", tags: JSON.stringify(["scholarship","finance"]), author: "Student Office", coverImageUrl: undefined, featured: false, publishedAt: now },
+      { id: 6, slug: "library-extended-hours", title: "Library Extends Opening Hours", content: "To support your studies, the campus library will extend opening hours to 00:00 from Monday to Friday.", category: "Library", tags: JSON.stringify(["library","hours"]), author: "Library Team", coverImageUrl: undefined, featured: false, publishedAt: now },
+      { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", content: "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", coverImageUrl: undefined, featured: true, publishedAt: now },
+    ];
+    const item = samples.find((s) => s.slug === slug) || null;
+    if (item) return res.json({ item });
+    return res.status(404).json({ error: "News not found" });
+  }
+});
+
 // Serve static files from build/client BEFORE React Router handler
 app.use(
   express.static(clientBuildPath, {

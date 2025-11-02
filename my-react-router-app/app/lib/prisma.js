@@ -17,7 +17,20 @@ try {
       create: async () => null,
       update: async () => null,
       delete: async () => null,
-    }
+    },
+    news: {
+      findMany: async () => [],
+      count: async () => 0,
+      findUnique: async () => null,
+    },
+    session: {
+      findUnique: async () => null,
+      deleteMany: async () => ({ count: 0 }),
+    },
+    praxisReport: {
+      findMany: async () => [],
+      upsert: async (_data) => _data,
+    },
   };
 }
 

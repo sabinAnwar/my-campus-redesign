@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, Form, useActionData, useNavigation } from "react-router";
+import { Link, useFetcher } from "react-router";
 import { showErrorToast } from "../lib/toast";
 
 export const loader = async () => {
@@ -7,17 +7,16 @@ export const loader = async () => {
 };
 
 export default function Login() {
-  const actionData = useActionData();
-  const navigation = useNavigation();
+  const fetcher = useFetcher();
   const [error, setError] = useState(null);
-  const isSubmitting = navigation.state === "submitting";
+  const isSubmitting = fetcher.state === "submitting";
 
   useEffect(() => {
-    if (actionData?.error) {
-      setError(actionData.error);
-      showErrorToast(actionData.error);
+    if (fetcher?.data?.error) {
+      setError(fetcher.data.error);
+      showErrorToast(fetcher.data.error);
     }
-  }, [actionData]);
+  }, [fetcher?.data]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
@@ -191,7 +190,7 @@ export default function Login() {
             </div>
 
             {/* Form */}
-            <Form
+            <fetcher.Form
               method="post"
               action="/api/login"
               encType="application/x-www-form-urlencoded"
@@ -420,7 +419,7 @@ export default function Login() {
                   <span>Support</span>
                 </a>
               </div>
-            </Form>
+            </fetcher.Form>
           </div>
 
           {/* Footer - Professional */}
