@@ -35,6 +35,16 @@ export default [
     file: "routes/events.jsx",
   },
   {
+    path: "news",
+    file: "routes/news.jsx",
+    children: [
+      {
+        path: ":slug",
+        file: "routes/news.$slug.jsx",
+      },
+    ],
+  },
+  {
     path: "courses/schedule",
     file: "routes/courses.schedule.jsx",
   },
@@ -108,6 +118,14 @@ export default [
   {
     path: "api/user",
     file: "routes/api/user.jsx",
+  },
+  {
+    path: "api/news",
+    file: "routes/api/news.jsx",
+  },
+  {
+    path: "api/news/:slug",
+    file: "routes/api/news.$slug.jsx",
   },
   {
     path: "api/request-password-reset",

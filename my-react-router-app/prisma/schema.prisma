@@ -141,3 +141,29 @@ model PraxisReport {
 
   @@unique([isoWeekKey, userId], name: "isoWeekKey_userId")
 }
+
+// News content for students
+enum NewsStatus {
+  DRAFT
+  PUBLISHED
+  ARCHIVED
+}
+
+model News {
+  id            Int        @id @default(autoincrement())
+  slug          String     @unique
+  title         String
+  excerpt       String?
+  content       String
+  category      String?
+  tags          String?    // JSON-encoded string array
+  author        String?
+  coverImageUrl String?
+  featured      Boolean    @default(false)
+  status        NewsStatus @default(PUBLISHED)
+  publishedAt   DateTime   @default(now())
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  @@index([publishedAt, featured])
+}
