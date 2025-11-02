@@ -17,6 +17,7 @@
     "bcryptjs": "^3.0.2",
     "isbot": "^5.1.27",
     "lucide-react": "^0.462.0",
+    "cookie-parser": "^1.4.6",
     "nodemailer": "^7.0.9",
     "prisma": "^6.15.0",
     "react": "^19.1.0",
