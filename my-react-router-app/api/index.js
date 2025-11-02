@@ -101,87 +101,9 @@ function getCookieOptions(req) {
   };
 }
 
-// Shared login handler so we can bind multiple paths (including .data)
-async function handleLogin(req, res) {
-  try {
-    const { email, password } = req.body;
-
-    // Debug logging
-    console.log("📝 Login request received:");
-    console.log("   Content-Type:", req.headers["content-type"]);
-    console.log("   Body:", req.body);
-    console.log("   Email type:", typeof email, "Value:", email);
-    console.log("   Password type:", typeof password);
-
-    if (!email || typeof email !== "string") {
-      console.log("❌ Invalid email:", { email, type: typeof email });
-      return res
-        .status(400)
-        .json({ error: "Please provide a valid email address" });
-    }
-
-    if (!password || typeof password !== "string") {
-      return res.status(400).json({ error: "Please provide a password" });
-    }
-
-    // Find user by email (case-insensitive)
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
-
-    if (!user) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    // Verify password
-    const isValidPassword = await bcryptjs.compare(password, user.password);
-    if (!isValidPassword) {
-      return res.status(401).json({ error: "Invalid email or password" });
-    }
-
-    // Create session cookie
-    const sessionId = crypto.randomUUID();
-
-    // Store session in database
-    await prisma.session.create({
-      data: {
-        token: sessionId,
-        userId: user.id,
-        expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000), // 7 days
-      },
-    });
-
-    // Harmonize cookie name with Router API (session) and set robust options
-    const cookieOpts = getCookieOptions(req);
-    res.cookie("session", sessionId, cookieOpts);
-    console.log("🍪 Express set session cookie", {
-      secure: cookieOpts.secure,
-      sameSite: cookieOpts.sameSite,
-      path: cookieOpts.path,
-      domain: cookieOpts.domain,
-      maxAge: cookieOpts.maxAge,
-    });
-
-    console.log("✅ Login successful for:", email);
-    return res.json({
-      success: true,
-      user: {
-        id: user.id,
-        email: user.email,
-        username: user.username,
-        name: user.name,
-      },
-      sessionToken: sessionId,
-    });
-  } catch (error) {
-    console.error("❌ Error during login:", error);
-    return res.status(500).json({ error: "Failed to process login" });
-  }
-}
-
-// Login endpoints (support both standard and React Router .data path)
-app.post("/api/login", express.urlencoded({ extended: true }), handleLogin);
-app.post("/api/login.data", express.urlencoded({ extended: true }), handleLogin);
+// Login endpoints are handled by React Router actions (app/routes/api/login.jsx)
+// Do NOT define Express handlers for /api/login or /api/login.data here,
+// so createRequestHandler can process them and perform 303 redirects.
 
 // Simple current user endpoint (used by dashboard)
 app.get("/api/user", async (req, res) => {
