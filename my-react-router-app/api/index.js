@@ -93,8 +93,8 @@ function getCookieOptions(req) {
   };
 }
 
-// Login endpoint
-app.post("/api/login", async (req, res) => {
+// Shared login handler so we can bind multiple paths (including .data)
+async function handleLogin(req, res) {
   try {
     const { email, password } = req.body;
 
@@ -161,7 +161,11 @@ app.post("/api/login", async (req, res) => {
     console.error("❌ Error during login:", error);
     return res.status(500).json({ error: "Failed to process login" });
   }
-});
+}
+
+// Login endpoints (support both standard and React Router .data path)
+app.post("/api/login", express.urlencoded({ extended: true }), handleLogin);
+app.post("/api/login.data", express.urlencoded({ extended: true }), handleLogin);
 
 // Simple current user endpoint (used by dashboard)
 app.get("/api/user", async (req, res) => {
@@ -189,8 +193,8 @@ app.get("/api/user", async (req, res) => {
   }
 });
 
-// Logout endpoint
-app.post("/api/logout", async (req, res) => {
+// Logout endpoint (support .data too)
+async function handleLogout(req, res) {
   try {
     const token = getSessionToken(req);
     if (token) {
@@ -202,7 +206,9 @@ app.post("/api/logout", async (req, res) => {
     console.error("/api/logout error", err);
     return res.status(500).json({ error: "Failed to logout" });
   }
-});
+}
+app.post("/api/logout", handleLogout);
+app.post("/api/logout.data", handleLogout);
 
 // Password reset request endpoint
 app.post("/api/request-password-reset", async (req, res) => {
