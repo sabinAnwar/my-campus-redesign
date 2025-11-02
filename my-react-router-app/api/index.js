@@ -20,8 +20,9 @@ const app = express();
 app.set("trust proxy", 1);
 
 // Middleware
-app.use(express.json());
-app.use(express.urlencoded({ extended: true })); // Handle form data
+// IMPORTANT: Do NOT use global body parsers before React Router's handler.
+// They will consume the request stream and break RR actions/loaders (e.g., /api/*.data POST bodies).
+// Use cookie parser globally (safe), and attach body parsers only to specific Express endpoints below.
 app.use(cookieParser()); // Populate req.cookies for auth/session
 
 // Catch special browser/devtools requests BEFORE React Router
@@ -155,7 +156,12 @@ app.post("/api/logout", handleLogout);
 app.post("/api/logout.data", handleLogout);
 
 // Password reset request endpoint
-app.post("/api/request-password-reset", async (req, res) => {
+app.post(
+  "/api/request-password-reset",
+  // Accept either application/json or x-www-form-urlencoded
+  express.json(),
+  express.urlencoded({ extended: true }),
+  async (req, res) => {
   try {
     const { email } = req.body;
 
@@ -225,7 +231,8 @@ app.post("/api/request-password-reset", async (req, res) => {
       details: error.message,
     });
   }
-});
+  }
+);
 
 async function sendPasswordResetEmail(email, resetLink) {
   try {
@@ -336,7 +343,11 @@ async function sendPasswordResetEmail(email, resetLink) {
 }
 
 // Verify password reset token endpoint
-app.post("/api/verify-reset-token", async (req, res) => {
+app.post(
+  "/api/verify-reset-token",
+  express.json(),
+  express.urlencoded({ extended: true }),
+  async (req, res) => {
   try {
     const { token } = req.body;
 
@@ -363,10 +374,15 @@ app.post("/api/verify-reset-token", async (req, res) => {
     console.error("❌ Error verifying reset token:", error);
     return res.status(500).json({ error: "Failed to verify token" });
   }
-});
+  }
+);
 
 // Reset password endpoint
-app.post("/api/reset-password", async (req, res) => {
+app.post(
+  "/api/reset-password",
+  express.json(),
+  express.urlencoded({ extended: true }),
+  async (req, res) => {
   try {
     const { token, password } = req.body;
 
@@ -426,7 +442,8 @@ app.post("/api/reset-password", async (req, res) => {
     console.error("❌ Error resetting password:", error);
     return res.status(500).json({ error: "Failed to reset password" });
   }
-});
+  }
+);
 
 // Email reminder cron job - sends reminders to students who haven't submitted this week
 app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
@@ -615,7 +632,7 @@ app.get("/api/praxisberichte", async (req, res) => {
   }
 });
 
-app.put("/api/praxisberichte/:weekKey", async (req, res) => {
+app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
   try {
     const sessionToken = getSessionToken(req);
     if (!sessionToken) {
