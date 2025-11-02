@@ -9,7 +9,7 @@
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",
-      "schedule": "0 17 * * FRI"
+      "schedule": "0 17 * * 5"
     }
   ]
 }
