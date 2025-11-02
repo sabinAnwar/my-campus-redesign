@@ -25,7 +25,7 @@ model User {
   files           File[]
   studienplan     Studienplan?
   sessions        Session[]
-  studiengang     Studiengang? @relation(fields: [studiengangId], references: [id])
+  studiengang     Studiengang? @relation("UserStudiengang", fields: [studiengangId], references: [id])
   studiengangId   Int?
   praxisReports   PraxisReport[]
 }
@@ -55,7 +55,7 @@ model Studiengang {
   createdAt DateTime @default(now())
   courses   Course[]
   files     File[]
-  users     User[]
+  users     User[]   @relation("UserStudiengang")
 }
 
 model Course {
