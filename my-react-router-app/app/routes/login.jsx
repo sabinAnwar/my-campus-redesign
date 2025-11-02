@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { Link, useNavigate, useFetcher } from "react-router";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 
@@ -10,26 +10,62 @@ export default function Login() {
   const navigate = useNavigate();
   const fetcher = useFetcher();
   const [error, setError] = useState(null);
+  const [submitted, setSubmitted] = useState(false);
+  const handledRef = useRef(false);
   const isSubmitting = fetcher.state === "submitting";
+
+  // Debug: track fetcher lifecycle in production
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      console.log(
+        "🔎 fetcher.state=",
+        fetcher.state,
+        "fetcher.data=",
+        fetcher.data,
+        "fetcher.formData=",
+        fetcher.formData
+      );
+    }
+  }, [fetcher.state, fetcher.data]);
 
   // React to fetcher responses
   useEffect(() => {
-    if (!fetcher.data) return;
-
-    if (fetcher.data.success) {
-      showSuccessToast("Login successful! Redirecting...");
+    // Primary path: React Router action returns JSON
+    if (!handledRef.current && fetcher.data?.success) {
+      handledRef.current = true;
+      showSuccessToast("✅ Login successful! Redirecting...");
       if (fetcher.data.sessionToken) {
         localStorage.setItem("sessionToken", fetcher.data.sessionToken);
       }
-      const t = setTimeout(() => navigate("/dashboard"), 800);
-      return () => clearTimeout(t);
+      // Navigate immediately to avoid StrictMode double-effect clearing timeouts
+      navigate("/dashboard", { replace: true });
     }
 
-    if (fetcher.data.error) {
+    // Fallback path (production when Express handled the request):
+    // After submit completes and no data returned, probe /api/user.
+    if (
+      !handledRef.current &&
+      submitted &&
+      fetcher.state === "idle" &&
+      !fetcher.data
+    ) {
+      (async () => {
+        try {
+          const res = await fetch("/api/user", { credentials: "include" });
+          if (res.ok) {
+            handledRef.current = true;
+            showSuccessToast("Login successful! Redirecting...");
+            navigate("/dashboard", { replace: true });
+          }
+        } catch (_) {}
+      })();
+    }
+
+    if (fetcher.data?.error) {
       setError(fetcher.data.error);
       showErrorToast(fetcher.data.error);
     }
-  }, [fetcher.data, navigate]);
+  }, [fetcher.data, fetcher.state, submitted, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
@@ -206,6 +242,11 @@ export default function Login() {
             <fetcher.Form
               method="post"
               action="/api/login"
+              encType="application/x-www-form-urlencoded"
+              onSubmit={() => {
+                setSubmitted(true);
+                handledRef.current = false; // allow a new attempt
+              }}
               className="space-y-7"
             >
               {/* Email Input - Professional with icon box */}
