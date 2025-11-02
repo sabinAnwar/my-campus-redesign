@@ -730,10 +730,10 @@ app.use(
   })
 );
 
-// IMPORTANT: Return 404 for any unhandled API routes BEFORE React Router sees them
-app.all("/api/*", (req, res) => {
-  res.status(404).json({ error: "API endpoint not found" });
-});
+// Note: Do NOT add a catch-all 404 for /api/* here.
+// React Router's data API uses paths like /route.data and query params under /api/*,
+// which must be handled by createRequestHandler below. A catch-all here would
+// intercept those requests and cause 404s (e.g., /api/login.data).
 
 // React Router handler (catches everything else)
 app.use(createRequestHandler({
