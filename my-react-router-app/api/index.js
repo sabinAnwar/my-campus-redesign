@@ -16,6 +16,9 @@ const clientBuildPath = path.join(__dirname, '../build/client');
 const prisma = new PrismaClient();
 const app = express();
 
+// Ensure Express knows it's behind a proxy (Vercel) so secure cookies work correctly
+app.set("trust proxy", 1);
+
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true })); // Handle form data
@@ -59,6 +62,37 @@ app.get("/sitemap.xml", (req, res) => {
 // Health check endpoint
 app.get("/api/health", (req, res) => res.json({ ok: true }));
 
+// Small helper: get session token from cookie or header, accept both legacy and new names
+function getSessionToken(req) {
+  const cookieToken =
+    req.cookies?.session || req.cookies?.auth_session || null;
+  const headerToken = req.get("X-Session-Token") || req.get("x-session-token") || null;
+  return cookieToken || headerToken || null;
+}
+
+function getCookieOptions(req) {
+  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+  let domain;
+  try {
+    if (process.env.APP_URL) {
+      const u = new URL(process.env.APP_URL);
+      // Host-only cookies are fine, but when APP_URL is set, prefer a domain cookie
+      // Prefix with dot to cover subdomains as needed
+      domain = u.hostname === "localhost" ? undefined : `.${u.hostname}`;
+    }
+  } catch (_) {
+    domain = undefined;
+  }
+  return {
+    httpOnly: true,
+    secure: isProduction,
+    sameSite: "lax",
+    path: "/",
+    domain,
+    maxAge: 7 * 24 * 60 * 60 * 1000,
+  };
+}
+
 // Login endpoint
 app.post("/api/login", async (req, res) => {
   try {
@@ -99,8 +133,6 @@ app.post("/api/login", async (req, res) => {
 
     // Create session cookie
     const sessionId = crypto.randomUUID();
-    const isProduction =
-      process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
 
     // Store session in database
     await prisma.session.create({
@@ -111,12 +143,8 @@ app.post("/api/login", async (req, res) => {
       },
     });
 
-    res.cookie("auth_session", sessionId, {
-      httpOnly: true,
-      secure: isProduction, // Only HTTPS in production
-      sameSite: isProduction ? "strict" : "lax",
-      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
-    });
+    // Harmonize cookie name with Router API (session) and set robust options
+    res.cookie("session", sessionId, getCookieOptions(req));
 
     console.log("✅ Login successful for:", email);
     return res.json({
@@ -127,10 +155,52 @@ app.post("/api/login", async (req, res) => {
         username: user.username,
         name: user.name,
       },
+      sessionToken: sessionId,
     });
   } catch (error) {
     console.error("❌ Error during login:", error);
     return res.status(500).json({ error: "Failed to process login" });
+  }
+});
+
+// Simple current user endpoint (used by dashboard)
+app.get("/api/user", async (req, res) => {
+  try {
+    const token = getSessionToken(req);
+    if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+    const session = await prisma.session.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+    if (!session || !session.user) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+    return res.json({
+      user: {
+        id: session.user.id,
+        name: session.user.name || "Student",
+        email: session.user.email,
+      },
+    });
+  } catch (err) {
+    console.error("/api/user error", err);
+    return res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+// Logout endpoint
+app.post("/api/logout", async (req, res) => {
+  try {
+    const token = getSessionToken(req);
+    if (token) {
+      await prisma.session.deleteMany({ where: { token } });
+    }
+    res.cookie("session", "", { ...getCookieOptions(req), maxAge: 0 });
+    return res.json({ success: true });
+  } catch (err) {
+    console.error("/api/logout error", err);
+    return res.status(500).json({ error: "Failed to logout" });
   }
 });
 
@@ -568,7 +638,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
 // Praxisbericht endpoints
 app.get("/api/praxisberichte", async (req, res) => {
   try {
-    const sessionToken = req.cookies.auth_session;
+    const sessionToken = getSessionToken(req);
     if (!sessionToken) {
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -597,7 +667,7 @@ app.get("/api/praxisberichte", async (req, res) => {
 
 app.put("/api/praxisberichte/:weekKey", async (req, res) => {
   try {
-    const sessionToken = req.cookies.auth_session;
+    const sessionToken = getSessionToken(req);
     if (!sessionToken) {
       return res.status(401).json({ error: "Unauthorized" });
     }

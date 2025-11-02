@@ -105,7 +105,7 @@ export default function LoginPage() {
       setDebugInfo(JSON.stringify(data, null, 2));
 
       if (data.success) {
-        showSuccessToast("✅ Login successful! Redirecting...");
+        showSuccessToast("Login successful! Redirecting...");
         setTimeout(() => navigate("/dashboard"), 1500);
       } else {
         const errorMsg = data.error || t.invalidCredentials;

@@ -17,7 +17,7 @@ export default function Login() {
     if (!fetcher.data) return;
 
     if (fetcher.data.success) {
-      showSuccessToast("✅ Login successful! Redirecting...");
+      showSuccessToast("Login successful! Redirecting...");
       if (fetcher.data.sessionToken) {
         localStorage.setItem("sessionToken", fetcher.data.sessionToken);
       }

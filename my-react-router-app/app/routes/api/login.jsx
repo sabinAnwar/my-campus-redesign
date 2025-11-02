@@ -110,10 +110,26 @@ async function handleLoginRequest(request) {
     );
 
     // Set cookie with proper headers
-    response.headers.set(
-      "Set-Cookie",
-      `session=${sessionToken}; Path=/; Max-Age=${7 * 24 * 60 * 60}; SameSite=Lax; HttpOnly`
-    );
+    const isProduction =
+      process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+    let domain = null;
+    try {
+      if (process.env.APP_URL) {
+        const u = new URL(process.env.APP_URL);
+        domain = u.hostname === "localhost" ? null : `.${u.hostname}`;
+      }
+    } catch (_) {}
+
+    const parts = [
+      `session=${sessionToken}`,
+      "Path=/",
+      `Max-Age=${7 * 24 * 60 * 60}`,
+      "SameSite=Lax",
+      "HttpOnly",
+    ];
+    if (isProduction) parts.push("Secure");
+    if (domain) parts.push(`Domain=${domain}`);
+    response.headers.set("Set-Cookie", parts.join("; "));
 
     console.log("🍪 Set-Cookie header set successfully");
 
