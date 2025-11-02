@@ -19,37 +19,36 @@ async function handleLoginRequest(request) {
   try {
     let email, password;
 
-    // Get content type from headers
+    // Be permissive with content types in production
     const contentType = request.headers.get("content-type") || "";
+    console.log("📝 /api/login content-type:", contentType);
 
-    if (contentType.includes("application/json")) {
-      // Parse as JSON
-      try {
-        const json = await request.json();
-        email = json.email;
-        password = json.password;
-      } catch (jsonError) {
-        console.error("❌ JSON parse error:", jsonError);
-        return Response.json({ error: "Invalid JSON body" }, { status: 400 });
-      }
-    } else if (contentType.includes("application/x-www-form-urlencoded")) {
-      // Parse as form data
-      try {
+    // Try URL-encoded first (browser form default)
+    try {
+      if (
+        contentType.includes("application/x-www-form-urlencoded") ||
+        !contentType
+      ) {
         const formData = await request.formData();
         email = formData.get("email");
         password = formData.get("password");
-      } catch (formError) {
-        console.error("❌ Form parse error:", formError);
-        return Response.json({ error: "Invalid form data" }, { status: 400 });
       }
-    } else {
-      return Response.json(
-        {
-          error:
-            "Content-Type must be application/json or application/x-www-form-urlencoded",
-        },
-        { status: 400 }
+    } catch (formErr) {
+      console.warn(
+        "⚠️ formData parse failed, will try JSON:",
+        formErr?.message
       );
+    }
+
+    // If still missing, try JSON
+    if (!email || !password) {
+      try {
+        const json = await request.json();
+        email = email || json?.email;
+        password = password || json?.password;
+      } catch (jsonErr) {
+        // Ignore; will validate below
+      }
     }
 
     if (!email || !password) {
