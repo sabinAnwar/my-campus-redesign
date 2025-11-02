@@ -12,6 +12,7 @@ export default function Login() {
   const [error, setError] = useState(null);
   const [submitted, setSubmitted] = useState(false);
   const handledRef = useRef(false);
+  const fallbackTimerRef = useRef(null);
   const isSubmitting = fetcher.state === "submitting";
 
   // Debug: track fetcher lifecycle in production
@@ -33,6 +34,7 @@ export default function Login() {
     // Primary path: React Router action returns JSON
     if (!handledRef.current && fetcher.data?.success) {
       handledRef.current = true;
+      console.log("➡️ Navigating: action success received", fetcher.data);
       showSuccessToast("✅ Login successful! Redirecting...");
       if (fetcher.data.sessionToken) {
         localStorage.setItem("sessionToken", fetcher.data.sessionToken);
@@ -49,12 +51,27 @@ export default function Login() {
       fetcher.state === "idle" &&
       !fetcher.data
     ) {
+      console.log(
+        "🧪 Fallback: probing /api/user after submit (no fetcher.data)"
+      );
       (async () => {
         try {
           const res = await fetch("/api/user", { credentials: "include" });
+          let body = null;
+          try {
+            body = await res.clone().json();
+          } catch (_) {
+            try {
+              body = await res.text();
+            } catch (__) {
+              body = null;
+            }
+          }
+          console.log("🧪 /api/user probe status:", res.status, "body:", body);
           if (res.ok) {
             handledRef.current = true;
             showSuccessToast("Login successful! Redirecting...");
+            console.log("➡️ Navigating: fallback /api/user ok");
             navigate("/dashboard", { replace: true });
           }
         } catch (_) {}
@@ -62,10 +79,39 @@ export default function Login() {
     }
 
     if (fetcher.data?.error) {
+      console.error("❌ Action error:", fetcher.data.error);
       setError(fetcher.data.error);
       showErrorToast(fetcher.data.error);
     }
   }, [fetcher.data, fetcher.state, submitted, navigate]);
+
+  // Safety net: if the action response isn't wired through to fetcher.data,
+  // probe /api/user after a short delay and redirect if authenticated.
+  useEffect(() => {
+    if (submitted && !handledRef.current) {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current);
+      }
+      fallbackTimerRef.current = setTimeout(async () => {
+        if (!handledRef.current) {
+          try {
+            const res = await fetch("/api/user", { credentials: "include" });
+            if (res.ok) {
+              handledRef.current = true;
+              showSuccessToast("✅ Login successful! Redirecting...");
+              navigate("/dashboard", { replace: true });
+            }
+          } catch (_) {}
+        }
+      }, 1500);
+    }
+    return () => {
+      if (fallbackTimerRef.current) {
+        clearTimeout(fallbackTimerRef.current);
+        fallbackTimerRef.current = null;
+      }
+    };
+  }, [submitted, fetcher.state, navigate]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
@@ -241,7 +287,7 @@ export default function Login() {
             {/* Form */}
             <fetcher.Form
               method="post"
-              action="/api/login.data"
+              action="/api/login"
               encType="application/x-www-form-urlencoded"
               onSubmit={() => {
                 setSubmitted(true);

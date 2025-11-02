@@ -144,7 +144,15 @@ async function handleLogin(req, res) {
     });
 
     // Harmonize cookie name with Router API (session) and set robust options
-    res.cookie("session", sessionId, getCookieOptions(req));
+    const cookieOpts = getCookieOptions(req);
+    res.cookie("session", sessionId, cookieOpts);
+    console.log("🍪 Express set session cookie", {
+      secure: cookieOpts.secure,
+      sameSite: cookieOpts.sameSite,
+      path: cookieOpts.path,
+      domain: cookieOpts.domain,
+      maxAge: cookieOpts.maxAge,
+    });
 
     console.log("✅ Login successful for:", email);
     return res.json({
@@ -170,13 +178,19 @@ app.post("/api/login.data", express.urlencoded({ extended: true }), handleLogin)
 // Simple current user endpoint (used by dashboard)
 app.get("/api/user", async (req, res) => {
   try {
+    console.log("🔎 /api/user headers", {
+      cookie: req.headers?.cookie || null,
+      xSession: req.get("x-session-token") || req.get("X-Session-Token") || null,
+    });
     const token = getSessionToken(req);
+    console.log("🔑 /api/user resolved token", token);
     if (!token) return res.status(401).json({ error: "Not authenticated" });
 
     const session = await prisma.session.findUnique({
       where: { token },
       include: { user: true },
     });
+    console.log("🗄️ /api/user session lookup", !!session, session?.user ? "has-user" : "no-user");
     if (!session || !session.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
