@@ -241,7 +241,7 @@ export default function Login() {
             {/* Form */}
             <fetcher.Form
               method="post"
-              action="/api/login"
+              action="/api/login.data"
               encType="application/x-www-form-urlencoded"
               onSubmit={() => {
                 setSubmitted(true);
