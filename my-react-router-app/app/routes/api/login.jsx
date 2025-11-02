@@ -95,25 +95,21 @@ async function handleLoginRequest(request) {
 
     console.log("✅ Login successful for:", user.email);
 
-    // Return success with session token
-    const response = Response.json(
-      {
-        success: true,
-        message: "Login successful!",
-        user: { id: user.id, email: user.email, name: user.name },
-        sessionToken: sessionToken,
-      },
-      {
-        status: 200,
-      }
-    );
-
-    // Set cookie with proper headers
+    // Build cookie header
     const isProduction =
       process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
     let domain = null;
     try {
-      if (process.env.APP_URL) {
+      if (process.env.COOKIE_DOMAIN) {
+        const d = process.env.COOKIE_DOMAIN.trim();
+        if (d.toLowerCase() === "host-only") {
+          domain = null;
+        } else {
+          domain = d.startsWith(".") ? d : `.${d}`;
+        }
+      } else if (process.env.DISABLE_COOKIE_DOMAIN === "1") {
+        domain = null;
+      } else if (process.env.APP_URL) {
         const u = new URL(process.env.APP_URL);
         domain = u.hostname === "localhost" ? null : `.${u.hostname}`;
       }
@@ -128,11 +124,15 @@ async function handleLoginRequest(request) {
     ];
     if (isProduction) parts.push("Secure");
     if (domain) parts.push(`Domain=${domain}`);
-    response.headers.set("Set-Cookie", parts.join("; "));
+    const cookieHeader = parts.join("; ");
 
     console.log("🍪 Set-Cookie header set successfully");
 
-    return response;
+    // Redirect directly to dashboard so navigation is guaranteed
+    const headers = new Headers();
+    headers.set("Set-Cookie", cookieHeader);
+    headers.set("Location", "/dashboard?login=1");
+    return new Response(null, { status: 303, headers });
   } catch (error) {
     console.error("❌ Login error:", error);
     console.error("❌ Stack:", error.stack);

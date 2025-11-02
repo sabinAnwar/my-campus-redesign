@@ -74,10 +74,18 @@ function getCookieOptions(req) {
   const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   let domain;
   try {
-    if (process.env.APP_URL) {
+    // Priority 1: explicit override
+    if (process.env.COOKIE_DOMAIN) {
+      const d = process.env.COOKIE_DOMAIN.trim();
+      if (d.toLowerCase() === "host-only") {
+        domain = undefined; // force host-only cookie
+      } else {
+        domain = d.startsWith(".") ? d : `.${d}`;
+      }
+    } else if (process.env.DISABLE_COOKIE_DOMAIN === "1") {
+      domain = undefined;
+    } else if (process.env.APP_URL) {
       const u = new URL(process.env.APP_URL);
-      // Host-only cookies are fine, but when APP_URL is set, prefer a domain cookie
-      // Prefix with dot to cover subdomains as needed
       domain = u.hostname === "localhost" ? undefined : `.${u.hostname}`;
     }
   } catch (_) {
