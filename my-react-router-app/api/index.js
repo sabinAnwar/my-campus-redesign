@@ -71,6 +71,38 @@ function getSessionToken(req) {
   return cookieToken || headerToken || null;
 }
 
+// Get current hour in a specific IANA timezone (0-23)
+function getHourInTimezone(tz) {
+  try {
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      hour: "2-digit",
+      hour12: false,
+      timeZone: tz || "Europe/Berlin",
+    });
+    const parts = fmt.formatToParts(new Date());
+    const hourStr = parts.find((p) => p.type === "hour")?.value || "00";
+    return Number(hourStr);
+  } catch (_) {
+    return new Date().getUTCHours();
+  }
+}
+
+// Get current minute in a specific IANA timezone (0-59)
+function getMinuteInTimezone(tz) {
+  try {
+    const fmt = new Intl.DateTimeFormat("en-US", {
+      minute: "2-digit",
+      hour12: false,
+      timeZone: tz || "Europe/Berlin",
+    });
+    const parts = fmt.formatToParts(new Date());
+    const minStr = parts.find((p) => p.type === "minute")?.value || "00";
+    return Number(minStr);
+  } catch (_) {
+    return new Date().getUTCMinutes();
+  }
+}
+
 function getCookieOptions(req) {
   const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   let domain;
@@ -451,8 +483,9 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     // Verify cron secret
     const cronSecret = process.env.CRON_SECRET;
     const secret = req.query.secret;
+    const isVercelCron = req.get("x-vercel-cron") === "1";
 
-    if (!cronSecret || secret !== cronSecret) {
+    if (!isVercelCron && (!cronSecret || secret !== cronSecret)) {
       console.warn("⚠️  Unauthorized cron request");
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -689,6 +722,112 @@ app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
   }
 });
 
+// ---------------------------------
+// Reminder Preferences API (per user)
+// ---------------------------------
+app.get("/api/reminders/preferences", async (req, res) => {
+  try {
+    const token = getSessionToken(req);
+    if (!token) return res.status(401).json({ error: "Unauthorized" });
+    const session = await prisma.session.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+    if (!session?.user) return res.status(401).json({ error: "Unauthorized" });
+    const { reminderEnabled, reminderHour, reminderMinute, reminderTimezone } =
+      session.user;
+    return res.json({
+      reminderEnabled: !!reminderEnabled,
+      reminderHour: reminderHour ?? 18,
+      reminderMinute: reminderMinute ?? 0,
+      reminderTimezone: reminderTimezone || "Europe/Berlin",
+    });
+  } catch (err) {
+    console.error("/api/reminders/preferences GET error", err);
+    return res.status(500).json({ error: "Failed to load preferences" });
+  }
+});
+
+app.post(
+  "/api/reminders/preferences",
+  express.json(),
+  express.urlencoded({ extended: true }),
+  async (req, res) => {
+    try {
+      const token = getSessionToken(req);
+      if (!token) return res.status(401).json({ error: "Unauthorized" });
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+      if (!session?.user)
+        return res.status(401).json({ error: "Unauthorized" });
+
+      const enabledRaw = (
+        req.body.enabled ??
+        req.body.reminderEnabled ??
+        "false"
+      ).toString();
+      const hourRaw = (
+        req.body.hour ??
+        req.body.reminderHour ??
+        "18"
+      ).toString();
+      const minuteRaw = (
+        req.body.minute ??
+        req.body.reminderMinute ??
+        "0"
+      ).toString();
+      const tzCandidate =
+        req.body.timezone ??
+        req.body.reminderTimezone ??
+        session.user.reminderTimezone;
+      const tzRaw = (tzCandidate || "Europe/Berlin").toString();
+
+      const enabled =
+        enabledRaw === "true" || enabledRaw === "1" || enabledRaw === "on";
+      let hour = parseInt(hourRaw, 10);
+      if (hour === 24) hour = 0; // map 24:00 to 00:00
+      if (!Number.isFinite(hour) || hour < 0 || hour > 23) hour = 18;
+      let minute = parseInt(minuteRaw, 10);
+      if (!Number.isFinite(minute) || minute < 0 || minute > 59) minute = 0;
+
+      // Try save with minute; if unsupported (older client/DB), retry without it
+      const data = {
+        reminderEnabled: enabled,
+        reminderHour: hour,
+        reminderTimezone: tzRaw,
+      };
+      let savedMinute = minute;
+      try {
+        await prisma.user.update({
+          where: { id: session.user.id },
+          data: { ...data, reminderMinute: minute },
+        });
+      } catch (e) {
+        const msg = String(e?.message || "");
+        const minuteUnsupported =
+          msg.includes("Unknown arg `reminderMinute`") ||
+          msg.includes('column "reminderMinute"');
+        if (!minuteUnsupported) throw e;
+        await prisma.user.update({ where: { id: session.user.id }, data });
+        savedMinute = null;
+      }
+
+      return res.json({
+        success: true,
+        reminderEnabled: enabled,
+        reminderHour: hour,
+        reminderMinute: savedMinute,
+        reminderTimezone: tzRaw,
+      });
+    } catch (err) {
+      console.error("/api/reminders/preferences POST error", err);
+      return res.status(500).json({ error: "Failed to save preferences" });
+    }
+  }
+);
+
 // -----------------------------
 // News API (public)
 // -----------------------------
@@ -748,7 +887,10 @@ app.get("/api/news", async (req, res) => {
       ? items.filter((n) => {
           try {
             const arr = JSON.parse(n.tags || "[]");
-            return Array.isArray(arr) && arr.some((t) => String(t).toLowerCase() === tag.toLowerCase());
+            return (
+              Array.isArray(arr) &&
+              arr.some((t) => String(t).toLowerCase() === tag.toLowerCase())
+            );
           } catch (_) {
             return false;
           }
@@ -766,29 +908,124 @@ app.get("/api/news", async (req, res) => {
       return t.toISOString();
     };
     const all = [
-      { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", excerpt: "Meet employers, attend workshops, and grow your network.", content: "Career fair details", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", coverImageUrl: undefined, featured: true, publishedAt: daysAgo(0) },
-      { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", excerpt: "Enroll now for the upcoming semester to learn modern analytics.", content: "Module details", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", coverImageUrl: undefined, featured: true, publishedAt: daysAgo(2) },
-      { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", excerpt: "Everything you need in one place: marks, applications, modules, and more.", content: "Welcome content", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(3) },
-      { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", excerpt: "Check the dates and registration deadlines for the winter term.", content: "Exam schedule details", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(4) },
-      { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", excerpt: "Short downtimes may occur on selected services next weekend.", content: "Maintenance details", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(5) },
-      { id: 5, slug: "scholarship-opportunities-2025", title: "Scholarship Opportunities 2025", excerpt: "Multiple scholarships for outstanding students now available.", content: "Scholarship details", category: "Scholarships", tags: JSON.stringify(["scholarship","finance"]), author: "Student Office", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(7) },
-      { id: 6, slug: "library-extended-hours", title: "Library Extends Opening Hours", excerpt: "From next month, the library will be open until midnight.", content: "Library details", category: "Library", tags: JSON.stringify(["library","hours"]), author: "Library Team", coverImageUrl: undefined, featured: false, publishedAt: daysAgo(9) },
+      {
+        id: 7,
+        slug: "career-fair-2025",
+        title: "Join the 2025 Career Fair",
+        excerpt: "Meet employers, attend workshops, and grow your network.",
+        content: "Career fair details",
+        category: "Careers",
+        tags: JSON.stringify(["career", "fair", "jobs"]),
+        author: "Career Services",
+        coverImageUrl: undefined,
+        featured: true,
+        publishedAt: daysAgo(0),
+      },
+      {
+        id: 4,
+        slug: "new-module-data-analytics",
+        title: "New Module: Data Analytics with Python",
+        excerpt:
+          "Enroll now for the upcoming semester to learn modern analytics.",
+        content: "Module details",
+        category: "Academics",
+        tags: JSON.stringify(["module", "python", "analytics"]),
+        author: "Faculty of Computer Science",
+        coverImageUrl: undefined,
+        featured: true,
+        publishedAt: daysAgo(2),
+      },
+      {
+        id: 1,
+        slug: "welcome-to-the-portal",
+        title: "Welcome to the IU Student Portal",
+        excerpt:
+          "Everything you need in one place: marks, applications, modules, and more.",
+        content: "Welcome content",
+        category: "Announcements",
+        tags: JSON.stringify(["announcement", "portal"]),
+        author: "IU Team",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: daysAgo(3),
+      },
+      {
+        id: 2,
+        slug: "exam-schedule-winter",
+        title: "Winter Exam Schedule Published",
+        excerpt:
+          "Check the dates and registration deadlines for the winter term.",
+        content: "Exam schedule details",
+        category: "Exams",
+        tags: JSON.stringify(["exams", "schedule"]),
+        author: "Examination Office",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: daysAgo(4),
+      },
+      {
+        id: 3,
+        slug: "campus-maintenance-november",
+        title: "Scheduled Campus Maintenance in November",
+        excerpt: "Short downtimes may occur on selected services next weekend.",
+        content: "Maintenance details",
+        category: "IT",
+        tags: JSON.stringify(["maintenance", "it"]),
+        author: "IT Services",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: daysAgo(5),
+      },
+      {
+        id: 5,
+        slug: "scholarship-opportunities-2025",
+        title: "Scholarship Opportunities 2025",
+        excerpt:
+          "Multiple scholarships for outstanding students now available.",
+        content: "Scholarship details",
+        category: "Scholarships",
+        tags: JSON.stringify(["scholarship", "finance"]),
+        author: "Student Office",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: daysAgo(7),
+      },
+      {
+        id: 6,
+        slug: "library-extended-hours",
+        title: "Library Extends Opening Hours",
+        excerpt: "From next month, the library will be open until midnight.",
+        content: "Library details",
+        category: "Library",
+        tags: JSON.stringify(["library", "hours"]),
+        author: "Library Team",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: daysAgo(9),
+      },
     ];
     const q = (search || "").toLowerCase();
     let filtered = all;
     if (q) {
       filtered = filtered.filter((n) =>
-        [n.title, n.excerpt, n.content].some((t) => (t || "").toLowerCase().includes(q))
+        [n.title, n.excerpt, n.content].some((t) =>
+          (t || "").toLowerCase().includes(q)
+        )
       );
     }
     if (category) {
-      filtered = filtered.filter((n) => (n.category || "").toLowerCase() === category.toLowerCase());
+      filtered = filtered.filter(
+        (n) => (n.category || "").toLowerCase() === category.toLowerCase()
+      );
     }
     if (tag) {
       filtered = filtered.filter((n) => {
         try {
           const arr = JSON.parse(n.tags || "[]");
-          return Array.isArray(arr) && arr.some((t) => String(t).toLowerCase() === tag.toLowerCase());
+          return (
+            Array.isArray(arr) &&
+            arr.some((t) => String(t).toLowerCase() === tag.toLowerCase())
+          );
         } catch {
           return false;
         }
@@ -802,8 +1039,151 @@ app.get("/api/news", async (req, res) => {
       return a.featured ? -1 : 1;
     });
     const total = filtered.length;
-    const items = filtered.slice(skip, skip + pageSize).map(({ content, ...rest }) => rest);
+    const items = filtered
+      .slice(skip, skip + pageSize)
+      .map(({ content, ...rest }) => rest);
     return res.json({ items, total, page, pageSize });
+  }
+});
+
+// ---------------------------------
+// Daily Praxisbericht Reminder Cron
+// ---------------------------------
+app.get("/api/cron/daily-reminders", async (req, res) => {
+  try {
+    const cronSecret = process.env.CRON_SECRET;
+    const secret = req.query.secret;
+    const isVercelCron = req.get("x-vercel-cron") === "1";
+    if (!isVercelCron && (!cronSecret || secret !== cronSecret)) {
+      return res.status(401).json({ error: "Unauthorized" });
+    }
+
+    // Determine target hour (0-23). If provided via query, use it; otherwise compute per user timezone.
+    const overrideHour =
+      req.query.hour !== undefined
+        ? parseInt(String(req.query.hour), 10)
+        : null;
+    const overrideMinute =
+      req.query.minute !== undefined
+        ? parseInt(String(req.query.minute), 10)
+        : null;
+    const nowUtc = new Date();
+
+    // Fetch all users who enabled reminders. We'll filter per-hour below if not overriding.
+    const users = await prisma.user.findMany({
+      where: { reminderEnabled: true },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        reminderHour: true,
+        reminderMinute: true,
+        reminderTimezone: true,
+        role: true,
+      },
+    });
+
+    // Get current ISO week key util (same as used elsewhere)
+    const now = new Date();
+    const d = new Date(now.getTime());
+    d.setHours(0, 0, 0, 0);
+    const day = d.getDay() || 7;
+    d.setDate(d.getDate() + 4 - day);
+    const isoYear = d.getFullYear();
+    const yearStart = new Date(isoYear, 0, 1);
+    const week = Math.ceil(
+      ((d - yearStart) / 86400000 + (yearStart.getDay() || 7)) / 7
+    );
+    const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
+
+    let sent = 0;
+    const emailService = process.env.EMAIL_SERVICE || "test";
+    let transporter;
+    if (emailService === "gmail") {
+      // Use Gmail SMTP with App Password (recommended). Requires 2FA + App Password on the account.
+      transporter = nodemailer.createTransport({
+        host: "smtp.gmail.com",
+        port: 465,
+        secure: true,
+        auth: {
+          user: process.env.EMAIL_USER,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      });
+    } else if (emailService === "sendgrid") {
+      transporter = nodemailer.createTransport({
+        host: "smtp.sendgrid.net",
+        port: 587,
+        auth: { user: "apikey", pass: process.env.SENDGRID_API_KEY },
+      });
+    } else {
+      const testAccount = await nodemailer.createTestAccount();
+      transporter = nodemailer.createTransport({
+        host: "smtp.ethereal.email",
+        port: 587,
+        secure: false,
+        auth: { user: testAccount.user, pass: testAccount.pass },
+      });
+    }
+
+    // Check which users are due and haven't submitted this week
+    for (const u of users) {
+      const tz = u.reminderTimezone || "Europe/Berlin";
+      const currentHour = getHourInTimezone(tz);
+      const currentMinute = getMinuteInTimezone(tz);
+      const targetHour = overrideHour ?? u.reminderHour ?? 18;
+      const targetMinute = overrideMinute ?? u.reminderMinute ?? 0;
+      if (currentHour !== targetHour || currentMinute !== targetMinute)
+        continue;
+
+      // Has user submitted this week?
+      const submitted = await prisma.praxisReport.findFirst({
+        where: {
+          userId: u.id,
+          isoWeekKey: currentWeekKey,
+          status: { in: ["SUBMITTED", "APPROVED"] },
+        },
+      });
+      if (submitted) continue;
+
+      // Send reminder email
+      const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
+      const portalLink = `${appUrl}/praxisbericht`;
+      const mailOptions = {
+        from:
+          process.env.EMAIL_FROM ||
+          process.env.EMAIL_USER ||
+          "noreply@iu-portal.com",
+        to: u.email,
+        subject: "🔔 Erinnerung: Praxisbericht heute noch ausfüllen",
+        html: `
+          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+            <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
+            <p>kurze Erinnerung für heute: Bitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.</p>
+            <p>
+              <a href="${portalLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
+            </p>
+            <p style="color:#999;font-size:12px;">Diese Erinnerung wurde um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}) gesendet.</p>
+          </div>
+        `,
+        text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${portalLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
+      };
+
+      try {
+        const info = await transporter.sendMail(mailOptions);
+        sent++;
+        if (emailService === "test") {
+          console.log("Preview:", nodemailer.getTestMessageUrl(info));
+        }
+      } catch (err) {
+        console.error(`Failed to send reminder to ${u.email}:`, err.message);
+      }
+    }
+
+    return res.json({ success: true, sent, usersChecked: users.length });
+  } catch (error) {
+    console.error("/api/cron/daily-reminders error", error);
+    return res.status(500).json({ error: "Failed to run daily reminders" });
   }
 });
 

@@ -28,6 +28,12 @@ model User {
   studiengang     Studiengang? @relation("UserStudiengang", fields: [studiengangId], references: [id])
   studiengangId   Int?
   praxisReports   PraxisReport[]
+
+  // Daily email reminder preferences for Praxisbericht
+  reminderEnabled  Boolean  @default(false)
+  reminderHour     Int?
+  reminderMinute   Int?     @default(0)
+  reminderTimezone String   @default("Europe/Berlin")
 }
 
 model Teacher {

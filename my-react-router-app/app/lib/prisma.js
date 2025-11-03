@@ -29,6 +29,7 @@ try {
     },
     praxisReport: {
       findMany: async () => [],
+      findFirst: async () => null,
       upsert: async (_data) => _data,
     },
   };
