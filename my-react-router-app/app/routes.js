@@ -65,6 +65,26 @@ export default [
     file: "routes/settings.jsx",
   },
   {
+    path: "curriculum",
+    file: "routes/curriculum.jsx",
+  },
+  {
+    path: "module-handbook",
+    file: "routes/module-handbook.jsx",
+  },
+  {
+    path: "student-id",
+    file: "routes/student-id.jsx",
+  },
+  {
+    path: "certificates/transcript",
+    file: "routes/certificates.transcript.jsx",
+  },
+  {
+    path: "certificates/immatriculation",
+    file: "routes/certificates.immatriculation.jsx",
+  },
+  {
     path: "courses",
     file: "routes/courses.jsx",
   },
@@ -138,5 +158,13 @@ export default [
   {
     path: "api/reset-password",
     file: "routes/api/reset-password.jsx",
+  },
+  {
+    path: "api/reminders/preferences",
+    file: "routes/api/reminders/preferences.jsx",
+  },
+  {
+    path: "api/cron/daily-reminders",
+    file: "routes/api/cron/daily-reminders.jsx",
   },
 ];

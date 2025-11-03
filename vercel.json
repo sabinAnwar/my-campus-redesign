@@ -10,6 +10,10 @@
     {
       "path": "/api/cron/praxisbericht-reminder",
       "schedule": "0 17 * * FRI"
+    },
+    {
+      "path": "/api/cron/daily-reminders",
+      "schedule": "* * * * *"
     }
   ]
 }

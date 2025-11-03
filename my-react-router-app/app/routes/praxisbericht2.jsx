@@ -83,13 +83,19 @@ export default function Praxisbericht2() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | DUE | DRAFT | SUBMITTED | APPROVED | KLAUSURPHASE
   const navigate = useNavigate();
+  // Reminder preferences display
+  const [reminderEnabled, setReminderEnabled] = useState(false);
+  const [reminderHour, setReminderHour] = useState(18);
   // calendar period control
   const [mode, setMode] = useState("month"); // 'month' | 'semester'
   const today = new Date();
   const [year, setYear] = useState(today.getFullYear());
   const [month, setMonth] = useState(today.getMonth()); // 0-11
   // semester starts: Summer = Apr(3), Winter = Oct(9)
-  const defaultSemStart = today.getMonth() >= 3 && today.getMonth() <= 8 ? { y: today.getFullYear(), m: 3 } : { y: today.getFullYear(), m: 9 };
+  const defaultSemStart =
+    today.getMonth() >= 3 && today.getMonth() <= 8
+      ? { y: today.getFullYear(), m: 3 }
+      : { y: today.getFullYear(), m: 9 };
   const [semStartYear, setSemStartYear] = useState(defaultSemStart.y);
   const [semStartMonth, setSemStartMonth] = useState(defaultSemStart.m);
 
@@ -111,6 +117,22 @@ export default function Praxisbericht2() {
     })();
   }, [navigate]);
 
+  // Load reminder preferences for banner
+  useEffect(() => {
+    (async () => {
+      try {
+        const res = await fetch("/api/reminders/preferences", {
+          credentials: "include",
+        });
+        if (res.ok) {
+          const p = await res.json();
+          setReminderEnabled(!!p.reminderEnabled);
+          setReminderHour(Number(p.reminderHour ?? 18));
+        }
+      } catch (_) {}
+    })();
+  }, []);
+
   // Derive period-aware metrics (submitted/due/klausur/completion + drafts/approved/satisfied) for visible period
   const stats = useMemo(() => {
     const statusMap = new Map();
@@ -118,15 +140,18 @@ export default function Praxisbericht2() {
       const s = r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status;
       statusMap.set(r.isoWeekKey, s);
     }
-    const visibleKeys = mode === "month" ? getMonthWeekKeys(year, month) : getSemesterWeekKeys(semStartYear, semStartMonth);
+    const visibleKeys =
+      mode === "month"
+        ? getMonthWeekKeys(year, month)
+        : getSemesterWeekKeys(semStartYear, semStartMonth);
 
     let total = 0;
     let submitted = 0;
     let due = 0;
-  let klausur = 0;
-  let drafts = 0;
-  let approved = 0;
-  let satisfied = 0;
+    let klausur = 0;
+    let drafts = 0;
+    let approved = 0;
+    let satisfied = 0;
 
     for (const wk of visibleKeys) {
       const s = statusMap.get(wk);
@@ -143,8 +168,9 @@ export default function Praxisbericht2() {
       // satisfied: majority of mooded days are happy/satisfied
       const rep = reports.find((r) => r.isoWeekKey === wk);
       if (rep && rep.days) {
-        const dayKeys = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
-        let pos = 0, denom = 0;
+        const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
+        let pos = 0,
+          denom = 0;
         for (const k of dayKeys) {
           const d = rep.days[k];
           if (!d || d.holiday) continue;
@@ -166,61 +192,120 @@ export default function Praxisbericht2() {
       <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
         <div className="bg-white border-b border-slate-200 shadow-sm">
           <div className="max-w-7xl mx-auto px-6 py-10">
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">Praxisberichte</h1>
-            <p className="text-slate-600">Document and submit your weekly practical work reports.</p>
+            <h1 className="text-4xl font-bold text-slate-900 mb-2">
+              Praxisberichte
+            </h1>
+            <p className="text-slate-600">
+              Document and submit your weekly practical work reports.
+            </p>
           </div>
         </div>
 
         <div className="max-w-7xl mx-auto px-6 py-8">
+          {/* Daily reminder banner */}
+          <div className="mb-6 bg-white border border-slate-200 rounded-lg p-4 flex items-center justify-between">
+            <div>
+              <div className="font-semibold text-slate-900">
+                Praxisbericht Erinnerung
+              </div>
+              <div className="text-sm text-slate-600">
+                {reminderEnabled ? (
+                  <>
+                    Aktiv: tägliche E-Mail um{" "}
+                    {String(reminderHour).padStart(2, "0")}:00
+                  </>
+                ) : (
+                  <>
+                    Deaktiviert: aktiviere tägliche Erinnerung in den
+                    Einstellungen
+                  </>
+                )}
+              </div>
+            </div>
+            <button
+              onClick={() => navigate("/settings")}
+              className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90"
+            >
+              Einstellungen öffnen
+            </button>
+          </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
                 <CheckCircle size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Submitted</div>
-              <div className="text-3xl font-bold text-emerald-700">{stats.submitted}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Submitted
+              </div>
+              <div className="text-3xl font-bold text-emerald-700">
+                {stats.submitted}
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-amber-200 text-amber-950 flex items-center justify-center border border-amber-500">
                 <AlertCircle size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Must be submitted</div>
-              <div className="text-3xl font-bold text-amber-700">{stats.due}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Must be submitted
+              </div>
+              <div className="text-3xl font-bold text-amber-700">
+                {stats.due}
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-blue-200 text-blue-950 flex items-center justify-center border border-blue-500">
                 <FileEdit size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Drafts</div>
-              <div className="text-3xl font-bold text-blue-700">{stats.drafts}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Drafts
+              </div>
+              <div className="text-3xl font-bold text-blue-700">
+                {stats.drafts}
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-teal-200 text-teal-950 flex items-center justify-center border border-teal-500">
                 <BadgeCheck size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Reviewed</div>
-              <div className="text-3xl font-bold text-teal-700">{stats.approved}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Reviewed
+              </div>
+              <div className="text-3xl font-bold text-teal-700">
+                {stats.approved}
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-zinc-200 text-zinc-800 flex items-center justify-center border border-zinc-500">
                 <CalendarClock size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Klausur Weeks</div>
-              <div className="text-3xl font-bold text-zinc-700">{stats.klausur}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Klausur Weeks
+              </div>
+              <div className="text-3xl font-bold text-zinc-700">
+                {stats.klausur}
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center">
                 <GraduationCap size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Completion</div>
-              <div className="text-3xl font-bold text-emerald-600">{stats.completion}%</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Completion
+              </div>
+              <div className="text-3xl font-bold text-emerald-600">
+                {stats.completion}%
+              </div>
             </div>
             <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
                 <Smile size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">Satisfied</div>
-              <div className="text-3xl font-bold text-emerald-700">{stats.satisfied}</div>
+              <div className="text-slate-600 text-sm font-medium mb-1">
+                Satisfied
+              </div>
+              <div className="text-3xl font-bold text-emerald-700">
+                {stats.satisfied}
+              </div>
             </div>
           </div>
 
@@ -251,7 +336,9 @@ export default function Praxisbericht2() {
                   setActiveReport(r);
                   setActiveWeekKey(wk);
                 }}
-              >Go to current week</button>
+              >
+                Go to current week
+              </button>
               <button
                 className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90"
                 onClick={() => {
@@ -260,30 +347,38 @@ export default function Praxisbericht2() {
                   setActiveReport(null);
                   setActiveWeekKey(wk);
                 }}
-              >New draft</button>
+              >
+                New draft
+              </button>
             </div>
           </div>
 
-                  {/* Status filter chips */}
-                  <div className="flex items-center gap-2 mb-2">
-                    {[
-                      { k: "ALL", label: "All" },
-                      { k: "DUE", label: "Due" },
-                      { k: "DRAFT", label: "Draft" },
-                      { k: "SUBMITTED", label: "Submitted" },
-                      { k: "APPROVED", label: "Reviewed" },
-                      { k: "KLAUSURPHASE", label: "Klausurphase" },
-                    ].map((f) => (
-                      <button key={f.k} onClick={() => setStatusFilter(f.k)} className={`text-xs px-2.5 py-1.5 rounded-full border ${statusFilter === f.k ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}>{f.label}</button>
-                    ))}
-                  </div>
+          {/* Status filter chips */}
+          <div className="flex items-center gap-2 mb-2">
+            {[
+              { k: "ALL", label: "All" },
+              { k: "DUE", label: "Due" },
+              { k: "DRAFT", label: "Draft" },
+              { k: "SUBMITTED", label: "Submitted" },
+              { k: "APPROVED", label: "Reviewed" },
+              { k: "KLAUSURPHASE", label: "Klausurphase" },
+            ].map((f) => (
+              <button
+                key={f.k}
+                onClick={() => setStatusFilter(f.k)}
+                className={`text-xs px-2.5 py-1.5 rounded-full border ${statusFilter === f.k ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
 
-                  {loading ? (
-                    <div className="grid grid-cols-1 gap-3">
-                      <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
-                      <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
-                    </div>
-                  ) : view === "calendar" ? (
+          {loading ? (
+            <div className="grid grid-cols-1 gap-3">
+              <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
+              <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
+            </div>
+          ) : view === "calendar" ? (
             <>
               <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
                 <div className="lg:col-span-2">
@@ -292,44 +387,95 @@ export default function Praxisbericht2() {
                       <button
                         className={`px-2.5 py-1.5 text-xs rounded-md border ${mode === "month" ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
                         onClick={() => setMode("month")}
-                      >Month</button>
+                      >
+                        Month
+                      </button>
                       <button
                         className={`px-2.5 py-1.5 text-xs rounded-md border ${mode === "semester" ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
                         onClick={() => setMode("semester")}
-                      >Semester</button>
+                      >
+                        Semester
+                      </button>
                     </div>
                     {mode === "month" ? (
                       <div className="flex items-center gap-2">
-                        <button className="px-2 py-1 text-xs rounded border flex items-center gap-1" onClick={() => {
-                          const d = new Date(year, month - 1, 1);
-                          setYear(d.getFullYear());
-                          setMonth(d.getMonth());
-                        }}><ChevronLeft size={14} /></button>
-                        <div className="text-sm font-semibold text-slate-900">{new Date(year, month, 1).toLocaleString(undefined, { month: "long", year: "numeric" })}</div>
-                        <button className="px-2 py-1 text-xs rounded border flex items-center gap-1" onClick={() => {
-                          const d = new Date(year, month + 1, 1);
-                          setYear(d.getFullYear());
-                          setMonth(d.getMonth());
-                        }}><ChevronRight size={14} /></button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          onClick={() => {
+                            const d = new Date(year, month - 1, 1);
+                            setYear(d.getFullYear());
+                            setMonth(d.getMonth());
+                          }}
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
+                        <div className="text-sm font-semibold text-slate-900">
+                          {new Date(year, month, 1).toLocaleString(undefined, {
+                            month: "long",
+                            year: "numeric",
+                          })}
+                        </div>
+                        <button
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          onClick={() => {
+                            const d = new Date(year, month + 1, 1);
+                            setYear(d.getFullYear());
+                            setMonth(d.getMonth());
+                          }}
+                        >
+                          <ChevronRight size={14} />
+                        </button>
                       </div>
                     ) : (
                       <div className="flex items-center gap-2">
-                        <button className="px-2 py-1 text-xs rounded border flex items-center gap-1" onClick={() => {
-                          // move semester 6 months back
-                          const d = new Date(semStartYear, semStartMonth - 6, 1);
-                          setSemStartYear(d.getFullYear());
-                          setSemStartMonth(d.getMonth());
-                        }}><ChevronLeft size={14} /></button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          onClick={() => {
+                            // move semester 6 months back
+                            const d = new Date(
+                              semStartYear,
+                              semStartMonth - 6,
+                              1
+                            );
+                            setSemStartYear(d.getFullYear());
+                            setSemStartMonth(d.getMonth());
+                          }}
+                        >
+                          <ChevronLeft size={14} />
+                        </button>
                         <div className="text-sm font-semibold text-slate-900">
-                          {new Date(semStartYear, semStartMonth, 1).toLocaleString(undefined, { month: "long", year: "numeric" })}
+                          {new Date(
+                            semStartYear,
+                            semStartMonth,
+                            1
+                          ).toLocaleString(undefined, {
+                            month: "long",
+                            year: "numeric",
+                          })}
                           {" – "}
-                          {new Date(semStartYear, semStartMonth + 5, 1).toLocaleString(undefined, { month: "long", year: "numeric" })}
+                          {new Date(
+                            semStartYear,
+                            semStartMonth + 5,
+                            1
+                          ).toLocaleString(undefined, {
+                            month: "long",
+                            year: "numeric",
+                          })}
                         </div>
-                        <button className="px-2 py-1 text-xs rounded border flex items-center gap-1" onClick={() => {
-                          const d = new Date(semStartYear, semStartMonth + 6, 1);
-                          setSemStartYear(d.getFullYear());
-                          setSemStartMonth(d.getMonth());
-                        }}><ChevronRight size={14} /></button>
+                        <button
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          onClick={() => {
+                            const d = new Date(
+                              semStartYear,
+                              semStartMonth + 6,
+                              1
+                            );
+                            setSemStartYear(d.getFullYear());
+                            setSemStartMonth(d.getMonth());
+                          }}
+                        >
+                          <ChevronRight size={14} />
+                        </button>
                       </div>
                     )}
                   </div>
@@ -341,7 +487,8 @@ export default function Praxisbericht2() {
                       month={month}
                       filter={statusFilter}
                       onDayClick={(weekKey) => {
-                        const r = reports.find((x) => x.isoWeekKey === weekKey) || null;
+                        const r =
+                          reports.find((x) => x.isoWeekKey === weekKey) || null;
                         setActiveReport(r);
                         setActiveWeekKey(weekKey);
                       }}
@@ -360,7 +507,9 @@ export default function Praxisbericht2() {
                             month={m}
                             filter={statusFilter}
                             onDayClick={(weekKey) => {
-                              const r = reports.find((x) => x.isoWeekKey === weekKey) || null;
+                              const r =
+                                reports.find((x) => x.isoWeekKey === weekKey) ||
+                                null;
                               setActiveReport(r);
                               setActiveWeekKey(weekKey);
                             }}
@@ -401,7 +550,9 @@ export default function Praxisbericht2() {
             }}
             onSaved={(saved) => {
               setReports((prev) => {
-                const idx = prev.findIndex((p) => p.isoWeekKey === saved.isoWeekKey);
+                const idx = prev.findIndex(
+                  (p) => p.isoWeekKey === saved.isoWeekKey
+                );
                 if (idx === -1) return [...prev, saved];
                 const next = prev.slice();
                 next[idx] = saved;
