@@ -128,11 +128,14 @@ async function handleLoginRequest(request) {
 
     console.log("🍪 Set-Cookie header set successfully");
 
-    // Redirect directly to dashboard so navigation is guaranteed
-    const headers = new Headers();
-    headers.set("Set-Cookie", cookieHeader);
-    headers.set("Location", "/dashboard?login=1");
-    return new Response(null, { status: 303, headers });
+    // Return success response with Set-Cookie header
+    // Client will handle navigation
+    const response = Response.json(
+      { success: true, message: "Login successful" },
+      { status: 200 }
+    );
+    response.headers.set("Set-Cookie", cookieHeader);
+    return response;
   } catch (error) {
     console.error("❌ Login error:", error);
     console.error("❌ Stack:", error.stack);

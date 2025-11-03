@@ -14,27 +14,33 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const sessionToken = localStorage.getItem("sessionToken");
-        const headers = {};
-        if (sessionToken) headers["X-Session-Token"] = sessionToken;
         const response = await fetch("/api/user", {
+          method: "GET",
           credentials: "include",
-          headers,
+          headers: {
+            "Accept": "application/json",
+          },
         });
+
         if (response.ok) {
           const data = await response.json();
           setUser(data.user || { name: "Student" });
+          setLoading(false);
         } else if (response.status === 401) {
-          navigate("/login");
+          console.log("User not authenticated, redirecting to login");
+          navigate("/login", { replace: true });
         } else {
+          console.log("Could not fetch user, using default");
           setUser({ name: "Student" });
+          setLoading(false);
         }
       } catch (err) {
+        console.error("Error fetching user:", err);
         setUser({ name: "Student" });
-      } finally {
         setLoading(false);
       }
     };
+    
     fetchUser();
   }, [navigate]);
 
