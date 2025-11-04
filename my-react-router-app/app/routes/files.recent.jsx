@@ -1,7 +1,7 @@
 import React, { useEffect, useMemo, useState } from "react";
 import AppShell from "../components/AppShell";
 import { Search, Clock, File as FileIcon, Trash2, ExternalLink, FolderOpen } from "lucide-react";
-import { getRecentFiles, clearRecentFiles } from "../lib/recentFiles";
+import { getRecentFiles, clearRecentFiles, saveRecentFile as saveRecentFileLib } from "../lib/recentFiles";
 
 export const loader = async () => null;
 
@@ -49,15 +49,29 @@ export default function RecentFiles() {
 
   // Load from localStorage
   useEffect(() => {
-    try {
-      const t = JSON.parse(localStorage.getItem(LS_KEYS.recentTerms) || "[]");
-      setRecentTerms(Array.isArray(t) ? t : []);
-      // Use utility function to get recent files
-      const files = getRecentFiles();
-      setRecentFiles(files);
-    } catch {
-      // ignore
-    }
+    const loadData = () => {
+      try {
+        const t = JSON.parse(localStorage.getItem(LS_KEYS.recentTerms) || "[]");
+        setRecentTerms(Array.isArray(t) ? t : []);
+        // Use utility function to get recent files
+        const files = getRecentFiles();
+        setRecentFiles(files);
+      } catch {
+        // ignore
+      }
+    };
+    
+    loadData();
+    
+    // Refresh data when storage changes (e.g., from another tab)
+    const handleStorageChange = (e) => {
+      if (e.key === LS_KEYS.recentFiles || e.key === LS_KEYS.recentTerms) {
+        loadData();
+      }
+    };
+    
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const saveTerm = (term) => {
@@ -68,11 +82,19 @@ export default function RecentFiles() {
   };
 
   const saveRecentFile = (file) => {
-    const entry = { id: file.id, name: file.name, moduleName: file.moduleName, at: Date.now() };
-    const dedup = recentFiles.filter((f) => f.id !== file.id);
-    const next = [entry, ...dedup].slice(0, 15);
-    setRecentFiles(next);
-    try { localStorage.setItem(LS_KEYS.recentFiles, JSON.stringify(next)); } catch {}
+    // Use the library function to save properly
+    const saved = saveRecentFileLib(
+      {
+        id: file.id,
+        name: file.name,
+        type: file.fileType || file.type,
+        url: file.url || null,
+      },
+      file.moduleName || file.moduleName,
+      file.studiengang || null
+    );
+    // Update local state
+    setRecentFiles(saved);
   };
 
   const onSearch = (term) => {
@@ -170,7 +192,27 @@ export default function RecentFiles() {
                           </div>
                         </div>
                       </div>
-                      <a href={`/courses`} className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 ml-2 flex-shrink-0"><ExternalLink className="h-3.5 w-3.5"/>Öffnen</a>
+                      <button
+                        onClick={() => {
+                          if (f.url) {
+                            window.open(f.url, "_blank", "noopener,noreferrer");
+                            // Update the file's timestamp when reopened
+                            const updatedFiles = recentFiles.map(file =>
+                              file.id === f.id ? { ...file, at: Date.now() } : file
+                            );
+                            setRecentFiles(updatedFiles);
+                            try {
+                              localStorage.setItem(LS_KEYS.recentFiles, JSON.stringify(updatedFiles));
+                            } catch {}
+                          } else {
+                            // Navigate to courses page if no URL
+                            window.location.href = "/courses";
+                          }
+                        }}
+                        className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:text-indigo-800 ml-2 flex-shrink-0"
+                      >
+                        <ExternalLink className="h-3.5 w-3.5"/>Öffnen
+                      </button>
                     </li>
                   );
                 })}
@@ -197,7 +239,14 @@ export default function RecentFiles() {
                         <div className="text-xs text-slate-500">{f.moduleName} • {f.size}</div>
                       </div>
                     </div>
-                    <button onClick={() => saveRecentFile(f)} className="text-xs inline-flex items-center gap-1 text-slate-600 hover:text-slate-800">Merken</button>
+                    <button 
+                      onClick={() => {
+                        saveRecentFile(f);
+                      }} 
+                      className="text-xs inline-flex items-center gap-1 text-slate-600 hover:text-slate-800 px-2 py-1 rounded hover:bg-slate-100 transition-colors"
+                    >
+                      Merken
+                    </button>
                   </li>
                 ))}
               </ul>
