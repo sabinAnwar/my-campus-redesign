@@ -95,12 +95,12 @@ export default function AppShell({ children }) {
 
   return (
     <div
-      className={`min-h-screen ${darkMode ? "dark bg-slate-950" : "bg-gradient-to-br from-slate-50 via-white to-blue-50/30"} flex`}
+      className={`min-h-screen ${darkMode ? "dark bg-slate-950" : "bg-gradient-to-br from-gray-50 via-white to-blue-50/30"} flex`}
     >
       {/* Mobile Sidebar Overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black/50 z-40 md:hidden"
+          className="fixed inset-0 bg-black/50 z-40 md:hidden backdrop-blur-sm"
           onClick={() => setSidebarOpen(false)}
         />
       )}
@@ -110,36 +110,39 @@ export default function AppShell({ children }) {
         className={`${
           darkMode
             ? "bg-slate-900 text-slate-100 border-slate-800"
-            : "bg-white text-slate-800 border-slate-200 shadow-xl"
+            : "bg-gradient-to-b from-white via-slate-50/50 to-white text-slate-800 border-slate-200 shadow-2xl"
         } ${
           sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"
-        } fixed md:static inset-y-0 left-0 w-72 z-50 flex flex-col border-r transition-transform duration-300 ease-in-out`}
+        } fixed md:static inset-y-0 left-0 w-72 z-50 flex flex-col border-r transition-transform duration-300 ease-in-out backdrop-blur-sm`}
       >
         {/* Logo Section */}
-        <div className="h-20 flex items-center justify-between px-6 border-b border-slate-200 dark:border-slate-800">
-          <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-80 transition-opacity">
-            <div className="h-10 w-10 rounded-lg bg-white border-2 border-slate-300 dark:border-slate-600 flex items-center justify-center shadow-sm">
-              <span className="text-black dark:text-white font-black text-lg font-extrabold select-none">IU</span>
+        <div className="h-24 flex items-center justify-between px-6 border-b-2 border-slate-200 dark:border-slate-800 bg-gradient-to-r from-blue-50/60 via-indigo-50/60 to-blue-50/60 dark:from-slate-800/50 dark:via-slate-800/50 dark:to-slate-800/50 backdrop-blur-sm">
+          <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-90 transition-all duration-200 group">
+            <div className="relative">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 border-2 border-blue-300 dark:border-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200">
+                <span className="text-white font-black text-xl font-extrabold select-none">IU</span>
+              </div>
+              <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse shadow-sm"></div>
             </div>
             <div className="text-xs leading-tight">
-              <div className="font-extrabold tracking-wide text-slate-900 dark:text-white">
+              <div className="font-extrabold tracking-wide text-slate-900 dark:text-white group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
                 INTERNATIONAL
               </div>
-              <div className="-mt-1 font-extrabold tracking-wide text-slate-700 dark:text-slate-300">
+              <div className="-mt-1 font-extrabold tracking-wide text-slate-700 dark:text-slate-300 group-hover:text-blue-700 dark:group-hover:text-blue-500 transition-colors">
                 UNIVERSITY
               </div>
             </div>
           </Link>
           <button
             onClick={() => setSidebarOpen(false)}
-            className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+            className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors hover:scale-110"
           >
             <X className="h-5 w-5" />
           </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-2">
+        <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
           {navItems.map((item) => {
             const active = isActive(item.to);
             return (
@@ -149,28 +152,44 @@ export default function AppShell({ children }) {
                 onClick={() => {
                   if (window.innerWidth < 768) setSidebarOpen(false);
                 }}
-                className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 relative ${
                   active
                     ? darkMode
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 text-white shadow-lg shadow-blue-500/30"
-                      : "bg-gradient-to-r from-blue-50 to-indigo-50 text-blue-700 border border-blue-200 shadow-sm"
+                      ? "bg-slate-800/70 border-l-4 border-blue-400 text-white shadow-sm"
+                      : "bg-blue-50/80 border-l-4 border-blue-500 text-blue-700 shadow-sm"
                     : darkMode
-                      ? "hover:bg-slate-800/50 text-slate-200 hover:text-white"
-                      : "hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+                      ? "hover:bg-slate-800/40 text-slate-300 hover:text-white hover:translate-x-1 border-l-4 border-transparent"
+                      : "hover:bg-slate-50 text-slate-700 hover:text-blue-700 hover:translate-x-1 border-l-4 border-transparent"
                 }`}
               >
-                <item.icon
-                  className={`h-5 w-5 flex-shrink-0 ${
-                    active
-                      ? darkMode
-                        ? "text-white"
-                        : "text-blue-600"
-                      : "text-slate-500 group-hover:text-slate-700 dark:text-slate-400 dark:group-hover:text-white"
-                  }`}
-                />
-                <span className="text-sm font-semibold">{item.label}</span>
+                <div className={`p-1.5 rounded-lg transition-all duration-200 ${
+                  active
+                    ? darkMode
+                      ? "bg-blue-500/20"
+                      : "bg-blue-100"
+                    : "bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/50"
+                }`}>
+                  <item.icon
+                    className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${
+                      active
+                        ? darkMode
+                          ? "text-blue-400 scale-110"
+                          : "text-blue-600 scale-110"
+                        : "text-slate-500 group-hover:text-blue-600 dark:text-slate-400 dark:group-hover:text-blue-400 group-hover:scale-110"
+                    }`}
+                  />
+                </div>
+                <span className={`text-sm font-semibold flex-1 ${
+                  active
+                    ? darkMode
+                      ? "text-white"
+                      : "text-blue-900"
+                    : ""
+                }`}>{item.label}</span>
                 {active && (
-                  <div className="ml-auto h-2 w-2 rounded-full bg-current opacity-60" />
+                  <div className={`ml-auto h-2 w-2 rounded-full ${
+                    darkMode ? "bg-blue-400" : "bg-blue-500"
+                  } opacity-80 shadow-sm`} />
                 )}
               </Link>
             );
@@ -179,47 +198,53 @@ export default function AppShell({ children }) {
 
         {/* User Quick Info */}
         <div
-          className={`p-4 border-t ${
-            darkMode ? "border-slate-800" : "border-slate-200"
+          className={`p-4 border-t-2 ${
+            darkMode 
+              ? "border-slate-800 bg-slate-900/50" 
+              : "border-slate-200 bg-gradient-to-t from-blue-50/60 via-indigo-50/40 to-transparent"
           }`}
         >
           <div
-            className={`p-3 rounded-xl ${
+            className={`p-4 rounded-xl border-2 transition-all duration-200 hover:shadow-lg ${
               darkMode
-                ? "bg-slate-800/50"
-                : "bg-gradient-to-br from-blue-50 to-indigo-50"
+                ? "bg-slate-800/70 border-slate-700 hover:border-slate-600"
+                : "bg-gradient-to-br from-blue-50 via-indigo-50 to-blue-50 border-blue-200 shadow-md hover:shadow-xl hover:border-blue-300"
             }`}
           >
             <div className="flex items-center gap-3">
-              <div
-                className={`h-10 w-10 rounded-full flex items-center justify-center ${
-                  darkMode
-                    ? "bg-slate-700"
-                    : "bg-gradient-to-br from-blue-500 to-indigo-500"
-                } text-white font-semibold`}
-              >
-                {userName
-                  ? userName
-                      .split(" ")
-                      .map((n) => n[0])
-                      .join("")
-                      .toUpperCase()
-                      .slice(0, 2)
-                  : "ST"}
+              <div className="relative">
+                <div
+                  className={`h-12 w-12 rounded-full flex items-center justify-center shadow-lg transition-transform duration-200 hover:scale-105 ${
+                    darkMode
+                      ? "bg-gradient-to-br from-slate-700 to-slate-800"
+                      : "bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600"
+                  } text-white font-bold text-sm ring-2 ring-white/50 dark:ring-slate-600/50`}
+                >
+                  {userName
+                    ? userName
+                        .split(" ")
+                        .map((n) => n[0])
+                        .join("")
+                        .toUpperCase()
+                        .slice(0, 2)
+                    : "ST"}
+                </div>
+                <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 shadow-sm"></div>
               </div>
               <div className="flex-1 min-w-0">
                 <div
-                  className={`text-sm font-semibold truncate ${
+                  className={`text-sm font-bold truncate mb-0.5 ${
                     darkMode ? "text-white" : "text-slate-900"
                   }`}
                 >
                   {userName || "Student"}
                 </div>
                 <div
-                  className={`text-xs truncate ${
+                  className={`text-xs truncate flex items-center gap-1 ${
                     darkMode ? "text-slate-400" : "text-slate-600"
                   }`}
                 >
+                  <GraduationCap className="h-3 w-3" />
                   Student Portal
                 </div>
               </div>
@@ -232,36 +257,44 @@ export default function AppShell({ children }) {
       <section className="flex-1 flex flex-col min-w-0">
         {/* Top bar */}
         <header
-          className={`h-16 flex items-center justify-between px-4 md:px-6 border-b ${
+          className={`h-20 flex items-center justify-between px-4 md:px-6 border-b-2 ${
             darkMode
-              ? "bg-slate-900/95 backdrop-blur-sm border-slate-800 text-slate-100"
-              : "bg-white/80 backdrop-blur-sm border-slate-200 shadow-sm"
+              ? "bg-slate-900/95 backdrop-blur-md border-slate-800 text-slate-100 shadow-lg shadow-slate-900/50"
+              : "bg-white/95 backdrop-blur-md border-slate-200 shadow-lg shadow-slate-200/50"
           } sticky top-0 z-30`}
         >
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4">
             <button
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className={`md:hidden p-2 rounded-lg transition-colors ${
+              className={`md:hidden p-2.5 rounded-xl transition-all ${
                 darkMode
-                  ? "hover:bg-slate-800 text-slate-200"
-                  : "hover:bg-slate-100 text-slate-700"
+                  ? "hover:bg-slate-800 text-slate-200 hover:scale-110 hover:shadow-md"
+                  : "hover:bg-blue-50 text-slate-700 hover:scale-110 hover:shadow-md border border-slate-200"
               }`}
             >
               <Menu className="h-5 w-5" />
             </button>
-            <div className="hidden sm:block text-xs font-semibold text-slate-600 dark:text-slate-300">
-              <span className="hidden lg:inline">DS WINFO Business Informatics</span>
-              <span className="lg:hidden">WINFO</span>
-              <span className="hidden md:inline ml-2 opacity-60">(Hamburg)</span>
+            <div className="hidden sm:block">
+              <div className="text-sm font-bold">
+                <span className="hidden lg:inline bg-gradient-to-r from-blue-600 via-indigo-600 to-blue-600 bg-clip-text text-transparent">
+                  DS WINFO Business Informatics
+                </span>
+                <span className="lg:hidden bg-gradient-to-r from-blue-600 to-indigo-600 bg-clip-text text-transparent">
+                  WINFO
+                </span>
+              </div>
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
+                <span className="hidden md:inline">Hamburg Campus</span>
+              </div>
             </div>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-3">
             <button
               onClick={() => setDarkMode(!darkMode)}
-              className={`p-2 rounded-lg transition-all ${
+              className={`p-2.5 rounded-xl transition-all border ${
                 darkMode
-                  ? "bg-slate-800 text-amber-300 hover:bg-slate-700"
-                  : "bg-slate-100 text-slate-700 hover:bg-slate-200"
+                  ? "bg-slate-800 text-amber-300 hover:bg-slate-700 hover:scale-110 hover:shadow-lg border-slate-700"
+                  : "bg-gradient-to-br from-slate-100 to-slate-200 text-slate-700 hover:from-slate-200 hover:to-slate-300 hover:scale-110 shadow-sm border-slate-200"
               }`}
               title="Toggle theme"
             >
@@ -274,69 +307,52 @@ export default function AppShell({ children }) {
             <Link
               to="/messages"
               title="Messages"
-              className={`relative p-2 rounded-lg transition-colors ${
+              className={`relative p-2.5 rounded-xl transition-all border ${
                 darkMode
-                  ? "hover:bg-slate-800 text-slate-200"
-                  : "hover:bg-slate-100 text-slate-700"
+                  ? "hover:bg-slate-800 text-slate-200 hover:scale-110 hover:shadow-lg border-slate-700"
+                  : "hover:bg-blue-50 text-slate-700 hover:scale-110 hover:shadow-md border-slate-200"
               }`}
             >
               <MessageSquare className="h-5 w-5" />
-              <span className="absolute top-1 right-1 h-2 w-2 bg-red-500 rounded-full border-2 border-white dark:border-slate-900" />
+              <span className="absolute top-1 right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse shadow-md" />
             </Link>
             <button
               onClick={() => setMenuOpen((v) => !v)}
               title="Profile Menu"
               aria-label="Profile Menu"
-              className={`h-9 w-9 rounded-full transition-all ${
+              className={`h-10 w-10 rounded-full transition-all border-2 ${
                 darkMode
-                  ? "bg-gradient-to-br from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500"
-                  : "bg-gradient-to-br from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600"
-              } flex items-center justify-center text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2`}
+                  ? "bg-gradient-to-br from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 hover:scale-110 border-blue-500/50"
+                  : "bg-gradient-to-br from-blue-500 to-indigo-600 hover:from-blue-600 hover:to-indigo-700 hover:scale-110 border-blue-400/30"
+              } flex items-center justify-center text-white shadow-lg hover:shadow-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 ring-offset-white`}
             >
               <UserIcon className="h-5 w-5" />
             </button>
             {menuOpen && (
               <div
                 ref={menuRef}
-                className={`absolute right-4 md:right-6 top-16 z-50 w-72 ${
-                  darkMode
-                    ? "bg-slate-900 text-slate-100 border-slate-800"
-                    : "bg-white text-slate-900 border-slate-200 shadow-2xl"
-                } border rounded-2xl overflow-hidden backdrop-blur-xl`}
+                className="absolute right-4 md:right-6 top-20 z-50 w-72 bg-white text-slate-900 border-2 border-slate-200 shadow-2xl rounded-2xl overflow-hidden backdrop-blur-xl animate-in fade-in slide-in-from-top-2 duration-200"
               >
-                <div
-                  className={`px-5 py-4 ${
-                    darkMode
-                      ? "bg-gradient-to-r from-slate-800 to-slate-900"
-                      : "bg-gradient-to-r from-blue-50 to-indigo-50"
-                  }`}
-                >
+                <div className="px-5 py-4 border-b-2 bg-gradient-to-r from-blue-50 via-indigo-50 to-blue-50 border-blue-100">
                   <div className="flex items-center gap-3">
-                    <div
-                      className={`h-12 w-12 rounded-full flex items-center justify-center text-white font-semibold ${
-                        darkMode
-                          ? "bg-gradient-to-br from-blue-600 to-indigo-600"
-                          : "bg-gradient-to-br from-blue-500 to-indigo-500"
-                      }`}
-                    >
-                      {userName
-                        ? userName
-                            .split(" ")
-                            .map((n) => n[0])
-                            .join("")
-                            .toUpperCase()
-                            .slice(0, 2)
-                        : "ST"}
+                    <div className="relative">
+                      <div className="h-12 w-12 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-lg ring-2 ring-white/50 transition-transform duration-200 hover:scale-105 bg-gradient-to-br from-blue-500 to-indigo-600">
+                        {userName
+                          ? userName
+                              .split(" ")
+                              .map((n) => n[0])
+                              .join("")
+                              .toUpperCase()
+                              .slice(0, 2)
+                          : "ST"}
+                      </div>
+                      <div className="absolute -bottom-0.5 -right-0.5 h-4 w-4 bg-green-500 rounded-full border-2 border-white shadow-sm"></div>
                     </div>
                     <div className="flex-1 min-w-0">
-                      <div className="font-semibold text-sm truncate">
+                      <div className="font-bold text-sm truncate">
                         {userName || "Student"}
                       </div>
-                      <div
-                        className={`text-xs truncate ${
-                          darkMode ? "text-slate-400" : "text-slate-600"
-                        }`}
-                      >
+                      <div className="text-xs truncate text-slate-600">
                         Student ID
                       </div>
                     </div>
@@ -404,7 +420,7 @@ export default function AppShell({ children }) {
         </header>
 
         {/* Content wrapper */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50/80 via-white to-blue-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
           <div className="px-4 md:px-6 lg:px-10 py-6 md:py-8">{children}</div>
         </div>
       </section>
@@ -416,18 +432,26 @@ function MenuItem({ to, icon: Icon, label, darkMode, danger }) {
   return (
     <Link
       to={to}
-      className={`flex items-center gap-3 px-5 py-2.5 text-sm transition-colors ${
+      className={`group flex items-center gap-3 px-5 py-3 text-sm transition-all duration-200 border-l-4 border-transparent ${
         danger
           ? darkMode
-            ? "text-red-400 hover:bg-red-500/10 hover:text-red-300"
-            : "text-red-600 hover:bg-red-50 hover:text-red-700"
+            ? "text-red-400 hover:bg-red-500/10 hover:text-red-300 hover:border-red-500/50"
+            : "text-red-600 hover:bg-red-50 hover:text-red-700 hover:translate-x-1 hover:border-red-400"
           : darkMode
-            ? "hover:bg-slate-800 text-slate-200 hover:text-white"
-            : "hover:bg-slate-50 text-slate-700 hover:text-slate-900"
+            ? "hover:bg-slate-800 text-slate-200 hover:text-white hover:border-blue-500/50"
+            : "hover:bg-gradient-to-r hover:from-blue-50 hover:to-indigo-50 text-slate-700 hover:text-blue-700 hover:translate-x-1 hover:border-blue-400"
       }`}
     >
-      {Icon ? <Icon className="h-4 w-4" /> : null}
-      <span>{label}</span>
+      {Icon ? (
+        <div className={`p-1 rounded-lg transition-all duration-200 ${
+          danger
+            ? "group-hover:bg-red-100/50 dark:group-hover:bg-red-500/10"
+            : "group-hover:bg-blue-100/50 dark:group-hover:bg-white/10"
+        }`}>
+          <Icon className="h-4 w-4 transition-transform duration-200 group-hover:scale-110" />
+        </div>
+      ) : null}
+      <span className="font-semibold">{label}</span>
     </Link>
   );
 }
