@@ -26,6 +26,7 @@ import {
   Users,
   Award,
   Clock,
+  DoorOpen,
 } from "lucide-react";
 
 export default function AppShell({ children }) {
@@ -33,6 +34,8 @@ export default function AppShell({ children }) {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [userName, setUserName] = useState("");
+  const [campusArea, setCampusArea] = useState("");
+  const [roomBookingEnabled, setRoomBookingEnabled] = useState(true);
   const location = useLocation();
   const menuRef = useRef(null);
 
@@ -85,13 +88,84 @@ export default function AppShell({ children }) {
           const data = await res.json();
           const u = data?.user;
           if (u?.name) setUserName(u.name);
+          if (u?.campusArea) setCampusArea(u.campusArea);
+          if (typeof u?.roomBookingEnabled === "boolean")
+            setRoomBookingEnabled(u.roomBookingEnabled);
         }
       } catch {}
     })();
   }, []);
 
+  // Theme: initialize from localStorage or system preference, and sync to document root
+  useEffect(() => {
+    try {
+      const stored = localStorage.getItem("theme");
+      if (stored === "dark") {
+        setDarkMode(true);
+        document.documentElement.classList.add("dark");
+      } else if (stored === "light") {
+        setDarkMode(false);
+        document.documentElement.classList.remove("dark");
+      } else if (window.matchMedia) {
+        const prefersDark = window.matchMedia(
+          "(prefers-color-scheme: dark)"
+        ).matches;
+        setDarkMode(prefersDark);
+        if (prefersDark) document.documentElement.classList.add("dark");
+        else document.documentElement.classList.remove("dark");
+
+        // Listen for system changes only when user hasn't persisted a choice
+        const mq = window.matchMedia("(prefers-color-scheme: dark)");
+        const onChange = (e) => {
+          const storedNow = localStorage.getItem("theme");
+          if (storedNow == null) {
+            setDarkMode(e.matches);
+            if (e.matches) document.documentElement.classList.add("dark");
+            else document.documentElement.classList.remove("dark");
+          }
+        };
+        try {
+          mq.addEventListener("change", onChange);
+        } catch (_) {
+          mq.addListener(onChange);
+        }
+
+        return () => {
+          try {
+            mq.removeEventListener("change", onChange);
+          } catch (_) {
+            mq.removeListener(onChange);
+          }
+        };
+      }
+    } catch (e) {
+      // ignore on server or private mode
+    }
+  }, []);
+
   const isActive = (to) =>
     location.pathname === to || location.pathname.startsWith(to + "/");
+
+  // Compute nav items with optional Raumbuchung, pointing to campus-aware URL
+  const computedNavItems = React.useMemo(() => {
+    const items = [...navItems];
+    if (roomBookingEnabled) {
+      const bookingTo = campusArea
+        ? `/raumbuchung?campus=${encodeURIComponent(campusArea)}`
+        : "/raumbuchung";
+      // Insert after Praxisbericht for visibility
+      const insertIndex = Math.max(
+        0,
+        items.findIndex((i) => i.to === "/praxisbericht") + 1
+      );
+      items.splice(insertIndex, 0, {
+        to: bookingTo,
+        label: "Raumbuchen",
+        icon: DoorOpen,
+      });
+    }
+    return items;
+  }, [navItems, roomBookingEnabled, campusArea]);
 
   return (
     <div
@@ -117,10 +191,15 @@ export default function AppShell({ children }) {
       >
         {/* Logo Section */}
         <div className="h-24 flex items-center justify-between px-6 border-b-2 border-slate-200 dark:border-slate-800 bg-gradient-to-r from-blue-50/60 via-indigo-50/60 to-blue-50/60 dark:from-slate-800/50 dark:via-slate-800/50 dark:to-slate-800/50 backdrop-blur-sm">
-          <Link to="/dashboard" className="flex items-center gap-3 hover:opacity-90 transition-all duration-200 group">
+          <Link
+            to="/dashboard"
+            className="flex items-center gap-3 hover:opacity-90 transition-all duration-200 group"
+          >
             <div className="relative">
               <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 border-2 border-blue-300 dark:border-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200">
-                <span className="text-white font-black text-xl font-extrabold select-none">IU</span>
+                <span className="text-white font-black text-xl font-extrabold select-none">
+                  IU
+                </span>
               </div>
               <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white dark:border-slate-900 animate-pulse shadow-sm"></div>
             </div>
@@ -143,7 +222,7 @@ export default function AppShell({ children }) {
 
         {/* Navigation */}
         <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
-          {navItems.map((item) => {
+          {computedNavItems.map((item) => {
             const active = isActive(item.to);
             return (
               <Link
@@ -162,13 +241,15 @@ export default function AppShell({ children }) {
                       : "hover:bg-slate-50 text-slate-700 hover:text-blue-700 hover:translate-x-1 border-l-4 border-transparent"
                 }`}
               >
-                <div className={`p-1.5 rounded-lg transition-all duration-200 ${
-                  active
-                    ? darkMode
-                      ? "bg-blue-500/20"
-                      : "bg-blue-100"
-                    : "bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/50"
-                }`}>
+                <div
+                  className={`p-1.5 rounded-lg transition-all duration-200 ${
+                    active
+                      ? darkMode
+                        ? "bg-blue-500/20"
+                        : "bg-blue-100"
+                      : "bg-transparent group-hover:bg-slate-100 dark:group-hover:bg-slate-800/50"
+                  }`}
+                >
                   <item.icon
                     className={`h-5 w-5 flex-shrink-0 transition-transform duration-200 ${
                       active
@@ -179,17 +260,19 @@ export default function AppShell({ children }) {
                     }`}
                   />
                 </div>
-                <span className={`text-sm font-semibold flex-1 ${
-                  active
-                    ? darkMode
-                      ? "text-white"
-                      : "text-blue-900"
-                    : ""
-                }`}>{item.label}</span>
+                <span
+                  className={`text-sm font-semibold flex-1 ${
+                    active ? (darkMode ? "text-white" : "text-blue-900") : ""
+                  }`}
+                >
+                  {item.label}
+                </span>
                 {active && (
-                  <div className={`ml-auto h-2 w-2 rounded-full ${
-                    darkMode ? "bg-blue-400" : "bg-blue-500"
-                  } opacity-80 shadow-sm`} />
+                  <div
+                    className={`ml-auto h-2 w-2 rounded-full ${
+                      darkMode ? "bg-blue-400" : "bg-blue-500"
+                    } opacity-80 shadow-sm`}
+                  />
                 )}
               </Link>
             );
@@ -199,8 +282,8 @@ export default function AppShell({ children }) {
         {/* User Quick Info */}
         <div
           className={`p-4 border-t-2 ${
-            darkMode 
-              ? "border-slate-800 bg-slate-900/50" 
+            darkMode
+              ? "border-slate-800 bg-slate-900/50"
               : "border-slate-200 bg-gradient-to-t from-blue-50/60 via-indigo-50/40 to-transparent"
           }`}
         >
@@ -290,7 +373,15 @@ export default function AppShell({ children }) {
           </div>
           <div className="flex items-center gap-3">
             <button
-              onClick={() => setDarkMode(!darkMode)}
+              onClick={() => {
+                const next = !darkMode;
+                setDarkMode(next);
+                try {
+                  localStorage.setItem("theme", next ? "dark" : "light");
+                  if (next) document.documentElement.classList.add("dark");
+                  else document.documentElement.classList.remove("dark");
+                } catch (_) {}
+              }}
               className={`p-2.5 rounded-xl transition-all border ${
                 darkMode
                   ? "bg-slate-800 text-amber-300 hover:bg-slate-700 hover:scale-110 hover:shadow-lg border-slate-700"
@@ -299,9 +390,9 @@ export default function AppShell({ children }) {
               title="Toggle theme"
             >
               {darkMode ? (
-                <Sun className="h-5 w-5" />
-              ) : (
                 <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
               )}
             </button>
             <Link
@@ -418,9 +509,10 @@ export default function AppShell({ children }) {
             )}
           </div>
         </header>
-
+        {/* flex-1 overflow-y-auto bg-gradient-to-br from-gray-50/80 via-white
+        to-blue-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 */}
         {/* Content wrapper */}
-        <div className="flex-1 overflow-y-auto bg-gradient-to-br from-gray-50/80 via-white to-blue-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+        <div className="">
           <div className="px-4 md:px-6 lg:px-10 py-6 md:py-8">{children}</div>
         </div>
       </section>

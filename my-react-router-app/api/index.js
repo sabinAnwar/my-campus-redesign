@@ -143,7 +143,8 @@ app.get("/api/user", async (req, res) => {
   try {
     console.log("🔎 /api/user headers", {
       cookie: req.headers?.cookie || null,
-      xSession: req.get("x-session-token") || req.get("X-Session-Token") || null,
+      xSession:
+        req.get("x-session-token") || req.get("X-Session-Token") || null,
     });
     const token = getSessionToken(req);
     console.log("🔑 /api/user resolved token", token);
@@ -153,15 +154,28 @@ app.get("/api/user", async (req, res) => {
       where: { token },
       include: { user: true },
     });
-    console.log("🗄️ /api/user session lookup", !!session, session?.user ? "has-user" : "no-user");
+    console.log(
+      "🗄️ /api/user session lookup",
+      !!session,
+      session?.user ? "has-user" : "no-user"
+    );
     if (!session || !session.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
+    // Derive campus/location info (placeholder until real data available)
+    // In the future, replace with actual user campus fields from DB or an external API
+    const campusCity = process.env.DEFAULT_CAMPUS_CITY || "Hamburg";
+    const campusArea = process.env.DEFAULT_CAMPUS_AREA || "Hammerbrook";
+    const roomBookingEnabled = process.env.ROOM_BOOKING_ENABLED !== "0"; // default true
+
     return res.json({
       user: {
         id: session.user.id,
         name: session.user.name || "Student",
         email: session.user.email,
+        campusCity,
+        campusArea,
+        roomBookingEnabled,
       },
     });
   } catch (err) {
