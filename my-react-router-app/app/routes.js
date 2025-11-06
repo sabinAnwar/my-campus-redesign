@@ -30,6 +30,11 @@ export default [
     path: "room-booking",
     file: "routes/room-booking.jsx",
   },
+  // German alias for room booking
+  {
+    path: "raumbuchung",
+    file: "routes/room-booking.jsx",
+  },
   {
     path: "events",
     file: "routes/events.jsx",

@@ -25,6 +25,7 @@ import {
   MoreHorizontal,
   MapPin,
   Users,
+  DoorOpen,
 } from "lucide-react";
 
 export async function loader() {
@@ -75,7 +76,9 @@ export default function Dashboard() {
         <div className="min-h-screen flex items-center justify-center">
           <div className="text-center">
             <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-            <p className="text-lg font-semibold text-slate-700 dark:text-slate-300">Loading...</p>
+            <p className="text-lg font-semibold text-slate-700 dark:text-slate-300">
+              Loading...
+            </p>
           </div>
         </div>
       </AppShell>
@@ -91,7 +94,7 @@ export default function Dashboard() {
   };
 
   // Mock data - Stats
-  const stats = [
+  const statsBase = [
     {
       label: "Aktive Kurse",
       value: "8",
@@ -130,13 +133,30 @@ export default function Dashboard() {
     },
   ];
 
+  const bookingLink = user?.campusArea
+    ? `/raumbuchung?campus=${encodeURIComponent(user.campusArea)}`
+    : "/raumbuchung";
+
+  const stats = [
+    ...statsBase,
+    {
+      label: "Raumbuchen",
+      value: user?.campusArea || "Campus",
+      change: "Räume",
+      icon: DoorOpen,
+      color: "blue",
+      bgGradient: "from-cyan-500 to-blue-600",
+      link: bookingLink,
+    },
+  ];
+
   // Upcoming classes today
   const todayClasses = [
     {
       id: 1,
       title: "Webentwicklung - Vorlesung",
       time: "10:00 - 11:30",
-      location: "Hörsaal A1",
+      location: "Hammerbrook",
       type: "Vorlesung",
       professor: "Prof. Dr. Schmidt",
       color: "blue",
@@ -145,7 +165,7 @@ export default function Dashboard() {
       id: 2,
       title: "Datenbankdesign - Seminar",
       time: "14:00 - 15:00",
-      location: "Seminarraum B2",
+      location: "Waterloohain",
       type: "Seminar",
       professor: "Prof. Dr. Müller",
       color: "purple",
@@ -154,7 +174,7 @@ export default function Dashboard() {
       id: 3,
       title: "Mathematik - Übung",
       time: "16:00 - 17:30",
-      location: "Raum C3",
+      location: "Hamburg-Mitte",
       type: "Übung",
       professor: "Dr. Weber",
       color: "green",
@@ -183,7 +203,8 @@ export default function Dashboard() {
     },
     {
       id: 3,
-      title: "Präsentation: Algorithmen",
+      title:
+        "Präsentation: Algorithmen",
       course: "Algorithmen",
       dueDate: "20.11.2025",
       daysLeft: 8,
@@ -203,9 +224,27 @@ export default function Dashboard() {
 
   // Recent files
   const recentFiles = [
-    { id: 1, name: "HTML_Basics.pdf", course: "Webentwicklung", type: "pdf", accessed: "Heute, 09:30" },
-    { id: 2, name: "SQL_Queries.pdf", course: "Datenbankdesign", type: "pdf", accessed: "Gestern, 14:20" },
-    { id: 3, name: "JavaScript_Tutorial.zip", course: "Webentwicklung", type: "zip", accessed: "Gestern, 16:45" },
+    {
+      id: 1,
+      name: "HTML_Basics.pdf",
+      course: "Webentwicklung",
+      type: "pdf",
+      accessed: "Heute, 09:30",
+    },
+    {
+      id: 2,
+      name: "SQL_Queries.pdf",
+      course: "Datenbankdesign",
+      type: "pdf",
+      accessed: "Gestern, 14:20",
+    },
+    {
+      id: 3,
+      name: "JavaScript_Tutorial.zip",
+      course: "Webentwicklung",
+      type: "zip",
+      accessed: "Gestern, 16:45",
+    },
   ];
 
   // News
@@ -220,17 +259,38 @@ export default function Dashboard() {
       title: "Information about the availability of the Campus",
       date: "2.11.2025",
       category: "Library",
-      description: "On October 30, 2025, the front desk at Campus Würzburg will be unstaffed.",
+      description:
+        "On October 30, 2025, the front desk at Campus Würzburg will be unstaffed.",
     },
   ];
 
   // Quick actions
   const quickActions = [
     { label: "Kurse", icon: BookOpen, link: "/courses", color: "blue" },
-    { label: "Stundenplan", icon: CalendarDays, link: "/courses/schedule", color: "purple" },
-    { label: "Aufgaben", icon: CheckSquare, link: "/tasks", color: "orange" },
-    { label: "Nachrichten", icon: MessageSquare, link: "/messages", color: "green" },
-    { label: "Dateien", icon: FileSearch, link: "/files/recent", color: "indigo" },
+    {
+      label: "Stundenplan",
+      icon: CalendarDays,
+      link: "/courses/schedule",
+      color: "purple",
+    },
+    {
+      label: "Aufgaben",
+      icon: CheckSquare,
+      link: "/tasks",
+      color: "orange",
+    },
+    {
+      label: "Nachrichten",
+      icon: MessageSquare,
+      link: "/messages",
+      color: "green",
+    },
+    {
+      label: "Dateien",
+      icon: FileSearch,
+      link: "/files/recent",
+      color: "indigo",
+    },
     { label: "Events", icon: Calendar, link: "/events", color: "pink" },
   ];
 
@@ -241,7 +301,8 @@ export default function Dashboard() {
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 mt-4">
           <div className="flex-1">
             <h1 className="text-[36px] font-bold text-slate-900 dark:text-white leading-tight mb-2">
-              {getGreeting()}, {user?.name ? user.name.split(" ")[0] : "Student"} 👋
+              {getGreeting()},{" "}
+              {user?.name ? user.name.split(" ")[0] : "Student"} 👋
             </h1>
             <p className="text-slate-600 dark:text-slate-400 text-sm">
               Hier ist eine Übersicht über deinen Studienalltag.
@@ -290,7 +351,7 @@ export default function Dashboard() {
               purple: "text-purple-700",
               green: "text-green-700",
             };
-            
+
             return (
               <Link
                 key={idx}
@@ -298,15 +359,25 @@ export default function Dashboard() {
                 className={`group relative overflow-hidden rounded-2xl bg-gradient-to-br ${gradientClasses[stat.color]} border-2 ${borderClasses[stat.color]} p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300`}
               >
                 <div className="flex items-start justify-between mb-4">
-                  <div className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} text-white shadow-lg`}>
+                  <div
+                    className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} text-white shadow-lg`}
+                  >
                     <stat.icon className="h-6 w-6" />
                   </div>
-                  <span className={`text-xs font-semibold px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm ${textClasses[stat.color]}`}>
+                  <span
+                    className={`text-xs font-semibold px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm ${textClasses[stat.color]}`}
+                  >
                     {stat.change}
                   </span>
                 </div>
-                <div className={`text-3xl font-bold ${textClasses[stat.color]} mb-1`}>{stat.value}</div>
-                <div className="text-sm text-slate-600 font-medium">{stat.label}</div>
+                <div
+                  className={`text-3xl font-bold ${textClasses[stat.color]} mb-1`}
+                >
+                  {stat.value}
+                </div>
+                <div className="text-sm text-slate-600 font-medium">
+                  {stat.label}
+                </div>
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
               </Link>
             );
@@ -342,25 +413,35 @@ export default function Dashboard() {
                         cls.color === "blue"
                           ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
                           : cls.color === "purple"
-                          ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
-                          : "bg-green-50 dark:bg-green-900/20 border-green-500"
+                            ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
+                            : "bg-green-50 dark:bg-green-900/20 border-green-500"
                       } hover:shadow-md transition-shadow`}
                     >
-                      <div className={`p-2 rounded-lg bg-white dark:bg-slate-800 ${
-                        cls.color === "blue" ? "text-blue-600" :
-                        cls.color === "purple" ? "text-purple-600" :
-                        "text-green-600"
-                      }`}>
+                      <div
+                        className={`p-2 rounded-lg bg-white dark:bg-slate-800 ${
+                          cls.color === "blue"
+                            ? "text-blue-600"
+                            : cls.color === "purple"
+                              ? "text-purple-600"
+                              : "text-green-600"
+                        }`}
+                      >
                         <Clock className="h-4 w-4" />
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{cls.title}</h3>
-                          <span className={`text-xs font-semibold px-2 py-0.5 rounded ${
-                            cls.color === "blue" ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400" :
-                            cls.color === "purple" ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400" :
-                            "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                          }`}>
+                          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                            {cls.title}
+                          </h3>
+                          <span
+                            className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                              cls.color === "blue"
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                : cls.color === "purple"
+                                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                                  : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                            }`}
+                          >
                             {cls.type}
                           </span>
                         </div>
@@ -397,7 +478,9 @@ export default function Dashboard() {
                   <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
                     <CheckSquare className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Bevorstehende Aufgaben</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Bevorstehende Aufgaben
+                  </h2>
                 </div>
                 <Link
                   to="/tasks"
@@ -431,7 +514,9 @@ export default function Dashboard() {
                     </button>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">{assignment.title}</h3>
+                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                          {assignment.title}
+                        </h3>
                         {assignment.priority === "high" && (
                           <span className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400">
                             <AlertCircle className="h-3.5 w-3.5" />
@@ -460,6 +545,154 @@ export default function Dashboard() {
               </div>
             </div>
 
+            {/* Turnitin Abgaben Section */}
+            <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-sm">
+              <div className="flex items-center justify-between mb-6">
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-gray-100 border border-gray-300">
+                    <FileText className="h-5 w-5 text-gray-700" />
+                  </div>
+                  <h2 className="text-lg font-bold text-black">
+                    Turnitin Abgaben
+                  </h2>
+                </div>
+              </div>
+              <div className="space-y-4">
+                {[
+                  {
+                    id: 1,
+                    title: "Hausarbeit: Digitale Transformation im E-Commerce",
+                    course: "E-Commerce",
+                    dueDate: "15.11.2025",
+                    correctionDate: "22.11.2025",
+                    status: "pending",
+                    daysUntilDue: 3,
+                    daysUntilCorrection: 10,
+                  },
+                  {
+                    id: 2,
+                    title: "Seminararbeit: Datenbankmodellierung",
+                    course: "Datenbankdesign",
+                    dueDate: "18.11.2025",
+                    correctionDate: "25.11.2025",
+                    status: "submitted",
+                    similarity: 12,
+                    daysUntilDue: 6,
+                    daysUntilCorrection: 13,
+                  },
+                  {
+                    id: 3,
+                    title: "Projektarbeit: Algorithmus für Routenoptimierung",
+                    course: "Algorithmen",
+                    dueDate: "20.11.2025",
+                    correctionDate: "27.11.2025",
+                    status: "pending",
+                    daysUntilDue: 8,
+                    daysUntilCorrection: 15,
+                  },
+                ].map((submission) => (
+                  <div
+                    key={submission.id}
+                    className="border-2 border-gray-200 rounded-xl p-4 bg-gray-50 hover:border-gray-300 transition-all"
+                  >
+                    <div className="flex items-start justify-between mb-3">
+                      <div className="flex-1">
+                        <h3 className="font-bold text-black text-sm mb-1">
+                          {submission.title}
+                        </h3>
+                        <p className="text-xs text-gray-600">
+                          {submission.course}
+                        </p>
+                      </div>
+                      <span
+                        className={`px-2 py-1 rounded text-xs font-semibold border ${
+                          submission.status === "submitted"
+                            ? "bg-gray-100 text-gray-800 border-gray-300"
+                            : "bg-white text-gray-700 border-gray-400"
+                        }`}
+                      >
+                        {submission.status === "submitted"
+                          ? "Abgegeben"
+                          : "Ausstehend"}
+                      </span>
+                    </div>
+
+                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray-200">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <Calendar className="h-3.5 w-3.5 text-gray-600" />
+                          <span className="text-xs font-semibold text-gray-700">
+                            Abgabefrist
+                          </span>
+                        </div>
+                        <p className="text-sm font-bold text-black">
+                          {submission.dueDate}
+                        </p>
+                        <p
+                          className={`text-xs mt-1 font-medium ${
+                            submission.daysUntilDue <= 3
+                              ? "text-orange-500"
+                              : "text-gray-500"
+                          }`}
+                        >
+                          {submission.daysUntilDue <= 0
+                            ? "Überfällig"
+                            : submission.daysUntilDue === 1
+                              ? "1 Tag verbleibend"
+                              : `${submission.daysUntilDue} Tage verbleibend`}
+                        </p>
+                      </div>
+
+                      <div>
+                        <div className="flex items-center gap-2 mb-1">
+                          <CheckSquare className="h-3.5 w-3.5 text-gray-600" />
+                          <span className="text-xs font-semibold text-gray-700">
+                            Korrektur
+                          </span>
+                        </div>
+                        <p className="text-sm font-bold text-black">
+                          {submission.correctionDate}
+                        </p>
+                        <p className="text-xs text-gray-600 mt-1">
+                          {submission.daysUntilCorrection} Tage nach Abgabe
+                        </p>
+                      </div>
+                    </div>
+
+                    {submission.status === "submitted" &&
+                      submission.similarity !== undefined && (
+                        <div className="mt-3 pt-3 border-t border-gray-200">
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs font-semibold text-gray-700">
+                              Turnitin Ähnlichkeit:
+                            </span>
+                            <span
+                              className={`text-sm font-bold px-2 py-1 rounded border-2 ${
+                                submission.similarity < 15
+                                  ? "bg-green-50/50 text-green-600 border-green-300"
+                                  : submission.similarity < 30
+                                    ? "bg-orange-50/50 text-orange-600 border-orange-300"
+                                    : "bg-red-50/50 text-red-600 border-red-300"
+                              }`}
+                            >
+                              {submission.similarity}%
+                            </span>
+                          </div>
+                        </div>
+                      )}
+
+                    {submission.status === "pending" && (
+                      <div className="mt-3 pt-3 border-t border-gray-200">
+                        <button className="w-full py-2 px-4 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors border border-gray-800">
+                          Abgabe vorbereiten
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                ))}
+              </div>
+            </div>
+
             {/* News Section */}
             <div>
               <div className="flex items-center justify-between mb-4">
@@ -467,7 +700,9 @@ export default function Dashboard() {
                   <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
                     <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Aktuelles</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Aktuelles
+                  </h2>
                 </div>
                 <Link
                   to="/news"
@@ -525,53 +760,66 @@ export default function Dashboard() {
           <div className="lg:col-span-4 space-y-6">
             {/* Quick Actions */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Schnellzugriff</h2>
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
+                Schnellzugriff
+              </h2>
               <div className="grid grid-cols-2 gap-3">
                 {quickActions.map((action, idx) => {
                   const colorClasses = {
                     blue: {
-                      border: "hover:border-blue-500 dark:hover:border-blue-400",
+                      border:
+                        "hover:border-blue-500 dark:hover:border-blue-400",
                       bg: "bg-blue-100 dark:bg-blue-900/30",
                       text: "text-blue-600 dark:text-blue-400",
                     },
                     purple: {
-                      border: "hover:border-purple-500 dark:hover:border-purple-400",
+                      border:
+                        "hover:border-purple-500 dark:hover:border-purple-400",
                       bg: "bg-purple-100 dark:bg-purple-900/30",
                       text: "text-purple-600 dark:text-purple-400",
                     },
                     orange: {
-                      border: "hover:border-orange-500 dark:hover:border-orange-400",
+                      border:
+                        "hover:border-orange-500 dark:hover:border-orange-400",
                       bg: "bg-orange-100 dark:bg-orange-900/30",
                       text: "text-orange-600 dark:text-orange-400",
                     },
                     green: {
-                      border: "hover:border-green-500 dark:hover:border-green-400",
+                      border:
+                        "hover:border-green-500 dark:hover:border-green-400",
                       bg: "bg-green-100 dark:bg-green-900/30",
                       text: "text-green-600 dark:text-green-400",
                     },
                     indigo: {
-                      border: "hover:border-indigo-500 dark:hover:border-indigo-400",
+                      border:
+                        "hover:border-indigo-500 dark:hover:border-indigo-400",
                       bg: "bg-indigo-100 dark:bg-indigo-900/30",
                       text: "text-indigo-600 dark:text-indigo-400",
                     },
                     pink: {
-                      border: "hover:border-pink-500 dark:hover:border-pink-400",
+                      border:
+                        "hover:border-pink-500 dark:hover:border-pink-400",
                       bg: "bg-pink-100 dark:bg-pink-900/30",
                       text: "text-pink-600 dark:text-pink-400",
                     },
                   };
-                  const classes = colorClasses[action.color] || colorClasses.blue;
-                  
+                  const classes =
+                    colorClasses[action.color] || colorClasses.blue;
+
                   return (
                     <Link
                       key={idx}
                       to={action.link}
                       className={`group p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 ${classes.border} hover:shadow-lg transition-all duration-200`}
                     >
-                      <div className={`p-2 rounded-lg ${classes.bg} w-fit mb-2 group-hover:scale-110 transition-transform`}>
+                      <div
+                        className={`p-2 rounded-lg ${classes.bg} w-fit mb-2 group-hover:scale-110 transition-transform`}
+                      >
                         <action.icon className={`h-5 w-5 ${classes.text}`} />
                       </div>
-                      <div className="text-xs font-semibold text-slate-900 dark:text-white">{action.label}</div>
+                      <div className="text-xs font-semibold text-slate-900 dark:text-white">
+                        {action.label}
+                      </div>
                     </Link>
                   );
                 })}
@@ -581,7 +829,9 @@ export default function Dashboard() {
             {/* Recent Files */}
             <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">Zuletzt verwendet</h2>
+                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                  Zuletzt verwendet
+                </h2>
                 <Link
                   to="/files/recent"
                   className="text-xs font-semibold text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
@@ -627,7 +877,10 @@ export default function Dashboard() {
                   <span className="text-sm opacity-90">abgeschlossen</span>
                 </div>
                 <div className="h-2 bg-white/20 rounded-full overflow-hidden">
-                  <div className="h-full bg-white rounded-full" style={{ width: "72%" }} />
+                  <div
+                    className="h-full bg-white rounded-full"
+                    style={{ width: "72%" }}
+                  />
                 </div>
               </div>
               <p className="text-sm opacity-90 mb-4">
@@ -653,7 +906,10 @@ export default function Dashboard() {
                   </div>
                   <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
                     Empfehle die IU und erhalte{" "}
-                    <span className="font-bold text-amber-600 dark:text-amber-400">bis zu 200€</span> als Dankeschön!
+                    <span className="font-bold text-amber-600 dark:text-amber-400">
+                      bis zu 200€
+                    </span>{" "}
+                    als Dankeschön!
                   </p>
                   <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:opacity-90 transition-opacity shadow-sm">
                     Bonus abholen
