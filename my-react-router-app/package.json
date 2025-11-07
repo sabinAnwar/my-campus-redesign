@@ -9,6 +9,7 @@
     "seed": "node prisma/seed.js"
   },
   "dependencies": {
+    "@heroicons/react": "^2.2.0",
     "@prisma/client": "^6.15.0",
     "@react-router/node": "^7.7.1",
     "@react-router/serve": "^7.7.1",

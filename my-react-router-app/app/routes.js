@@ -67,6 +67,7 @@ export default [
     path: "module-handbook",
     file: "routes/module-handbook.jsx",
   },
+
   {
     path: "student-id",
     file: "routes/student-id.jsx",
@@ -161,6 +162,10 @@ export default [
   {
     path: "api/cron/daily-reminders",
     file: "routes/api/cron/daily-reminders.jsx",
+  },
+  {
+    path: "faq",
+    file: "routes/faq.jsx",
   },
   {
     path: "api/room-bookings",

@@ -1,13 +1,12 @@
 import React, { useEffect, useMemo, useState } from "react";
 import {
   Link,
-  useSearchParams,
-  useFetcher,
   useLoaderData,
   useActionData,
   useRevalidator,
 } from "react-router-dom";
 import AppShell from "../components/AppShell";
+import { prisma } from "../lib/prisma";
 import {
   showToast,
   showSuccessToast,
@@ -68,97 +67,176 @@ const LECTURES = [
   },
 ];
 
-// In-memory storage for bookings (for development)
-// In production, this would be in a database
-let inMemoryBookings = [];
+// Helper function to get session token from request cookies
+function getSessionToken(request) {
+  const cookieHeader = request.headers.get("Cookie");
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const sessionCookie = cookies.find((c) => c.startsWith("session="));
+
+  if (!sessionCookie) return null;
+  return sessionCookie.split("=")[1];
+}
 
 export async function loader({ request }) {
   try {
-    // For development, we'll use userId 1
-    // In production, you'd get this from session
-    const userId = 1;
+    // Get session token from cookies
+    const token = getSessionToken(request);
+    console.log("🍪 Cookie header:", request.headers.get("Cookie"));
+    console.log("� Session token:", token);
 
-    // Filter bookings for this user
-    const userBookings = inMemoryBookings.filter((b) => b.userId === userId);
+    let userId = 1; // Default fallback
+
+    if (token) {
+      // Look up session in database
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+
+      if (session?.user) {
+        userId = session.user.id;
+        console.log("✅ Found user from session:", userId);
+      }
+    }
+
+    // Fetch bookings from database for this user
+    const bookings = await prisma.roomBooking.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        date: "asc",
+      },
+    });
+
     console.log(
-      "📚 Loading bookings for userId:",
+      "📚 Loading bookings from database for userId:",
       userId,
       "- Found:",
-      userBookings.length
+      bookings.length
     );
 
-    return { bookings: userBookings, userId };
+    // Convert date objects to ISO strings for JSON serialization
+    const serializedBookings = bookings.map((booking) => ({
+      ...booking,
+      date: booking.date.toISOString().split("T")[0],
+      createdAt: booking.createdAt.toISOString(),
+      updatedAt: booking.updatedAt.toISOString(),
+    }));
+
+    return { bookings: serializedBookings, userId };
   } catch (error) {
     console.error("Error loading bookings:", error);
     return { bookings: [], userId: 1 };
   }
 }
 
-// Handle form submissions for booking and canceling
 export async function action({ request }) {
   const formData = await request.formData();
   const actionType = formData.get("_action");
 
   console.log("🎬 Action type:", actionType);
 
-  if (actionType === "create") {
-    const userId = parseInt(formData.get("userId"));
-    const roomId = formData.get("roomId");
-    const roomName = formData.get("roomName");
-    const campus = formData.get("campus");
+  try {
+    // Get session token from cookies
+    const token = getSessionToken(request);
+    let userId = parseInt(formData.get("userId")) || 1; // Fallback
 
-    // Check if user already has a booking for this room and campus
-    const existingBookingIndex = inMemoryBookings.findIndex(
-      (b) =>
-        b.userId === userId && b.roomName === roomName && b.campus === campus
-    );
+    if (token) {
+      // Look up session in database
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
 
-    // Create new booking
-    const booking = {
-      id: Date.now(),
-      userId,
-      roomId,
-      roomName,
-      campus,
-      date: formData.get("date"),
-      startTime: formData.get("startTime"),
-      endTime: formData.get("endTime"),
-    };
-
-    if (existingBookingIndex !== -1) {
-      // Replace existing booking
-      console.log("🔄 Replacing existing booking for", roomName);
-      inMemoryBookings[existingBookingIndex] = booking;
-    } else {
-      // Add new booking
-      inMemoryBookings.push(booking);
+      if (session?.user) {
+        userId = session.user.id;
+        console.log("✅ Found user from session for action:", userId);
+      }
     }
 
-    console.log("✅ Booking created/updated:", booking);
-    console.log("📦 Total bookings in memory:", inMemoryBookings.length);
+    if (actionType === "create") {
+      const roomId = formData.get("roomId");
+      const roomName = formData.get("roomName");
+      const campus = formData.get("campus");
+      const dateStr = formData.get("date");
+      const startTime = formData.get("startTime");
+      const endTime = formData.get("endTime");
 
-    return { success: true, booking, bookings: inMemoryBookings };
+      // Check if user already has a booking for this room and campus
+      const existingBooking = await prisma.roomBooking.findFirst({
+        where: {
+          userId: userId,
+          roomName: roomName,
+          campus: campus,
+          date: new Date(dateStr),
+        },
+      });
+
+      let booking;
+      if (existingBooking) {
+        // Update existing booking
+        console.log("🔄 Updating existing booking for", roomName);
+        booking = await prisma.roomBooking.update({
+          where: { id: existingBooking.id },
+          data: {
+            startTime,
+            endTime,
+          },
+        });
+      } else {
+        // Create new booking
+        console.log("➕ Creating new booking for", roomName);
+        booking = await prisma.roomBooking.create({
+          data: {
+            userId,
+            roomId,
+            roomName,
+            campus,
+            date: new Date(dateStr),
+            startTime,
+            endTime,
+          },
+        });
+      }
+
+      console.log("✅ Booking created/updated:", booking);
+
+      return {
+        success: true,
+        booking: {
+          ...booking,
+          date: booking.date.toISOString().split("T")[0],
+          createdAt: booking.createdAt.toISOString(),
+          updatedAt: booking.updatedAt.toISOString(),
+        },
+      };
+    }
+
+    if (actionType === "delete") {
+      const bookingId = parseInt(formData.get("bookingId"));
+
+      console.log("🗑️ Deleting booking:", bookingId);
+
+      await prisma.roomBooking.delete({
+        where: { id: bookingId },
+      });
+
+      console.log("✅ Booking deleted successfully");
+
+      return { success: true };
+    }
+
+    return { success: false, error: "Invalid action" };
+  } catch (error) {
+    console.error("❌ Action error:", error);
+    return { success: false, error: error.message };
   }
+}
 
-  if (actionType === "delete") {
-    const bookingId = parseInt(formData.get("bookingId"));
-
-    // Remove from in-memory storage
-    const beforeLength = inMemoryBookings.length;
-    inMemoryBookings = inMemoryBookings.filter((b) => b.id !== bookingId);
-    const afterLength = inMemoryBookings.length;
-
-    console.log(
-      "🗑️ Booking deleted. Before:",
-      beforeLength,
-      "After:",
-      afterLength
-    );
-    return { success: true, bookings: inMemoryBookings };
-  }
-
-  return { success: false, error: "Invalid action" };
-} // Helper to programmatically generate seat positions for a grid with numbering
+// Helper to programmatically generate seat positions for a grid with numbering
 function generateSeats(
   prefix,
   roomName,
@@ -215,54 +293,31 @@ export default function RoomBooking() {
   const loaderData = useLoaderData();
   const actionData = useActionData();
   const revalidator = useRevalidator();
-  const fetcher = useFetcher();
   const [selectedLocation, setSelectedLocation] = useState("Hammerbrook");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("11:00");
-  const [userId, setUserId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(false);
 
-  // Use loader data for initial bookings, or fallback to empty array
-  const [bookings, setBookings] = useState(loaderData?.bookings || []);
+  // Get user ID and bookings from loader
+  const userId = loaderData?.userId || 1;
+  const bookings = loaderData?.bookings || [];
 
-  // Get userId from loader data or use fallback
+  // Handle action completion
   useEffect(() => {
-    if (loaderData?.userId) {
-      console.log("👤 User ID from loader:", loaderData.userId);
-      setUserId(loaderData.userId);
-    } else {
-      // Fallback for development/testing
-      console.log("⚠️ Using fallback userId: 1");
-      setUserId(1);
-    }
-  }, [loaderData]);
-
-  // Update bookings when loader data changes
-  useEffect(() => {
-    if (loaderData?.bookings) {
-      console.log("📚 Loaded bookings:", loaderData.bookings);
-      setBookings(loaderData.bookings);
-    }
-  }, [loaderData]);
-
-  // Update bookings when action completes
-  useEffect(() => {
-    if (actionData?.success && actionData?.bookings) {
-      console.log(
-        "✅ Action completed, updating bookings:",
-        actionData.bookings
-      );
-      setBookings(actionData.bookings);
+    if (actionData?.success) {
+      console.log("✅ Action completed successfully");
       setIsLoading(false);
+      // Revalidate to get fresh data from database
+      revalidator.revalidate();
     }
-  }, [actionData]);
+  }, [actionData, revalidator]);
 
   // Get rooms for selected campus
   const rooms = CAMPUS_ROOMS[selectedLocation] || [];
 
-  // Buchungsfunktion mit React Router action
-  const handleBookRoom = async (room) => {
+  // Buchungsfunktion - uses Form submission to server action
+  const handleBookRoom = (room) => {
     if (!userId) {
       showErrorToast("Benutzer nicht angemeldet");
       return;
@@ -276,16 +331,6 @@ export default function RoomBooking() {
     setIsLoading(true);
     const today = new Date().toISOString().split("T")[0];
 
-    const formData = new FormData();
-    formData.append("_action", "create");
-    formData.append("userId", userId.toString());
-    formData.append("roomId", room.id);
-    formData.append("roomName", room.name);
-    formData.append("campus", selectedLocation);
-    formData.append("date", today);
-    formData.append("startTime", startTime);
-    formData.append("endTime", endTime);
-
     console.log("📤 Booking room:", {
       userId,
       roomId: room.id,
@@ -296,37 +341,36 @@ export default function RoomBooking() {
       endTime,
     });
 
-    try {
-      // Use React Router fetcher to submit the form
-      fetcher.submit(formData, { method: "POST" });
+    // Create form and submit to server action
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.style.display = "none";
 
-      // Add booking to local state immediately for better UX
-      const newBooking = {
-        id: Date.now(),
-        userId,
-        roomId: room.id,
-        roomName: room.name,
-        campus: selectedLocation,
-        date: today,
-        startTime,
-        endTime,
-      };
+    const formData = new FormData();
+    formData.append("_action", "create");
+    formData.append("userId", userId.toString());
+    formData.append("roomId", room.id);
+    formData.append("roomName", room.name);
+    formData.append("campus", selectedLocation);
+    formData.append("date", today);
+    formData.append("startTime", startTime);
+    formData.append("endTime", endTime);
 
-      setBookings([...bookings, newBooking]);
-      showSuccessToast(
-        `Raum ${room.name} erfolgreich gebucht! Zeit: ${startTime} - ${endTime}`
-      );
-
-      // Revalidate to get fresh data from server
-      setTimeout(() => {
-        revalidator.revalidate();
-      }, 100);
-    } catch (error) {
-      console.error("❌ Booking error:", error);
-      showErrorToast("Fehler beim Buchen des Raums");
-    } finally {
-      setTimeout(() => setIsLoading(false), 500);
+    // Append form data to form
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
     }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    showSuccessToast(
+      `Raum ${room.name} wird gebucht... Zeit: ${startTime} - ${endTime}`
+    );
   };
 
   // Verfügbarkeit prüfen
@@ -359,7 +403,7 @@ export default function RoomBooking() {
   };
 
   // Stornierungsfunktion mit React Router action
-  const handleCancelBooking = async (roomName) => {
+  const handleCancelBooking = (roomName) => {
     const booking = bookings.find(
       (b) => b.roomName === roomName && b.campus === selectedLocation
     );
@@ -377,28 +421,28 @@ export default function RoomBooking() {
     setIsLoading(true);
     console.log("🗑️ Cancelling booking:", booking);
 
+    // Create form and submit to server action
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.style.display = "none";
+
     const formData = new FormData();
     formData.append("_action", "delete");
     formData.append("bookingId", booking.id.toString());
 
-    try {
-      // Use React Router fetcher to submit the form
-      fetcher.submit(formData, { method: "POST" });
-
-      // Remove booking from local state immediately for better UX
-      setBookings(bookings.filter((b) => b.id !== booking.id));
-      showInfoToast(`Buchung für ${roomName} storniert`);
-
-      // Revalidate to get fresh data from server
-      setTimeout(() => {
-        revalidator.revalidate();
-      }, 100);
-    } catch (error) {
-      console.error("❌ Cancel error:", error);
-      showErrorToast("Fehler beim Stornieren");
-    } finally {
-      setTimeout(() => setIsLoading(false), 500);
+    // Append form data to form
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
     }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    showInfoToast(`Buchung für ${roomName} wird storniert...`);
   };
 
   // Get lectures for selected campus and today

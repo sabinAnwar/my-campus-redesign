@@ -27,6 +27,7 @@ import {
   Users,
   DoorOpen,
   History,
+  Library,
 } from "lucide-react";
 import { getRecentCourses } from "../lib/recentCourses";
 
@@ -209,8 +210,7 @@ export default function Dashboard() {
     },
     {
       id: 3,
-      title:
-        "Präsentation: Algorithmen",
+      title: "Präsentation: Algorithmen",
       course: "Algorithmen",
       dueDate: "20.11.2025",
       daysLeft: 8,
@@ -261,10 +261,11 @@ export default function Dashboard() {
       color: "orange",
     },
     {
-      label: "Nachrichten",
-      icon: MessageSquare,
-      link: "/messages",
+      label: "Online Bibliothek",
+      icon: Library,
+      link: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
       color: "green",
+      external: true,
     },
     {
       label: "Raumbuchung",
@@ -380,7 +381,9 @@ export default function Dashboard() {
                   <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
                     <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Heute</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Heute
+                  </h2>
                 </div>
                 <Link
                   to="/courses/schedule"
@@ -517,12 +520,18 @@ export default function Dashboard() {
                           <Calendar className="h-3.5 w-3.5" />
                           Fällig: {assignment.dueDate}
                         </span>
-                        <span className={`font-semibold ${
-                          assignment.daysLeft === 0 ? "text-red-600 dark:text-red-400" :
-                          assignment.daysLeft <= 3 ? "text-orange-600 dark:text-orange-400" :
-                          "text-slate-600 dark:text-slate-400"
-                        }`}>
-                          {assignment.daysLeft === 0 ? "Heute!" : `${assignment.daysLeft} Tage`}
+                        <span
+                          className={`font-semibold ${
+                            assignment.daysLeft === 0
+                              ? "text-red-600 dark:text-red-400"
+                              : assignment.daysLeft <= 3
+                                ? "text-orange-600 dark:text-orange-400"
+                                : "text-slate-600 dark:text-slate-400"
+                          }`}
+                        >
+                          {assignment.daysLeft === 0
+                            ? "Heute!"
+                            : `${assignment.daysLeft} Tage`}
                         </span>
                       </div>
                     </div>
@@ -777,10 +786,20 @@ export default function Dashboard() {
                   const classes =
                     colorClasses[action.color] || colorClasses.blue;
 
+                  // Use regular <a> tag for external links
+                  const Component = action.external ? "a" : Link;
+                  const linkProps = action.external
+                    ? {
+                        href: action.link,
+                        target: "_blank",
+                        rel: "noopener noreferrer",
+                      }
+                    : { to: action.link };
+
                   return (
-                    <Link
+                    <Component
                       key={idx}
-                      to={action.link}
+                      {...linkProps}
                       className={`group p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 ${classes.border} hover:shadow-lg transition-all duration-200`}
                     >
                       <div
@@ -791,7 +810,7 @@ export default function Dashboard() {
                       <div className="text-xs font-semibold text-slate-900 dark:text-white">
                         {action.label}
                       </div>
-                    </Link>
+                    </Component>
                   );
                 })}
               </div>

@@ -74,7 +74,7 @@ model Studiengang {
 
 model Course {
   id           Int      @id @default(autoincrement())
-  code         String   // e.g., "WEB101"
+  code         String   @unique // e.g., "WEB101"
   name         String
   description  String?
   studiengang  Studiengang @relation(fields: [studiengangId], references: [id])
