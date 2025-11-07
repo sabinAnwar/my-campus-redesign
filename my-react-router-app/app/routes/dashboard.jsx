@@ -111,7 +111,7 @@ export default function Dashboard() {
       link: "/courses",
     },
     {
-      label: "Abgabefristen",
+      label: "Aufgaben",
       value: "12",
       change: "5 fällig",
       icon: CheckSquare,
@@ -187,91 +187,46 @@ export default function Dashboard() {
     },
   ];
 
-  // Calculate days until deadline
-  const calculateDaysLeft = (dueDateString) => {
-    const dueDate = new Date(dueDateString.split(".").reverse().join("-"));
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    dueDate.setHours(0, 0, 0, 0);
-    const diffTime = dueDate - today;
-    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-    return diffDays;
-  };
-
-  // Upcoming assignments - Wissenschaftliche Arbeiten
+  // Upcoming assignments
   const upcomingAssignments = [
     {
       id: 1,
-      title: "Hausarbeit: Digitale Transformation im E-Commerce",
+      title: "Hausarbeit: E-Commerce Analyse",
       course: "E-Commerce",
       dueDate: "15.11.2025",
-      type: "Hausarbeit",
-      pages: "15-20 Seiten",
+      daysLeft: 3,
       priority: "high",
       completed: false,
     },
     {
       id: 2,
-      title: "Seminararbeit: Datenbankmodellierung für große Unternehmen",
+      title: "Projekt: Datenbankmodellierung",
       course: "Datenbankdesign",
       dueDate: "18.11.2025",
-      type: "Seminararbeit",
-      pages: "20-25 Seiten",
+      daysLeft: 6,
       priority: "medium",
       completed: false,
     },
     {
       id: 3,
       title:
-        "Projektarbeit: Entwicklung eines Algorithmus für Routenoptimierung",
-      course: "Algorithmen und Datenstrukturen",
+        "Präsentation: Algorithmen",
+      course: "Algorithmen",
       dueDate: "20.11.2025",
-      type: "Projektarbeit",
-      pages: "25-30 Seiten",
+      daysLeft: 8,
       priority: "medium",
       completed: false,
     },
     {
       id: 4,
-      title: "Hausarbeit: Webentwicklung mit modernen Frameworks",
+      title: "Quiz: Webentwicklung",
       course: "Webentwicklung",
       dueDate: "12.11.2025",
-      type: "Hausarbeit",
-      pages: "12-15 Seiten",
+      daysLeft: 0,
       priority: "high",
       completed: false,
     },
-    {
-      id: 5,
-      title:
-        "Forschungsarbeit: Künstliche Intelligenz in der Wirtschaftsinformatik",
-      course: "Wirtschaftsinformatik",
-      dueDate: "25.11.2025",
-      type: "Forschungsarbeit",
-      pages: "30-35 Seiten",
-      priority: "medium",
-      completed: false,
-    },
-  ]
-    .map((assignment) => {
-      const daysLeft = calculateDaysLeft(assignment.dueDate);
-      // Auto-adjust priority based on days left
-      let autoPriority = assignment.priority;
-      if (daysLeft < 0) {
-        autoPriority = "high"; // Overdue
-      } else if (daysLeft <= 3) {
-        autoPriority = "high"; // Urgent
-      } else if (daysLeft <= 7) {
-        autoPriority = "medium"; // Soon
-      }
-
-      return {
-        ...assignment,
-        daysLeft,
-        priority: autoPriority,
-      };
-    })
-    .sort((a, b) => a.daysLeft - b.daysLeft);
+  ];
 
   // News
   const news = [
@@ -300,7 +255,7 @@ export default function Dashboard() {
       color: "purple",
     },
     {
-      label: "Abgabefristen",
+      label: "Aufgaben",
       icon: CheckSquare,
       link: "/tasks",
       color: "orange",
@@ -331,11 +286,11 @@ export default function Dashboard() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 mt-4">
           <div className="flex-1">
-            <h1 className="text-[36px] font-bold text-black leading-tight mb-2">
+            <h1 className="text-[36px] font-bold text-slate-900 dark:text-white leading-tight mb-2">
               {getGreeting()},{" "}
               {user?.name ? user.name.split(" ")[0] : "Student"} 👋
             </h1>
-            <p className="text-gray-700 text-sm font-medium">
+            <p className="text-slate-600 dark:text-slate-400 text-sm">
               Hier ist eine Übersicht über deinen Studienalltag.
             </p>
           </div>
@@ -365,10 +320,10 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, idx) => {
             const gradientClasses = {
-              blue: "from-blue-50 via-indigo-50 to-blue-100",
-              orange: "from-orange-50 via-amber-50 to-orange-100",
-              purple: "from-purple-50 via-pink-50 to-purple-100",
-              green: "from-green-50 via-emerald-50 to-green-100",
+              blue: "from-blue-50 to-indigo-50",
+              orange: "from-orange-50 to-amber-50",
+              purple: "from-purple-50 to-pink-50",
+              green: "from-green-50 to-emerald-50",
             };
             const borderClasses = {
               blue: "border-blue-200",
@@ -396,7 +351,7 @@ export default function Dashboard() {
                     <stat.icon className="h-6 w-6" />
                   </div>
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-full bg-white/90 backdrop-blur-sm ${textClasses[stat.color]}`}
+                    className={`text-xs font-semibold px-2 py-1 rounded-full bg-white/80 backdrop-blur-sm ${textClasses[stat.color]}`}
                   >
                     {stat.change}
                   </span>
@@ -406,7 +361,7 @@ export default function Dashboard() {
                 >
                   {stat.value}
                 </div>
-                <div className="text-sm text-slate-700 font-medium">
+                <div className="text-sm text-slate-600 font-medium">
                   {stat.label}
                 </div>
                 <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
@@ -419,13 +374,13 @@ export default function Dashboard() {
           {/* Main Column */}
           <div className="lg:col-span-8 space-y-6">
             {/* Today's Schedule */}
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100">
-                    <CalendarDays className="h-5 w-5 text-blue-600" />
+                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
+                    <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900">Heute</h2>
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">Heute</h2>
                 </div>
                 <Link
                   to="/courses/schedule"
@@ -442,14 +397,14 @@ export default function Dashboard() {
                       key={cls.id}
                       className={`flex items-start gap-4 p-4 rounded-xl border-l-4 ${
                         cls.color === "blue"
-                          ? "bg-white/80 border-blue-500"
+                          ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
                           : cls.color === "purple"
-                            ? "bg-white/80 border-purple-500"
-                            : "bg-white/80 border-green-500"
-                      } hover:shadow-md transition-shadow backdrop-blur-sm`}
+                            ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
+                            : "bg-green-50 dark:bg-green-900/20 border-green-500"
+                      } hover:shadow-md transition-shadow`}
                     >
                       <div
-                        className={`p-2 rounded-lg bg-white ${
+                        className={`p-2 rounded-lg bg-white dark:bg-slate-800 ${
                           cls.color === "blue"
                             ? "text-blue-600"
                             : cls.color === "purple"
@@ -461,22 +416,22 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="font-semibold text-slate-900 text-sm">
+                          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                             {cls.title}
                           </h3>
                           <span
                             className={`text-xs font-semibold px-2 py-0.5 rounded ${
                               cls.color === "blue"
-                                ? "bg-blue-100 text-blue-700"
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
                                 : cls.color === "purple"
-                                  ? "bg-purple-100 text-purple-700"
-                                  : "bg-green-100 text-green-700"
+                                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
+                                  : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
                             }`}
                           >
                             {cls.type}
                           </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 mt-2">
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400 mt-2">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
                             {cls.time}
@@ -495,7 +450,7 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-slate-500">
+                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
                   <CalendarDays className="h-12 w-12 mx-auto mb-2 opacity-50" />
                   <p className="text-sm">Keine Termine für heute</p>
                 </div>
@@ -503,14 +458,14 @@ export default function Dashboard() {
             </div>
 
             {/* Upcoming Assignments */}
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-100">
-                    <CheckSquare className="h-5 w-5 text-orange-600" />
+                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
+                    <CheckSquare className="h-5 w-5 text-orange-600 dark:text-orange-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900">
-                    Bevorstehende Abgabefristen
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                    Bevorstehende Aufgaben
                   </h2>
                 </div>
                 <Link
@@ -527,9 +482,9 @@ export default function Dashboard() {
                     key={assignment.id}
                     className={`flex items-start gap-4 p-4 rounded-xl border ${
                       assignment.priority === "high"
-                        ? "bg-red-50 border-red-300"
-                        : "bg-white/80 border-orange-200"
-                    } hover:shadow-md transition-shadow backdrop-blur-sm`}
+                        ? "bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800"
+                        : "bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700"
+                    } hover:shadow-md transition-shadow`}
                   >
                     <button
                       onClick={() => {
@@ -538,63 +493,36 @@ export default function Dashboard() {
                       className="mt-0.5 flex-shrink-0"
                     >
                       {assignment.completed ? (
-                        <CheckCircle2 className="h-5 w-5 text-green-600" />
+                        <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                       ) : (
-                        <Circle className="h-5 w-5 text-slate-400" />
+                        <Circle className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                       )}
                     </button>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-2 mb-1">
-                        <h3 className="font-semibold text-slate-900 text-sm">
+                        <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
                           {assignment.title}
                         </h3>
                         {assignment.priority === "high" && (
-                          <span className="flex items-center gap-1 text-xs font-semibold text-red-600">
+                          <span className="flex items-center gap-1 text-xs font-semibold text-red-600 dark:text-red-400">
                             <AlertCircle className="h-3.5 w-3.5" />
                             Dringend
                           </span>
                         )}
                       </div>
-                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 mt-2">
-                        <span className="font-medium">{assignment.course}</span>
+                      <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400 mt-2">
+                        <span>{assignment.course}</span>
                         <span>•</span>
-                        <span className="px-2 py-0.5 rounded bg-blue-100 text-blue-700 font-semibold">
-                          {assignment.type}
-                        </span>
-                        {assignment.pages && (
-                          <>
-                            <span>•</span>
-                            <span className="text-slate-500">
-                              {assignment.pages}
-                            </span>
-                          </>
-                        )}
-                        <span className="flex items-center gap-1 ml-auto">
+                        <span className="flex items-center gap-1">
                           <Calendar className="h-3.5 w-3.5" />
-                          <span className="font-medium">
-                            Fällig: {assignment.dueDate}
-                          </span>
+                          Fällig: {assignment.dueDate}
                         </span>
-                        <span
-                          className={`font-bold px-2 py-0.5 rounded ${
-                            assignment.daysLeft < 0
-                              ? "bg-red-100 text-red-700"
-                              : assignment.daysLeft === 0
-                                ? "bg-red-200 text-red-800"
-                                : assignment.daysLeft <= 3
-                                  ? "bg-orange-100 text-orange-700"
-                                  : assignment.daysLeft <= 7
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-green-100 text-green-700"
-                          }`}
-                        >
-                          {assignment.daysLeft < 0
-                            ? `${Math.abs(assignment.daysLeft)} Tage überfällig!`
-                            : assignment.daysLeft === 0
-                              ? "Heute fällig!"
-                              : assignment.daysLeft === 1
-                                ? "Morgen fällig!"
-                                : `${assignment.daysLeft} Tage`}
+                        <span className={`font-semibold ${
+                          assignment.daysLeft === 0 ? "text-red-600 dark:text-red-400" :
+                          assignment.daysLeft <= 3 ? "text-orange-600 dark:text-orange-400" :
+                          "text-slate-600 dark:text-slate-400"
+                        }`}>
+                          {assignment.daysLeft === 0 ? "Heute!" : `${assignment.daysLeft} Tage`}
                         </span>
                       </div>
                     </div>
@@ -740,16 +668,16 @@ export default function Dashboard() {
             <div>
               <div className="flex items-center justify-between mb-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-indigo-100">
-                    <Bell className="h-5 w-5 text-indigo-600" />
+                  <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
+                    <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
                   </div>
-                  <h2 className="text-lg font-bold text-slate-900">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     Aktuelles
                   </h2>
                 </div>
                 <Link
                   to="/news"
-                  className="text-sm font-semibold text-indigo-600 hover:text-indigo-700 inline-flex items-center gap-1"
+                  className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 inline-flex items-center gap-1"
                 >
                   Alle anzeigen
                   <ArrowRight className="h-4 w-4" />
@@ -759,11 +687,7 @@ export default function Dashboard() {
                 {news.map((item, i) => (
                   <div
                     key={i}
-                    className={`relative rounded-2xl p-5 border-2 hover:shadow-lg transition-all duration-300 group ${
-                      i === 0
-                        ? "bg-gradient-to-br from-blue-50 to-indigo-50 border-blue-200"
-                        : "bg-gradient-to-br from-purple-50 to-pink-50 border-purple-200"
-                    }`}
+                    className="relative rounded-2xl p-5 border bg-white dark:bg-slate-800 border-slate-200 dark:border-slate-700 hover:shadow-lg transition-all duration-300 group"
                   >
                     <div
                       className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${
@@ -771,29 +695,29 @@ export default function Dashboard() {
                       }`}
                     />
                     <div className="absolute top-3 right-4 flex flex-col gap-1.5">
-                      <span className="px-2 py-0.5 rounded bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-semibold">
+                      <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold">
                         {item.category}
                       </span>
                       {item.featured && (
-                        <span className="px-2 py-0.5 rounded bg-amber-100 text-amber-700 text-xs font-semibold">
+                        <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-xs font-semibold">
                           FEATURED
                         </span>
                       )}
                     </div>
                     <div className="mt-2">
-                      <p className="text-sm font-semibold text-slate-800 mb-2 pr-20">
+                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 mb-2 pr-20">
                         {item.title}
                       </p>
                       {item.description && (
-                        <p className="mt-2 text-xs text-slate-600">
+                        <p className="mt-2 text-xs text-slate-600 dark:text-slate-400">
                           {item.description}
                         </p>
                       )}
-                      <div className="flex items-center gap-2 mt-3 text-xs text-slate-500">
+                      <div className="flex items-center gap-2 mt-3 text-xs text-slate-500 dark:text-slate-500">
                         <Calendar className="h-3.5 w-3.5" />
                         <span>{item.date}</span>
                       </div>
-                      <button className="mt-4 px-4 py-2 rounded-lg bg-white/90 backdrop-blur-sm text-slate-700 text-xs font-semibold hover:bg-white transition-colors inline-flex items-center gap-1 shadow-sm">
+                      <button className="mt-4 px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors inline-flex items-center gap-1">
                         Weiterlesen <ArrowRight className="h-3 w-3" />
                       </button>
                     </div>
@@ -806,8 +730,8 @@ export default function Dashboard() {
           {/* Right Sidebar */}
           <div className="lg:col-span-4 space-y-6">
             {/* Quick Actions */}
-            <div className="bg-gradient-to-br from-slate-50 to-white border-2 border-slate-200 rounded-2xl p-6 shadow-sm">
-              <h2 className="text-lg font-bold text-slate-900 mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+              <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-4">
                 Schnellzugriff
               </h2>
               <div className="grid grid-cols-2 gap-3">
@@ -857,14 +781,14 @@ export default function Dashboard() {
                     <Link
                       key={idx}
                       to={action.link}
-                      className={`group p-4 rounded-xl border-2 border-slate-200 bg-white ${classes.border} hover:shadow-lg transition-all duration-200`}
+                      className={`group p-4 rounded-xl border-2 border-slate-200 dark:border-slate-700 ${classes.border} hover:shadow-lg transition-all duration-200`}
                     >
                       <div
                         className={`p-2 rounded-lg ${classes.bg} w-fit mb-2 group-hover:scale-110 transition-transform`}
                       >
                         <action.icon className={`h-5 w-5 ${classes.text}`} />
                       </div>
-                      <div className="text-xs font-semibold text-slate-900">
+                      <div className="text-xs font-semibold text-slate-900 dark:text-white">
                         {action.label}
                       </div>
                     </Link>
@@ -905,23 +829,23 @@ export default function Dashboard() {
             </div>
 
             {/* Recommendation Card */}
-            <div className="bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
               <div className="flex items-start gap-4">
-                <div className="h-12 w-16 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex-shrink-0 flex items-center justify-center shadow-lg">
+                <div className="h-12 w-16 rounded-lg bg-gradient-to-br from-amber-400 to-orange-500 flex-shrink-0 flex items-center justify-center">
                   <Award className="h-6 w-6 text-white" />
                 </div>
                 <div className="flex-1">
-                  <div className="text-sm font-bold text-slate-900 mb-2">
+                  <div className="text-sm font-bold text-slate-900 dark:text-white mb-2">
                     STUDIEN EMPFEHLEN
                   </div>
-                  <p className="text-xs text-slate-600 mb-4">
+                  <p className="text-xs text-slate-600 dark:text-slate-400 mb-4">
                     Empfehle die IU und erhalte{" "}
-                    <span className="font-bold text-amber-600">
+                    <span className="font-bold text-amber-600 dark:text-amber-400">
                       bis zu 200€
                     </span>{" "}
                     als Dankeschön!
                   </p>
-                  <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 text-white text-xs font-semibold hover:opacity-90 transition-opacity shadow-sm">
+                  <button className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-xs font-semibold hover:opacity-90 transition-opacity shadow-sm">
                     Bonus abholen
                   </button>
                 </div>
@@ -929,12 +853,12 @@ export default function Dashboard() {
             </div>
 
             {/* Exam Guide */}
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 border-2 border-orange-200 rounded-2xl p-6 shadow-sm">
-              <div className="text-sm font-bold text-slate-900 mb-4">
+            <div className="bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-2xl p-6">
+              <div className="text-sm font-bold text-slate-900 dark:text-white mb-4">
                 Prüfungs-Guide
               </div>
-              <div className="h-32 rounded-xl bg-gradient-to-br from-orange-200 to-amber-300 mb-4 shadow-inner" />
-              <p className="text-xs text-slate-600">
+              <div className="h-32 rounded-xl bg-gradient-to-br from-orange-200 to-amber-300 dark:from-orange-900/30 dark:to-amber-900/30 mb-4" />
+              <p className="text-xs text-slate-600 dark:text-slate-400">
                 Hier findest Du alle relevanten Infos zu Deinen Prüfungen.
               </p>
             </div>
