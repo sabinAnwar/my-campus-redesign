@@ -56,13 +56,51 @@ export async function loader({ request }) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-  const overrideHour = overrideHourRaw != null ? parseInt(String(overrideHourRaw), 10) : null;
-  const overrideMinute = overrideMinuteRaw != null ? parseInt(String(overrideMinuteRaw), 10) : null;
+    const overrideHour =
+      overrideHourRaw != null ? parseInt(String(overrideHourRaw), 10) : null;
+    const overrideMinute =
+      overrideMinuteRaw != null
+        ? parseInt(String(overrideMinuteRaw), 10)
+        : null;
 
-    const users = await prisma.user.findMany({
-      where: { reminderEnabled: true },
-      select: { id: true, email: true, name: true, reminderHour: true, reminderMinute: true, reminderTimezone: true },
-    });
+    // Try selecting reminderMinute; if the Prisma client is outdated, retry without it
+    let users;
+    let noMinuteInClient = false;
+    try {
+      users = await prisma.user.findMany({
+        where: { reminderEnabled: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          reminderHour: true,
+          reminderMinute: true,
+          reminderTimezone: true,
+        },
+      });
+    } catch (e) {
+      const msg = e?.message || "";
+      if (
+        msg.includes("Unknown field `reminderMinute`") ||
+        msg.includes("Unknown arg `reminderMinute`")
+      ) {
+        noMinuteInClient = true;
+        users = await prisma.user.findMany({
+          where: { reminderEnabled: true },
+          select: {
+            id: true,
+            email: true,
+            name: true,
+            reminderHour: true,
+            reminderTimezone: true,
+          },
+        });
+        // Normalize to include reminderMinute: 0 when client doesn't support it
+        users = users.map((u) => ({ ...u, reminderMinute: 0 }));
+      } else {
+        throw e;
+      }
+    }
 
     const currentWeekKey = getCurrentWeekKey();
 

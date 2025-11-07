@@ -84,3 +84,21 @@ export function showWarningToast(message) {
     fallbackNotification(message, 'warning');
   }
 }
+
+// Generic showToast function that accepts type parameter
+export function showToast(message, type = 'success') {
+  console.log(`📢 Showing ${type} toast:`, message);
+  
+  switch (type) {
+    case 'success':
+      return showSuccessToast(message);
+    case 'error':
+      return showErrorToast(message);
+    case 'info':
+      return showInfoToast(message);
+    case 'warning':
+      return showWarningToast(message);
+    default:
+      return showSuccessToast(message);
+  }
+}

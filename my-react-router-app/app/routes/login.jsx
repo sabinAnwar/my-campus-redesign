@@ -1,22 +1,59 @@
 import { useEffect, useState } from "react";
-import { Link, useFetcher } from "react-router";
-import { showErrorToast } from "../lib/toast";
+import { Link, useNavigate } from "react-router";
+import { showErrorToast, showSuccessToast } from "../lib/toast";
 
 export const loader = async () => {
   return null;
 };
 
 export default function Login() {
-  const fetcher = useFetcher();
+  const navigate = useNavigate();
   const [error, setError] = useState(null);
-  const isSubmitting = fetcher.state === "submitting";
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  useEffect(() => {
-    if (fetcher?.data?.error) {
-      setError(fetcher.data.error);
-      showErrorToast(fetcher.data.error);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError(null);
+    setIsSubmitting(true);
+
+    try {
+      const formData = new FormData(e.target);
+      const email = formData.get("email");
+      const password = formData.get("password");
+
+      const response = await fetch("/api/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({ email, password }),
+        credentials: "include",
+      });
+
+      // Check for redirect (303 status)
+      if (response.redirected || response.ok) {
+        showSuccessToast("Login successful! Redirecting...");
+        // Wait a moment for cookies to be set, then navigate
+        setTimeout(() => {
+          navigate("/dashboard", { replace: true });
+        }, 500);
+        return;
+      }
+
+      if (!response.ok) {
+        const data = await response.json();
+        const errorMsg = data.error || "Login failed. Please try again.";
+        setError(errorMsg);
+        showErrorToast(errorMsg);
+      }
+    } catch (err) {
+      const errorMsg = err.message || "An error occurred during login";
+      setError(errorMsg);
+      showErrorToast(errorMsg);
+    } finally {
+      setIsSubmitting(false);
     }
-  }, [fetcher?.data]);
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-stretch">
@@ -190,12 +227,7 @@ export default function Login() {
             </div>
 
             {/* Form */}
-            <fetcher.Form
-              method="post"
-              action="/api/login"
-              encType="application/x-www-form-urlencoded"
-              className="space-y-7"
-            >
+            <form onSubmit={handleSubmit} className="space-y-7">
               {/* Email Input - Professional with icon box */}
               <div>
                 <label
@@ -419,7 +451,7 @@ export default function Login() {
                   <span>Support</span>
                 </a>
               </div>
-            </fetcher.Form>
+            </form>
           </div>
 
           {/* Footer - Professional */}

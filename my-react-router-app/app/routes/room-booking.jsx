@@ -1,275 +1,669 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useMemo, useState } from "react";
+import {
+  Link,
+  useLoaderData,
+  useActionData,
+  useRevalidator,
+} from "react-router-dom";
+import AppShell from "../components/AppShell";
+import { prisma } from "../lib/prisma";
+import {
+  showToast,
+  showSuccessToast,
+  showErrorToast,
+  showInfoToast,
+} from "../lib/toast";
 
-const HAMBURG_LOCATIONS = {
-  'Hammerbrook': {
-    rooms: [
-      { id: 1, name: 'Hörsaal A1', capacity: 150, type: 'Lecture Hall' },
-      { id: 2, name: 'Seminarraum B2', capacity: 40, type: 'Seminar' },
-      { id: 3, name: 'Computerlab C3', capacity: 30, type: 'Lab' },
-      { id: 4, name: 'Besprechungsraum D1', capacity: 12, type: 'Meeting' },
-    ]
+const TIME_SLOTS = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+];
+
+// Mock lectures dataset - Raum A1, A2, A3, etc.
+const LECTURES = [
+  {
+    id: 1,
+    campus: "Hammerbrook",
+    roomName: "Raum A1",
+    title: "Data Analytics",
+    startTime: "08:00",
+    endTime: "10:00",
+    date: "2025-11-07",
   },
-  'Waterloohain': {
-    rooms: [
-      { id: 5, name: 'Hörsaal H1', capacity: 200, type: 'Lecture Hall' },
-      { id: 6, name: 'Seminarraum W2', capacity: 50, type: 'Seminar' },
-      { id: 7, name: 'Gruppenraum W3', capacity: 20, type: 'Group' },
-      { id: 8, name: 'Prüfungsraum E1', capacity: 25, type: 'Exam' },
-    ]
+  {
+    id: 2,
+    campus: "Hammerbrook",
+    roomName: "Raum B1",
+    title: "Business Informatik",
+    startTime: "11:00",
+    endTime: "13:00",
+    date: "2025-11-07",
+  },
+  {
+    id: 3,
+    campus: "Waterloohain",
+    roomName: "Raum C1",
+    title: "Webentwicklung",
+    startTime: "09:30",
+    endTime: "11:30",
+    date: "2025-11-07",
+  },
+  {
+    id: 4,
+    campus: "Waterloohain",
+    roomName: "Raum C2",
+    title: "Datenbanken",
+    startTime: "10:00",
+    endTime: "12:00",
+    date: "2025-11-07",
+  },
+];
+
+// Helper function to get session token from request cookies
+function getSessionToken(request) {
+  const cookieHeader = request.headers.get("Cookie");
+  if (!cookieHeader) return null;
+
+  const cookies = cookieHeader.split(";").map((c) => c.trim());
+  const sessionCookie = cookies.find((c) => c.startsWith("session="));
+
+  if (!sessionCookie) return null;
+  return sessionCookie.split("=")[1];
+}
+
+export async function loader({ request }) {
+  try {
+    // Get session token from cookies
+    const token = getSessionToken(request);
+    console.log("🍪 Cookie header:", request.headers.get("Cookie"));
+    console.log("� Session token:", token);
+
+    let userId = 1; // Default fallback
+
+    if (token) {
+      // Look up session in database
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+
+      if (session?.user) {
+        userId = session.user.id;
+        console.log("✅ Found user from session:", userId);
+      }
+    }
+
+    // Fetch bookings from database for this user
+    const bookings = await prisma.roomBooking.findMany({
+      where: {
+        userId: userId,
+      },
+      orderBy: {
+        date: "asc",
+      },
+    });
+
+    console.log(
+      "📚 Loading bookings from database for userId:",
+      userId,
+      "- Found:",
+      bookings.length
+    );
+
+    // Convert date objects to ISO strings for JSON serialization
+    const serializedBookings = bookings.map((booking) => ({
+      ...booking,
+      date: booking.date.toISOString().split("T")[0],
+      createdAt: booking.createdAt.toISOString(),
+      updatedAt: booking.updatedAt.toISOString(),
+    }));
+
+    return { bookings: serializedBookings, userId };
+  } catch (error) {
+    console.error("Error loading bookings:", error);
+    return { bookings: [], userId: 1 };
   }
-};
+}
 
-const TIME_SLOTS = ['09:00', '10:00', '11:00', '12:00', '13:00', '14:00', '15:00', '16:00', '17:00'];
+export async function action({ request }) {
+  const formData = await request.formData();
+  const actionType = formData.get("_action");
 
-export const loader = async () => {
-  return null;
+  console.log("🎬 Action type:", actionType);
+
+  try {
+    // Get session token from cookies
+    const token = getSessionToken(request);
+    let userId = parseInt(formData.get("userId")) || 1; // Fallback
+
+    if (token) {
+      // Look up session in database
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+
+      if (session?.user) {
+        userId = session.user.id;
+        console.log("✅ Found user from session for action:", userId);
+      }
+    }
+
+    if (actionType === "create") {
+      const roomId = formData.get("roomId");
+      const roomName = formData.get("roomName");
+      const campus = formData.get("campus");
+      const dateStr = formData.get("date");
+      const startTime = formData.get("startTime");
+      const endTime = formData.get("endTime");
+
+      // Check if user already has a booking for this room and campus
+      const existingBooking = await prisma.roomBooking.findFirst({
+        where: {
+          userId: userId,
+          roomName: roomName,
+          campus: campus,
+          date: new Date(dateStr),
+        },
+      });
+
+      let booking;
+      if (existingBooking) {
+        // Update existing booking
+        console.log("🔄 Updating existing booking for", roomName);
+        booking = await prisma.roomBooking.update({
+          where: { id: existingBooking.id },
+          data: {
+            startTime,
+            endTime,
+          },
+        });
+      } else {
+        // Create new booking
+        console.log("➕ Creating new booking for", roomName);
+        booking = await prisma.roomBooking.create({
+          data: {
+            userId,
+            roomId,
+            roomName,
+            campus,
+            date: new Date(dateStr),
+            startTime,
+            endTime,
+          },
+        });
+      }
+
+      console.log("✅ Booking created/updated:", booking);
+
+      return {
+        success: true,
+        booking: {
+          ...booking,
+          date: booking.date.toISOString().split("T")[0],
+          createdAt: booking.createdAt.toISOString(),
+          updatedAt: booking.updatedAt.toISOString(),
+        },
+      };
+    }
+
+    if (actionType === "delete") {
+      const bookingId = parseInt(formData.get("bookingId"));
+
+      console.log("🗑️ Deleting booking:", bookingId);
+
+      await prisma.roomBooking.delete({
+        where: { id: bookingId },
+      });
+
+      console.log("✅ Booking deleted successfully");
+
+      return { success: true };
+    }
+
+    return { success: false, error: "Invalid action" };
+  } catch (error) {
+    console.error("❌ Action error:", error);
+    return { success: false, error: error.message };
+  }
+}
+
+// Helper to programmatically generate seat positions for a grid with numbering
+function generateSeats(
+  prefix,
+  roomName,
+  rows,
+  cols,
+  startX,
+  startY,
+  gapX,
+  gapY
+) {
+  const seats = [];
+  let seatNumber = 1;
+  for (let r = 0; r < rows; r++) {
+    for (let c = 0; c < cols; c++) {
+      const x = startX + c * gapX;
+      const y = startY + r * gapY;
+      const features = [];
+      if ((r + c) % 2 === 0) features.push("Dual Monitor");
+      if ((r + c) % 3 === 0) features.push("Adjustable Height");
+      seats.push({
+        id: `${prefix}_${seatNumber}`,
+        number: seatNumber++,
+        roomName,
+        x,
+        y,
+        w: 50,
+        h: 28,
+        rot: c % 4 === 0 ? -3 : c % 4 === 1 ? 3 : 0,
+        features,
+      });
+    }
+  }
+  return seats;
+}
+
+// Campus → Rooms (Raum A1, A2, A3, B1, B2, C1, C2, etc.)
+const CAMPUS_ROOMS = {
+  Hammerbrook: [
+    { id: "HB-A1", name: "Raum A1", capacity: 18 },
+    { id: "HB-A2", name: "Raum A2", capacity: 15 },
+    { id: "HB-A3", name: "Raum A3", capacity: 15 },
+    { id: "HB-B1", name: "Raum B1", capacity: 20 },
+    { id: "HB-B2", name: "Raum B2", capacity: 10 },
+  ],
+  Waterloohain: [
+    { id: "WL-C1", name: "Raum C1", capacity: 18 },
+    { id: "WL-C2", name: "Raum C2", capacity: 15 },
+    { id: "WL-C3", name: "Raum C3", capacity: 12 },
+    { id: "WL-D1", name: "Raum D1", capacity: 20 },
+  ],
 };
 
 export default function RoomBooking() {
-  const [selectedLocation, setSelectedLocation] = useState('Hammerbrook');
-  const [selectedRoom, setSelectedRoom] = useState(null);
-  const [selectedDate, setSelectedDate] = useState('');
-  const [selectedTime, setSelectedTime] = useState('');
-  const [bookings, setBookings] = useState([]);
-  const [showForm, setShowForm] = useState(false);
+  const loaderData = useLoaderData();
+  const actionData = useActionData();
+  const revalidator = useRevalidator();
+  const [selectedLocation, setSelectedLocation] = useState("Hammerbrook");
+  const [startTime, setStartTime] = useState("09:00");
+  const [endTime, setEndTime] = useState("11:00");
+  const [isLoading, setIsLoading] = useState(false);
+  const [availabilityChecked, setAvailabilityChecked] = useState(false);
 
-  const handleBooking = (e) => {
-    e.preventDefault();
-    if (selectedRoom && selectedDate && selectedTime) {
-      const newBooking = {
-        id: Date.now(),
-        room: selectedRoom.name,
-        location: selectedLocation,
-        date: selectedDate,
-        time: selectedTime,
-        duration: '1 hour',
-      };
-      setBookings([...bookings, newBooking]);
-      setSelectedRoom(null);
-      setSelectedDate('');
-      setSelectedTime('');
-      setShowForm(false);
+  // Get user ID and bookings from loader
+  const userId = loaderData?.userId || 1;
+  const bookings = loaderData?.bookings || [];
+
+  // Handle action completion
+  useEffect(() => {
+    if (actionData?.success) {
+      console.log("✅ Action completed successfully");
+      setIsLoading(false);
+      // Revalidate to get fresh data from database
+      revalidator.revalidate();
     }
+  }, [actionData, revalidator]);
+
+  // Get rooms for selected campus
+  const rooms = CAMPUS_ROOMS[selectedLocation] || [];
+
+  // Buchungsfunktion - uses Form submission to server action
+  const handleBookRoom = (room) => {
+    if (!userId) {
+      showErrorToast("Benutzer nicht angemeldet");
+      return;
+    }
+
+    if (isLoading) {
+      console.log("⏳ Already processing a request");
+      return;
+    }
+
+    setIsLoading(true);
+    const today = new Date().toISOString().split("T")[0];
+
+    console.log("📤 Booking room:", {
+      userId,
+      roomId: room.id,
+      roomName: room.name,
+      campus: selectedLocation,
+      date: today,
+      startTime,
+      endTime,
+    });
+
+    // Create form and submit to server action
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.style.display = "none";
+
+    const formData = new FormData();
+    formData.append("_action", "create");
+    formData.append("userId", userId.toString());
+    formData.append("roomId", room.id);
+    formData.append("roomName", room.name);
+    formData.append("campus", selectedLocation);
+    formData.append("date", today);
+    formData.append("startTime", startTime);
+    formData.append("endTime", endTime);
+
+    // Append form data to form
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    showSuccessToast(
+      `Raum ${room.name} wird gebucht... Zeit: ${startTime} - ${endTime}`
+    );
   };
 
-  const cancelBooking = (id) => {
-    setBookings(bookings.filter(b => b.id !== id));
+  // Verfügbarkeit prüfen
+  const handleCheckAvailability = () => {
+    if (!startTime || !endTime) {
+      showErrorToast("Bitte wählen Sie Start- und Endzeit");
+      return;
+    }
+
+    if (startTime >= endTime) {
+      showErrorToast("Startzeit muss vor der Endzeit liegen");
+      return;
+    }
+
+    console.log("🔍 Checking availability:", {
+      startTime,
+      endTime,
+      campus: selectedLocation,
+    });
+    setAvailabilityChecked(true);
+
+    const availableRooms = rooms.filter((room) => {
+      const { status } = getRoomStatus(room.name);
+      return status === "frei";
+    });
+
+    showSuccessToast(
+      `${availableRooms.length} von ${rooms.length} Räumen verfügbar für ${startTime} - ${endTime}`
+    );
+  };
+
+  // Stornierungsfunktion mit React Router action
+  const handleCancelBooking = (roomName) => {
+    const booking = bookings.find(
+      (b) => b.roomName === roomName && b.campus === selectedLocation
+    );
+
+    if (!booking) {
+      showErrorToast("Buchung nicht gefunden");
+      return;
+    }
+
+    if (isLoading) {
+      console.log("⏳ Already processing a request");
+      return;
+    }
+
+    setIsLoading(true);
+    console.log("🗑️ Cancelling booking:", booking);
+
+    // Create form and submit to server action
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.style.display = "none";
+
+    const formData = new FormData();
+    formData.append("_action", "delete");
+    formData.append("bookingId", booking.id.toString());
+
+    // Append form data to form
+    for (const [key, value] of formData.entries()) {
+      const input = document.createElement("input");
+      input.type = "hidden";
+      input.name = key;
+      input.value = value;
+      form.appendChild(input);
+    }
+
+    document.body.appendChild(form);
+    form.submit();
+
+    showInfoToast(`Buchung für ${roomName} wird storniert...`);
+  };
+
+  // Get lectures for selected campus and today
+  const todayLectures = useMemo(() => {
+    const today = new Date().toISOString().split("T")[0];
+    return LECTURES.filter(
+      (l) => l.campus === selectedLocation && l.date === today
+    );
+  }, [selectedLocation]);
+
+  // Check if a room has a lecture or is booked
+  const getRoomStatus = (roomName) => {
+    // Check if room has lecture
+    const lecture = todayLectures.find((l) => l.roomName === roomName);
+    if (lecture) {
+      return { status: "belegt", lecture, booking: null };
+    }
+
+    // Check if room is booked by user
+    const booking = bookings.find(
+      (b) => b.roomName === roomName && b.campus === selectedLocation
+    );
+    if (booking) {
+      return { status: "gebucht", lecture: null, booking };
+    }
+
+    return { status: "frei", lecture: null, booking: null };
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-slate-100 pb-12">
-      {/* Header */}
-      <div className="bg-gradient-to-r from-slate-900 via-blue-900 to-slate-900 text-white px-8 py-8 shadow-xl">
-        <div className="container mx-auto">
-          <Link to="/dashboard" className="inline-flex items-center gap-2 text-blue-200 hover:text-white mb-4 font-semibold">
-            ← Zurück zum Dashboard
-          </Link>
-          <h1 className="text-4xl font-black mb-2">🏛️ Raumbuchung</h1>
-          <p className="text-slate-200 text-lg">Buche Räume an den IU Campus-Standorten in Hamburg</p>
+    <AppShell>
+      <div className="min-h-screen bg-gray-50 pb-12">
+        {/* Header */}
+        <div className="bg-white shadow-sm border-b border-gray-200 px-8 py-6">
+          <div className="container mx-auto max-w-6xl">
+            <Link
+              to="/dashboard"
+              className="inline-flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-3 font-medium text-sm"
+            >
+              ← Zurück zum Dashboard
+            </Link>
+            <h1 className="text-3xl font-bold text-gray-900">
+              Raumbuchung – IU Hamburg Campus
+            </h1>
+          </div>
         </div>
-      </div>
 
-      <div className="container mx-auto px-4 py-12">
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Booking Form */}
-          <div className="lg:col-span-2">
-            {!showForm ? (
+        {/* Main Content */}
+        <div className="container mx-auto px-8 py-8 max-w-6xl">
+          {/* Campus Selection Tabs */}
+          <div className="flex justify-center gap-0 mb-8">
+            {Object.keys(CAMPUS_ROOMS).map((campus) => (
               <button
-                onClick={() => setShowForm(true)}
-                className="w-full bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold py-4 px-6 rounded-xl transition shadow-lg text-lg mb-8"
+                key={campus}
+                onClick={() => setSelectedLocation(campus)}
+                className={`px-12 py-4 text-lg font-bold transition-all ${
+                  selectedLocation === campus
+                    ? "bg-orange-500 text-white rounded-t-xl"
+                    : "bg-white text-gray-800 border-2 border-gray-300 rounded-t-xl hover:bg-gray-50"
+                }`}
               >
-                ➕ Neue Raumbuchung
+                {campus}
               </button>
-            ) : null}
+            ))}
+          </div>
 
-            {showForm && (
-              <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-slate-200 mb-8">
-                <h2 className="text-2xl font-black text-slate-900 mb-6">Raum buchen</h2>
-
-                <form onSubmit={handleBooking} className="space-y-6">
-                  {/* Campus Selection */}
-                  <div>
-                    <label className="block text-base font-bold text-slate-900 mb-3">📍 Campus</label>
-                    <div className="grid grid-cols-2 gap-4">
-                      {Object.keys(HAMBURG_LOCATIONS).map(location => (
-                        <button
-                          key={location}
-                          type="button"
-                          onClick={() => {
-                            setSelectedLocation(location);
-                            setSelectedRoom(null);
-                          }}
-                          className={`p-4 rounded-lg font-bold transition ${
-                            selectedLocation === location
-                              ? 'bg-cyan-600 text-white border-2 border-cyan-700'
-                              : 'bg-slate-100 text-slate-900 border-2 border-slate-200 hover:border-cyan-400'
-                          }`}
-                        >
-                          {location}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Room Selection */}
-                  <div>
-                    <label className="block text-base font-bold text-slate-900 mb-3">🚪 Raum</label>
-                    <div className="grid grid-cols-1 gap-3 max-h-64 overflow-y-auto">
-                      {HAMBURG_LOCATIONS[selectedLocation].rooms.map(room => (
-                        <button
-                          key={room.id}
-                          type="button"
-                          onClick={() => setSelectedRoom(room)}
-                          className={`p-4 rounded-lg text-left font-semibold transition ${
-                            selectedRoom?.id === room.id
-                              ? 'bg-blue-600 text-white border-2 border-blue-700'
-                              : 'bg-slate-50 text-slate-900 border-2 border-slate-200 hover:border-blue-400'
-                          }`}
-                        >
-                          <div className="font-bold">{room.name}</div>
-                          <div className="text-sm opacity-75">👥 {room.capacity} Plätze • {room.type}</div>
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-
-                  {/* Date Selection */}
-                  <div>
-                    <label className="block text-base font-bold text-slate-900 mb-3">📅 Datum</label>
-                    <input
-                      type="date"
-                      value={selectedDate}
-                      onChange={(e) => setSelectedDate(e.target.value)}
-                      min={new Date().toISOString().split('T')[0]}
-                      className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-cyan-600 focus:outline-none font-semibold"
-                      required
-                    />
-                  </div>
-
-                  {/* Time Selection */}
-                  <div>
-                    <label className="block text-base font-bold text-slate-900 mb-3">⏰ Uhrzeit</label>
-                    <select
-                      value={selectedTime}
-                      onChange={(e) => setSelectedTime(e.target.value)}
-                      className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-cyan-600 focus:outline-none font-semibold"
-                      required
-                    >
-                      <option value="">-- Wähle eine Uhrzeit --</option>
-                      {TIME_SLOTS.map(time => (
-                        <option key={time} value={time}>{time} - {String(parseInt(time) + 1).padStart(2, '0')}:00</option>
-                      ))}
-                    </select>
-                  </div>
-
-                  {/* Buttons */}
-                  <div className="flex gap-4">
-                    <button
-                      type="submit"
-                      className="flex-1 bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg"
-                    >
-                      ✅ Buchen
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setShowForm(false)}
-                      className="flex-1 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 text-white font-bold py-3 px-6 rounded-lg transition shadow-lg"
-                    >
-                      ❌ Abbrechen
-                    </button>
-                  </div>
-                </form>
+          {/* Time Filter Section */}
+          <div className="bg-white rounded-xl border-2 border-gray-300 p-6 mb-8">
+            <div className="flex items-center justify-center gap-8">
+              <div className="flex items-center gap-3">
+                <label className="text-gray-900 font-bold text-lg">Von:</label>
+                <div className="relative">
+                  <input
+                    type="time"
+                    value={startTime}
+                    onChange={(e) => setStartTime(e.target.value)}
+                    className="px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-orange-500"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    🕐
+                  </span>
+                </div>
               </div>
-            )}
-
-            {/* My Bookings */}
-            <div className="bg-white rounded-2xl shadow-2xl p-8 border-2 border-slate-200">
-              <h2 className="text-2xl font-black text-slate-900 mb-6">Meine Buchungen ({bookings.length})</h2>
-              
-              {bookings.length === 0 ? (
-                <div className="text-center py-12">
-                  <p className="text-slate-600 text-lg font-semibold">Keine Buchungen vorhanden</p>
-                  <p className="text-slate-500">Buche deinen ersten Raum! 👆</p>
+              <div className="flex items-center gap-3">
+                <label className="text-gray-900 font-bold text-lg">Bis:</label>
+                <div className="relative">
+                  <input
+                    type="time"
+                    value={endTime}
+                    onChange={(e) => setEndTime(e.target.value)}
+                    className="px-4 py-2 border-2 border-gray-300 rounded-lg text-gray-900 font-medium focus:outline-none focus:border-orange-500"
+                  />
+                  <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
+                    🕐
+                  </span>
                 </div>
-              ) : (
-                <div className="space-y-4">
-                  {bookings.map(booking => (
-                    <div key={booking.id} className="bg-gradient-to-r from-slate-50 to-blue-50 rounded-lg p-6 border-2 border-slate-200 hover:border-blue-400 transition">
-                      <div className="flex justify-between items-start mb-3">
-                        <div>
-                          <h3 className="text-lg font-black text-slate-900">{booking.room}</h3>
-                          <p className="text-sm text-slate-600 font-semibold">📍 {booking.location}</p>
-                        </div>
-                        <button
-                          onClick={() => cancelBooking(booking.id)}
-                          className="bg-red-100 hover:bg-red-200 text-red-700 font-bold px-4 py-2 rounded-lg transition"
-                        >
-                          ❌ Stornieren
-                        </button>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4 text-sm">
-                        <div>
-                          <p className="text-slate-600 font-semibold">Datum</p>
-                          <p className="text-slate-900 font-bold">{new Date(booking.date).toLocaleDateString('de-DE')}</p>
-                        </div>
-                        <div>
-                          <p className="text-slate-600 font-semibold">Uhrzeit</p>
-                          <p className="text-slate-900 font-bold">{booking.time} - {String(parseInt(booking.time) + 1).padStart(2, '0')}:00</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+              </div>
+              <button
+                onClick={handleCheckAvailability}
+                className="bg-orange-500 hover:bg-orange-600 text-white font-bold px-8 py-3 rounded-xl transition"
+              >
+                Verfügbarkeit prüfen
+              </button>
             </div>
           </div>
 
-          {/* Campus Info Sidebar */}
-          <div className="space-y-6">
-            {/* Hammerbrook Info */}
-            <div className="bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 border-2 border-orange-300">
-              <h3 className="text-xl font-black text-slate-900 mb-3">📍 Hammerbrook</h3>
-              <div className="space-y-2 text-sm">
-                <p className="text-slate-700"><strong>Adresse:</strong><br/>Hammerbrook 1<br/>20537 Hamburg</p>
-                <p className="text-slate-700"><strong>☎️ Telefon:</strong><br/>+49 40 1234 5678</p>
-                <p className="text-slate-700"><strong>🚗 Parken:</strong><br/>Tiefgarage vorhanden</p>
-                <p className="text-slate-700"><strong>🚌 ÖPNV:</strong><br/>U-Bahn: Hammerbrook</p>
-              </div>
+          {/* Legend */}
+          <div className="flex justify-center gap-6 mb-8">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-green-500 rounded"></div>
+              <span className="text-gray-700 font-medium">Frei</span>
             </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-orange-500 rounded"></div>
+              <span className="text-gray-700 font-medium">Belegt</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-fuchsia-500 rounded"></div>
+              <span className="text-gray-700 font-medium">
+                Gebucht (von Ihnen)
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 bg-yellow-400 rounded"></div>
+              <span className="text-gray-700 font-medium">Bald belegt</span>
+            </div>
+          </div>
 
-            {/* Waterloohain Info */}
-            <div className="bg-gradient-to-br from-purple-50 to-pink-50 rounded-xl p-6 border-2 border-purple-300">
-              <h3 className="text-xl font-black text-slate-900 mb-3">📍 Waterloohain</h3>
-              <div className="space-y-2 text-sm">
-                <p className="text-slate-700"><strong>Adresse:</strong><br/>Waterloohain 45<br/>20099 Hamburg</p>
-                <p className="text-slate-700"><strong>☎️ Telefon:</strong><br/>+49 40 9876 5432</p>
-                <p className="text-slate-700"><strong>🚗 Parken:</strong><br/>Parkhaus in der Nähe</p>
-                <p className="text-slate-700"><strong>🚌 ÖPNV:</strong><br/>U-Bahn: Waterloohain</p>
-              </div>
-            </div>
+          {/* Location Label */}
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">
+            Standort: {selectedLocation}
+          </h2>
 
-            {/* Quick Facts */}
-            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6 border-2 border-cyan-300">
-              <h3 className="text-lg font-black text-slate-900 mb-4">ℹ️ Infos</h3>
-              <ul className="space-y-2 text-sm">
-                <li className="flex items-start gap-2">
-                  <span className="text-lg">✅</span>
-                  <span className="text-slate-700"><strong>Kostenlos:</strong> Alle Räume sind für Studierende kostenlos</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-lg">⏱️</span>
-                  <span className="text-slate-700"><strong>Max. 4 Stunden:</strong> Pro Buchung maximal 4 Stunden</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <span className="text-lg">📅</span>
-                  <span className="text-slate-700"><strong>2 Wochen voraus:</strong> Bis zu 2 Wochen im Voraus buchen</span>
-                </li>
-              </ul>
-            </div>
+          {/* Room Cards Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {rooms.map((room) => {
+              const { status, lecture, booking } = getRoomStatus(room.name);
+
+              // Border und Text-Farben basierend auf Status
+              const borderColor =
+                status === "belegt"
+                  ? "border-orange-500"
+                  : status === "gebucht"
+                    ? "border-fuchsia-500"
+                    : "border-green-500";
+
+              const textColor =
+                status === "belegt"
+                  ? "text-orange-600"
+                  : status === "gebucht"
+                    ? "text-fuchsia-600"
+                    : "text-green-600";
+
+              return (
+                <div
+                  key={room.id}
+                  className={`bg-white rounded-xl p-6 border-3 transition-all hover:shadow-lg ${borderColor}`}
+                >
+                  <h3 className={`text-xl font-bold mb-3 ${textColor}`}>
+                    {room.name}
+                  </h3>
+
+                  {lecture ? (
+                    // Raum mit Vorlesung
+                    <>
+                      <p className="text-gray-700 font-medium mb-3">
+                        Vorlesung: {lecture.title}
+                      </p>
+                      <div className="bg-gray-100 rounded-lg px-4 py-3 text-center">
+                        <span className="text-gray-900 font-bold text-lg">
+                          {lecture.startTime} – {lecture.endTime}
+                        </span>
+                      </div>
+                    </>
+                  ) : status === "gebucht" && booking ? (
+                    // Von Ihnen gebucht
+                    <>
+                      <p className="text-fuchsia-600 font-bold mb-3 text-lg">
+                        ✓ Gebucht (von Ihnen)
+                      </p>
+                      <div className="bg-fuchsia-100 rounded-lg px-4 py-4 text-center mb-4 border-2 border-fuchsia-300">
+                        <p className="text-fuchsia-900 font-bold text-xl">
+                          {booking.startTime} – {booking.endTime}
+                        </p>
+                        <p className="text-fuchsia-700 text-sm mt-1">
+                          {new Date(booking.date).toLocaleDateString("de-DE", {
+                            weekday: "short",
+                            day: "2-digit",
+                            month: "2-digit",
+                          })}
+                        </p>
+                      </div>
+                      <button
+                        onClick={() => handleCancelBooking(room.name)}
+                        disabled={isLoading}
+                        className="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed shadow-md"
+                      >
+                        {isLoading ? "Wird storniert..." : "Buchung stornieren"}
+                      </button>
+                    </>
+                  ) : (
+                    // Frei - kann gebucht werden
+                    <>
+                      <p className="text-gray-600 font-medium mb-4">
+                        Keine Belegung
+                      </p>
+                      <button
+                        onClick={() => handleBookRoom(room)}
+                        disabled={isLoading}
+                        className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      >
+                        {isLoading ? "Wird gebucht..." : "Buchen"}
+                      </button>
+                    </>
+                  )}
+                </div>
+              );
+            })}
           </div>
         </div>
       </div>
-    </div>
+    </AppShell>
   );
 }
