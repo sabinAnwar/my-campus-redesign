@@ -21,6 +21,13 @@ model User {
   resetTokenExpiry DateTime?
   createdAt       DateTime  @default(now())
   updatedAt       DateTime  @updatedAt
+  
+  // Student ID fields
+  matriculationNumber String?
+  birthday        DateTime?
+  studyProgram    String?
+  validUntil      DateTime?
+  
   marks           Mark[]
   files           File[]
   studienplan     Studienplan?
@@ -28,6 +35,7 @@ model User {
   studiengang     Studiengang? @relation("UserStudiengang", fields: [studiengangId], references: [id])
   studiengangId   Int?
   praxisReports   PraxisReport[]
+  roomBookings    RoomBooking[]
 
   // Daily email reminder preferences for Praxisbericht
   reminderEnabled  Boolean  @default(false)
@@ -172,4 +180,22 @@ model News {
   updatedAt     DateTime   @updatedAt
 
   @@index([publishedAt, featured])
+}
+
+// Room Booking for campus rooms
+model RoomBooking {
+  id        Int      @id @default(autoincrement())
+  roomId    String   // e.g., "HB-A1", "WL-C2"
+  roomName  String   // e.g., "Raum A1", "Raum C2"
+  campus    String   // "Hammerbrook" or "Waterloohain"
+  date      DateTime
+  startTime String   // e.g., "09:00"
+  endTime   String   // e.g., "11:00"
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([date, campus, roomId])
+  @@index([userId, date])
 }

@@ -26,18 +26,11 @@ export default [
     path: "dashboard",
     file: "routes/dashboard.jsx",
   },
-  {
-    path: "room-booking",
-    file: "routes/room-booking.jsx",
-  },
+
   // German alias for room booking
   {
     path: "raumbuchung",
-    file: "routes/room-booking.jsx",
-  },
-  {
-    path: "events",
-    file: "routes/events.jsx",
+    file: "routes/raumbuchung.jsx",
   },
   {
     path: "news",
@@ -57,10 +50,7 @@ export default [
     path: "files/recent",
     file: "routes/files.recent.jsx",
   },
-  {
-    path: "messages",
-    file: "routes/messages.jsx",
-  },
+
   {
     path: "tasks",
     file: "routes/tasks.jsx",
@@ -171,5 +161,13 @@ export default [
   {
     path: "api/cron/daily-reminders",
     file: "routes/api/cron/daily-reminders.jsx",
+  },
+  {
+    path: "api/room-bookings",
+    file: "routes/api.room-bookings.jsx",
+  },
+  {
+    path: "room-booking",
+    file: "routes/room-booking.jsx",
   },
 ];

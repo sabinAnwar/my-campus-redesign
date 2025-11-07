@@ -26,7 +26,9 @@ import {
   MapPin,
   Users,
   DoorOpen,
+  History,
 } from "lucide-react";
+import { getRecentCourses } from "../lib/recentCourses";
 
 export async function loader() {
   return null;
@@ -35,6 +37,7 @@ export async function loader() {
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [recentCourses, setRecentCourses] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -68,6 +71,9 @@ export default function Dashboard() {
     };
 
     fetchUser();
+
+    // Load recently visited courses
+    setRecentCourses(getRecentCourses(6));
   }, [navigate]);
 
   if (loading) {
@@ -267,31 +273,6 @@ export default function Dashboard() {
     })
     .sort((a, b) => a.daysLeft - b.daysLeft);
 
-  // Recent files
-  const recentFiles = [
-    {
-      id: 1,
-      name: "HTML_Basics.pdf",
-      course: "Webentwicklung",
-      type: "pdf",
-      accessed: "Heute, 09:30",
-    },
-    {
-      id: 2,
-      name: "SQL_Queries.pdf",
-      course: "Datenbankdesign",
-      type: "pdf",
-      accessed: "Gestern, 14:20",
-    },
-    {
-      id: 3,
-      name: "JavaScript_Tutorial.zip",
-      course: "Webentwicklung",
-      type: "zip",
-      accessed: "Gestern, 16:45",
-    },
-  ];
-
   // News
   const news = [
     {
@@ -331,12 +312,17 @@ export default function Dashboard() {
       color: "green",
     },
     {
-      label: "Dateien",
-      icon: FileSearch,
-      link: "/files/recent",
+      label: "Raumbuchung",
+      icon: DoorOpen,
+      link: "/raumbuchung",
       color: "indigo",
     },
-    { label: "Events", icon: Calendar, link: "/events", color: "pink" },
+    {
+      label: "Studentenausweis",
+      icon: GraduationCap,
+      link: "/student-id",
+      color: "pink",
+    },
   ];
 
   return (
@@ -617,151 +603,136 @@ export default function Dashboard() {
               </div>
             </div>
 
-            {/* Turnitin Abgaben Section */}
-            <div className="bg-white border-2 border-gray-200 rounded-2xl p-6 shadow-sm">
+            {/* Zuletzt besuchte Kurse Section */}
+            <div className="bg-white border-2 border-blue-200 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-gray-100 border border-gray-300">
-                    <FileText className="h-5 w-5 text-gray-700" />
+                  <div className="p-2 rounded-lg bg-blue-100 border border-blue-300">
+                    <History className="h-5 w-5 text-blue-700" />
                   </div>
-                  <h2 className="text-lg font-bold text-black">
-                    Turnitin Abgaben
+                  <h2 className="text-lg font-bold text-slate-900">
+                    Zuletzt besuchte Kurse
                   </h2>
                 </div>
+                <Link
+                  to="/courses"
+                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 inline-flex items-center gap-1"
+                >
+                  Alle Kurse
+                  <ArrowRight className="h-4 w-4" />
+                </Link>
               </div>
-              <div className="space-y-4">
-                {[
-                  {
-                    id: 1,
-                    title: "Hausarbeit: Digitale Transformation im E-Commerce",
-                    course: "E-Commerce",
-                    dueDate: "15.11.2025",
-                    correctionDate: "22.11.2025",
-                    status: "pending",
-                    daysUntilDue: 3,
-                    daysUntilCorrection: 10,
-                  },
-                  {
-                    id: 2,
-                    title: "Seminararbeit: Datenbankmodellierung",
-                    course: "Datenbankdesign",
-                    dueDate: "18.11.2025",
-                    correctionDate: "25.11.2025",
-                    status: "submitted",
-                    similarity: 12,
-                    daysUntilDue: 6,
-                    daysUntilCorrection: 13,
-                  },
-                  {
-                    id: 3,
-                    title: "Projektarbeit: Algorithmus für Routenoptimierung",
-                    course: "Algorithmen",
-                    dueDate: "20.11.2025",
-                    correctionDate: "27.11.2025",
-                    status: "pending",
-                    daysUntilDue: 8,
-                    daysUntilCorrection: 15,
-                  },
-                ].map((submission) => (
-                  <div
-                    key={submission.id}
-                    className="border-2 border-gray-200 rounded-xl p-4 bg-gray-50 hover:border-gray-300 transition-all"
-                  >
-                    <div className="flex items-start justify-between mb-3">
-                      <div className="flex-1">
-                        <h3 className="font-bold text-black text-sm mb-1">
-                          {submission.title}
-                        </h3>
-                        <p className="text-xs text-gray-600">
-                          {submission.course}
-                        </p>
-                      </div>
-                      <span
-                        className={`px-2 py-1 rounded text-xs font-semibold border ${
-                          submission.status === "submitted"
-                            ? "bg-gray-100 text-gray-800 border-gray-300"
-                            : "bg-white text-gray-700 border-gray-400"
+              <div className="space-y-3">
+                {recentCourses.length === 0 ? (
+                  <div className="text-center py-8 px-4">
+                    <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-3" />
+                    <p className="text-sm text-slate-600 mb-2">
+                      Noch keine Kurse besucht
+                    </p>
+                    <p className="text-xs text-slate-500">
+                      Öffne einen Kurs, um ihn hier zu sehen
+                    </p>
+                    <Link
+                      to="/courses"
+                      className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                    >
+                      Kurse entdecken
+                    </Link>
+                  </div>
+                ) : (
+                  recentCourses.map((course) => {
+                    const timeSince = Date.now() - course.visitedAt;
+                    const hoursAgo = Math.floor(timeSince / (1000 * 60 * 60));
+                    const daysAgo = Math.floor(
+                      timeSince / (1000 * 60 * 60 * 24)
+                    );
+
+                    let timeText = "Gerade eben";
+                    if (hoursAgo < 1) {
+                      const minutesAgo = Math.floor(timeSince / (1000 * 60));
+                      timeText =
+                        minutesAgo < 1
+                          ? "Gerade eben"
+                          : `Vor ${minutesAgo} Min.`;
+                    } else if (hoursAgo < 24) {
+                      timeText = `Vor ${hoursAgo} Std.`;
+                    } else if (daysAgo === 1) {
+                      timeText = "Gestern";
+                    } else if (daysAgo < 7) {
+                      timeText = `Vor ${daysAgo} Tagen`;
+                    } else {
+                      timeText = new Date(course.visitedAt).toLocaleDateString(
+                        "de-DE"
+                      );
+                    }
+
+                    const colorClasses = {
+                      blue: "bg-blue-50 border-blue-200 hover:border-blue-300",
+                      purple:
+                        "bg-purple-50 border-purple-200 hover:border-purple-300",
+                      green:
+                        "bg-green-50 border-green-200 hover:border-green-300",
+                      orange:
+                        "bg-orange-50 border-orange-200 hover:border-orange-300",
+                      pink: "bg-pink-50 border-pink-200 hover:border-pink-300",
+                      indigo:
+                        "bg-indigo-50 border-indigo-200 hover:border-indigo-300",
+                    };
+
+                    const iconColorClasses = {
+                      blue: "bg-blue-100 text-blue-700",
+                      purple: "bg-purple-100 text-purple-700",
+                      green: "bg-green-100 text-green-700",
+                      orange: "bg-orange-100 text-orange-700",
+                      pink: "bg-pink-100 text-pink-700",
+                      indigo: "bg-indigo-100 text-indigo-700",
+                    };
+
+                    return (
+                      <Link
+                        key={course.id}
+                        to="/courses"
+                        className={`block border-2 rounded-xl p-4 transition-all ${
+                          colorClasses[course.color] || colorClasses.blue
                         }`}
                       >
-                        {submission.status === "submitted"
-                          ? "Abgegeben"
-                          : "Ausstehend"}
-                      </span>
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-3 mt-3 pt-3 border-t border-gray-200">
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <Calendar className="h-3.5 w-3.5 text-gray-600" />
-                          <span className="text-xs font-semibold text-gray-700">
-                            Abgabefrist
-                          </span>
-                        </div>
-                        <p className="text-sm font-bold text-black">
-                          {submission.dueDate}
-                        </p>
-                        <p
-                          className={`text-xs mt-1 font-medium ${
-                            submission.daysUntilDue <= 3
-                              ? "text-orange-500"
-                              : "text-gray-500"
-                          }`}
-                        >
-                          {submission.daysUntilDue <= 0
-                            ? "Überfällig"
-                            : submission.daysUntilDue === 1
-                              ? "1 Tag verbleibend"
-                              : `${submission.daysUntilDue} Tage verbleibend`}
-                        </p>
-                      </div>
-
-                      <div>
-                        <div className="flex items-center gap-2 mb-1">
-                          <CheckSquare className="h-3.5 w-3.5 text-gray-600" />
-                          <span className="text-xs font-semibold text-gray-700">
-                            Korrektur
-                          </span>
-                        </div>
-                        <p className="text-sm font-bold text-black">
-                          {submission.correctionDate}
-                        </p>
-                        <p className="text-xs text-gray-600 mt-1">
-                          {submission.daysUntilCorrection} Tage nach Abgabe
-                        </p>
-                      </div>
-                    </div>
-
-                    {submission.status === "submitted" &&
-                      submission.similarity !== undefined && (
-                        <div className="mt-3 pt-3 border-t border-gray-200">
-                          <div className="flex items-center justify-between">
-                            <span className="text-xs font-semibold text-gray-700">
-                              Turnitin Ähnlichkeit:
-                            </span>
-                            <span
-                              className={`text-sm font-bold px-2 py-1 rounded border-2 ${
-                                submission.similarity < 15
-                                  ? "bg-green-50/50 text-green-600 border-green-300"
-                                  : submission.similarity < 30
-                                    ? "bg-orange-50/50 text-orange-600 border-orange-300"
-                                    : "bg-red-50/50 text-red-600 border-red-300"
-                              }`}
-                            >
-                              {submission.similarity}%
-                            </span>
+                        <div className="flex items-start gap-3">
+                          <div
+                            className={`p-2 rounded-lg ${
+                              iconColorClasses[course.color] ||
+                              iconColorClasses.blue
+                            }`}
+                          >
+                            <BookOpen className="h-5 w-5" />
                           </div>
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-slate-900 text-sm mb-1 truncate">
+                              {course.name}
+                            </h3>
+                            <div className="flex items-center gap-2 text-xs text-slate-600">
+                              {course.studiengang && (
+                                <>
+                                  <span className="truncate">
+                                    {course.studiengang}
+                                  </span>
+                                  {course.semester && <span>•</span>}
+                                </>
+                              )}
+                              {course.semester && (
+                                <span>{course.semester}</span>
+                              )}
+                            </div>
+                            <div className="flex items-center gap-1 mt-2 text-xs text-slate-500">
+                              <Clock className="h-3 w-3" />
+                              <span>{timeText}</span>
+                            </div>
+                          </div>
+                          <ArrowRight className="h-4 w-4 text-slate-400 flex-shrink-0 mt-1" />
                         </div>
-                      )}
-
-                    {submission.status === "pending" && (
-                      <div className="mt-3 pt-3 border-t border-gray-200">
-                        <button className="w-full py-2 px-4 bg-black text-white rounded-lg text-sm font-semibold hover:bg-gray-800 transition-colors border border-gray-800">
-                          Abgabe vorbereiten
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
+                      </Link>
+                    );
+                  })
+                )}
               </div>
             </div>
 
@@ -899,43 +870,6 @@ export default function Dashboard() {
                     </Link>
                   );
                 })}
-              </div>
-            </div>
-
-            {/* Recent Files */}
-            <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-lg font-bold text-slate-900">
-                  Zuletzt verwendet
-                </h2>
-                <Link
-                  to="/files/recent"
-                  className="text-xs font-semibold text-indigo-600 hover:text-indigo-700"
-                >
-                  Alle
-                </Link>
-              </div>
-              <div className="space-y-3">
-                {recentFiles.map((file) => (
-                  <Link
-                    key={file.id}
-                    to="/files/recent"
-                    className="flex items-center gap-3 p-3 rounded-xl bg-white/80 hover:bg-white transition-colors group backdrop-blur-sm"
-                  >
-                    <div className="p-2 rounded-lg bg-indigo-100">
-                      <FileText className="h-4 w-4 text-indigo-600" />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="text-sm font-semibold text-slate-900 truncate group-hover:text-blue-600">
-                        {file.name}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        {file.course} • {file.accessed}
-                      </div>
-                    </div>
-                    <ArrowRight className="h-4 w-4 text-slate-400 opacity-0 group-hover:opacity-100 transition-opacity" />
-                  </Link>
-                ))}
               </div>
             </div>
 

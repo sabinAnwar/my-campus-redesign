@@ -24,6 +24,7 @@ import {
   Video,
 } from "lucide-react";
 import { saveRecentFile } from "../lib/recentFiles";
+import { saveRecentCourse } from "../lib/recentCourses";
 
 const TRANSLATIONS = {
   de: {
@@ -132,10 +133,24 @@ export default function Courses() {
   const t = TRANSLATIONS[language];
 
   const toggleSection = (sectionId) => {
-    setExpandedSections(prev => ({
+    setExpandedSections((prev) => ({
       ...prev,
-      [sectionId]: !prev[sectionId]
+      [sectionId]: !prev[sectionId],
     }));
+  };
+
+  // Function to handle course selection and track it
+  const handleCourseClick = (course) => {
+    setSelectedCourse(course);
+
+    // Save to recently visited courses
+    saveRecentCourse({
+      id: course.id,
+      name: course.title,
+      studiengang: course.studiengang || "Wirtschaftsinformatik",
+      semester: course.semester,
+      color: course.color || "blue",
+    });
   };
 
   const courses = [
@@ -148,6 +163,8 @@ export default function Courses() {
       semester: "Wintersemester 2024/25",
       startDate: "01.10.2024",
       endDate: "31.01.2025",
+      studiengang: "Wirtschaftsinformatik",
+      color: "blue",
       description:
         language === "de"
           ? "Grundlagen der modernen Webentwicklung mit React, HTML, CSS und JavaScript"
@@ -331,6 +348,8 @@ export default function Courses() {
       semester: "Wintersemester 2024/25",
       startDate: "01.10.2024",
       endDate: "31.01.2025",
+      studiengang: "Wirtschaftsinformatik",
+      color: "purple",
       description:
         language === "de"
           ? "Design und Implementierung von relationalen Datenbanken mit SQL"
@@ -438,6 +457,8 @@ export default function Courses() {
       semester: "Sommersemester 2025",
       startDate: "01.04.2025",
       endDate: "31.07.2025",
+      studiengang: "Wirtschaftsinformatik",
+      color: "green",
       description:
         language === "de"
           ? "Grundlagen effizienter Algorithmen und Datenstrukturen"
@@ -458,6 +479,8 @@ export default function Courses() {
       semester: "Sommersemester 2025",
       startDate: "01.04.2025",
       endDate: "31.07.2025",
+      studiengang: "Wirtschaftsinformatik",
+      color: "orange",
       description:
         language === "de"
           ? "Online-Handel, Plattformen, Payment und Recht"
@@ -478,6 +501,8 @@ export default function Courses() {
       semester: "Sommersemester 2025",
       startDate: "01.04.2025",
       endDate: "31.07.2025",
+      studiengang: "Wirtschaftsinformatik",
+      color: "pink",
       description:
         language === "de"
           ? "Praxisnahes Projekt mit Unternehmenspartnern"
@@ -1072,7 +1097,7 @@ export default function Courses() {
               .map((course) => (
                 <div
                   key={course.id}
-                  onClick={() => setSelectedCourse(course)}
+                  onClick={() => handleCourseClick(course)}
                   className="cursor-pointer rounded-2xl border border-slate-200 hover:border-slate-300 shadow-sm hover:shadow transition overflow-hidden bg-white"
                 >
                   <div className="h-36 w-full bg-gradient-to-br from-slate-200 to-slate-300" />

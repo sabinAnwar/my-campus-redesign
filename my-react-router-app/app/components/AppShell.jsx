@@ -56,8 +56,7 @@ export default function AppShell({ children }) {
       label: "Study Organization",
       icon: GraduationCap,
     },
-    { to: "/messages", label: "Messages", icon: MessageSquare },
-    { to: "/events", label: "Events", icon: CalendarDays },
+
     { to: "/info-center", label: "Info Center", icon: Info },
     { to: "/faq", label: "Help & FAQ", icon: HelpCircle },
   ];
@@ -196,8 +195,8 @@ export default function AppShell({ children }) {
             className="flex items-center gap-3 hover:opacity-90 transition-all duration-200 group"
           >
             <div className="relative">
-              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-blue-500 via-blue-600 to-indigo-600 border-2 border-blue-300 dark:border-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200">
-                <span className="text-white font-black text-xl font-extrabold select-none">
+              <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-black-500 via-blue-600 to-indigo-600 border-2 border-black-300 dark:border-blue-500 flex items-center justify-center shadow-lg group-hover:shadow-xl group-hover:scale-105 transition-all duration-200">
+                <span className="text-white font-white text-xl font-extrabold select-none">
                   IU
                 </span>
               </div>
