@@ -21,7 +21,10 @@ export default function Login() {
       const email = formData.get("email");
       const password = formData.get("password");
 
-      const response = await fetch("/api/login", {
+      console.log("🔐 Login: Submitting credentials for:", email);
+
+      // Use .data suffix for React Router actions
+      const response = await fetch("/api/login.data", {
         method: "POST",
         headers: {
           "Content-Type": "application/x-www-form-urlencoded",
@@ -30,11 +33,22 @@ export default function Login() {
         credentials: "include",
       });
 
-      // Check for redirect (303 status)
+      console.log("📡 Login: Response status:", response.status);
+      console.log("🍪 Login: Response headers:", Object.fromEntries(response.headers.entries()));
+
+      // Check for redirect (303 status) or success (200)
       if (response.redirected || response.ok) {
+        const data = await response.json();
+        console.log("✅ Login: Success response:", data);
+
+        // Log cookies after login
+        console.log("🍪 Login: Cookies after login:", document.cookie);
+
         showSuccessToast("Login successful! Redirecting...");
-        // Wait a moment for cookies to be set, then navigate
+
+        // Wait for cookies to be set, then navigate
         setTimeout(() => {
+          console.log("🔄 Login: Navigating to dashboard");
           navigate("/dashboard", { replace: true });
         }, 500);
         return;
@@ -42,11 +56,13 @@ export default function Login() {
 
       if (!response.ok) {
         const data = await response.json();
+        console.error("❌ Login: Failed with error:", data);
         const errorMsg = data.error || "Login failed. Please try again.";
         setError(errorMsg);
         showErrorToast(errorMsg);
       }
     } catch (err) {
+      console.error("❌ Login: Exception occurred:", err);
       const errorMsg = err.message || "An error occurred during login";
       setError(errorMsg);
       showErrorToast(errorMsg);

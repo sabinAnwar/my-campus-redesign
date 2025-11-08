@@ -30,15 +30,25 @@ export async function login({ email, password }) {
 
 export async function logout() {
   try {
-    const response = await fetch("/api/logout", {
+    console.log("🔓 Logout: Calling API...");
+    const response = await fetch("/api/logout.data", {
       method: "POST",
       credentials: "include",
     });
+    console.log("📡 Logout: Response status:", response.status);
     const data = await response.json();
     console.log("✅ Logout response:", data);
+    
+    // Clear cookies manually as backup
+    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    document.cookie = "auth_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    
     return data;
   } catch (err) {
     console.error("❌ Logout error:", err);
+    // Clear cookies anyway
+    document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+    document.cookie = "auth_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
     return null;
   }
 }

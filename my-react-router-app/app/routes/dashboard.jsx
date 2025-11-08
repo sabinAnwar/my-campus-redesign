@@ -44,6 +44,7 @@ export default function Dashboard() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
+        console.log("🔍 Dashboard: Fetching user...");
         const response = await fetch("/api/user", {
           method: "GET",
           credentials: "include",
@@ -52,22 +53,29 @@ export default function Dashboard() {
           },
         });
 
+        console.log("📡 Dashboard: Response status:", response.status);
+
         if (response.ok) {
           const data = await response.json();
+          console.log("✅ Dashboard: User data received:", data);
           setUser(data.user || { name: "Student" });
           setLoading(false);
         } else if (response.status === 401) {
-          console.log("User not authenticated, redirecting to login");
+          console.log("❌ Dashboard: User not authenticated (401), redirecting to login");
+          // Clear any stale cookies
+          document.cookie = "session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
+          document.cookie = "auth_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
           navigate("/login", { replace: true });
         } else {
-          console.log("Could not fetch user, using default");
+          console.log("⚠️ Dashboard: Unexpected response, using default user");
           setUser({ name: "Student" });
           setLoading(false);
         }
       } catch (err) {
-        console.error("Error fetching user:", err);
-        setUser({ name: "Student" });
-        setLoading(false);
+        console.error("❌ Dashboard: Error fetching user:", err);
+        // On network error, redirect to login
+        console.log("🔄 Dashboard: Network error, redirecting to login");
+        navigate("/login", { replace: true });
       }
     };
 

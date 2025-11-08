@@ -2,6 +2,14 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
+// Loader for GET requests (should not be used, but prevents HTML response)
+export async function loader() {
+  return Response.json(
+    { error: "Method not allowed. Use POST." },
+    { status: 405 }
+  );
+}
+
 export async function action({ request }) {
   if (request.method !== "POST") {
     return Response.json(
@@ -40,4 +48,9 @@ export async function action({ request }) {
       { status: 500 }
     );
   }
+}
+
+// Default export for React Router (not used, but required)
+export default function LogoutAPI() {
+  return null;
 }

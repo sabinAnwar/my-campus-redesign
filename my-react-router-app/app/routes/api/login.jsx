@@ -4,6 +4,14 @@ import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
+// Loader for GET requests (should not be used, but prevents HTML response)
+export async function loader() {
+  return Response.json(
+    { error: "Method not allowed. Use POST." },
+    { status: 405 }
+  );
+}
+
 export async function action({ request }) {
   return handleLoginRequest(request);
 }
@@ -126,12 +134,20 @@ async function handleLoginRequest(request) {
     if (domain) parts.push(`Domain=${domain}`);
     const cookieHeader = parts.join("; ");
 
-    console.log("🍪 Set-Cookie header set successfully");
+    console.log("🍪 Set-Cookie header:", cookieHeader);
 
     // Return success response with Set-Cookie header
     // Client will handle navigation
     const response = Response.json(
-      { success: true, message: "Login successful" },
+      {
+        success: true,
+        message: "Login successful",
+        user: {
+          id: user.id,
+          name: user.name,
+          email: user.email,
+        },
+      },
       { status: 200 }
     );
     response.headers.set("Set-Cookie", cookieHeader);
