@@ -95,47 +95,21 @@ export default function AppShell({ children }) {
     })();
   }, []);
 
-  // Theme: initialize from localStorage or system preference, and sync to document root
+  // Theme: initialize from localStorage (independent of system preference)
   useEffect(() => {
     try {
       const stored = localStorage.getItem("theme");
       if (stored === "dark") {
         setDarkMode(true);
         document.documentElement.classList.add("dark");
-      } else if (stored === "light") {
+      } else {
+        // Default to light mode if no preference is stored
         setDarkMode(false);
         document.documentElement.classList.remove("dark");
-      } else if (window.matchMedia) {
-        const prefersDark = window.matchMedia(
-          "(prefers-color-scheme: dark)"
-        ).matches;
-        setDarkMode(prefersDark);
-        if (prefersDark) document.documentElement.classList.add("dark");
-        else document.documentElement.classList.remove("dark");
-
-        // Listen for system changes only when user hasn't persisted a choice
-        const mq = window.matchMedia("(prefers-color-scheme: dark)");
-        const onChange = (e) => {
-          const storedNow = localStorage.getItem("theme");
-          if (storedNow == null) {
-            setDarkMode(e.matches);
-            if (e.matches) document.documentElement.classList.add("dark");
-            else document.documentElement.classList.remove("dark");
-          }
-        };
-        try {
-          mq.addEventListener("change", onChange);
-        } catch (_) {
-          mq.addListener(onChange);
+        // Save default preference
+        if (!stored) {
+          localStorage.setItem("theme", "light");
         }
-
-        return () => {
-          try {
-            mq.removeEventListener("change", onChange);
-          } catch (_) {
-            mq.removeListener(onChange);
-          }
-        };
       }
     } catch (e) {
       // ignore on server or private mode

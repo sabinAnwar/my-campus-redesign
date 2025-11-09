@@ -199,3 +199,16 @@ model RoomBooking {
   @@index([date, campus, roomId])
   @@index([userId, date])
 }
+
+// FAQ - Frequently Asked Questions
+model FAQ {
+  id        Int      @id @default(autoincrement())
+  question  String   @unique
+  answer    String
+  category  String   // e.g., "studium", "prüfungen", "praxisphase", "angebote"
+  keywords  String?  // JSON array of keywords for better search
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+}

@@ -89,6 +89,11 @@ export default [
     file: "routes/contact.jsx",
   },
   {
+    path: "study-organization",
+    file: "routes/study-organization.jsx",
+  },
+
+  {
     path: "praxisbericht",
     file: "routes/praxisbericht2.jsx",
   },
