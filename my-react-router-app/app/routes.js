@@ -92,6 +92,10 @@ export default [
     path: "study-organization",
     file: "routes/study-organization.jsx",
   },
+  {
+    path: "notenverwaltung",
+    file: "routes/notenverwaltung.jsx",
+  },
 
   {
     path: "praxisbericht",

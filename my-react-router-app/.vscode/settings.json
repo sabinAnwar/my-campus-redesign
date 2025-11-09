@@ -1,0 +1,81 @@
+{
+  // ESLint Configuration
+  "eslint.enable": true,
+  "eslint.run": "onSave",
+  "eslint.validate": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact"
+  ],
+  "eslint.lintTask.enable": true,
+  "eslint.format.enable": true,
+  "eslint.options": {
+    "overrideConfigFile": "eslint.config.js"
+  },
+  
+  // Auto-fix on save
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit"
+  },
+  
+  // Show errors and warnings inline
+  "problems.showCurrentInStatus": true,
+  "eslint.alwaysShowStatus": true,
+  
+  // Ensure .jsx files are treated as React JSX
+  "files.associations": {
+    "*.jsx": "javascriptreact",
+    "*.js": "javascript"
+  },
+  
+  // GitHub Copilot Settings
+  "github.copilot.enable": {
+    "*": true,
+    "javascript": true,
+    "javascriptreact": true,
+    "typescript": true,
+    "typescriptreact": true
+  },
+  "github.copilot.editor.enableAutoCompletions": true,
+  
+  // Better code completion
+  "editor.suggestSelection": "first",
+  "editor.tabCompletion": "on",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": true,
+    "strings": true
+  },
+  
+  // Format settings
+  "editor.formatOnSave": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "[javascript]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "dbaeumer.vscode-eslint"
+  },
+  
+  // Files to exclude from watcher
+  "files.watcherExclude": {
+    "**/node_modules/**": true,
+    "**/build/**": true,
+    "**/.react-router/**": true
+  },
+  
+  // Prettier integration (if you want to add it later)
+  "prettier.enable": false,
+  
+  // React/JSX settings
+  "emmet.includeLanguages": {
+    "javascript": "javascriptreact"
+  },
+  "emmet.triggerExpansionOnTab": true,
+  
+  // Copilot Chat
+  "chat.editor.fontFamily": "Consolas, 'Courier New', monospace",
+  "chat.editor.fontSize": 14,
+  "chat.editor.lineHeight": 22
+}
