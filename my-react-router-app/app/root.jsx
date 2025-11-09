@@ -21,6 +21,15 @@ export function Layout() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>IU Student Portal</title>
         <script src="https://cdn.tailwindcss.com"></script>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              tailwind.config = {
+                darkMode: 'class'
+              }
+            `,
+          }}
+        />
       </head>
       <body>
         <div id="root">
