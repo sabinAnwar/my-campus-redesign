@@ -1,15 +1,15 @@
 {
   "framework": null,
-  "buildCommand": "cd my-react-router-app && npm run build",
-  "installCommand": "cd my-react-router-app && npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "buildCommand": "npm run build",
+  "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "routes": [
     { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "my-react-router-app/api/index.js" }
+    { "src": "/(.*)", "dest": "/api/index.js" }
   ],
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",
-      "schedule": "0 17 * * FRI"
+      "schedule": "0 17 * * 5"
     },
     {
       "path": "/api/cron/daily-reminders",
