@@ -1,4 +1,7 @@
 @import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
 
 @theme {
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
@@ -8,8 +11,9 @@
 html,
 body {
   @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+  /* Always start in light mode; actual theme is controlled by the .dark class from ThemeProvider, not system settings */
+  color-scheme: light;
 }
+
+/* When ThemeProvider adds the .dark clas
+

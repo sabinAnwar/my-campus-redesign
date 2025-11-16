@@ -9,7 +9,11 @@ import {
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import { ThemeProvider } from "./contexts/ThemeContext";
 
+// ---------------------------------------------
+// DOCUMENT LAYOUT (keine App-Logik hier)
+// ---------------------------------------------
 export const links: Route.LinksFunction = () => [
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -23,6 +27,7 @@ export const links: Route.LinksFunction = () => [
   },
 ];
 
+// THE HTML SHELL (DOCUMENT)
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
@@ -32,6 +37,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
         <Meta />
         <Links />
       </head>
+
       <body>
         {children}
         <ScrollRestoration />
@@ -41,10 +47,20 @@ export function Layout({ children }: { children: React.ReactNode }) {
   );
 }
 
+// ---------------------------------------------
+// APP ROOT (HIER MUSS DER PROVIDER SEIN!)
+// ---------------------------------------------
 export default function App() {
-  return <Outlet />;
+  return (
+    <ThemeProvider defaultTheme="system" storageKey="iu-theme">
+      <Outlet />
+    </ThemeProvider>
+  );
 }
 
+// ---------------------------------------------
+// ERROR BOUNDARY
+// ---------------------------------------------
 export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
   let message = "Oops!";
   let details = "An unexpected error occurred.";
