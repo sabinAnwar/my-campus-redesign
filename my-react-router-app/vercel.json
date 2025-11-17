@@ -5,11 +5,11 @@
   "outputDirectory": "build",
   "routes": [
     {
-      "src": "/api/(.*)",
+      "src": "^/api/(.*)$",
       "dest": "/api/$1"
     },
     {
-      "src": "/(.*)",
+      "src": "^(?!/api/).*",
       "dest": "/server/index.js"
     }
   ],
