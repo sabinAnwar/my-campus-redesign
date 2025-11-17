@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "installCommand": "rm -rf node_modules && npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "routes": [
