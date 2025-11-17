@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "rm -rf node_modules && npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "installCommand": "npm install vite-tsconfig-paths && npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "buildCommand": "npm run build",
   "outputDirectory": "build",
   "routes": [
