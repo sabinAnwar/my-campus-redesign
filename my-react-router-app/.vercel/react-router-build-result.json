@@ -1,0 +1,970 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/reset-password.$token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.dashboard": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.raumbuchung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.room-booking": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.student-id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.study-organization": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.courses": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.courses.schedule": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.certificates.immatriculation": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.certificates.transcript": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.news": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.news.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.users._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.users.new": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.users.$userId": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.events": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.faq": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.contact": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.tasks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.files.recent": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.basic-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.form-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.console-diagnostic": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.notenverwaltung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.praxisbericht2": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.toast-direct": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.toast-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/health": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/news": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/news.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/praxisberichte": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/praxisberichte.$weekKey": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.room-bookings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/reminders.preferences": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/request-password-reset": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/user": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/verify-reset-token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/cron/daily-reminders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {}
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "app/routes/home.tsx",
+        "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "app/routes/login.tsx",
+        "path": "login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "app/routes/logout.tsx",
+        "path": "logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/reset-password": {
+        "id": "routes/reset-password",
+        "parentId": "root",
+        "file": "app/routes/reset-password.tsx",
+        "path": "reset-password",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/reset-password.$token": {
+        "id": "routes/reset-password.$token",
+        "parentId": "root",
+        "file": "app/routes/reset-password.$token.tsx",
+        "path": "reset-password/:token",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/_app": {
+        "id": "routes/_app",
+        "parentId": "root",
+        "file": "app/routes/_app.tsx",
+        "path": "",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/_app.dashboard": {
+        "id": "routes/_app.dashboard",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.dashboard.tsx",
+        "path": "dashboard",
+        "config": {}
+      },
+      "routes/_app.raumbuchung": {
+        "id": "routes/_app.raumbuchung",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.raumbuchung.tsx",
+        "path": "raumbuchung",
+        "config": {}
+      },
+      "routes/_app.room-booking": {
+        "id": "routes/_app.room-booking",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.room-booking.tsx",
+        "path": "room-booking",
+        "config": {}
+      },
+      "routes/_app.student-id": {
+        "id": "routes/_app.student-id",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.student-id.tsx",
+        "path": "student-id",
+        "config": {}
+      },
+      "routes/_app.study-organization": {
+        "id": "routes/_app.study-organization",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.study-organization.tsx",
+        "path": "study-organization",
+        "config": {}
+      },
+      "routes/_app.courses": {
+        "id": "routes/_app.courses",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.courses.tsx",
+        "path": "courses",
+        "config": {}
+      },
+      "routes/_app.courses.schedule": {
+        "id": "routes/_app.courses.schedule",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.courses.schedule.tsx",
+        "path": "courses/schedule",
+        "config": {}
+      },
+      "routes/_app.certificates.immatriculation": {
+        "id": "routes/_app.certificates.immatriculation",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.certificates.immatriculation.tsx",
+        "path": "certificates/immatriculation",
+        "config": {}
+      },
+      "routes/_app.certificates.transcript": {
+        "id": "routes/_app.certificates.transcript",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.certificates.transcript.tsx",
+        "path": "certificates/transcript",
+        "config": {}
+      },
+      "routes/_app.news": {
+        "id": "routes/_app.news",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.news.tsx",
+        "path": "news",
+        "config": {}
+      },
+      "routes/_app.news.$slug": {
+        "id": "routes/_app.news.$slug",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.news.$slug.tsx",
+        "path": "news/:slug",
+        "config": {}
+      },
+      "routes/_app.users": {
+        "id": "routes/_app.users",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.users.tsx",
+        "path": "users",
+        "config": {}
+      },
+      "routes/_app.users._index": {
+        "id": "routes/_app.users._index",
+        "parentId": "routes/_app.users",
+        "file": "app/routes/_app.users._index.tsx",
+        "index": true,
+        "config": {}
+      },
+      "routes/_app.users.new": {
+        "id": "routes/_app.users.new",
+        "parentId": "routes/_app.users",
+        "file": "app/routes/_app.users.new.tsx",
+        "path": "new",
+        "config": {}
+      },
+      "routes/_app.users.$userId": {
+        "id": "routes/_app.users.$userId",
+        "parentId": "routes/_app.users",
+        "file": "app/routes/_app.users.$userId.tsx",
+        "path": ":userId",
+        "config": {}
+      },
+      "routes/_app.events": {
+        "id": "routes/_app.events",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.events.tsx",
+        "path": "events",
+        "config": {}
+      },
+      "routes/_app.faq": {
+        "id": "routes/_app.faq",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.faq.tsx",
+        "path": "faq",
+        "config": {}
+      },
+      "routes/_app.contact": {
+        "id": "routes/_app.contact",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.contact.tsx",
+        "path": "contact",
+        "config": {}
+      },
+      "routes/_app.tasks": {
+        "id": "routes/_app.tasks",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.tasks.tsx",
+        "path": "tasks",
+        "config": {}
+      },
+      "routes/_app.files.recent": {
+        "id": "routes/_app.files.recent",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.files.recent.tsx",
+        "path": "files/recent",
+        "config": {}
+      },
+      "routes/_app.basic-test": {
+        "id": "routes/_app.basic-test",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.basic-test.tsx",
+        "path": "basic-test",
+        "config": {}
+      },
+      "routes/_app.form-test": {
+        "id": "routes/_app.form-test",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.form-test.tsx",
+        "path": "form-test",
+        "config": {}
+      },
+      "routes/_app.console-diagnostic": {
+        "id": "routes/_app.console-diagnostic",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.console-diagnostic.tsx",
+        "path": "console-diagnostic",
+        "config": {}
+      },
+      "routes/_app.notenverwaltung": {
+        "id": "routes/_app.notenverwaltung",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.notenverwaltung.tsx",
+        "path": "notenverwaltung",
+        "config": {}
+      },
+      "routes/_app.praxisbericht2": {
+        "id": "routes/_app.praxisbericht2",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.praxisbericht2.tsx",
+        "path": "praxisbericht2",
+        "config": {}
+      },
+      "routes/_app.toast-direct": {
+        "id": "routes/_app.toast-direct",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.toast-direct.tsx",
+        "path": "toast-direct",
+        "config": {}
+      },
+      "routes/_app.toast-test": {
+        "id": "routes/_app.toast-test",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.toast-test.tsx",
+        "path": "toast-test",
+        "config": {}
+      },
+      "routes/_app.settings": {
+        "id": "routes/_app.settings",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.settings.tsx",
+        "path": "settings",
+        "config": {}
+      },
+      "routes/api/health": {
+        "id": "routes/api/health",
+        "parentId": "root",
+        "file": "app/routes/api/health.tsx",
+        "path": "api/health",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/login": {
+        "id": "routes/api/login",
+        "parentId": "root",
+        "file": "app/routes/api/login.tsx",
+        "path": "api/login",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/logout": {
+        "id": "routes/api/logout",
+        "parentId": "root",
+        "file": "app/routes/api/logout.tsx",
+        "path": "api/logout",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/news": {
+        "id": "routes/api/news",
+        "parentId": "root",
+        "file": "app/routes/api/news.tsx",
+        "path": "api/news",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/news.$slug": {
+        "id": "routes/api/news.$slug",
+        "parentId": "root",
+        "file": "app/routes/api/news.$slug.tsx",
+        "path": "api/news/:slug",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/praxisberichte": {
+        "id": "routes/api/praxisberichte",
+        "parentId": "root",
+        "file": "app/routes/api/praxisberichte.tsx",
+        "path": "api/praxisberichte",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/praxisberichte.$weekKey": {
+        "id": "routes/api/praxisberichte.$weekKey",
+        "parentId": "root",
+        "file": "app/routes/api/praxisberichte.$weekKey.tsx",
+        "path": "api/praxisberichte/:weekKey",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.room-bookings": {
+        "id": "routes/api.room-bookings",
+        "parentId": "root",
+        "file": "app/routes/api.room-bookings.tsx",
+        "path": "api/room-bookings",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/reminders.preferences": {
+        "id": "routes/api/reminders.preferences",
+        "parentId": "root",
+        "file": "app/routes/api/reminders.preferences.tsx",
+        "path": "api/reminders/preferences",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/request-password-reset": {
+        "id": "routes/api/request-password-reset",
+        "parentId": "root",
+        "file": "app/routes/api/request-password-reset.tsx",
+        "path": "api/request-password-reset",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/reset-password": {
+        "id": "routes/api/reset-password",
+        "parentId": "root",
+        "file": "app/routes/api/reset-password.tsx",
+        "path": "api/reset-password",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/user": {
+        "id": "routes/api/user",
+        "parentId": "root",
+        "file": "app/routes/api/user.tsx",
+        "path": "api/user",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/verify-reset-token": {
+        "id": "routes/api/verify-reset-token",
+        "parentId": "root",
+        "file": "app/routes/api/verify-reset-token.tsx",
+        "path": "api/verify-reset-token",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/cron/daily-reminders": {
+        "id": "routes/api/cron/daily-reminders",
+        "parentId": "root",
+        "file": "app/routes/api/cron/daily-reminders.tsx",
+        "path": "api/cron/daily-reminders",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "C:/Dell/iu/website-bauen/my-react-router-app/app",
+    "basename": "/",
+    "buildDirectory": "C:/Dell/iu/website-bauen/my-react-router-app/build",
+    "future": {
+      "v8_middleware": false,
+      "unstable_optimizeDeps": false,
+      "unstable_splitRouteModules": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "root",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "routes/login.tsx",
+        "path": "login"
+      },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "routes/logout.tsx",
+        "path": "logout"
+      },
+      "routes/reset-password": {
+        "id": "routes/reset-password",
+        "parentId": "root",
+        "file": "routes/reset-password.tsx",
+        "path": "reset-password"
+      },
+      "routes/reset-password.$token": {
+        "id": "routes/reset-password.$token",
+        "parentId": "root",
+        "file": "routes/reset-password.$token.tsx",
+        "path": "reset-password/:token"
+      },
+      "routes/_app": {
+        "id": "routes/_app",
+        "parentId": "root",
+        "file": "routes/_app.tsx",
+        "path": ""
+      },
+      "routes/_app.dashboard": {
+        "id": "routes/_app.dashboard",
+        "parentId": "routes/_app",
+        "file": "routes/_app.dashboard.tsx",
+        "path": "dashboard"
+      },
+      "routes/_app.raumbuchung": {
+        "id": "routes/_app.raumbuchung",
+        "parentId": "routes/_app",
+        "file": "routes/_app.raumbuchung.tsx",
+        "path": "raumbuchung"
+      },
+      "routes/_app.room-booking": {
+        "id": "routes/_app.room-booking",
+        "parentId": "routes/_app",
+        "file": "routes/_app.room-booking.tsx",
+        "path": "room-booking"
+      },
+      "routes/_app.student-id": {
+        "id": "routes/_app.student-id",
+        "parentId": "routes/_app",
+        "file": "routes/_app.student-id.tsx",
+        "path": "student-id"
+      },
+      "routes/_app.study-organization": {
+        "id": "routes/_app.study-organization",
+        "parentId": "routes/_app",
+        "file": "routes/_app.study-organization.tsx",
+        "path": "study-organization"
+      },
+      "routes/_app.courses": {
+        "id": "routes/_app.courses",
+        "parentId": "routes/_app",
+        "file": "routes/_app.courses.tsx",
+        "path": "courses"
+      },
+      "routes/_app.courses.schedule": {
+        "id": "routes/_app.courses.schedule",
+        "parentId": "routes/_app",
+        "file": "routes/_app.courses.schedule.tsx",
+        "path": "courses/schedule"
+      },
+      "routes/_app.certificates.immatriculation": {
+        "id": "routes/_app.certificates.immatriculation",
+        "parentId": "routes/_app",
+        "file": "routes/_app.certificates.immatriculation.tsx",
+        "path": "certificates/immatriculation"
+      },
+      "routes/_app.certificates.transcript": {
+        "id": "routes/_app.certificates.transcript",
+        "parentId": "routes/_app",
+        "file": "routes/_app.certificates.transcript.tsx",
+        "path": "certificates/transcript"
+      },
+      "routes/_app.news": {
+        "id": "routes/_app.news",
+        "parentId": "routes/_app",
+        "file": "routes/_app.news.tsx",
+        "path": "news"
+      },
+      "routes/_app.news.$slug": {
+        "id": "routes/_app.news.$slug",
+        "parentId": "routes/_app",
+        "file": "routes/_app.news.$slug.tsx",
+        "path": "news/:slug"
+      },
+      "routes/_app.users": {
+        "id": "routes/_app.users",
+        "parentId": "routes/_app",
+        "file": "routes/_app.users.tsx",
+        "path": "users"
+      },
+      "routes/_app.users._index": {
+        "id": "routes/_app.users._index",
+        "parentId": "routes/_app.users",
+        "file": "routes/_app.users._index.tsx",
+        "index": true
+      },
+      "routes/_app.users.new": {
+        "id": "routes/_app.users.new",
+        "parentId": "routes/_app.users",
+        "file": "routes/_app.users.new.tsx",
+        "path": "new"
+      },
+      "routes/_app.users.$userId": {
+        "id": "routes/_app.users.$userId",
+        "parentId": "routes/_app.users",
+        "file": "routes/_app.users.$userId.tsx",
+        "path": ":userId"
+      },
+      "routes/_app.events": {
+        "id": "routes/_app.events",
+        "parentId": "routes/_app",
+        "file": "routes/_app.events.tsx",
+        "path": "events"
+      },
+      "routes/_app.faq": {
+        "id": "routes/_app.faq",
+        "parentId": "routes/_app",
+        "file": "routes/_app.faq.tsx",
+        "path": "faq"
+      },
+      "routes/_app.contact": {
+        "id": "routes/_app.contact",
+        "parentId": "routes/_app",
+        "file": "routes/_app.contact.tsx",
+        "path": "contact"
+      },
+      "routes/_app.tasks": {
+        "id": "routes/_app.tasks",
+        "parentId": "routes/_app",
+        "file": "routes/_app.tasks.tsx",
+        "path": "tasks"
+      },
+      "routes/_app.files.recent": {
+        "id": "routes/_app.files.recent",
+        "parentId": "routes/_app",
+        "file": "routes/_app.files.recent.tsx",
+        "path": "files/recent"
+      },
+      "routes/_app.basic-test": {
+        "id": "routes/_app.basic-test",
+        "parentId": "routes/_app",
+        "file": "routes/_app.basic-test.tsx",
+        "path": "basic-test"
+      },
+      "routes/_app.form-test": {
+        "id": "routes/_app.form-test",
+        "parentId": "routes/_app",
+        "file": "routes/_app.form-test.tsx",
+        "path": "form-test"
+      },
+      "routes/_app.console-diagnostic": {
+        "id": "routes/_app.console-diagnostic",
+        "parentId": "routes/_app",
+        "file": "routes/_app.console-diagnostic.tsx",
+        "path": "console-diagnostic"
+      },
+      "routes/_app.notenverwaltung": {
+        "id": "routes/_app.notenverwaltung",
+        "parentId": "routes/_app",
+        "file": "routes/_app.notenverwaltung.tsx",
+        "path": "notenverwaltung"
+      },
+      "routes/_app.praxisbericht2": {
+        "id": "routes/_app.praxisbericht2",
+        "parentId": "routes/_app",
+        "file": "routes/_app.praxisbericht2.tsx",
+        "path": "praxisbericht2"
+      },
+      "routes/_app.toast-direct": {
+        "id": "routes/_app.toast-direct",
+        "parentId": "routes/_app",
+        "file": "routes/_app.toast-direct.tsx",
+        "path": "toast-direct"
+      },
+      "routes/_app.toast-test": {
+        "id": "routes/_app.toast-test",
+        "parentId": "routes/_app",
+        "file": "routes/_app.toast-test.tsx",
+        "path": "toast-test"
+      },
+      "routes/_app.settings": {
+        "id": "routes/_app.settings",
+        "parentId": "routes/_app",
+        "file": "routes/_app.settings.tsx",
+        "path": "settings"
+      },
+      "routes/api/health": {
+        "id": "routes/api/health",
+        "parentId": "root",
+        "file": "routes/api/health.tsx",
+        "path": "api/health"
+      },
+      "routes/api/login": {
+        "id": "routes/api/login",
+        "parentId": "root",
+        "file": "routes/api/login.tsx",
+        "path": "api/login"
+      },
+      "routes/api/logout": {
+        "id": "routes/api/logout",
+        "parentId": "root",
+        "file": "routes/api/logout.tsx",
+        "path": "api/logout"
+      },
+      "routes/api/news": {
+        "id": "routes/api/news",
+        "parentId": "root",
+        "file": "routes/api/news.tsx",
+        "path": "api/news"
+      },
+      "routes/api/news.$slug": {
+        "id": "routes/api/news.$slug",
+        "parentId": "root",
+        "file": "routes/api/news.$slug.tsx",
+        "path": "api/news/:slug"
+      },
+      "routes/api/praxisberichte": {
+        "id": "routes/api/praxisberichte",
+        "parentId": "root",
+        "file": "routes/api/praxisberichte.tsx",
+        "path": "api/praxisberichte"
+      },
+      "routes/api/praxisberichte.$weekKey": {
+        "id": "routes/api/praxisberichte.$weekKey",
+        "parentId": "root",
+        "file": "routes/api/praxisberichte.$weekKey.tsx",
+        "path": "api/praxisberichte/:weekKey"
+      },
+      "routes/api.room-bookings": {
+        "id": "routes/api.room-bookings",
+        "parentId": "root",
+        "file": "routes/api.room-bookings.tsx",
+        "path": "api/room-bookings"
+      },
+      "routes/api/reminders.preferences": {
+        "id": "routes/api/reminders.preferences",
+        "parentId": "root",
+        "file": "routes/api/reminders.preferences.tsx",
+        "path": "api/reminders/preferences"
+      },
+      "routes/api/request-password-reset": {
+        "id": "routes/api/request-password-reset",
+        "parentId": "root",
+        "file": "routes/api/request-password-reset.tsx",
+        "path": "api/request-password-reset"
+      },
+      "routes/api/reset-password": {
+        "id": "routes/api/reset-password",
+        "parentId": "root",
+        "file": "routes/api/reset-password.tsx",
+        "path": "api/reset-password"
+      },
+      "routes/api/user": {
+        "id": "routes/api/user",
+        "parentId": "root",
+        "file": "routes/api/user.tsx",
+        "path": "api/user"
+      },
+      "routes/api/verify-reset-token": {
+        "id": "routes/api/verify-reset-token",
+        "parentId": "root",
+        "file": "routes/api/verify-reset-token.tsx",
+        "path": "api/verify-reset-token"
+      },
+      "routes/api/cron/daily-reminders": {
+        "id": "routes/api/cron/daily-reminders",
+        "parentId": "root",
+        "file": "routes/api/cron/daily-reminders.tsx",
+        "path": "api/cron/daily-reminders"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "routes/home.tsx",
+            "index": true
+          },
+          {
+            "file": "routes/login.tsx",
+            "path": "login"
+          },
+          {
+            "file": "routes/logout.tsx",
+            "path": "logout"
+          },
+          {
+            "file": "routes/reset-password.tsx",
+            "path": "reset-password"
+          },
+          {
+            "file": "routes/reset-password.$token.tsx",
+            "path": "reset-password/:token"
+          },
+          {
+            "file": "routes/_app.tsx",
+            "children": [
+              {
+                "file": "routes/_app.dashboard.tsx",
+                "path": "dashboard"
+              },
+              {
+                "file": "routes/_app.raumbuchung.tsx",
+                "path": "raumbuchung"
+              },
+              {
+                "file": "routes/_app.room-booking.tsx",
+                "path": "room-booking"
+              },
+              {
+                "file": "routes/_app.student-id.tsx",
+                "path": "student-id"
+              },
+              {
+                "file": "routes/_app.study-organization.tsx",
+                "path": "study-organization"
+              },
+              {
+                "file": "routes/_app.courses.tsx",
+                "path": "courses"
+              },
+              {
+                "file": "routes/_app.courses.schedule.tsx",
+                "path": "courses/schedule"
+              },
+              {
+                "file": "routes/_app.certificates.immatriculation.tsx",
+                "path": "certificates/immatriculation"
+              },
+              {
+                "file": "routes/_app.certificates.transcript.tsx",
+                "path": "certificates/transcript"
+              },
+              {
+                "file": "routes/_app.news.tsx",
+                "path": "news"
+              },
+              {
+                "file": "routes/_app.news.$slug.tsx",
+                "path": "news/:slug"
+              },
+              {
+                "file": "routes/_app.users.tsx",
+                "children": [
+                  {
+                    "file": "routes/_app.users._index.tsx",
+                    "index": true
+                  },
+                  {
+                    "file": "routes/_app.users.new.tsx",
+                    "path": "new"
+                  },
+                  {
+                    "file": "routes/_app.users.$userId.tsx",
+                    "path": ":userId"
+                  }
+                ],
+                "path": "users"
+              },
+              {
+                "file": "routes/_app.events.tsx",
+                "path": "events"
+              },
+              {
+                "file": "routes/_app.faq.tsx",
+                "path": "faq"
+              },
+              {
+                "file": "routes/_app.contact.tsx",
+                "path": "contact"
+              },
+              {
+                "file": "routes/_app.tasks.tsx",
+                "path": "tasks"
+              },
+              {
+                "file": "routes/_app.files.recent.tsx",
+                "path": "files/recent"
+              },
+              {
+                "file": "routes/_app.basic-test.tsx",
+                "path": "basic-test"
+              },
+              {
+                "file": "routes/_app.form-test.tsx",
+                "path": "form-test"
+              },
+              {
+                "file": "routes/_app.console-diagnostic.tsx",
+                "path": "console-diagnostic"
+              },
+              {
+                "file": "routes/_app.notenverwaltung.tsx",
+                "path": "notenverwaltung"
+              },
+              {
+                "file": "routes/_app.praxisbericht2.tsx",
+                "path": "praxisbericht2"
+              },
+              {
+                "file": "routes/_app.toast-direct.tsx",
+                "path": "toast-direct"
+              },
+              {
+                "file": "routes/_app.toast-test.tsx",
+                "path": "toast-test"
+              },
+              {
+                "file": "routes/_app.settings.tsx",
+                "path": "settings"
+              }
+            ],
+            "path": ""
+          },
+          {
+            "file": "routes/api/health.tsx",
+            "path": "api/health"
+          },
+          {
+            "file": "routes/api/login.tsx",
+            "path": "api/login"
+          },
+          {
+            "file": "routes/api/logout.tsx",
+            "path": "api/logout"
+          },
+          {
+            "file": "routes/api/news.tsx",
+            "path": "api/news"
+          },
+          {
+            "file": "routes/api/news.$slug.tsx",
+            "path": "api/news/:slug"
+          },
+          {
+            "file": "routes/api/praxisberichte.tsx",
+            "path": "api/praxisberichte"
+          },
+          {
+            "file": "routes/api/praxisberichte.$weekKey.tsx",
+            "path": "api/praxisberichte/:weekKey"
+          },
+          {
+            "file": "routes/api.room-bookings.tsx",
+            "path": "api/room-bookings"
+          },
+          {
+            "file": "routes/api/reminders.preferences.tsx",
+            "path": "api/reminders/preferences"
+          },
+          {
+            "file": "routes/api/request-password-reset.tsx",
+            "path": "api/request-password-reset"
+          },
+          {
+            "file": "routes/api/reset-password.tsx",
+            "path": "api/reset-password"
+          },
+          {
+            "file": "routes/api/user.tsx",
+            "path": "api/user"
+          },
+          {
+            "file": "routes/api/verify-reset-token.tsx",
+            "path": "api/verify-reset-token"
+          },
+          {
+            "file": "routes/api/cron/daily-reminders.tsx",
+            "path": "api/cron/daily-reminders"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

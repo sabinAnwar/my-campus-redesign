@@ -1,0 +1,21 @@
+{
+  "framework": null,
+  "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "buildCommand": "npm run build",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/api/index"
+    }
+  ],
+  "crons": [
+    {
+      "path": "/api/cron/praxisbericht-reminder",
+      "schedule": "0 17 * * 5"
+    },
+    {
+      "path": "/api/cron/daily-reminders",
+      "schedule": "0 18 * * *"
+    }
+  ]
+}
