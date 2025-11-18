@@ -1,11 +1,9 @@
-// react-router.config.js
 import { vercelPreset } from "@vercel/react-router/vite";
+import type { Config } from "@react-router/dev/config";
 
-/** @type {import('@react-router/dev/config').Config} */
-export default {
+const config: Config = {
   ssr: true,
   presets: [vercelPreset()],
-  ssrBuild: {
-    outDir: "build/server", // <--- force static output
-  },
 };
+
+export default config;
