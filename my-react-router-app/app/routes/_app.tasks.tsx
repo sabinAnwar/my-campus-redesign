@@ -23,12 +23,18 @@ type LoaderData = {
   submissions: LoaderSubmission[];
 };
 
+type UISubmission = LoaderSubmission & {
+  status: "pending" | "submitted";
+  daysUntilDue: number;
+  similarity?: number;
+};
+
 export const loader = async () => {
   try {
     const rows = await prisma.studentTask.findMany({
       orderBy: { dueDate: "asc" },
     });
-    const submissions: LoaderSubmission[] = rows.map((t) => ({
+    const submissions: LoaderSubmission[] = rows.map((t: { id: any; title: any; course: any; type: any; dueDate: { toISOString: () => string | any[]; }; }) => ({
       id: t.id,
       title: t.title,
       course: t.course,
@@ -44,20 +50,23 @@ export const loader = async () => {
 
 export default function Tasks() {
   const { submissions: initialSubmissions } = useLoaderData() as LoaderData;
-  const [showModal, setShowModal] = useState(false);
-  const [selectedSubmission, setSelectedSubmission] =
-    useState<LoaderSubmission | null>(null);
-  const [accepted, setAccepted] = useState({ honor: false, privacy: false });
-  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
-
   // Submissions from database (with extra UI fields)
-  const [submissions, setSubmissions] = useState(
+  const [submissions, setSubmissions] = useState<UISubmission[]>(
     initialSubmissions.map((s) => ({
       ...s,
-      status: "pending" as "pending" | "submitted",
+      status: "pending",
       daysUntilDue: calculateDaysLeft(s.dueDate),
     }))
   );
+
+  // UI state for modal/upload handling
+  const [showModal, setShowModal] = useState<boolean>(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<LoaderSubmission | null>(null);
+  const [accepted, setAccepted] = useState<{ honor: boolean; privacy: boolean }>({
+    honor: false,
+    privacy: false,
+  });
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
   const exams = [
     {
@@ -72,15 +81,15 @@ export default function Tasks() {
     },
   ];
 
-  const openModal = (submission) => {
+  const openModal = (submission: React.SetStateAction<LoaderSubmission | null>) => {
     setSelectedSubmission(submission);
     setShowModal(true);
     setAccepted({ honor: false, privacy: false });
     setUploadedFile(null);
   };
 
-  const handleFileChange = (e) => {
-    const file = e.target.files[0];
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
     if (file) setUploadedFile(file);
   };
 
@@ -93,6 +102,12 @@ export default function Tasks() {
     }
     if (!uploadedFile) {
       alert("Bitte lade deine Datei hoch, bevor du fortfährst.");
+      return;
+    }
+
+    // Ensure a submission is selected before accessing it
+    if (!selectedSubmission) {
+      alert("Keine Abgabe ausgewählt.");
       return;
     }
 

@@ -7,7 +7,7 @@ export const loader = async () => {
 
 export default function ToastDirect() {
   const [mounted, setMounted] = useState(false);
-  const [toastContainer, setToastContainer] = useState(null);
+  const [toastContainer, setToastContainer] = useState<Element | null>(null);
 
   useEffect(() => {
     console.log('🟢 ToastDirect component mounted');
@@ -58,7 +58,12 @@ export default function ToastDirect() {
       }, 100);
     } catch (error) {
       console.error('❌ Error calling toast:', error);
-      alert(`ERROR: ${error.message}`);
+      // Safely handle unknown error type
+      if (error instanceof Error) {
+        alert(`ERROR: ${error.message}`);
+      } else {
+        alert(`ERROR: ${String(error)}`);
+      }
     }
   };
 

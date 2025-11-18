@@ -2,9 +2,16 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function action({ request }) {
+export async function action({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   if (request.method !== "POST") {
-    return { error: "Method not allowed" }, { status: 405 };
+    return Response.json(
+      { error: "Method not allowed" },
+      { status: 405 }
+    );
   }
 
   try {

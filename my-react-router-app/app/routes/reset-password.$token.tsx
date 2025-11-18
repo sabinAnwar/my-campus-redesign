@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, FormEvent } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { showSuccessToast, showErrorToast } from '../lib/toast';
 
@@ -9,7 +9,7 @@ export const loader = async () => {
 export default function ResetPassword() {
   const { token } = useParams();
   const navigate = useNavigate();
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isValidating, setIsValidating] = useState(true);
   const [isValidToken, setIsValidToken] = useState(false);
@@ -41,12 +41,12 @@ export default function ResetPassword() {
     validateToken();
   }, [token]);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
     setIsSubmitting(true);
 
-    const formData = new FormData(e.target);
+    const formData = new FormData(e.currentTarget);
     const password = formData.get('password');
     const confirmPassword = formData.get('confirmPassword');
 
@@ -88,9 +88,14 @@ export default function ResetPassword() {
       console.log('✅ Password reset successfully');
       showSuccessToast('✅ Password reset successfully! Redirecting to login...');
       setTimeout(() => navigate('/login'), 2000);
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('❌ Error resetting password:', err);
-      const errMsg = err.message || 'An error occurred while resetting your password';
+      const errMsg =
+        err instanceof Error
+          ? err.message
+          : typeof err === 'string'
+          ? err
+          : 'An error occurred while resetting your password';
       setError(errMsg);
       showErrorToast(errMsg);
       setIsSubmitting(false);

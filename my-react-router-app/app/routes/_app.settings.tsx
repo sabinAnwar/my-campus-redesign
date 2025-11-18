@@ -100,7 +100,8 @@ export const loader = async () => {
 
 export default function Settings() {
   const fetcher = useFetcher();
-  const [language, setLanguage] = useState("de");
+  type Language = keyof typeof TRANSLATIONS;
+  const [language, setLanguage] = useState<Language>("de");
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderHour, setReminderHour] = useState(18);
   const [reminderMinute, setReminderMinute] = useState(0);
@@ -117,7 +118,7 @@ export default function Settings() {
     (async () => {
       try {
         const sessionToken = localStorage.getItem("sessionToken");
-        const headers = {};
+        const headers: Record<string, string> = {};
         if (sessionToken) headers["X-Session-Token"] = sessionToken;
         const res = await fetch("/api/reminders/preferences", {
           credentials: "include",
@@ -139,7 +140,7 @@ export default function Settings() {
     (async () => {
       try {
         const sessionToken = localStorage.getItem("sessionToken");
-        const headers = {};
+        const headers: Record<string, string> = {};
         if (sessionToken) headers["X-Session-Token"] = sessionToken;
         const res = await fetch("/api/user", {
           credentials: "include",
@@ -184,16 +185,15 @@ export default function Settings() {
               Verwalte Konto, Einstellungen und Benachrichtigungen
             </p>
           </div>
-          <div className="flex items-center gap-3">
             <select
               value={language}
-              onChange={(e) => setLanguage(e.target.value)}
+              onChange={(e) => setLanguage(e.target.value as Language)}
               className="px-3 py-2 text-sm rounded-lg border bg-white border-slate-200 text-slate-900"
             >
+      
               <option value="de">Deutsch</option>
               <option value="en">English</option>
             </select>
-          </div>
         </div>
 
         {/* Grid */}

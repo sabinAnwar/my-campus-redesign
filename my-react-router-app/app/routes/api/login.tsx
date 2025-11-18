@@ -1,11 +1,12 @@
 import bcryptjs from "bcryptjs";
+
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
 
 const prisma = new PrismaClient();
 
 // Loader for GET requests (just blocks HTML)
-export async function loader() {
+export async function loader(): Promise<Response> {
   return Response.json(
     { error: "Method not allowed. Use POST." },
     { status: 405 }
@@ -13,7 +14,11 @@ export async function loader() {
 }
 
 // Action handles POST /api/login
-export async function action({ request }: { request: Request }) {
+export async function action({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   return handleLoginRequest(request);
 }
 
@@ -26,7 +31,8 @@ async function handleLoginRequest(request: Request) {
   }
 
   try {
-    let email, password;
+    let email: string | null = null;
+    let password: string | null = null;
 
     // Be permissive with content types in production
     const contentType = request.headers.get("content-type") || "";
@@ -39,8 +45,10 @@ async function handleLoginRequest(request: Request) {
         !contentType
       ) {
         const formData = await request.formData();
-        email = formData.get("email");
-        password = formData.get("password");
+        const emailEntry = formData.get("email");
+        const passwordEntry = formData.get("password");
+        email = typeof emailEntry === "string" ? emailEntry : null;
+        password = typeof passwordEntry === "string" ? passwordEntry : null;
       }
     } catch (formErr) {
       const message =
@@ -56,9 +64,16 @@ async function handleLoginRequest(request: Request) {
     // If still missing, try JSON
     if (!email || !password) {
       try {
-        const json = await request.json();
-        email = email || json?.email;
-        password = password || json?.password;
+        const json: unknown = await request.json();
+        if (typeof json === "object" && json !== null) {
+          const obj = json as { email?: unknown; password?: unknown };
+          if (!email && typeof obj.email === "string") {
+            email = obj.email;
+          }
+          if (!password && typeof obj.password === "string") {
+            password = obj.password;
+          }
+        }
       } catch (jsonErr) {
         // Ignore; will validate below
       }

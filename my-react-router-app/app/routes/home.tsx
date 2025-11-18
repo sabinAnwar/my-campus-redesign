@@ -1,8 +1,31 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getUser } from "../lib/auth.ts";
+import { getUser } from "../lib/auth";
 
-const TRANSLATIONS = {
+type Language = "de" | "en";
+
+interface Translation {
+  welcomeBack: string;
+  dashboard: string;
+  logout: string;
+  login: string;
+  courses: string;
+  courseOverview: string;
+  courseOverviewDesc: string;
+  submissions: string;
+  submissionsDesc: string;
+  viewAll: string;
+  noCoursesYet: string;
+  turnitin: string;
+  similarityScore: string;
+  status: string;
+  dueDate: string;
+  submitted: string;
+  pending: string;
+  language: string;
+}
+
+const TRANSLATIONS: Record<Language, Translation> = {
   de: {
     welcomeBack: "Willkommen zurück",
     dashboard: "Dashboard",
@@ -34,7 +57,6 @@ const TRANSLATIONS = {
     submissions: "Submissions",
     submissionsDesc: "Manage your submitted assignments",
     viewAll: "View all",
-    noCoursesYet: "No courses yet",
     turnitin: "Turnitin",
     similarityScore: "Similarity Score",
     status: "Status",
@@ -42,6 +64,7 @@ const TRANSLATIONS = {
     submitted: "Submitted",
     pending: "Pending",
     language: "Language",
+    noCoursesYet: ""
   },
 };
 
@@ -56,10 +79,10 @@ type User = {
 };
 
 export default function Home() {
-  const [user, setUser] = useState<User | null>(null);
-  const [language, setLanguage] = useState("de");
-  const [activeTab, setActiveTab] = useState("overview");
   const navigate = useNavigate();
+  const [user, setUser] = useState<User | null>(null);
+  const [language, setLanguage] = useState<Language>("de");
+  const [activeTab, setActiveTab] = useState("overview");
   const t = TRANSLATIONS[language];
 
   useEffect(() => {
@@ -227,9 +250,10 @@ export default function Home() {
             </nav>
 
             <div className="flex items-center space-x-4">
+            
               <select
                 value={language}
-                onChange={(e) => setLanguage(e.target.value)}
+                onChange={(e) => setLanguage(e.target.value as Language)}
                 className="px-3 py-2 border border-blue-200 rounded-lg bg-white text-gray-700 font-medium hover:border-blue-400 transition"
               >
                 <option value="de">DE</option>

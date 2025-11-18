@@ -3,7 +3,7 @@ import { useState } from "react";
 import { prisma } from "../lib/prisma";
 
 // Define action function for handling form submission
-export async function action({ request, params }) {
+export async function action({ request, params }: { request: Request; params: { userId: string } }) {
   const formData = await request.formData();
   const action = formData.get("_action");
   const userId = parseInt(params.userId, 10); // Convert string ID to integer
@@ -20,7 +20,8 @@ export async function action({ request, params }) {
       return { success: true };
     } catch (error) {
       console.error("Failed to delete user:", error);
-      return { error: error.message };
+      const message = error instanceof Error ? error.message : String(error);
+      return { error: message };
     }
   } else if (action === "update") {
     const name = formData.get("name");
@@ -42,10 +43,10 @@ export async function action({ request, params }) {
         },
       });
 
-      return { success: true };
     } catch (error) {
       console.error("Failed to update user:", error);
-      return { error: error.message };
+      const message = error instanceof Error ? error.message : String(error);
+      return { error: message };
     }
   }
 
@@ -53,7 +54,7 @@ export async function action({ request, params }) {
 }
 
 // Define loader function to get user data
-export async function loader({ params }) {
+export async function loader({ params }: { params: { userId: string } }) {
   const userId = parseInt(params.userId, 10); // Convert string ID to integer
 
   try {
@@ -68,12 +69,14 @@ export async function loader({ params }) {
       throw new Error("User not found");
     }
 
+    // Return the found user
     return { user };
   } catch (error) {
     console.error("Error loading user:", error);
 
     // Return error to be handled in the component
-    return { error: error.message };
+    const message = error instanceof Error ? error.message : String(error);
+    return { error: message };
   }
 }
 

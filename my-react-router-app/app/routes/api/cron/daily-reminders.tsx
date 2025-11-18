@@ -1,7 +1,7 @@
 import { prisma } from "../../../lib/prisma";
 import nodemailer from "nodemailer";
 
-function getHourInTimezone(tz) {
+function getHourInTimezone(tz: string | null | undefined): number {
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
       hour: "2-digit",
@@ -16,7 +16,7 @@ function getHourInTimezone(tz) {
   }
 }
 
-function getMinuteInTimezone(tz) {
+function getMinuteInTimezone(tz: string | null | undefined): number {
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
       minute: "2-digit",
@@ -31,7 +31,7 @@ function getMinuteInTimezone(tz) {
   }
 }
 
-function getCurrentWeekKey() {
+function getCurrentWeekKey(): string {
   const now = new Date();
   const d = new Date(now.getTime());
   d.setHours(0, 0, 0, 0);
@@ -43,7 +43,11 @@ function getCurrentWeekKey() {
   return `${isoYear}-W${String(week).padStart(2, "0")}`;
 }
 
-export async function loader({ request }) {
+export async function loader({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   try {
     const url = new URL(request.url);
     const secret = url.searchParams.get("secret");
@@ -64,7 +68,14 @@ export async function loader({ request }) {
         : null;
 
     // Try selecting reminderMinute; if the Prisma client is outdated, retry without it
-    let users;
+    let users: Array<{
+      id: number;
+      email: string;
+      name: string | null;
+      reminderHour: number | null;
+      reminderMinute?: number | null;
+      reminderTimezone?: string | null;
+    }>;
     let noMinuteInClient = false;
     try {
       users = await prisma.user.findMany({
@@ -78,8 +89,13 @@ export async function loader({ request }) {
           reminderTimezone: true,
         },
       });
-    } catch (e) {
-      const msg = e?.message || "";
+    } catch (e: unknown) {
+      let msg = "";
+      if (e && typeof e === "object" && "message" in e) {
+        msg = String((e as any).message);
+      } else if (typeof e === "string") {
+        msg = e;
+      }
       if (
         msg.includes("Unknown field `reminderMinute`") ||
         msg.includes("Unknown arg `reminderMinute`")
@@ -180,8 +196,17 @@ export async function loader({ request }) {
         if (emailService === "test") {
           console.log("Preview:", nodemailer.getTestMessageUrl(info));
         }
-      } catch (err) {
-        console.error(`Failed to send reminder to ${u.email}:`, err.message);
+      } catch (err: unknown) {
+        let message = "Unknown error";
+        if (err && typeof err === "object" && "message" in err) {
+          message = String((err as any).message);
+        } else if (typeof err === "string") {
+          message = err;
+        }
+        console.error(
+          `Failed to send reminder to ${u.email}:`,
+          message
+        );
       }
     }
 

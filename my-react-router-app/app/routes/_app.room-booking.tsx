@@ -68,18 +68,18 @@ const LECTURES = [
 ];
 
 // Helper function to get session token from request cookies
-function getSessionToken(request) {
+function getSessionToken(request: { headers: { get: (arg0: string) => any; }; }) {
   const cookieHeader = request.headers.get("Cookie");
   if (!cookieHeader) return null;
 
-  const cookies = cookieHeader.split(";").map((c) => c.trim());
-  const sessionCookie = cookies.find((c) => c.startsWith("session="));
+  const cookies = cookieHeader.split(";").map((c: string) => c.trim());
+  const sessionCookie = cookies.find((c: string) => c.startsWith("session="));
 
   if (!sessionCookie) return null;
   return sessionCookie.split("=")[1];
 }
 
-export async function loader({ request }) {
+export async function loader({ request }: { request: Request }) {
   try {
     // Get session token from cookies
     const token = getSessionToken(request);
@@ -133,7 +133,7 @@ export async function loader({ request }) {
   }
 }
 
-export async function action({ request }) {
+export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const actionType = formData.get("_action");
 
@@ -142,7 +142,7 @@ export async function action({ request }) {
   try {
     // Get session token from cookies
     const token = getSessionToken(request);
-    let userId = parseInt(formData.get("userId")) || 1; // Fallback
+    let userId = parseInt(String(formData.get("userId") ?? "1"), 10) || 1; // Fallback
 
     if (token) {
       // Look up session in database
@@ -165,13 +165,16 @@ export async function action({ request }) {
       const startTime = formData.get("startTime");
       const endTime = formData.get("endTime");
 
+      // Normalize date from FormData (FormData.get can return FormDataEntryValue | null)
+      const bookingDate = dateStr ? new Date(String(dateStr)) : new Date();
+
       // Check if user already has a booking for this room and campus
       const existingBooking = await prisma.roomBooking.findFirst({
         where: {
           userId: userId,
           roomName: roomName,
           campus: campus,
-          date: new Date(dateStr),
+          date: bookingDate,
         },
       });
 
@@ -195,7 +198,7 @@ export async function action({ request }) {
             roomId,
             roomName,
             campus,
-            date: new Date(dateStr),
+            date: bookingDate,
             startTime,
             endTime,
           },
@@ -216,7 +219,7 @@ export async function action({ request }) {
     }
 
     if (actionType === "delete") {
-      const bookingId = parseInt(formData.get("bookingId"));
+      const bookingId = parseInt(String(formData.get("bookingId") ?? "0"), 10);
 
       console.log("🗑️ Deleting booking:", bookingId);
 
@@ -232,20 +235,21 @@ export async function action({ request }) {
     return { success: false, error: "Invalid action" };
   } catch (error) {
     console.error("❌ Action error:", error);
-    return { success: false, error: error.message };
+    const message = error instanceof Error ? error.message : String(error);
+    return { success: false, error: message };
   }
 }
 
 // Helper to programmatically generate seat positions for a grid with numbering
 function generateSeats(
-  prefix,
-  roomName,
-  rows,
-  cols,
-  startX,
-  startY,
-  gapX,
-  gapY
+  prefix: any,
+  roomName: any,
+  rows: number,
+  cols: number,
+  startX: number,
+  startY: number,
+  gapX: number,
+  gapY: number
 ) {
   const seats = [];
   let seatNumber = 1;
@@ -293,7 +297,8 @@ export default function RoomBooking() {
   const loaderData = useLoaderData();
   const actionData = useActionData();
   const revalidator = useRevalidator();
-  const [selectedLocation, setSelectedLocation] = useState("Hammerbrook");
+  type CampusKey = keyof typeof CAMPUS_ROOMS;
+  const [selectedLocation, setSelectedLocation] = useState<CampusKey>("Hammerbrook");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("11:00");
   const [isLoading, setIsLoading] = useState(false);
@@ -317,7 +322,7 @@ export default function RoomBooking() {
   const rooms = CAMPUS_ROOMS[selectedLocation] || [];
 
   // Buchungsfunktion - uses Form submission to server action
-  const handleBookRoom = (room) => {
+  const handleBookRoom = (room: { id: React.Key | null | undefined; name: string | number | React.ReactNode; }) => {
     if (!userId) {
       showErrorToast("Benutzer nicht angemeldet");
       return;
@@ -333,8 +338,8 @@ export default function RoomBooking() {
 
     console.log("📤 Booking room:", {
       userId,
-      roomId: room.id,
-      roomName: room.name,
+      roomId: String(room.id),
+      roomName: String(room.name),
       campus: selectedLocation,
       date: today,
       startTime,
@@ -349,8 +354,8 @@ export default function RoomBooking() {
     const formData = new FormData();
     formData.append("_action", "create");
     formData.append("userId", userId.toString());
-    formData.append("roomId", room.id);
-    formData.append("roomName", room.name);
+    formData.append("roomId", String(room.id));
+    formData.append("roomName", String(room.name));
     formData.append("campus", selectedLocation);
     formData.append("date", today);
     formData.append("startTime", startTime);
@@ -361,7 +366,7 @@ export default function RoomBooking() {
       const input = document.createElement("input");
       input.type = "hidden";
       input.name = key;
-      input.value = value;
+      input.value = String(value);
       form.appendChild(input);
     }
 
@@ -369,7 +374,7 @@ export default function RoomBooking() {
     form.submit();
 
     showSuccessToast(
-      `Raum ${room.name} wird gebucht... Zeit: ${startTime} - ${endTime}`
+      `Raum ${String(room.name)} wird gebucht... Zeit: ${startTime} - ${endTime}`
     );
   };
 
@@ -392,7 +397,7 @@ export default function RoomBooking() {
     });
     setAvailabilityChecked(true);
 
-    const availableRooms = rooms.filter((room) => {
+    const availableRooms = rooms.filter((room: { name: any; }) => {
       const { status } = getRoomStatus(room.name);
       return status === "frei";
     });
@@ -403,9 +408,9 @@ export default function RoomBooking() {
   };
 
   // Stornierungsfunktion mit React Router action
-  const handleCancelBooking = (roomName) => {
+  const handleCancelBooking = (roomName: any) => {
     const booking = bookings.find(
-      (b) => b.roomName === roomName && b.campus === selectedLocation
+      (b: { roomName: any; campus: string; }) => b.roomName === roomName && b.campus === selectedLocation
     );
 
     if (!booking) {
@@ -435,7 +440,7 @@ export default function RoomBooking() {
       const input = document.createElement("input");
       input.type = "hidden";
       input.name = key;
-      input.value = value;
+      input.value = String(value);
       form.appendChild(input);
     }
 
@@ -454,16 +459,24 @@ export default function RoomBooking() {
   }, [selectedLocation]);
 
   // Check if a room has a lecture or is booked
-  const getRoomStatus = (roomName) => {
+  const getRoomStatus = (roomName: unknown) => {
+    // If roomName is null/undefined, return free by default
+    if (roomName == null) {
+      return { status: "frei", lecture: null, booking: null };
+    }
+
+    // Normalize to string for comparisons (covers numbers, elements, etc.)
+    const name = String(roomName);
+
     // Check if room has lecture
-    const lecture = todayLectures.find((l) => l.roomName === roomName);
+    const lecture = todayLectures.find((l) => l.roomName === name);
     if (lecture) {
       return { status: "belegt", lecture, booking: null };
     }
 
     // Check if room is booked by user
     const booking = bookings.find(
-      (b) => b.roomName === roomName && b.campus === selectedLocation
+      (b: any) => b.roomName === name && b.campus === selectedLocation
     );
     if (booking) {
       return { status: "gebucht", lecture: null, booking };
@@ -492,9 +505,8 @@ export default function RoomBooking() {
 
         {/* Main Content */}
         <div className="container mx-auto px-8 py-8 max-w-6xl">
-          {/* Campus Selection Tabs */}
           <div className="flex justify-center gap-0 mb-8">
-            {Object.keys(CAMPUS_ROOMS).map((campus) => (
+            {(Object.keys(CAMPUS_ROOMS) as (keyof typeof CAMPUS_ROOMS)[]).map((campus) => (
               <button
                 key={campus}
                 onClick={() => setSelectedLocation(campus)}
@@ -578,7 +590,7 @@ export default function RoomBooking() {
 
           {/* Room Cards Grid */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {rooms.map((room) => {
+            {rooms.map((room: { name: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; id: React.Key | null | undefined; }) => {
               const { status, lecture, booking } = getRoomStatus(room.name);
 
               // Border und Text-Farben basierend auf Status

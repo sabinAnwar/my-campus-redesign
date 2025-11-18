@@ -7,12 +7,12 @@ export const loader = async () => {
 };
 
 export default function RequestReset() {
-  const [error, setError] = useState(null);
-  const [success, setSuccess] = useState(false);
-  const [resetLink, setResetLink] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<boolean>(false);
+  const [resetLink, setResetLink] = useState<string | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState<boolean>(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: { preventDefault: () => void; currentTarget: HTMLFormElement | undefined; }) => {
     e.preventDefault();
     setError(null);
     setSuccess(false);
@@ -24,7 +24,12 @@ export default function RequestReset() {
     try {
       const response = await fetch("/api/request-password-reset", {
         method: "POST",
-        body: new URLSearchParams({ email }),
+        headers: {
+          "Content-Type": "application/x-www-form-urlencoded",
+        },
+        body: new URLSearchParams({
+          email: typeof email === "string" ? email : "",
+        }),
       });
 
       const contentType = response.headers.get("content-type");
@@ -58,7 +63,11 @@ export default function RequestReset() {
     } catch (err) {
       console.error("❌ Error requesting password reset:", err);
       const errMsg =
-        err.message || "An error occurred while requesting password reset";
+        err instanceof Error
+          ? err.message
+          : typeof err === "string"
+          ? err
+          : "An error occurred while requesting password reset";
       setError(errMsg);
       showErrorToast(errMsg);
     }

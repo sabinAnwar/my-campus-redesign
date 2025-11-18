@@ -1,23 +1,35 @@
 import { useState } from "react";
-import { useNavigate, Link, Form, redirect } from "react-router-dom";
+import { useNavigate, Link, Form, redirect, useActionData } from "react-router-dom";
 import { prisma } from "../lib/prisma";
 
 // Action function to handle form submission
-export async function action({ request }) {
+export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
+
+  // Normalize FormDataEntryValue to strings to satisfy TypeScript and runtime checks
+  const nameRaw = formData.get("name");
+  const usernameRaw = formData.get("username");
+  const emailRaw = formData.get("email");
+  const roleRaw = formData.get("role");
+
+  const name = typeof nameRaw === "string" ? nameRaw : "";
+  const username = typeof usernameRaw === "string" ? usernameRaw : "";
+  const email = typeof emailRaw === "string" ? emailRaw : "";
+  const role = typeof roleRaw === "string" && roleRaw ? roleRaw : "USER";
+
   const userData = {
-    name: formData.get("name"),
-    username: formData.get("username"),
-    email: formData.get("email"),
-    role: formData.get("role") || "USER",
+    name,
+    username,
+    email,
+    role,
     createdAt: new Date()
   };
 
   // Basic validation
-  const errors = {};
-  if (!userData.username) errors.username = "Username is required";
-  if (!userData.email) errors.email = "Email is required";
-  if (userData.email && !/\S+@\S+\.\S+/.test(userData.email)) {
+  const errors: Record<string, string> = {};
+  if (!username) errors.username = "Username is required";
+  if (!email) errors.email = "Email is required";
+  if (email && !/\S+@\S+\.\S+/.test(email)) {
     errors.email = "Email is invalid";
   }
 
@@ -39,10 +51,13 @@ export async function action({ request }) {
   } catch (error) {
     console.error("Error creating user:", error);
     
+    // Safely extract message from unknown error
+    const errorMessage = error instanceof Error ? error.message : String(error);
+    
     // Return database error
     return { 
       errors: { 
-        _form: `Database error: ${error.message}` 
+        _form: `Database error: ${errorMessage}` 
       },
       values: userData
     };
@@ -63,12 +78,12 @@ export default function NewUser() {
   });
   
   // This will be populated by the form action if there are errors
-  const actionData = {};
-  const errors = actionData?.errors || {};
-  const values = actionData?.values || formData;
+    const actionData = useActionData() as { errors?: Record<string, string>; values?: typeof formData } | null;
+    const errors = actionData?.errors || {};
+    const values = actionData?.values || formData;
   
   // Handle input changes
-  const handleChange = (e) => {
+  const handleChange = (e: { target: { name: any; value: any; }; }) => {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,

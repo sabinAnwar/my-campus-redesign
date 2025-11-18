@@ -38,9 +38,12 @@ export async function loader() {
       },
     ];
 
+    const databaseError =
+      error instanceof Error ? error.message : String(error);
+
     return {
       users: fallbackUsers,
-      databaseError: error.message,
+      databaseError,
     };
   }
 }
@@ -139,7 +142,7 @@ export default function Users() {
         ) : (
           // Users grid
           <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-            {users.map((user) => (
+            {users.map((user: { id: React.Key | null | undefined; avatar: string | undefined; name: any; username: any; email: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | React.ReactPortal | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; role: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; createdAt: string | number | Date; }) => (
               <Link
                 to={`${user.id}`}
                 key={user.id}
@@ -267,7 +270,7 @@ export default function Users() {
                   <div className="ml-4">
                     <p className="text-sm font-medium text-gray-600">Admins</p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {users.filter((u) => u.role === "ADMIN").length}
+                      {users.filter((u: { role: string; }) => u.role === "ADMIN").length}
                     </p>
                   </div>
                 </div>
@@ -291,7 +294,7 @@ export default function Users() {
                       Regular Users
                     </p>
                     <p className="text-2xl font-bold text-gray-900">
-                      {users.filter((u) => u.role === "USER").length}
+                      {users.filter((u: { role: string; }) => u.role === "USER").length}
                     </p>
                   </div>
                 </div>

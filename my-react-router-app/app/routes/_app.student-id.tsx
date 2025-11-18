@@ -25,8 +25,8 @@ export async function loader() {
 
 export default function StudentIdPage() {
   const { user } = useLoaderData();
-  const frontRef = useRef(null);
-  const backRef = useRef(null);
+  const frontRef = useRef<HTMLDivElement | null>(null);
+  const backRef = useRef<HTMLDivElement | null>(null);
 
   if (!user) {
     return (
@@ -51,8 +51,11 @@ export default function StudentIdPage() {
         format: [85.6, 53.98],
       });
 
-      const renderCard = async (ref) => {
-        const canvas = await html2canvas(ref.current, {
+      const renderCard = async (ref: React.RefObject<HTMLDivElement | null>) => {
+        if (!ref.current) {
+          throw new Error("Ref element is not available");
+        }
+        const canvas = await html2canvas(ref.current as HTMLElement, {
           scale: 4,
           useCORS: true,
           backgroundColor: null,

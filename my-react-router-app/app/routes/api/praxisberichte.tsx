@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function loader({ request }) {
+export async function loader({ request }: { request: Request }) {
   if (request.method !== "GET") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -36,13 +36,10 @@ export async function loader({ request }) {
     return Response.json({ reports });
   } catch (error) {
     console.error("❌ Error fetching praxisberichte:", error);
-    return Response.json(
-      { error: "Failed to fetch reports" },
-      { status: 500 }
-    );
+    return Response.json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 }
 
-export async function action({ request, params }) {
+export async function action({ request, params }: { request: Request; params: any }) {
   return Response.json({ error: "Method not allowed" }, { status: 405 });
 }

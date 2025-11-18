@@ -1,6 +1,23 @@
 import React, { useMemo, useState } from "react";
 
 export const loader = async () => null;
+
+type StatusKey = "P" | "F" | "M" | "CE" | "E";
+
+interface GradeModule {
+  name: string;
+  status: StatusKey;
+  note: number | null;
+  credits: number;
+  datum: string;
+  bewertung?: string;
+}
+
+interface Section {
+  name: string;
+  modules: GradeModule[];
+}
+
 /* ---------- STUDENT ---------- */
 const studentData = {
   vorname: "Sabin",
@@ -11,7 +28,7 @@ const studentData = {
 };
 
 /* ---------- DATA: SEMESTER + VERTIEFUNG + ZUSATZ ---------- */
-const semesters = [
+const semesters: Section[] = [
   {
     name: "1. Semester",
     modules: [
@@ -289,7 +306,7 @@ const semesters = [
   },
 ];
 
-const vertiefungDataAnalytics = {
+const vertiefungDataAnalytics: Section = {
   name: "Vertiefung: Data Analytics",
   modules: [
     {
@@ -319,7 +336,7 @@ const vertiefungDataAnalytics = {
   ],
 };
 
-const zusatzModule = {
+const zusatzModule: Section = {
   name: "Zusatzmodule & Projekte",
   modules: [
     {
@@ -341,14 +358,14 @@ const zusatzModule = {
 };
 
 /* ---------- STATUS CHIP COLORS ---------- */
-const chipClasses = {
+const chipClasses: Record<StatusKey, string> = {
   P: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
   F: "bg-red-50 text-red-700 ring-1 ring-red-200",
   M: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
   CE: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
   E: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
 };
-const chipLabel = {
+const chipLabel: Record<StatusKey, string> = {
   P: "Bestanden",
   F: "Nicht bestanden",
   M: "Offen",
@@ -356,7 +373,7 @@ const chipLabel = {
   E: "Zur Prüfung angemeldet",
 };
 
-function parseDate(d) {
+function parseDate(d: string) {
   if (!d || d === "–") return null;
   // dd.mm.yyyy
   const [dd, mm, yyyy] = d.split(".");
@@ -379,12 +396,12 @@ function formatCSVCell(val) {
 
 export default function GradesDashboardIU() {
   const [expanded, setExpanded] = useState([0, 1, 2]); // some open by default
-  const [statusFilter, setStatusFilter] = useState("ALL");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | StatusKey>("ALL");
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState("none"); // none | datum | note
-  const [sortDir, setSortDir] = useState("desc"); // asc | desc
+  const [sortKey, setSortKey] = useState<"none" | "datum" | "note">("none");
+  const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
 
-  const allSections = useMemo(
+  const allSections = useMemo<Section[]>(
     () => [...semesters, vertiefungDataAnalytics, zusatzModule],
     []
   );
@@ -401,25 +418,23 @@ export default function GradesDashboardIU() {
     return { total, passed, open, failed, passRate };
   }, [allSections]);
 
-  const toggle = (i) =>
-    setExpanded((prev) =>
-      prev.includes(i) ? prev.filter((x) => x !== i) : [...prev, i]
+  const toggle = (i: number) =>
+    setExpanded((prev: number[]) =>
+      prev.includes(i) ? prev.filter((x: number) => x !== i) : [...prev, i]
     );
 
   const collapseAll = () => setExpanded([]);
   const expandAll = () => setExpanded(allSections.map((_, i) => i));
 
-  const moduleMatches = (m) => {
+  const moduleMatches = (m: GradeModule) => {
     const sOk =
-      statusFilter === "ALL"
-        ? true
-        : (m.status || "").toUpperCase() === statusFilter;
+      statusFilter === "ALL" ? true : m.status === statusFilter;
     const q = search.trim().toLowerCase();
     const qOk = !q || (m.name || "").toLowerCase().includes(q);
     return sOk && qOk;
   };
 
-  const sortedModules = (mods) => {
+  const sortedModules = (mods: GradeModule[]): GradeModule[] => {
     if (sortKey === "none") return mods;
     const copy = [...mods];
     copy.sort((a, b) => {
@@ -438,8 +453,8 @@ export default function GradesDashboardIU() {
     return copy;
   };
 
-  const filteredSections = useMemo(() => {
-    return allSections.map((section) => {
+  const filteredSections = useMemo<Section[]>(() => {
+    return allSections.map((section: Section) => {
       const visible = sortedModules(section.modules.filter(moduleMatches));
       return { ...section, modules: visible };
     });
@@ -553,6 +568,7 @@ export default function GradesDashboardIU() {
 </body>
 </html>`;
     const w = window.open("", "_blank");
+    if (!w) return;
     w.document.write(html);
     w.document.close();
   };

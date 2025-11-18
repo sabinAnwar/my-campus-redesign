@@ -1,22 +1,32 @@
 import { prisma } from "../../lib/prisma";
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router-dom";
 
-export async function loader({ params, request }) {
+export async function loader({ params, request }: LoaderFunctionArgs) {
   if (request.method !== "GET") {
-    return Response.json({ error: "Method not allowed" }, { status: 405 });
+    return new Response(JSON.stringify({ error: "Method not allowed" }), {
+      status: 405,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 
-  const { slug } = params;
+  const slug = params.slug ?? "";
+
   try {
     let item = await prisma.news.findUnique({ where: { slug } });
     if (!item && /^\d+$/.test(slug)) {
       item = await prisma.news.findUnique({ where: { id: Number(slug) } });
     }
     if (!item) {
-      return Response.json({ error: "News not found" }, { status: 404 });
+      return new Response(JSON.stringify({ error: "News not found" }), {
+        status: 404,
+        headers: { "Content-Type": "application/json" },
+      });
     }
-    return Response.json({ item });
+    return new Response(JSON.stringify({ item }), {
+      headers: { "Content-Type": "application/json" },
+    });
   } catch (err) {
-    console.warn("/api/news/:slug (RR) fallback:", err.message);
+    console.warn("/api/news/:slug (RR) fallback:", (err as Error).message);
     const now = new Date().toISOString();
     const samples = [
       { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", content: "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
@@ -28,9 +38,17 @@ export async function loader({ params, request }) {
       { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", content: "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", coverImageUrl: undefined, featured: true, publishedAt: now },
     ];
     const item = samples.find((s) => s.slug === slug) || null;
-    if (item) return Response.json({ item });
-    return Response.json({ error: "News not found" }, { status: 404 });
+    if (item) {
+      return new Response(JSON.stringify({ item }), {
+        headers: { "Content-Type": "application/json" },
+      });
+    }
+    return new Response(JSON.stringify({ error: "News not found" }), {
+      status: 404,
+      headers: { "Content-Type": "application/json" },
+    });
   }
 }
 
-export const action = loader;
+export const action = async ({ request, params }: ActionFunctionArgs) =>
+  loader({ request, params } as LoaderFunctionArgs);

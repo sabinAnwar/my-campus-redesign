@@ -1,11 +1,11 @@
 import { prisma } from "../../lib/prisma";
 
-function toInt(value, def) {
-  const n = parseInt(value, 10);
+function toInt(value: string | null, def: number) {
+  const n = parseInt(String(value), 10);
   return Number.isFinite(n) && n > 0 ? n : def;
 }
 
-export async function loader({ request }) {
+export async function loader({ request }: { request: Request }) {
   if (request.method !== "GET") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
@@ -54,7 +54,7 @@ export async function loader({ request }) {
     ]);
 
     const filtered = tag
-      ? items.filter((n) => {
+      ? items.filter((n: { tags: any; }) => {
           try {
             const arr = JSON.parse(n.tags || "[]");
             return (
@@ -69,7 +69,12 @@ export async function loader({ request }) {
 
     return Response.json({ items: filtered, total, page, pageSize });
   } catch (err) {
-    console.warn("/api/news (RR) fallback:", err.message);
+    // err is unknown; narrow to Error to safely access message
+    if (err instanceof Error) {
+      console.warn("/api/news (RR) fallback:", err.message);
+    } else {
+      console.warn("/api/news (RR) fallback:", String(err));
+    }
     const url = new URL(request.url);
     const search = (url.searchParams.get("search") || "").trim();
     const category = (url.searchParams.get("category") || "").trim();
@@ -78,7 +83,7 @@ export async function loader({ request }) {
     const pageSize = Math.min(toInt(url.searchParams.get("pageSize"), 12), 50);
     const skip = (page - 1) * pageSize;
     const now = new Date();
-    const daysAgo = (d) => {
+    const daysAgo = (d: number) => {
       const t = new Date(now);
       t.setDate(now.getDate() - d);
       return t.toISOString();
@@ -112,7 +117,7 @@ export async function loader({ request }) {
     }
     filtered = filtered.sort((a, b) => {
       if (a.featured === b.featured) {
-        return new Date(b.publishedAt) - new Date(a.publishedAt);
+        return Date.parse(String(b.publishedAt)) - Date.parse(String(a.publishedAt));
       }
       return a.featured ? -1 : 1;
     });

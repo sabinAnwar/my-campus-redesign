@@ -63,13 +63,13 @@ export async function getCurrentSession() {
   return sessions.get(sessionId);
 }
 
-export async function getUser(request: any) {
+export async function getUser(request?: any) {
   const session = await getCurrentSession();
   if (!session?.userId) return null;
 
   try {
-    const user = await prisma.user.findUnique({ 
-      where: { id: session.userId }
+    const user = await prisma.user.findUnique({
+      where: { id: session.userId },
     });
     return user;
   } catch {

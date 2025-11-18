@@ -3,7 +3,11 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-export async function action({ request }) {
+export async function action({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   if (request.method !== "POST") {
     return Response.json(
       { error: "Method not allowed" },
@@ -14,7 +18,10 @@ export async function action({ request }) {
   try {
     const { token, password } = await request.json();
 
-    console.log("📝 Password reset attempt with token:", token?.substring(0, 8) + "...");
+    console.log(
+      "📝 Password reset attempt with token:",
+      token?.substring(0, 8) + "..."
+    );
 
     if (!token || typeof token !== "string") {
       return Response.json({ error: "Invalid token" }, { status: 400 });

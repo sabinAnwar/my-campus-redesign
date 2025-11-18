@@ -2,7 +2,11 @@ import { PrismaClient } from "@prisma/client";
 
 const prisma = new PrismaClient();
 
-async function handleRequest({ request }) {
+async function handleRequest({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   if (request.method !== "GET") {
     return Response.json(
       { error: "Method not allowed" },
@@ -87,10 +91,18 @@ async function handleRequest({ request }) {
   }
 }
 
-export async function loader({ request }) {
+export async function loader({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   return handleRequest({ request });
 }
 
-export async function action({ request }) {
+export async function action({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   return handleRequest({ request });
 }

@@ -7,20 +7,21 @@ import "react-toastify/dist/ReactToastify.css";
 import { CalendarRange, ListChecks, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, CalendarClock, GraduationCap, ClipboardList, FileEdit, BadgeCheck, Smile } from "lucide-react";
 
 // Helpers
-function getISOWeekKey(date) {
+function getISOWeekKey(date: Date) {
   const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
   // Thursday in current week decides the year
   const dayNum = d.getUTCDay() || 7; // 1..7, Mon..Sun
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d - yearStart) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
   const weekStr = String(weekNo).padStart(2, "0");
   return `${d.getUTCFullYear()}-W${weekStr}`;
 }
 
-function parseISOWeekStart(weekKey) {
+function parseISOWeekStart(weekKey: string | null | undefined) {
   // weekKey format: YYYY-Www
   try {
+    if (typeof weekKey !== "string") return null;
     const [y, w] = weekKey.split("-W");
     const year = parseInt(y, 10);
     const week = parseInt(w, 10);
@@ -36,7 +37,7 @@ function parseISOWeekStart(weekKey) {
   }
 }
 
-function buildMonth(year, month) {
+function buildMonth(year: number, month: number) {
   // Build a 6x7 grid starting Monday
   const first = new Date(year, month, 1);
   const startOffset = (first.getDay() + 6) % 7; // 0=Mon
@@ -54,7 +55,7 @@ function buildMonth(year, month) {
   return weeks;
 }
 
-function getMonthWeekKeys(year, month) {
+function getMonthWeekKeys(year: number, month: number) {
   // Collect unique ISO week keys that intersect the given month (1..last day)
   const keys = new Set();
   const lastDay = new Date(year, month + 1, 0).getDate();
@@ -65,7 +66,7 @@ function getMonthWeekKeys(year, month) {
   return keys;
 }
 
-function getSemesterWeekKeys(semStartYear, semStartMonth) {
+function getSemesterWeekKeys(semStartYear: number, semStartMonth: number) {
   const keys = new Set();
   for (let i = 0; i < 6; i++) {
     const d = new Date(semStartYear, semStartMonth + i, 1);
@@ -77,9 +78,9 @@ function getSemesterWeekKeys(semStartYear, semStartMonth) {
 
 export default function Praxisbericht2() {
   const [view, setView] = useState("calendar");
-  const [reports, setReports] = useState([]);
-  const [activeWeekKey, setActiveWeekKey] = useState(null);
-  const [activeReport, setActiveReport] = useState(null);
+  const [reports, setReports] = useState<any[]>([]);
+  const [activeWeekKey, setActiveWeekKey] = useState<string | null>(null);
+  const [activeReport, setActiveReport] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | DUE | DRAFT | SUBMITTED | APPROVED | KLAUSURPHASE
   const navigate = useNavigate();
@@ -105,7 +106,7 @@ export default function Praxisbericht2() {
         const data = await apiGet("/api/praxisberichte");
         setReports(data.reports || []);
         setLoading(false);
-      } catch (e) {
+      } catch (e: any) {
         console.error("Failed to load praxisberichte", e);
         if (e && e.status === 401) {
           navigate("/login");
@@ -482,17 +483,17 @@ export default function Praxisbericht2() {
 
                   {mode === "month" ? (
                     <CalendarView
-                      reports={reports}
-                      year={year}
-                      month={month}
-                      filter={statusFilter}
-                      onDayClick={(weekKey) => {
-                        const r =
-                          reports.find((x) => x.isoWeekKey === weekKey) || null;
-                        setActiveReport(r);
-                        setActiveWeekKey(weekKey);
-                      }}
-                    />
+                        reports={reports}
+                        year={year}
+                        month={month}
+                        filter={statusFilter}
+                        onDayClick={(weekKey: string) => {
+                          const r =
+                            reports.find((x) => x.isoWeekKey === weekKey) || null;
+                          setActiveReport(r);
+                          setActiveWeekKey(weekKey);
+                        }}
+                      />
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       {Array.from({ length: 6 }).map((_, i) => {
@@ -506,7 +507,7 @@ export default function Praxisbericht2() {
                             year={y}
                             month={m}
                             filter={statusFilter}
-                            onDayClick={(weekKey) => {
+                            onDayClick={(weekKey: string) => {
                               const r =
                                 reports.find((x) => x.isoWeekKey === weekKey) ||
                                 null;
@@ -531,7 +532,7 @@ export default function Praxisbericht2() {
             <ListView
               reports={reports}
               filter={statusFilter}
-              onOpen={(weekKey) => {
+              onOpen={(weekKey: string) => {
                 const r = reports.find((x) => x.isoWeekKey === weekKey) || null;
                 setActiveReport(r);
                 setActiveWeekKey(weekKey);
@@ -548,7 +549,7 @@ export default function Praxisbericht2() {
               setActiveWeekKey(null);
               setActiveReport(null);
             }}
-            onSaved={(saved) => {
+            onSaved={(saved: { isoWeekKey: any; }) => {
               setReports((prev) => {
                 const idx = prev.findIndex(
                   (p) => p.isoWeekKey === saved.isoWeekKey
@@ -598,7 +599,7 @@ function Legend() {
   );
 }
 
-function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }) {
+function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { reports: any[]; onDayClick?: (weekKey: string) => void; year: number; month: number; filter?: string }) {
   const headerDate = new Date(year, month, 1);
   const weeks = useMemo(() => buildMonth(year, month), [year, month]);
 
@@ -624,7 +625,7 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }) {
 
   const minutesByWeek = useMemo(() => {
     const map = new Map();
-    const toMin = (t) => {
+    const toMin = (t: string | null | undefined) => {
       if (!t || typeof t !== "string" || !t.includes(":")) return null;
       const [hh, mm] = t.split(":");
       const h = Number(hh), m = Number(mm);
@@ -645,13 +646,13 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }) {
     return map;
   }, [reports]);
 
-  const DayCell = ({ date }) => {
+  const DayCell = ({ date }: { date: Date }) => {
     const inMonth = date.getMonth() === month;
     const weekKey = getISOWeekKey(date);
     let status = statusByWeek.get(weekKey) || "DUE";
     // normalize legacy values
     if (status === "KLAUSUR") status = "KLAUSURPHASE";
-    const clsObj = STATUS_STYLES[status] || { bg: "bg-white", text: "text-slate-900", border: "border-slate-200" };
+    const clsObj = STATUS_STYLES[status as keyof typeof STATUS_STYLES] || { bg: "bg-white", text: "text-slate-900", border: "border-slate-200" };
     // Always show week color starting Monday, even on trailing/leading days; fade if out of month
     const dimByFilter = filter !== "ALL" && status !== filter;
     const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-60"} ${dimByFilter ? "opacity-40" : ""}`;
@@ -698,13 +699,13 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }) {
   );
 }
 
-function ListView({ reports, filter = "ALL", onOpen }) {
-  const truncate = (s, n = 140) => {
+function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?: string; onOpen?: (weekKey: string) => void }) {
+  const truncate = (s: string, n = 140) => {
     if (!s) return "";
     const t = s.trim();
     return t.length > n ? t.slice(0, n - 1) + "…" : t;
   };
-  const statusPill = (s) => {
+  const statusPill = (s: string) => {
     if (!s) return "bg-amber-100 text-amber-900 border-amber-500";
     if (s === "KLAUSUR") s = "KLAUSURPHASE";
     return s === "DRAFT" ? "bg-blue-100 text-blue-900 border-blue-500" :
@@ -713,16 +714,16 @@ function ListView({ reports, filter = "ALL", onOpen }) {
            s === "KLAUSURPHASE" ? "bg-zinc-200 text-zinc-800 border-zinc-500" :
            "bg-amber-100 text-amber-900 border-amber-500";
   };
-  const toMinutes = (t) => {
-    if (!t || typeof t !== "string" || !t.includes(":")) return null;
+  const toMinutes = (t: string | null | undefined) => {
+    if (typeof t !== "string" || !t.includes(":")) return null;
     const [hh, mm] = t.split(":");
     const h = Number(hh), m = Number(mm);
     if (Number.isNaN(h) || Number.isNaN(m)) return null;
     return h * 60 + m;
   };
-  const weekMinutes = (rep) => {
+  const weekMinutes = (rep: any) => {
     let sum = 0;
-    const days = rep?.days || {};
+    const days: Record<string, any> = rep?.days || {};
     for (const k of ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]) {
       const d = days[k];
       if (!d || d.holiday) continue;
@@ -732,14 +733,14 @@ function ListView({ reports, filter = "ALL", onOpen }) {
     return sum;
   };
 
-  const normalized = reports.map((r) => ({
+  const normalized = reports.map((r: any) => ({
     ...r,
     normStatus: r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status || "DUE",
   }));
 
-  const filtered = normalized.filter((r) => filter === "ALL" || r.normStatus === filter);
+  const filtered = normalized.filter((r: any) => filter === "ALL" || r.normStatus === filter);
 
-  const parseWeek = (wk) => {
+  const parseWeek = (wk: { split: (arg0: string) => [any, any]; }) => {
     // wk: YYYY-Www
     const [y, w] = wk.split("-W");
     return { y: Number(y) || 0, w: Number(w) || 0 };
@@ -761,17 +762,17 @@ function ListView({ reports, filter = "ALL", onOpen }) {
 
   return (
     <div className="bg-white rounded-lg border border-slate-200 divide-y">
-      {sorted.map((r) => {
-        const start = parseISOWeekStart(r.isoWeekKey);
+      {sorted.map((r: { isoWeekKey: boolean | React.Key | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; normStatus: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; tasks: any; }) => {
+        const start = typeof r.isoWeekKey === "string" ? parseISOWeekStart(r.isoWeekKey) : null;
         const dates = start ? `${start.toLocaleDateString()} – ${new Date(start.getFullYear(), start.getMonth(), start.getDate()+6).toLocaleDateString()}` : r.isoWeekKey;
         const mins = weekMinutes(r);
         const hours = mins > 0 ? `${Math.floor(mins/60)}h ${mins%60}m` : "–";
         return (
-          <div key={r.isoWeekKey} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div key={String(r.isoWeekKey)} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
                 <div className="font-semibold text-slate-900">{r.isoWeekKey}</div>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${statusPill(r.normStatus)}`}>
+                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${statusPill(String(r.normStatus || ""))}`}>
                   {r.normStatus === "APPROVED" ? "Reviewed (Prüfungsamt)" : r.normStatus}
                 </span>
                 <span className="text-xs text-slate-500">{dates}</span>
@@ -784,7 +785,7 @@ function ListView({ reports, filter = "ALL", onOpen }) {
             <div className="flex items-center gap-2 shrink-0">
               <button
                 className="px-3 py-1.5 text-sm rounded-md border border-slate-300 hover:bg-slate-50"
-                onClick={() => onOpen && onOpen(r.isoWeekKey)}
+                onClick={() => { if (typeof r.isoWeekKey === "string" && onOpen) onOpen(r.isoWeekKey); }}
               >Open</button>
             </div>
           </div>
@@ -794,11 +795,11 @@ function ListView({ reports, filter = "ALL", onOpen }) {
   );
 }
 
-function WeekModal({ open, weekKey, report, onClose, onSaved }) {
+function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean; weekKey: string | null; report: any | null; onClose?: () => void; onSaved?: (saved: any) => void }) {
   const [tasks, setTasks] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMode, setSaveMode] = useState("SUBMITTED");
-  const [daysState, setDaysState] = useState({});
+  const [daysState, setDaysState] = useState<Record<string, any>>({});
   const [grade, setGrade] = useState("");
   const navigate = useNavigate();
   const dayKeys = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
@@ -814,14 +815,14 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }) {
   }, [weekStart]);
 
   // helper to parse HH:MM -> minutes
-  const parseToMinutes = (t) => {
-    if (!t || typeof t !== "string" || !t.includes(":")) return null;
-    const [hh, mm] = t.split(":");
-    const h = Number(hh);
-    const m = Number(mm);
-    if (Number.isNaN(h) || Number.isNaN(m)) return null;
-    return h * 60 + m;
-  };
+    const parseToMinutes = (t: string | null | undefined): number | null => {
+      if (typeof t !== "string" || !t.includes(":")) return null;
+      const [hh, mm] = t.split(":");
+      const h = Number(hh);
+      const m = Number(mm);
+      if (Number.isNaN(h) || Number.isNaN(m)) return null;
+      return h * 60 + m;
+    };
 
   // Compute weekly total minutes based on from/till times ignoring holidays
   const totalMinutes = useMemo(() => {
@@ -842,7 +843,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }) {
     if (open) {
       setTasks(report?.tasks || "");
       setGrade(Number.isInteger(report?.grade) ? String(report.grade) : "");
-      const init = {};
+      const init: Record<string, any> = {};
       for (let i = 0; i < dayKeys.length; i++) {
         const k = dayKeys[i];
         const v = report?.days?.[k] || {};
@@ -873,21 +874,56 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }) {
         }
       }
       setSaving(true);
-  const body = { tasks: (tasks || "").trim(), days: daysState, status: mode };
-      if (grade !== "") {
-        const g = Number(grade);
-        if (!Number.isNaN(g)) body.grade = g;
-      }
+ async function apiJson(path: URL | RequestInfo, method = "POST", body: any = null, headers: Record<string, string> = {}) {
+  const opts: RequestInit = {
+    method,
+    headers: { "Content-Type": "application/json", ...headers },
+    credentials: "include",
+  };
+  if (body !== null && body !== undefined) {
+    opts.body = JSON.stringify(body);
+  }
+  const res = await fetch(path, opts);
+  let data;
+  let text;
+  try {
+    data = await res.json();
+  } catch (_) {
+    try {
+      text = await res.text();
+    } catch (_) {
+      text = null;
+    }
+    data = null;
+  }
+  if (!res.ok) {
+    const fallback = text && text.length < 500 ? text : null;
+    const msg = (data && (data.error || data.message)) || fallback || `HTTP ${res.status}`;
+    const err = new Error(msg) as Error & { status?: number; data?: any };
+    err.status = res.status;
+    err.data = data || { text: fallback };
+    throw err;
+  }
+  return data;
+}
+      const body = {
+        isoWeekKey: weekKey,
+        tasks: tasks || "",
+        days: daysState || {},
+        grade: grade !== "" ? Number(grade) : undefined,
+        status: mode,
+      };
       const saved = await apiJson(`/api/praxisberichte/${weekKey}`, "PUT", body);
       toast.success(mode === "DRAFT" ? "Draft saved" : "Week submitted");
       onSaved && onSaved(saved);
       onClose && onClose();
     } catch (e) {
-      console.error(e);
-      if (e && e.status === 401) {
+      const err: any = e;
+      console.error(err);
+      if (err && err.status === 401) {
         navigate("/login");
       } else {
-        const msg = e?.message || "Failed to save week";
+        const msg = err?.message || "Failed to save week";
         toast.error(msg);
       }
     } finally {
@@ -975,7 +1011,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }) {
                 onClick={() => {
                   setDaysState((prev) => {
                     const next = { ...prev };
-                    const setIf = (k, from, till) => {
+                    const setIf = (k: string, from: string, till: string) => {
                       if (!next[k]?.holiday) next[k] = { ...next[k], from, till };
                     };
                     setIf("Mon", "09:00", "17:00");

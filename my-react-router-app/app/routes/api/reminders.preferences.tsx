@@ -1,6 +1,6 @@
 import { prisma } from "../../lib/prisma";
 
-function getSessionTokenFromRequest(request) {
+function getSessionTokenFromRequest(request: Request): string | null {
   try {
     const cookieHeader = request.headers.get("cookie") || "";
     const cookies = Object.fromEntries(
@@ -10,25 +10,37 @@ function getSessionTokenFromRequest(request) {
         .filter(Boolean)
         .map((c) => {
           const idx = c.indexOf("=");
-          return idx === -1 ? [c, ""] : [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))];
+          return idx === -1
+            ? [c, ""]
+            : [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))];
         })
-    );
-    const headerToken = request.headers.get("x-session-token") || request.headers.get("X-Session-Token") || null;
+    ) as Record<string, string>;
+    const headerToken =
+      request.headers.get("x-session-token") ||
+      request.headers.get("X-Session-Token") ||
+      null;
     return cookies.session || cookies.auth_session || headerToken || null;
   } catch {
     return null;
   }
 }
 
-async function requireSessionUser(request) {
+async function requireSessionUser(request: Request) {
   const token = getSessionTokenFromRequest(request);
   if (!token) return null;
-  const session = await prisma.session.findUnique({ where: { token }, include: { user: true } });
+  const session = await prisma.session.findUnique({
+    where: { token },
+    include: { user: true },
+  });
   if (!session?.user) return null;
   return session.user;
 }
 
-export async function loader({ request }) {
+export async function loader({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   const user = await requireSessionUser(request);
   if (!user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
@@ -41,14 +53,21 @@ export async function loader({ request }) {
   });
 }
 
-export async function action({ request }) {
+export async function action({
+  request,
+}: {
+  request: Request;
+}): Promise<Response> {
   const user = await requireSessionUser(request);
   if (!user) {
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
 
   try {
-    let enabledRaw, hourRaw, minuteRaw, tzRaw;
+    let enabledRaw: string = "";
+    let hourRaw: string = "";
+    let minuteRaw: string = "";
+    let tzRaw: string = "";
     const contentType = request.headers.get("content-type") || "";
     if (contentType.includes("application/x-www-form-urlencoded")) {
       const form = await request.formData();
@@ -108,27 +127,46 @@ export async function action({ request }) {
       minute = 0;
     }
 
-    const data = {
+    const data: {
+      reminderEnabled: boolean;
+      reminderHour: number;
+      reminderTimezone: string;
+    } = {
       reminderEnabled: enabled,
       reminderHour: hour,
       reminderTimezone: tzRaw,
     };
-    let savedMinute = minute;
+    let savedMinute: number | null = minute;
     try {
       await prisma.user.update({
         where: { id: user.id },
         data: { ...data, reminderMinute: minute },
       });
-    } catch (e) {
+    } catch (e: unknown) {
+      let message = "Unknown error";
+      if (e && typeof e === "object" && "message" in e) {
+        message = String((e as any).message);
+      } else if (typeof e === "string") {
+        message = e;
+      }
       console.warn(
         "preferences (alt): minute update failed, retrying without minute",
-        e?.message
+        message
       );
       try {
         await prisma.user.update({ where: { id: user.id }, data });
         savedMinute = null;
-      } catch (e2) {
-        console.error("preferences (alt): fallback update failed", e2?.message);
+      } catch (e2: unknown) {
+        let message2 = "Unknown error";
+        if (e2 && typeof e2 === "object" && "message" in e2) {
+          message2 = String((e2 as any).message);
+        } else if (typeof e2 === "string") {
+          message2 = e2;
+        }
+        console.error(
+          "preferences (alt): fallback update failed",
+          message2
+        );
         throw e2;
       }
     }
