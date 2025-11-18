@@ -1,6 +1,12 @@
-import express from "express";
+import express, {
+  type Request,
+  type Response,
+  type NextFunction,
+  type CookieOptions,
+} from "express";
 import cookieParser from "cookie-parser";
-import { createRequestHandler } from '@react-router/express';
+import { createRequestHandler } from "@react-router/express";
+import * as serverBuild from "../build/server/index.js";
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
@@ -10,7 +16,7 @@ import { fileURLToPath } from "url";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const clientBuildPath = path.join(__dirname, '../build/client');
+const clientBuildPath = path.join(__dirname, "../build/client");
 
 const prisma = new PrismaClient();
 const app = express();
@@ -25,7 +31,7 @@ app.set("trust proxy", 1);
 app.use(cookieParser()); // Populate req.cookies for auth/session
 
 // Catch special browser/devtools requests BEFORE React Router
-app.use((req, res, next) => {
+app.use((req: Request, res: Response, next: NextFunction) => {
   // Handle /.well-known/* requests
   if (req.path.startsWith("/.well-known/")) {
     return res.status(404).json({ error: "Not found" });
@@ -43,15 +49,15 @@ app.use((req, res, next) => {
 });
 
 // Ignore browser requests for special files
-app.get("/.well-known/appspecific/:filename", (req, res) => {
+app.get("/.well-known/appspecific/:filename", (req: Request, res: Response) => {
   res.status(404).json({ error: "Not found" });
 });
 
-app.get("/robots.txt", (req, res) => {
+app.get("/robots.txt", (req: Request, res: Response) => {
   res.type("text/plain").send("User-agent: *\nDisallow: /admin\n");
 });
 
-app.get("/sitemap.xml", (req, res) => {
+app.get("/sitemap.xml", (req: Request, res: Response) => {
   res
     .type("text/xml")
     .send(
@@ -60,10 +66,10 @@ app.get("/sitemap.xml", (req, res) => {
 });
 
 // Health check endpoint
-app.get("/api/health", (req, res) => res.json({ ok: true }));
+app.get("/api/health", (req: Request, res: Response) => res.json({ ok: true }));
 
 // Small helper: get session token from cookie or header, accept both legacy and new names
-function getSessionToken(req) {
+function getSessionToken(req: Request): string | null {
   const cookieToken =
     req.cookies?.session || req.cookies?.auth_session || null;
   const headerToken = req.get("X-Session-Token") || req.get("x-session-token") || null;
@@ -71,7 +77,7 @@ function getSessionToken(req) {
 }
 
 // Get current hour in a specific IANA timezone (0-23)
-function getHourInTimezone(tz) {
+function getHourInTimezone(tz: string | null | undefined): number {
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
       hour: "2-digit",
@@ -87,7 +93,7 @@ function getHourInTimezone(tz) {
 }
 
 // Get current minute in a specific IANA timezone (0-59)
-function getMinuteInTimezone(tz) {
+function getMinuteInTimezone(tz: string | null | undefined): number {
   try {
     const fmt = new Intl.DateTimeFormat("en-US", {
       minute: "2-digit",
@@ -102,7 +108,7 @@ function getMinuteInTimezone(tz) {
   }
 }
 
-function getCookieOptions(req) {
+function getCookieOptions(req: Request): CookieOptions {
   const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   let domain;
   try {
@@ -138,7 +144,7 @@ function getCookieOptions(req) {
 // so createRequestHandler can process them and perform 303 redirects.
 
 // Simple current user endpoint (used by dashboard)
-app.get("/api/user", async (req, res) => {
+app.get("/api/user", async (req: Request, res: Response) => {
   try {
     console.log("🔎 /api/user headers", {
       cookie: req.headers?.cookie || null,
@@ -177,14 +183,14 @@ app.get("/api/user", async (req, res) => {
         roomBookingEnabled,
       },
     });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("/api/user error", err);
     return res.status(500).json({ error: "Failed to fetch user" });
   }
 });
 
 // Logout endpoint (support .data too)
-async function handleLogout(req, res) {
+async function handleLogout(req: Request, res: Response) {
   try {
     const token = getSessionToken(req);
     if (token) {
@@ -192,7 +198,7 @@ async function handleLogout(req, res) {
     }
     res.cookie("session", "", { ...getCookieOptions(req), maxAge: 0 });
     return res.json({ success: true });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("/api/logout error", err);
     return res.status(500).json({ error: "Failed to logout" });
   }
@@ -268,18 +274,28 @@ app.post(
       // In development, return the link for testing
       ...(process.env.NODE_ENV === "development" && { resetLink, resetToken }),
     });
-  } catch (error) {
-    console.error("❌ Error requesting password reset:", error);
-    console.error("   Error stack:", error.stack);
+  } catch (error: unknown) {
+    let message = "Unknown error";
+    let stack: string | undefined;
+    if (error instanceof Error) {
+      message = error.message;
+      stack = error.stack;
+    } else if (typeof error === "string") {
+      message = error;
+    }
+    console.error("❌ Error requesting password reset:", message);
+    if (stack) {
+      console.error("   Error stack:", stack);
+    }
     return res.status(500).json({
       error: "Failed to process password reset request",
-      details: error.message,
+      details: message,
     });
   }
   }
 );
 
-async function sendPasswordResetEmail(email, resetLink) {
+async function sendPasswordResetEmail(email: string, resetLink: string) {
   try {
     let transporter;
 
@@ -381,7 +397,7 @@ async function sendPasswordResetEmail(email, resetLink) {
     const info = await transporter.sendMail(mailOptions);
     console.log("Password reset email sent:", info.messageId);
     return true;
-  } catch (error) {
+  } catch (error: unknown) {
     console.log("Error sending password reset email:", error);
     return false;
   }
@@ -415,7 +431,7 @@ app.post(
     }
 
     return res.json({ success: true, valid: true });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("❌ Error verifying reset token:", error);
     return res.status(500).json({ error: "Failed to verify token" });
   }
@@ -483,7 +499,7 @@ app.post(
       success: true,
       message: "Password reset successfully!",
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("❌ Error resetting password:", error);
     return res.status(500).json({ error: "Failed to reset password" });
   }
@@ -514,7 +530,9 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     const isoYear = d.getFullYear();
     const yearStart = new Date(isoYear, 0, 1);
     const week = Math.ceil(
-      ((d - yearStart) / 86400000 + (yearStart.getDay() || 7)) / 7
+      ((d.getTime() - yearStart.getTime()) / 86400000 +
+        (yearStart.getDay() || 7)) /
+        7
     );
     const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
 
@@ -537,8 +555,8 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
       select: { userId: true },
     });
 
-    const submittedIds = new Set(submitted.map((r) => r.userId));
-    const targets = students.filter((s) => !submittedIds.has(s.id));
+    const submittedIds = new Set(submitted.map((r: { userId: any; }) => r.userId));
+    const targets = students.filter((s: { id: unknown; }) => !submittedIds.has(s.id));
 
     console.log(`📬 Targeting ${targets.length} students for reminders`);
 
@@ -548,7 +566,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
         dryRun: true,
         currentWeekKey,
         targetCount: targets.length,
-        targets: targets.map((t) => t.email),
+        targets: targets.map((t: { email: any; }) => t.email),
       });
     }
 
@@ -627,10 +645,16 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
             : ""
         );
         sent++;
-      } catch (err) {
+      } catch (err: unknown) {
+        let message = "Unknown error";
+        if (err && typeof err === "object" && "message" in err) {
+          message = String((err as any).message);
+        } else if (typeof err === "string") {
+          message = err;
+        }
         console.error(
           `❌ Failed to send email to ${student.email}:`,
-          err.message
+          message
         );
       }
     }
@@ -642,7 +666,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
       sent,
       currentWeekKey,
     });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("❌ Error in cron reminder:", error);
     return res.status(500).json({ error: "Failed to send reminders" });
   }
@@ -672,7 +696,7 @@ app.get("/api/praxisberichte", async (req, res) => {
     });
 
     return res.json({ reports });
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("❌ Error fetching praxisberichte:", error);
     return res.status(500).json({ error: "Failed to fetch reports" });
   }
@@ -729,7 +753,7 @@ app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
     });
 
     return res.json(report);
-  } catch (error) {
+  } catch (error: unknown) {
     console.error("❌ Error updating praxisbericht:", error);
     return res.status(500).json({ error: "Failed to update report" });
   }
@@ -755,7 +779,7 @@ app.get("/api/reminders/preferences", async (req, res) => {
       reminderMinute: reminderMinute ?? 0,
       reminderTimezone: reminderTimezone || "Europe/Berlin",
     });
-  } catch (err) {
+  } catch (err: unknown) {
     console.error("/api/reminders/preferences GET error", err);
     return res.status(500).json({ error: "Failed to load preferences" });
   }
@@ -811,14 +835,19 @@ app.post(
         reminderHour: hour,
         reminderTimezone: tzRaw,
       };
-      let savedMinute = minute;
+      let savedMinute: number | null = minute;
       try {
         await prisma.user.update({
           where: { id: session.user.id },
           data: { ...data, reminderMinute: minute },
         });
-      } catch (e) {
-        const msg = String(e?.message || "");
+      } catch (e: unknown) {
+        let msg = "";
+        if (e && typeof e === "object" && "message" in e) {
+          msg = String((e as any).message);
+        } else if (typeof e === "string") {
+          msg = e;
+        }
         const minuteUnsupported =
           msg.includes("Unknown arg `reminderMinute`") ||
           msg.includes('column "reminderMinute"');
@@ -834,7 +863,7 @@ app.post(
         reminderMinute: savedMinute,
         reminderTimezone: tzRaw,
       });
-    } catch (err) {
+    } catch (err: unknown) {
       console.error("/api/reminders/preferences POST error", err);
       return res.status(500).json({ error: "Failed to save preferences" });
     }
@@ -847,8 +876,8 @@ app.post(
 // IMPORTANT: Must be registered BEFORE the React Router handler below.
 
 // Helper to safely parse ints with default
-function toInt(value, def) {
-  const n = parseInt(value, 10);
+function toInt(value: unknown, def: number): number {
+  const n = parseInt(String(value), 10);
   return Number.isFinite(n) && n > 0 ? n : def;
 }
 
@@ -863,19 +892,43 @@ app.get("/api/news", async (req, res) => {
   try {
     const where = {
       status: "PUBLISHED",
-      ...(search && {
-        OR: [
-          { title: { contains: search, mode: "insensitive" } },
-          { excerpt: { contains: search, mode: "insensitive" } },
-          { content: { contains: search, mode: "insensitive" } },
-        ],
-      }),
-      ...(category && { category: { equals: category, mode: "insensitive" } }),
+      ...(search
+        ? {
+            OR: [
+              {
+                title: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                excerpt: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+              {
+                content: {
+                  contains: search,
+                  mode: "insensitive",
+                },
+              },
+            ],
+          }
+        : {}),
+      ...(category
+        ? {
+            category: {
+              equals: category,
+              mode: "insensitive",
+            },
+          }
+        : {}),
     };
 
     const [items, total] = await Promise.all([
       prisma.news.findMany({
-        where,
+        where: where as any,
         orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
         take: pageSize,
         skip,
@@ -892,12 +945,12 @@ app.get("/api/news", async (req, res) => {
           publishedAt: true,
         },
       }),
-      prisma.news.count({ where }),
+      prisma.news.count({ where: where as any }),
     ]);
 
     // optional tag filter on result set (tags stored as JSON string)
     const filtered = tag
-      ? items.filter((n) => {
+      ? items.filter((n: { tags: any; }) => {
           try {
             const arr = JSON.parse(n.tags || "[]");
             return (
@@ -911,16 +964,34 @@ app.get("/api/news", async (req, res) => {
       : items;
 
     return res.json({ items: filtered, total, page, pageSize });
-  } catch (err) {
-    console.warn("/api/news fallback due to error:", err.message);
+  } catch (err: unknown) {
+    let message = "Unknown error";
+    if (err && typeof err === "object" && "message" in err) {
+      message = String((err as any).message);
+    } else if (typeof err === "string") {
+      message = err;
+    }
+    console.warn("/api/news fallback due to error:", message);
     // Fallback: multiple static samples when DB not migrated, with filtering + pagination
     const now = new Date();
-    const daysAgo = (d) => {
+    const daysAgo = (d: number) => {
       const t = new Date(now);
       t.setDate(now.getDate() - d);
       return t.toISOString();
     };
-    const all = [
+    const all: Array<{
+      id: number;
+      slug: string;
+      title: string;
+      excerpt: string;
+      content: string;
+      category: string;
+      tags: string;
+      author: string;
+      coverImageUrl?: string;
+      featured: boolean;
+      publishedAt: string;
+    }> = [
       {
         id: 7,
         slug: "career-fair-2025",
@@ -1047,7 +1118,10 @@ app.get("/api/news", async (req, res) => {
     // Sort featured first, then by publishedAt desc
     filtered = filtered.sort((a, b) => {
       if (a.featured === b.featured) {
-        return new Date(b.publishedAt) - new Date(a.publishedAt);
+        return (
+          new Date(b.publishedAt).getTime() -
+          new Date(a.publishedAt).getTime()
+        );
       }
       return a.featured ? -1 : 1;
     });
@@ -1105,7 +1179,9 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     const isoYear = d.getFullYear();
     const yearStart = new Date(isoYear, 0, 1);
     const week = Math.ceil(
-      ((d - yearStart) / 86400000 + (yearStart.getDay() || 7)) / 7
+      ((d.getTime() - yearStart.getTime()) / 86400000 +
+        (yearStart.getDay() || 7)) /
+        7
     );
     const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
 
@@ -1188,8 +1264,17 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         if (emailService === "test") {
           console.log("Preview:", nodemailer.getTestMessageUrl(info));
         }
-      } catch (err) {
-        console.error(`Failed to send reminder to ${u.email}:`, err.message);
+      } catch (err: unknown) {
+        let message = "Unknown error";
+        if (err && typeof err === "object" && "message" in err) {
+          message = String((err as any).message);
+        } else if (typeof err === "string") {
+          message = err;
+        }
+        console.error(
+          `Failed to send reminder to ${u.email}:`,
+          message
+        );
       }
     }
 
@@ -1211,8 +1296,14 @@ app.get("/api/news/:slug", async (req, res) => {
       return res.status(404).json({ error: "News not found" });
     }
     return res.json({ item });
-  } catch (err) {
-    console.warn("/api/news/:slug fallback due to error:", err.message);
+  } catch (err: unknown) {
+    let message = "Unknown error";
+    if (err && typeof err === "object" && "message" in err) {
+      message = String((err as any).message);
+    } else if (typeof err === "string") {
+      message = err;
+    }
+    console.warn("/api/news/:slug fallback due to error:", message);
     const now = new Date().toISOString();
     const samples = [
       { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", content: "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
@@ -1243,10 +1334,13 @@ app.use(
 // intercept those requests and cause 404s (e.g., /api/login.data).
 
 // React Router handler (catches everything else)
-app.use(createRequestHandler({
-  build,
-  mode: 'production',
-}));
+app.use(
+  createRequestHandler({
+    // Cast to avoid type mismatch between generated build and ServerBuild interface
+    build: serverBuild as any,
+    mode: "production",
+  })
+);
 
 // Vercel expects export, not app.listen()
 export default app;
