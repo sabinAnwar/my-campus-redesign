@@ -1,11 +1,7 @@
 {
   "framework": null,
-  "buildCommand": "npm run build",
   "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
-  "routes": [
-    { "handle": "filesystem" },
-    { "src": "/(.*)", "dest": "/api/index.js" }
-  ],
+  "buildCommand": "npm run build",
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",
