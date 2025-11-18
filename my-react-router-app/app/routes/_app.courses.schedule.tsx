@@ -20,8 +20,25 @@ import {
 
 export const loader = async () => null;
 
+type EventType = "Lecture" | "Seminar" | "Lab" | "Office Hours";
+
+interface CourseEvent {
+  id: number;
+  title: string;
+  type: EventType;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
+  duration: string;
+  location: string;
+  professor: string;
+  professorColor: string;
+  mandatory: boolean;
+  zoom: string | null;
+  description: string;
+}
+
 // Enhanced event data with professor colors
-const EVENTS = [
+const EVENTS: CourseEvent[] = [
   {
     id: 1,
     title: "Algorithms - Lecture",
@@ -94,39 +111,45 @@ const EVENTS = [
   },
 ];
 
-const typeStyles = {
+const typeStyles: Record<
+  EventType,
+  {
+    badge: string;
+    icon: string;
+  }
+> = {
   Lecture: { badge: "from-blue-600 to-cyan-600", icon: "📚" },
   Seminar: { badge: "from-purple-600 to-pink-600", icon: "💬" },
   Lab: { badge: "from-green-600 to-emerald-600", icon: "⚙️" },
   "Office Hours": { badge: "from-orange-600 to-red-600", icon: "👨‍🏫" },
 };
 
-function fmtMonth(date) {
+function fmtMonth(date: Date) {
   return date.toLocaleDateString("en-US", { month: "long", year: "numeric" });
 }
 
-function startOfMonth(date) {
+function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-function startOfWeek(date) {
+function startOfWeek(date: Date) {
   const d = new Date(date);
   const day = d.getDay();
   const diff = d.getDate() - day + (day === 0 ? -6 : 1);
   return new Date(d.setDate(diff));
 }
 
-function addMonths(date, delta) {
+function addMonths(date: Date, delta: number) {
   return new Date(date.getFullYear(), date.getMonth() + delta, 1);
 }
 
-function addDays(date, delta) {
+function addDays(date: Date, delta: number) {
   const d = new Date(date);
   d.setDate(d.getDate() + delta);
   return d;
 }
 
-function isSameDay(a, b) {
+function isSameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
@@ -134,14 +157,14 @@ function isSameDay(a, b) {
   );
 }
 
-function toISODate(d) {
+function toISODate(d: Date) {
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function buildMonthGrid(current) {
+function buildMonthGrid(current: Date): Date[] {
   const first = startOfMonth(current);
   const dayOfWeek = (first.getDay() + 6) % 7;
   const gridStart = new Date(first);
@@ -155,7 +178,7 @@ function buildMonthGrid(current) {
   return days;
 }
 
-function buildWeekGrid(date) {
+function buildWeekGrid(date: Date): Date[] {
   const start = startOfWeek(date);
   const days = [];
   for (let i = 0; i < 7; i++) {
@@ -164,17 +187,17 @@ function buildWeekGrid(date) {
   return days;
 }
 
-function parseDurationMinutes(str) {
+function parseDurationMinutes(str: unknown): number {
   const m = /([0-9]+)\s*minute/.exec(String(str).toLowerCase());
   return m ? parseInt(m[1], 10) : 60;
 }
 
-function toICSDateUTC(date) {
+function toICSDateUTC(date: Date) {
   const iso = date.toISOString().replace(/[-:]/g, "").replace(".000", "");
   return iso.replace(/Z$/, "Z");
 }
 
-function buildGoogleCalendarUrl(evt) {
+function buildGoogleCalendarUrl(evt: CourseEvent) {
   const start = new Date(`${evt.date}T${evt.time}:00`);
   const end = new Date(
     start.getTime() + parseDurationMinutes(evt.duration) * 60000
@@ -190,7 +213,7 @@ function buildGoogleCalendarUrl(evt) {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-function downloadICS(evt) {
+function downloadICS(evt: CourseEvent) {
   const uid = `${evt.id}@iu-portal`;
   const start = new Date(`${evt.date}T${evt.time}:00`);
   const end = new Date(
@@ -225,26 +248,32 @@ function downloadICS(evt) {
 
 export default function CourseScheduleEnhanced() {
   const today = new Date();
-  const [showOptional, setShowOptional] = useState(true);
-  const [selectedType, setSelectedType] = useState("All");
-  const [currentMonth, setCurrentMonth] = useState(
+  const [showOptional, setShowOptional] = useState<boolean>(true);
+  const [selectedType, setSelectedType] = useState<"All" | EventType>("All");
+  const [currentMonth, setCurrentMonth] = useState<Date>(
     new Date(today.getFullYear(), today.getMonth(), 1)
   );
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [query, setQuery] = useState("");
-  const [viewMode, setViewMode] = useState("month"); // "month" or "week"
-  const [bookmarked, setBookmarked] = useState(new Set());
-  const [expandedStats, setExpandedStats] = useState(false);
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CourseEvent | null>(null);
+  const [query, setQuery] = useState<string>("");
+  const [viewMode, setViewMode] = useState<"month" | "week">("month");
+  const [bookmarked, setBookmarked] = useState<Set<number>>(new Set());
+  const [expandedStats, setExpandedStats] = useState<boolean>(false);
 
-  const types = ["All", "Lecture", "Seminar", "Lab", "Office Hours"];
-  const days = useMemo(() => {
+  const types: Array<"All" | EventType> = [
+    "All",
+    "Lecture",
+    "Seminar",
+    "Lab",
+    "Office Hours",
+  ];
+  const days = useMemo<Date[]>(() => {
     return viewMode === "month"
       ? buildMonthGrid(currentMonth)
       : buildWeekGrid(currentMonth);
   }, [currentMonth, viewMode]);
 
-  const filtered = useMemo(() => {
+  const filtered = useMemo<CourseEvent[]>(() => {
     const q = query.trim().toLowerCase();
     return EVENTS.filter((e) => {
       if (!showOptional && !e.mandatory) return false;
@@ -258,8 +287,8 @@ export default function CourseScheduleEnhanced() {
     });
   }, [showOptional, selectedType, query]);
 
-  const eventsByDate = useMemo(() => {
-    const map = new Map();
+  const eventsByDate = useMemo<Map<string, CourseEvent[]>>(() => {
+    const map = new Map<string, CourseEvent[]>();
     filtered.forEach((e) => {
       const list = map.get(e.date) || [];
       list.push(e);
@@ -268,8 +297,14 @@ export default function CourseScheduleEnhanced() {
     return map;
   }, [filtered]);
 
-  const professors = useMemo(() => {
-    const profs = new Map();
+  interface ProfessorInfo {
+    name: string;
+    color: string;
+    count: number;
+  }
+
+  const professors = useMemo<ProfessorInfo[]>(() => {
+    const profs = new Map<string, ProfessorInfo>();
     EVENTS.forEach((e) => {
       if (e.professor && !profs.has(e.professor)) {
         profs.set(e.professor, {
@@ -283,9 +318,13 @@ export default function CourseScheduleEnhanced() {
   }, []);
 
   const stats = useMemo(() => {
-    const typeCount = {};
+    const typeCount: Record<EventType, number> = {
+      Lecture: 0,
+      Seminar: 0,
+      Lab: 0,
+      "Office Hours": 0,
+    };
     const mandatoryCount = { mandatory: 0, optional: 0 };
-    const totalHours = 0;
 
     filtered.forEach((e) => {
       typeCount[e.type] = (typeCount[e.type] || 0) + 1;
@@ -301,13 +340,18 @@ export default function CourseScheduleEnhanced() {
       ? fmtMonth(currentMonth)
       : `Week of ${currentMonth.toLocaleDateString("en-US", { month: "short", day: "numeric" })}`;
 
-  const typeCounts = useMemo(() => {
-    const counts = { Lecture: 0, Seminar: 0, Lab: 0, "Office Hours": 0 };
+  const typeCounts = useMemo<Record<EventType, number>>(() => {
+    const counts: Record<EventType, number> = {
+      Lecture: 0,
+      Seminar: 0,
+      Lab: 0,
+      "Office Hours": 0,
+    };
     for (const e of filtered) counts[e.type] = (counts[e.type] || 0) + 1;
     return counts;
   }, [filtered]);
 
-  const toggleBookmark = (eventId) => {
+  const toggleBookmark = (eventId: number) => {
     const newBookmarks = new Set(bookmarked);
     if (newBookmarks.has(eventId)) {
       newBookmarks.delete(eventId);
@@ -640,7 +684,7 @@ export default function CourseScheduleEnhanced() {
                           )}
                         </div>
                         <div className="space-y-1">
-                          {topTwo.map((e) => (
+                          {topTwo.map((e: CourseEvent) => (
                             <div
                               key={e.id}
                               title={`${e.title} • ${e.time}`}
@@ -694,8 +738,9 @@ export default function CourseScheduleEnhanced() {
                   </div>
                   <div className="p-6">
                     {(() => {
-                      const ds =
-                        eventsByDate.get(toISODate(selectedDate)) || [];
+                      const ds = selectedDate
+                        ? eventsByDate.get(toISODate(selectedDate)) || []
+                        : [];
                       if (ds.length === 0) {
                         return (
                           <div className="text-center py-8">
@@ -708,7 +753,7 @@ export default function CourseScheduleEnhanced() {
                       }
                       return (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                          {ds.map((e) => (
+                          {ds.map((e: CourseEvent) => (
                             <div
                               key={e.id}
                               className="border border-slate-200 rounded-xl p-4 hover:shadow-md transition"

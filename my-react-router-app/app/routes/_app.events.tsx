@@ -11,8 +11,23 @@ import {
   X as CloseIcon,
 } from "lucide-react";
 
+type EventType = "Lecture" | "Seminar" | "Lab" | "Office Hours";
+
+interface CalendarEvent {
+  id: number;
+  title: string;
+  type: EventType;
+  date: string; // YYYY-MM-DD
+  time: string; // HH:mm
+  duration: string;
+  location: string;
+  professor?: string;
+  zoom: string | null;
+  description?: string;
+}
+
 // Demo events (can be replaced with API data later)
-const EVENTS = [
+const EVENTS: CalendarEvent[] = [
   {
     id: 1,
     title: "Webentwicklung - Vorlesung",
@@ -67,7 +82,13 @@ export const loader = async () => {
   return null;
 };
 
-const typeStyles = {
+const typeStyles: Record<
+  EventType,
+  {
+    badge: string;
+    dot: string;
+  }
+> = {
   Lecture: {
     badge: "from-blue-600 to-cyan-600",
     dot: "bg-blue-600",
@@ -86,19 +107,19 @@ const typeStyles = {
   },
 };
 
-function fmtMonth(date) {
+function fmtMonth(date: Date) {
   return date.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
 }
 
-function startOfMonth(date) {
+function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
 }
 
-function addMonths(date, delta) {
+function addMonths(date: Date, delta: number) {
   return new Date(date.getFullYear(), date.getMonth() + delta, 1);
 }
 
-function isSameDay(a, b) {
+function isSameDay(a: Date, b: Date) {
   return (
     a.getFullYear() === b.getFullYear() &&
     a.getMonth() === b.getMonth() &&
@@ -106,14 +127,14 @@ function isSameDay(a, b) {
   );
 }
 
-function toISODate(d) {
+function toISODate(d: Date) {
   const yyyy = d.getFullYear();
   const mm = String(d.getMonth() + 1).padStart(2, "0");
   const dd = String(d.getDate()).padStart(2, "0");
   return `${yyyy}-${mm}-${dd}`;
 }
 
-function buildMonthGrid(current) {
+function buildMonthGrid(current: Date): Date[] {
   // Build a 6-week grid starting on Monday
   const first = startOfMonth(current);
   const dayOfWeek = (first.getDay() + 6) % 7; // Mon=0..Sun=6
@@ -128,17 +149,17 @@ function buildMonthGrid(current) {
   return days;
 }
 
-function parseDurationMinutes(str) {
+function parseDurationMinutes(str: unknown): number {
   const m = /([0-9]+)\s*minute/.exec(String(str).toLowerCase());
   return m ? parseInt(m[1], 10) : 60;
 }
 
-function toICSDateUTC(date) {
+function toICSDateUTC(date: Date) {
   const iso = date.toISOString().replace(/[-:]/g, "").replace(".000", "");
   return iso.replace(/Z$/, "Z"); // YYYYMMDDTHHMMSSZ
 }
 
-function buildGoogleCalendarUrl(evt) {
+function buildGoogleCalendarUrl(evt: CalendarEvent) {
   const start = new Date(`${evt.date}T${evt.time}:00`);
   const end = new Date(start.getTime() + parseDurationMinutes(evt.duration) * 60000);
   const dates = `${toICSDateUTC(start)}/${toICSDateUTC(end)}`;
@@ -152,7 +173,7 @@ function buildGoogleCalendarUrl(evt) {
   return `https://calendar.google.com/calendar/render?${params.toString()}`;
 }
 
-function downloadICS(evt) {
+function downloadICS(evt: CalendarEvent) {
   const uid = `${evt.id}@iu-portal`;
   const start = new Date(`${evt.date}T${evt.time}:00`);
   const end = new Date(start.getTime() + parseDurationMinutes(evt.duration) * 60000);
@@ -184,14 +205,14 @@ function downloadICS(evt) {
 }
 
 export default function Events() {
-  const [currentMonth, setCurrentMonth] = useState(new Date(2025, 9, 1)); // Oct 2025 sample
-  const [selectedDate, setSelectedDate] = useState(null);
-  const [selectedEvent, setSelectedEvent] = useState(null);
-  const [selectedType, setSelectedType] = useState("All");
+  const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 9, 1)); // Oct 2025 sample
+  const [selectedDate, setSelectedDate] = useState<Date | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedType, setSelectedType] = useState<"All" | EventType>("All");
 
   const days = useMemo(() => buildMonthGrid(currentMonth), [currentMonth]);
-  const eventsByDate = useMemo(() => {
-    const map = new Map();
+  const eventsByDate = useMemo<Map<string, CalendarEvent[]>>(() => {
+    const map = new Map<string, CalendarEvent[]>();
     (selectedType === "All" ? EVENTS : EVENTS.filter((e) => e.type === selectedType)).forEach(
       (e) => {
         const list = map.get(e.date) || [];
@@ -203,7 +224,13 @@ export default function Events() {
   }, [selectedType]);
 
   const monthLabel = fmtMonth(currentMonth);
-  const types = ["All", "Lecture", "Seminar", "Lab", "Office Hours"];
+  const types: Array<"All" | EventType> = [
+    "All",
+    "Lecture",
+    "Seminar",
+    "Lab",
+    "Office Hours",
+  ];
 
   return (
       <div className="px-4 sm:px-6 lg:px-8 py-8">
@@ -303,7 +330,7 @@ export default function Events() {
                     )}
                   </div>
                   <div className="mt-1 space-y-1">
-                    {topThree.map((e) => (
+                    {topThree.map((e: CalendarEvent) => (
                       <div
                         key={e.id}
                         title={`${e.title} • ${e.time}`}
@@ -353,7 +380,9 @@ export default function Events() {
             </div>
             <div className="p-6">
               {(() => {
-                const ds = eventsByDate.get(toISODate(selectedDate)) || [];
+                const ds = selectedDate
+                  ? eventsByDate.get(toISODate(selectedDate)) || []
+                  : [];
                 if (ds.length === 0) {
                   return (
                     <div className="text-slate-600 font-semibold">Keine Termine für diesen Tag.</div>
@@ -361,7 +390,7 @@ export default function Events() {
                 }
                 return (
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {ds.map((e) => (
+                    {ds.map((e: CalendarEvent) => (
                       <div
                         key={e.id}
                         className="border border-slate-200 rounded-xl p-4 hover:shadow-sm"

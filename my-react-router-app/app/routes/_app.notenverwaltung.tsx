@@ -380,7 +380,7 @@ function parseDate(d: string) {
   return new Date(`${yyyy}-${mm}-${dd}T00:00:00`);
 }
 
-function formatCSVCell(val) {
+function formatCSVCell(val: unknown) {
   if (val == null) return "";
   const s = String(val);
   if (
@@ -681,7 +681,9 @@ export default function GradesDashboardIU() {
             {/* Status Filter */}
             <select
               value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value)}
+              onChange={(e) =>
+                setStatusFilter(e.target.value as "ALL" | StatusKey)
+              }
               className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-slate-900 dark:text-white transition-all"
             >
               <option value="ALL">Alle Status</option>
@@ -696,7 +698,9 @@ export default function GradesDashboardIU() {
             <div className="flex items-center gap-2">
               <select
                 value={sortKey}
-                onChange={(e) => setSortKey(e.target.value)}
+                onChange={(e) =>
+                  setSortKey(e.target.value as "none" | "datum" | "note")
+                }
                 className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-slate-900 dark:text-white transition-all"
               >
                 <option value="none">Sortierung: Keine</option>

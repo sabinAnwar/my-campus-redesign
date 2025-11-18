@@ -70,7 +70,7 @@ export const loader = async ({ request }: { request: Request }) => {
       }),
       prisma.studentTask.count(),
     ]);
-    tasks = rows.map((t) => ({
+    tasks = rows.map((t: { id: any; title: any; course: any; kind: any; type: any; dueDate: { toISOString: () => any; }; }) => ({
       id: t.id,
       title: t.title,
       course: t.course,
