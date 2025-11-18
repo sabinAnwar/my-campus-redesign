@@ -7,7 +7,7 @@ import express, {
 import cookieParser from "cookie-parser";
 import { createRequestHandler } from "@react-router/express";
 // @ts-ignore - generated server build has no TypeScript types
-import * as serverBuild from "../build/server/index.js";
+import * as serverBuild from "../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js";
 import nodemailer from "nodemailer";
 import { PrismaClient } from "@prisma/client";
 import crypto from "crypto";
