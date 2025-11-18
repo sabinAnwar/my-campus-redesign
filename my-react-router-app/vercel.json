@@ -2,8 +2,8 @@
   "framework": null,
   "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "buildCommand": "npm run build",
-    "outputDirectory": "/build/server/index.js",
-
+  "outputDirectory": "my-react-router-app\\build\\server\\nodejs_eyJydW50aW1lIjoibm9kZWpzIn0\\index.js",
+ 
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",
