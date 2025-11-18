@@ -1,6 +1,6 @@
 {
   "framework": null,
-  "installCommand": "react-router npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "buildCommand": "react-router build",
 
   "crons": [
