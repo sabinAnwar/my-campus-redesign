@@ -1,16 +1,12 @@
 {
   "framework": null,
-  "installCommand": "rm -rf node_modules package-lock.json && npm install vite-tsconfig-paths && npm install && npx prisma format && npx prisma validate && npx prisma generate",
-  "buildCommand": "npm run build",
-  "outputDirectory": "build",
+  "installCommand": "cd my-react-router-app && npm install && npx prisma format && npx prisma validate && npx prisma generate",
+  "buildCommand": "cd my-react-router-app && npm run build",
+  "outputDirectory": "my-react-router-app/build/client",
   "routes": [
     {
-      "src": "^/api/(.*)$",
-      "dest": "/api/$1"
-    },
-    {
-      "src": "^(?!/api/).*",
-      "dest": "/server/index.js"
+      "src": "/(.*)",
+      "dest": "/api/index"
     }
   ],
   "crons": [
