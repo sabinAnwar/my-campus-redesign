@@ -1,7 +1,8 @@
 {
   "framework": null,
   "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
-  "buildCommand": "npm run build",
+  "buildCommand": "react-router build",
+
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",
