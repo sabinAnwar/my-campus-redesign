@@ -2,7 +2,7 @@
   "framework": null,
   "installCommand": "npm install && npx prisma format && npx prisma validate && npx prisma generate",
   "buildCommand": "npm run build",
-  "outputDirectory": "my-react-router-app/build/client",
+  "outputDirectory": "build/client",
   "routes": [
     {
       "src": "/(.*)",
