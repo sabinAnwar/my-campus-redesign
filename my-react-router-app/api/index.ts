@@ -515,7 +515,10 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     const secret = req.query.secret;
     const isVercelCron = req.get("x-vercel-cron") === "1";
 
-    if (!isVercelCron && (!cronSecret || secret !== cronSecret)) {
+    const requireSecret =
+      process.env.NODE_ENV === "production" ? true : !!cronSecret;
+
+    if (!isVercelCron && requireSecret && (!cronSecret || secret !== cronSecret)) {
       console.warn("⚠️  Unauthorized cron request");
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -610,7 +613,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     for (const student of targets) {
       try {
         const appUrl = process.env.APP_URL || "http://localhost:5174";
-        const portalLink = `${appUrl}/praxisbericht`;
+        const portalLink = `${appUrl}/praxisbericht2`;
 
         const mailOptions = {
           from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
@@ -1139,10 +1142,23 @@ app.get("/api/news", async (req, res) => {
 // ---------------------------------
 app.get("/api/cron/daily-reminders", async (req, res) => {
   try {
+    console.log("🚦 daily-reminders hit", {
+      hour: req.query.hour,
+      minute: req.query.minute,
+      userId: req.query.userId,
+      self: req.query.self,
+    });
     const cronSecret = process.env.CRON_SECRET;
     const secret = req.query.secret;
     const isVercelCron = req.get("x-vercel-cron") === "1";
-    if (!isVercelCron && (!cronSecret || secret !== cronSecret)) {
+    const requireSecret =
+      process.env.NODE_ENV === "production" ? true : !!cronSecret;
+    if (
+      !isVercelCron &&
+      requireSecret &&
+      (!cronSecret || secret !== cronSecret)
+    ) {
+      console.warn("⚠️ daily-reminders unauthorized");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -1157,19 +1173,77 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         : null;
     const nowUtc = new Date();
 
-    // Fetch all users who enabled reminders. We'll filter per-hour below if not overriding.
-    const users = await prisma.user.findMany({
-      where: { reminderEnabled: true },
-      select: {
-        id: true,
-        email: true,
-        name: true,
-        reminderHour: true,
-        reminderMinute: true,
-        reminderTimezone: true,
-        role: true,
-      },
-    });
+    const targetUserIdRaw = req.query.userId;
+    const selfOnly = req.query.self === "1";
+
+    let users;
+    if (selfOnly) {
+      const token = getSessionToken(req);
+      if (!token) return res.status(401).json({ error: "Unauthorized" });
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+      if (!session?.user || !session.user.reminderEnabled) {
+        return res.json({ success: true, sent: 0, usersChecked: 0 });
+      }
+      users = [
+        {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+          reminderHour: session.user.reminderHour,
+          reminderMinute: session.user.reminderMinute,
+          reminderTimezone: session.user.reminderTimezone,
+          role: session.user.role,
+        },
+      ];
+    } else if (targetUserIdRaw) {
+      console.log("🔎 daily-reminders targeting userId", targetUserIdRaw);
+      const user = await prisma.user.findUnique({
+        where: { id: Number(targetUserIdRaw) || -1 },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          reminderHour: true,
+          reminderMinute: true,
+          reminderTimezone: true,
+          role: true,
+          reminderEnabled: true,
+        },
+      });
+      users =
+        user && user.reminderEnabled
+          ? [
+              {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                reminderHour: user.reminderHour,
+                reminderMinute: user.reminderMinute,
+                reminderTimezone: user.reminderTimezone,
+                role: user.role,
+              },
+            ]
+          : [];
+    } else {
+      // Fetch all users who enabled reminders. We'll filter per-hour below if not overriding.
+      users = await prisma.user.findMany({
+        where: { reminderEnabled: true },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          reminderHour: true,
+          reminderMinute: true,
+          reminderTimezone: true,
+          role: true,
+        },
+      });
+    }
+
+    console.log("👥 daily-reminders users loaded", users.length);
 
     // Get current ISO week key util (same as used elsewhere)
     const now = new Date();
@@ -1188,6 +1262,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
 
     let sent = 0;
     const emailService = process.env.EMAIL_SERVICE || "test";
+    const previewUrls: string[] = [];
     let transporter;
     if (emailService === "gmail") {
       // Use Gmail SMTP with App Password (recommended). Requires 2FA + App Password on the account.
@@ -1238,7 +1313,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
 
       // Send reminder email
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
-      const portalLink = `${appUrl}/praxisbericht`;
+      const portalLink = `${appUrl}/praxisbericht2`;
       const mailOptions = {
         from:
           process.env.EMAIL_FROM ||
@@ -1263,7 +1338,9 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         const info = await transporter.sendMail(mailOptions);
         sent++;
         if (emailService === "test") {
-          console.log("Preview:", nodemailer.getTestMessageUrl(info));
+          const preview = nodemailer.getTestMessageUrl(info);
+          if (preview) previewUrls.push(preview);
+          console.log("Preview:", preview);
         }
       } catch (err: unknown) {
         let message = "Unknown error";
@@ -1279,7 +1356,17 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       }
     }
 
-    return res.json({ success: true, sent, usersChecked: users.length });
+    console.log("✅ daily-reminders complete", {
+      sent,
+      usersChecked: users.length,
+      previews: previewUrls.length,
+    });
+    return res.json({
+      success: true,
+      sent,
+      usersChecked: users.length,
+      ...(previewUrls.length > 0 ? { previews: previewUrls } : {}),
+    });
   } catch (error) {
     console.error("/api/cron/daily-reminders error", error);
     return res.status(500).json({ error: "Failed to run daily reminders" });

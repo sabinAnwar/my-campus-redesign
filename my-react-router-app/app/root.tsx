@@ -6,9 +6,11 @@ import {
   Scripts,
   ScrollRestoration,
 } from "react-router";
+import { ToastContainer } from "react-toastify";
 
 import type { Route } from "./+types/root";
 import "./app.css";
+import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 
 // ---------------------------------------------
@@ -53,6 +55,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 export default function App() {
   return (
     <ThemeProvider defaultTheme="system" storageKey="iu-theme">
+      <ToastContainer />
       <Outlet />
     </ThemeProvider>
   );

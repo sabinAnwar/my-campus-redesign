@@ -1,5 +1,6 @@
-import { prisma } from "../../../lib/prisma";
 import nodemailer from "nodemailer";
+
+import { prisma } from "../../../lib/prisma";
 
 function getHourInTimezone(tz: string | null | undefined): number {
   try {
@@ -11,7 +12,7 @@ function getHourInTimezone(tz: string | null | undefined): number {
     const parts = fmt.formatToParts(new Date());
     const hourStr = parts.find((p) => p.type === "hour")?.value || "00";
     return Number(hourStr);
-  } catch (_) {
+  } catch (_e) {
     return new Date().getUTCHours();
   }
 }
@@ -26,58 +27,91 @@ function getMinuteInTimezone(tz: string | null | undefined): number {
     const parts = fmt.formatToParts(new Date());
     const minStr = parts.find((p) => p.type === "minute")?.value || "00";
     return Number(minStr);
-  } catch (_) {
+  } catch (_e) {
     return new Date().getUTCMinutes();
   }
 }
 
-function getCurrentWeekKey(): string {
-  const now = new Date();
-  const d = new Date(now.getTime());
-  d.setHours(0, 0, 0, 0);
-  const day = d.getDay() || 7;
-  d.setDate(d.getDate() + 4 - day);
-  const isoYear = d.getFullYear();
-  const yearStart = new Date(isoYear, 0, 1);
-  const week = Math.ceil(((d - yearStart) / 86400000 + (yearStart.getDay() || 7)) / 7);
-  return `${isoYear}-W${String(week).padStart(2, "0")}`;
+function getIsoWeekKey(date: Date) {
+  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const dayNum = d.getUTCDay() || 7;
+  d.setUTCDate(d.getUTCDate() + 4 - dayNum);
+  const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
+  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const weekStr = String(weekNo).padStart(2, "0");
+  return `${d.getUTCFullYear()}-W${weekStr}`;
 }
 
-export async function loader({
-  request,
-}: {
-  request: Request;
-}): Promise<Response> {
+export const loader = async ({ request }: { request: Request }) => {
   try {
     const url = new URL(request.url);
     const secret = url.searchParams.get("secret");
-    const isVercelCron = request.headers.get("x-vercel-cron") === "1";
-    const overrideHourRaw = url.searchParams.get("hour");
-    const overrideMinuteRaw = url.searchParams.get("minute");
-
-    const cronSecret = process.env.CRON_SECRET;
-    if (!isVercelCron && (!cronSecret || secret !== cronSecret)) {
-      return Response.json({ error: "Unauthorized" }, { status: 401 });
+    const cronSecret = process.env.CRON_SECRET || null;
+    const isLocal = process.env.VERCEL !== "1" && process.env.NODE_ENV !== "production";
+    const requireSecret = process.env.NODE_ENV === "production" ? true : !!cronSecret;
+    if (!isLocal && !isVercelCron(request) && requireSecret && (!cronSecret || secret !== cronSecret)) {
+      return json({ error: "Unauthorized" }, 401);
     }
 
-    const overrideHour =
-      overrideHourRaw != null ? parseInt(String(overrideHourRaw), 10) : null;
-    const overrideMinute =
-      overrideMinuteRaw != null
-        ? parseInt(String(overrideMinuteRaw), 10)
-        : null;
+    const overrideHour = url.searchParams.get("hour");
+    const overrideMinute = url.searchParams.get("minute");
+    console.log("🚦 daily-reminders (RR) hit", {
+      hour: overrideHour,
+      minute: overrideMinute,
+      userId: url.searchParams.get("userId"),
+      self: url.searchParams.get("self"),
+    });
+    const targetUserIdRaw = url.searchParams.get("userId");
+    const selfOnly = url.searchParams.get("self") === "1";
 
-    // Try selecting reminderMinute; if the Prisma client is outdated, retry without it
-    let users: Array<{
-      id: number;
-      email: string;
-      name: string | null;
-      reminderHour: number | null;
-      reminderMinute?: number | null;
-      reminderTimezone?: string | null;
-    }>;
-    let noMinuteInClient = false;
-    try {
+    let users;
+    if (selfOnly) {
+      const token = getSessionTokenFromRequest(request);
+      if (!token) return json({ error: "Unauthorized" }, 401);
+      const session = await prisma.session.findUnique({
+        where: { token },
+        include: { user: true },
+      });
+      if (!session?.user || !session.user.reminderEnabled) {
+        return json({ success: true, sent: 0, usersChecked: 0 }, 200);
+      }
+      users = [
+        {
+          id: session.user.id,
+          email: session.user.email,
+          name: session.user.name,
+          reminderHour: session.user.reminderHour,
+          reminderMinute: session.user.reminderMinute,
+          reminderTimezone: session.user.reminderTimezone,
+        },
+      ];
+    } else if (targetUserIdRaw) {
+      const user = await prisma.user.findUnique({
+        where: { id: Number(targetUserIdRaw) || -1 },
+        select: {
+          id: true,
+          email: true,
+          name: true,
+          reminderHour: true,
+          reminderMinute: true,
+          reminderTimezone: true,
+          reminderEnabled: true,
+        },
+      });
+      users =
+        user && user.reminderEnabled
+          ? [
+              {
+                id: user.id,
+                email: user.email,
+                name: user.name,
+                reminderHour: user.reminderHour,
+                reminderMinute: user.reminderMinute,
+                reminderTimezone: user.reminderTimezone,
+              },
+            ]
+          : [];
+    } else {
       users = await prisma.user.findMany({
         where: { reminderEnabled: true },
         select: {
@@ -89,38 +123,16 @@ export async function loader({
           reminderTimezone: true,
         },
       });
-    } catch (e: unknown) {
-      let msg = "";
-      if (e && typeof e === "object" && "message" in e) {
-        msg = String((e as any).message);
-      } else if (typeof e === "string") {
-        msg = e;
-      }
-      if (
-        msg.includes("Unknown field `reminderMinute`") ||
-        msg.includes("Unknown arg `reminderMinute`")
-      ) {
-        noMinuteInClient = true;
-        users = await prisma.user.findMany({
-          where: { reminderEnabled: true },
-          select: {
-            id: true,
-            email: true,
-            name: true,
-            reminderHour: true,
-            reminderTimezone: true,
-          },
-        });
-        // Normalize to include reminderMinute: 0 when client doesn't support it
-        users = users.map((u) => ({ ...u, reminderMinute: 0 }));
-      } else {
-        throw e;
-      }
     }
 
-    const currentWeekKey = getCurrentWeekKey();
+    console.log("👥 daily-reminders (RR) users loaded", users.length);
 
+    const now = new Date();
+    const currentWeekKey = getIsoWeekKey(now);
+
+    let sent = 0;
     const emailService = process.env.EMAIL_SERVICE || "test";
+    const previewUrls: string[] = [];
     let transporter;
     if (emailService === "gmail") {
       transporter = nodemailer.createTransport({
@@ -148,15 +160,13 @@ export async function loader({
       });
     }
 
-    let sent = 0;
     for (const u of users) {
       const tz = u.reminderTimezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
-      const targetHour = overrideHour ?? u.reminderHour ?? 18;
-      const targetMinute = overrideMinute ?? u.reminderMinute ?? 0;
-      if (currentHour !== targetHour || currentMinute !== targetMinute)
-        continue;
+      const targetHour = overrideHour ? parseInt(overrideHour, 10) : u.reminderHour ?? 18;
+      const targetMinute = overrideMinute ? parseInt(overrideMinute, 10) : u.reminderMinute ?? 0;
+      if (currentHour !== targetHour || currentMinute !== targetMinute) continue;
 
       const submitted = await prisma.praxisReport.findFirst({
         where: {
@@ -167,14 +177,10 @@ export async function loader({
       });
       if (submitted) continue;
 
-      const appUrl = process.env.APP_URL || "http://localhost:5173";
-      const portalLink = `${appUrl}/praxisbericht`;
-
+      const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
+      const portalLink = `${appUrl}/praxisbericht2`;
       const mailOptions = {
-        from:
-          process.env.EMAIL_FROM ||
-          process.env.EMAIL_USER ||
-          "noreply@iu-portal.com",
+        from: process.env.EMAIL_FROM || process.env.EMAIL_USER || "noreply@iu-portal.com",
         to: u.email,
         subject: "🔔 Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
@@ -194,29 +200,71 @@ export async function loader({
         const info = await transporter.sendMail(mailOptions);
         sent++;
         if (emailService === "test") {
-          console.log("Preview:", nodemailer.getTestMessageUrl(info));
+          const preview = nodemailer.getTestMessageUrl(info);
+          if (preview) previewUrls.push(preview);
+          console.log("Preview:", preview);
         }
-      } catch (err: unknown) {
-        let message = "Unknown error";
-        if (err && typeof err === "object" && "message" in err) {
-          message = String((err as any).message);
-        } else if (typeof err === "string") {
-          message = err;
-        }
-        console.error(
-          `Failed to send reminder to ${u.email}:`,
-          message
-        );
+      } catch (err) {
+        console.error(`Failed to send reminder to ${u.email}:`, err);
       }
     }
 
-    return Response.json({ success: true, sent, usersChecked: users.length });
+    console.log("✅ daily-reminders (RR) complete", {
+      sent,
+      usersChecked: users.length,
+      previews: previewUrls.length,
+    });
+    return json(
+      {
+        success: true,
+        sent,
+        usersChecked: users.length,
+        ...(previewUrls.length ? { previews: previewUrls } : {}),
+      },
+      200
+    );
   } catch (error) {
-    console.error("/api/cron/daily-reminders loader error", error);
-    return Response.json({ error: "Failed to run daily reminders" }, { status: 500 });
+    console.error("cron/daily-reminders route error", error);
+    return json({ error: "Failed to run daily reminders" }, 500);
+  }
+};
+
+function isVercelCron(req: Request) {
+  return req.headers.get("x-vercel-cron") === "1";
+}
+
+function json(body: any, status = 200) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
+function getSessionTokenFromRequest(request: Request): string | null {
+  try {
+    const cookieHeader = request.headers.get("cookie") || "";
+    const cookies = Object.fromEntries(
+      cookieHeader
+        .split("; ")
+        .map((c) => c.trim())
+        .filter(Boolean)
+        .map((c) => {
+          const idx = c.indexOf("=");
+          return idx === -1
+            ? [c, ""]
+            : [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))];
+        })
+    ) as Record<string, string>;
+    const headerToken =
+      request.headers.get("x-session-token") ||
+      request.headers.get("X-Session-Token") ||
+      null;
+    return cookies.session || cookies.auth_session || headerToken || null;
+  } catch {
+    return null;
   }
 }
 
-export default function DailyRemindersApiRoute() {
+export default function CronDailyReminders() {
   return null;
 }

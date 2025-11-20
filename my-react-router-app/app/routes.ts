@@ -12,12 +12,13 @@ export default [
   route("", "routes/_app.tsx", [
     // Core dashboard & navigation
     route("dashboard", "routes/_app.dashboard.tsx"),
-    // route("curriculum", "routes/_app.curriculum.tsx"),
+    route("curriculum", "routes/_app.curriculum.tsx"),
     route("raumbuchung", "routes/_app.raumbuchung.tsx"),
     route("room-booking", "routes/_app.room-booking.tsx"),
-    // route("module-handbook", "routes/_app.module-handbook.tsx"),
+    route("module-handbook", "routes/_app.module-handbook.tsx"),
     route("student-id", "routes/_app.student-id.tsx"),
     route("study-organization", "routes/_app.study-organization.tsx"),
+    route("info-center", "routes/_app.info-center.tsx"),
     route("courses", "routes/_app.courses.tsx"),
     route("courses/schedule", "routes/_app.courses.schedule.tsx"),
 
@@ -53,6 +54,7 @@ export default [
     route("toast-direct", "routes/_app.toast-direct.tsx"),
     route("toast-test", "routes/_app.toast-test.tsx"),
     route("settings", "routes/_app.settings.tsx"),
+    route("messages", "routes/_app.messages.tsx"),
   ]),
 
   // API routes (handled by React Router in dev/SSR)

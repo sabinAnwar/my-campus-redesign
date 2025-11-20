@@ -190,7 +190,7 @@ export default function NewsList() {
       <div className="max-w-6xl mx-auto">
         {/* Search */}
         <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-black text-slate-900">News</h1>
+          <h1 className="text-3xl font-black text-foreground">News</h1>
 
           <form method="get" className="flex items-center gap-2">
             <input
@@ -198,7 +198,7 @@ export default function NewsList() {
               name="search"
               defaultValue={q}
               placeholder="Search news..."
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm"
+              className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               onChange={(e) => {
                 if (e.target.value === "") {
                   submit(e.currentTarget.form!, {
@@ -209,13 +209,13 @@ export default function NewsList() {
               }}
             />
 
-            <button className="px-3 py-2 bg-slate-900 text-white rounded-lg text-sm">
+            <button className="px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90">
               Search
             </button>
 
             <Link
               to="/news"
-              className="px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white text-slate-700"
+              className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
             >
               Reset
             </Link>
@@ -224,25 +224,25 @@ export default function NewsList() {
 
         {/* Results grid */}
         {items.length === 0 ? (
-          <p className="text-slate-500">No news found.</p>
+          <p className="text-muted-foreground">No news found.</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((n, i) => (
               <article
                 key={n.slug}
-                className="relative rounded-xl border border-slate-200 bg-white shadow-sm group transition hover:shadow-md"
+                className="relative rounded-xl border border-border bg-card text-card-foreground shadow-sm group transition hover:shadow-md"
               >
                 <div className={`h-1 w-full ${catColor(n.category)}`} />
 
                 <div className="p-4 flex flex-col h-full">
                   {/* Category */}
                   <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200 font-semibold">
+                    <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
                       {n.category || "General"}
                     </span>
 
                     {n.featured && (
-                      <span className="text-[10px] px-2 py-1 rounded bg-amber-100 text-amber-800 border border-amber-200 font-bold">
+                      <span className="text-[10px] px-2 py-1 rounded bg-amber-100 text-amber-800 border border-amber-200 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
                         FEATURED
                       </span>
                     )}
@@ -254,20 +254,20 @@ export default function NewsList() {
                     onClick={() => openModal(n.slug, i)}
                     className="text-left w-full"
                   >
-                    <h2 className="text-lg font-extrabold text-slate-900 line-clamp-2 hover:underline">
+                    <h2 className="text-lg font-extrabold text-card-foreground line-clamp-2 hover:underline">
                       {n.title}
                     </h2>
                   </button>
 
                   {/* Date */}
-                  <div className="mt-1 text-xs text-slate-500 flex items-center gap-1">
+                  <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
                     {new Date(n.publishedAt).toLocaleDateString()}
                     {n.author && <span>• {n.author}</span>}
                   </div>
 
                   {/* Excerpt */}
                   {n.excerpt && (
-                    <p className="mt-2 text-sm text-slate-600 line-clamp-3">
+                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
                       {n.excerpt}
                     </p>
                   )}
@@ -276,7 +276,7 @@ export default function NewsList() {
                   <div className="mt-auto pt-4">
                     <button
                       onClick={() => openModal(n.slug, i)}
-                      className="px-3 py-1.5 rounded-lg bg-slate-100 border border-slate-200 text-sm font-semibold"
+                      className="px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground border border-border text-sm font-semibold hover:bg-secondary/80"
                     >
                       Read more →
                     </button>
@@ -300,8 +300,8 @@ export default function NewsList() {
                   to={`?${sp.toString()}`}
                   className={`px-3 py-1.5 rounded text-sm border ${
                     p === currentPage
-                      ? "bg-slate-900 text-white border-slate-900"
-                      : "bg-white text-slate-700 border-slate-300"
+                      ? "bg-primary text-primary-foreground border-primary"
+                      : "bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground"
                   }`}
                 >
                   {p}
@@ -366,14 +366,14 @@ function NewsModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50" onClick={onClose} />
+      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
 
       {/* Modal */}
-      <div className="relative z-10 w-[90vw] max-w-3xl max-h-[85vh] overflow-y-auto bg-white rounded-2xl shadow-xl border border-slate-200">
+      <div className="relative z-10 w-[90vw] max-w-3xl max-h-[85vh] overflow-y-auto bg-card text-card-foreground rounded-2xl shadow-xl border border-border">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200">
+        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3">
-            <span className="text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200 font-semibold">
+            <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
               {article?.category || "General"}
             </span>
           </div>
@@ -383,8 +383,8 @@ function NewsModal({
             <button
               onClick={onPrev}
               disabled={atStart}
-              className={`p-1.5 rounded border ${
-                atStart ? "opacity-40" : "hover:bg-slate-100"
+              className={`p-1.5 rounded border border-border ${
+                atStart ? "opacity-40" : "hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               ←
@@ -394,8 +394,8 @@ function NewsModal({
             <button
               onClick={onNext}
               disabled={atEnd}
-              className={`p-1.5 rounded border ${
-                atEnd ? "opacity-40" : "hover:bg-slate-100"
+              className={`p-1.5 rounded border border-border ${
+                atEnd ? "opacity-40" : "hover:bg-accent hover:text-accent-foreground"
               }`}
             >
               →
@@ -404,7 +404,7 @@ function NewsModal({
             {/* Copy */}
             <button
               onClick={copyLink}
-              className="p-1.5 rounded border hover:bg-slate-100"
+              className="p-1.5 rounded border border-border hover:bg-accent hover:text-accent-foreground"
             >
               {copied ? "✔" : "⧉"}
             </button>
@@ -413,7 +413,7 @@ function NewsModal({
             <button
               ref={closeBtnRef}
               onClick={onClose}
-              className="p-1.5 rounded hover:bg-slate-100"
+              className="p-1.5 rounded hover:bg-accent hover:text-accent-foreground"
             >
               ✕
             </button>
@@ -422,25 +422,25 @@ function NewsModal({
 
         {/* Content */}
         <div className="px-5 py-6">
-          {loading && <p className="text-slate-400">Loading…</p>}
-          {error && <p className="text-red-600">{error}</p>}
+          {loading && <p className="text-muted-foreground">Loading…</p>}
+          {error && <p className="text-destructive">{error}</p>}
 
           {!loading && !error && article && (
             <>
-              <h3 className="text-2xl font-bold">{article.title}</h3>
+              <h3 className="text-2xl font-bold text-card-foreground">{article.title}</h3>
 
-              <div className="mt-2 text-xs text-slate-500">
+              <div className="mt-2 text-xs text-muted-foreground">
                 {new Date(article.publishedAt).toLocaleDateString()}
                 {article.author && ` • ${article.author}`}
               </div>
 
               {article.excerpt && (
-                <p className="mt-3 font-medium text-slate-700">
+                <p className="mt-3 font-medium text-foreground">
                   {article.excerpt}
                 </p>
               )}
 
-              <div className="prose prose-slate mt-4">
+              <div className="prose dark:prose-invert mt-4 max-w-none text-foreground">
                 <p style={{ whiteSpace: "pre-wrap" }}>{article.content}</p>
               </div>
             </>
@@ -448,8 +448,8 @@ function NewsModal({
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-slate-200 flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg border">
+        <div className="px-5 py-4 border-t border-border flex justify-end">
+          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-input hover:bg-accent hover:text-accent-foreground">
             Close
           </button>
         </div>

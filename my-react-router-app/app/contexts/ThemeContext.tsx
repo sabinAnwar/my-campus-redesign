@@ -8,15 +8,9 @@ import {
 
 export type Theme = "light" | "dark" | "system";
 
-type ThemeTokens = {
-  background: { page: string; shellGradient: string };
-  text: { primary: string; secondary: string };
-};
-
 type ThemeContextType = {
   theme: "light" | "dark";
   isDark: boolean;
-  tokens: ThemeTokens;
   setTheme: (theme: Theme) => void;
 };
 
@@ -60,20 +54,6 @@ export function ThemeProvider({
     window.localStorage.setItem(storageKey, theme);
   }, [theme, storageKey]);
 
-  // design tokens
-  const tokens: ThemeTokens = {
-    background: {
-      page: isDark ? "#0f172a" : "#eef2ff",
-      shellGradient: isDark
-        ? "linear-gradient(to bottom, #0f172a, #1e293b)"
-        : "linear-gradient(to bottom, #e0e7ff, #f8fafc)",
-    },
-    text: {
-      primary: isDark ? "#f8fafc" : "#0f172a",
-      secondary: isDark ? "#94a3b8" : "#475569",
-    },
-  };
-
   // Only allow "light" or "dark" to be set, ignore "system"
   const handleSetTheme = (newTheme: Theme) => {
     if (newTheme === "light" || newTheme === "dark") {
@@ -86,7 +66,6 @@ export function ThemeProvider({
       value={{
         theme,
         isDark,
-        tokens,
         setTheme: handleSetTheme,
       }}
     >
@@ -99,22 +78,9 @@ export function useTheme() {
   const ctx = useContext(ThemeContext);
   if (!ctx) {
     // Fallback when a component accidentally renders outside ThemeProvider
-    const isDark = false;
-    const tokens: ThemeTokens = {
-      background: {
-        page: "#ffffff",
-        shellGradient: "linear-gradient(to bottom, #ffffff, #f1f5f9)",
-      },
-      text: {
-        primary: "#0f172a",
-        secondary: "#475569",
-      },
-    };
     return {
-      theme: "light",
-      resolvedTheme: "light",
-      isDark,
-      tokens,
+      theme: "light" as const,
+      isDark: false,
       setTheme: () => {},
     };
   }

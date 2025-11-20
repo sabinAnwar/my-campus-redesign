@@ -189,27 +189,26 @@ export default function Praxisbericht2() {
   }, [reports, mode, year, month, semStartYear, semStartMonth]);
 
   return (
-  
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-        <div className="bg-white border-b border-slate-200 shadow-sm">
-          <div className="max-w-7xl mx-auto px-6 py-10">
-            <h1 className="text-4xl font-bold text-slate-900 mb-2">
-              Praxisberichte
-            </h1>
-            <p className="text-slate-600">
-              Document and submit your weekly practical work reports.
-            </p>
-          </div>
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
+      <div className="bg-white dark:bg-slate-900/70 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
+        <div className="max-w-7xl mx-auto px-6 py-10">
+          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
+            Praxisberichte
+          </h1>
+          <p className="text-slate-600 dark:text-slate-300">
+            Document and submit your weekly practical work reports.
+          </p>
         </div>
+      </div>
 
-        <div className="max-w-7xl mx-auto px-6 py-8">
+      <div className="max-w-7xl mx-auto px-6 py-8">
           {/* Daily reminder banner */}
-          <div className="mb-6 bg-white border border-slate-200 rounded-lg p-4 flex items-center justify-between">
+          <div className="mb-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 flex items-center justify-between transition-colors">
             <div>
-              <div className="font-semibold text-slate-900">
+              <div className="font-semibold text-slate-900 dark:text-white">
                 Praxisbericht Erinnerung
               </div>
-              <div className="text-sm text-slate-600">
+              <div className="text-sm text-slate-600 dark:text-slate-300">
                 {reminderEnabled ? (
                   <>
                     Aktiv: tägliche E-Mail um{" "}
@@ -225,83 +224,83 @@ export default function Praxisbericht2() {
             </div>
             <button
               onClick={() => navigate("/settings")}
-              className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90"
+              className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
             >
               Einstellungen öffnen
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
                 <CheckCircle size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Submitted
               </div>
               <div className="text-3xl font-bold text-emerald-700">
                 {stats.submitted}
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-amber-200 text-amber-950 flex items-center justify-center border border-amber-500">
                 <AlertCircle size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Must be submitted
               </div>
               <div className="text-3xl font-bold text-amber-700">
                 {stats.due}
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-blue-200 text-blue-950 flex items-center justify-center border border-blue-500">
                 <FileEdit size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Drafts
               </div>
               <div className="text-3xl font-bold text-blue-700">
                 {stats.drafts}
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-teal-200 text-teal-950 flex items-center justify-center border border-teal-500">
                 <BadgeCheck size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Reviewed
               </div>
               <div className="text-3xl font-bold text-teal-700">
                 {stats.approved}
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-zinc-200 text-zinc-800 flex items-center justify-center border border-zinc-500">
                 <CalendarClock size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Klausur Weeks
               </div>
               <div className="text-3xl font-bold text-zinc-700">
                 {stats.klausur}
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center">
                 <GraduationCap size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Completion
               </div>
               <div className="text-3xl font-bold text-emerald-600">
                 {stats.completion}%
               </div>
             </div>
-            <div className="bg-white rounded-lg border border-slate-200 p-5 relative overflow-hidden">
+            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
               <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
                 <Smile size={18} />
               </div>
-              <div className="text-slate-600 text-sm font-medium mb-1">
+              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
                 Satisfied
               </div>
               <div className="text-3xl font-bold text-emerald-700">
@@ -311,23 +310,31 @@ export default function Praxisbericht2() {
           </div>
 
           <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 bg-white rounded-lg border border-slate-200 p-1.5">
+            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 transition-colors">
               <button
                 onClick={() => setView("calendar")}
-                className={`px-4 py-2 rounded-md font-medium text-sm ${view === "calendar" ? "bg-slate-900 text-white" : "text-slate-700"}`}
+                className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
+                  view === "calendar"
+                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                }`}
               >
                 <CalendarRange size={18} className="inline mr-2" /> Calendar
               </button>
               <button
                 onClick={() => setView("list")}
-                className={`px-4 py-2 rounded-md font-medium text-sm ${view === "list" ? "bg-slate-900 text-white" : "text-slate-700"}`}
+                className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
+                  view === "list"
+                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
+                }`}
               >
                 <ListChecks size={18} className="inline mr-2" /> List
               </button>
             </div>
             <div className="flex items-center gap-2">
               <button
-                className="px-3 py-2 text-sm rounded-md border border-slate-300 hover:bg-slate-50"
+                className="px-3 py-2 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                 onClick={() => {
                   const now = new Date();
                   setYear(now.getFullYear());
@@ -341,7 +348,7 @@ export default function Praxisbericht2() {
                 Go to current week
               </button>
               <button
-                className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90"
+                className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
                 onClick={() => {
                   const now = new Date();
                   const wk = getISOWeekKey(now);
@@ -367,7 +374,11 @@ export default function Praxisbericht2() {
               <button
                 key={f.k}
                 onClick={() => setStatusFilter(f.k)}
-                className={`text-xs px-2.5 py-1.5 rounded-full border ${statusFilter === f.k ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
+                className={`text-xs px-2.5 py-1.5 rounded-full border transition-colors ${
+                  statusFilter === f.k
+                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                }`}
               >
                 {f.label}
               </button>
@@ -386,13 +397,21 @@ export default function Praxisbericht2() {
                   <div className="flex items-center justify-between mb-3">
                     <div className="flex items-center gap-2">
                       <button
-                        className={`px-2.5 py-1.5 text-xs rounded-md border ${mode === "month" ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
+                        className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors ${
+                          mode === "month"
+                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
                         onClick={() => setMode("month")}
                       >
                         Month
                       </button>
                       <button
-                        className={`px-2.5 py-1.5 text-xs rounded-md border ${mode === "semester" ? "bg-slate-900 text-white" : "bg-white text-slate-700"}`}
+                        className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors ${
+                          mode === "semester"
+                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
+                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
+                        }`}
                         onClick={() => setMode("semester")}
                       >
                         Semester
@@ -401,7 +420,7 @@ export default function Praxisbericht2() {
                     {mode === "month" ? (
                       <div className="flex items-center gap-2">
                         <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                           onClick={() => {
                             const d = new Date(year, month - 1, 1);
                             setYear(d.getFullYear());
@@ -410,14 +429,14 @@ export default function Praxisbericht2() {
                         >
                           <ChevronLeft size={14} />
                         </button>
-                        <div className="text-sm font-semibold text-slate-900">
+                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                           {new Date(year, month, 1).toLocaleString(undefined, {
                             month: "long",
                             year: "numeric",
                           })}
                         </div>
                         <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                          className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
                           onClick={() => {
                             const d = new Date(year, month + 1, 1);
                             setYear(d.getFullYear());
@@ -520,8 +539,8 @@ export default function Praxisbericht2() {
                     </div>
                   )}
                 </div>
-                <div className="bg-white rounded-lg border border-slate-200 p-5">
-                  <h3 className="font-semibold text-slate-900 mb-4">Legend</h3>
+                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 transition-colors">
+                  <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Legend</h3>
                   <Legend />
                 </div>
               </div>
@@ -591,8 +610,12 @@ function Legend() {
     <div className="space-y-3">
       {items.map((it, i) => (
         <div key={i} className="flex items-center gap-3 text-sm">
-          <div className={`h-4 w-4 rounded border ${it.cls ? `${it.cls.bg} ${it.cls.border}` : "bg-white border-slate-300"} ${it.ring ? "ring-2 ring-offset-1 ring-indigo-400" : ""}`}></div>
-          <span className="text-slate-700">{it.label}</span>
+          <div
+            className={`h-4 w-4 rounded border ${
+              it.cls ? `${it.cls.bg} ${it.cls.border}` : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
+            } ${it.ring ? "ring-2 ring-offset-1 ring-indigo-400 dark:ring-indigo-500/70" : ""}`}
+          ></div>
+          <span className="text-slate-700 dark:text-slate-200">{it.label}</span>
         </div>
       ))}
     </div>
@@ -652,7 +675,12 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
     let status = statusByWeek.get(weekKey) || "DUE";
     // normalize legacy values
     if (status === "KLAUSUR") status = "KLAUSURPHASE";
-    const clsObj = STATUS_STYLES[status as keyof typeof STATUS_STYLES] || { bg: "bg-white", text: "text-slate-900", border: "border-slate-200" };
+    const clsObj =
+      STATUS_STYLES[status as keyof typeof STATUS_STYLES] || {
+        bg: "bg-white dark:bg-slate-900",
+        text: "text-slate-900 dark:text-slate-100",
+        border: "border-slate-200 dark:border-slate-700",
+      };
     // Always show week color starting Monday, even on trailing/leading days; fade if out of month
     const dimByFilter = filter !== "ALL" && status !== filter;
     const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-60"} ${dimByFilter ? "opacity-40" : ""}`;
@@ -669,11 +697,15 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
         title={`${weekKey} • ${status}${hoursLabel ? " • "+hoursLabel : ""}${isEdited ? " • edited" : ""}`}
       >
         {isMonday && (
-          <span className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-white/70 border border-slate-300 text-slate-700">W{weekNumber}</span>
+          <span className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-white/70 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+            W{weekNumber}
+          </span>
         )}
         <span>{date.getDate()}</span>
         {hoursLabel && (
-          <span className="absolute bottom-1 right-1 text-[10px] px-1 py-0.5 rounded bg-white/70 border border-slate-300 text-slate-700">{hoursLabel}</span>
+          <span className="absolute bottom-1 right-1 text-[10px] px-1 py-0.5 rounded bg-white/70 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+            {hoursLabel}
+          </span>
         )}
       </button>
     );
@@ -682,12 +714,16 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
   const dow = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 p-4">
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 transition-colors">
       <div className="flex items-center justify-between mb-3">
-        <div className="text-sm font-semibold text-slate-900">{headerDate.toLocaleString(undefined, { month: "long", year: "numeric" })}</div>
-        <div className="text-xs text-slate-500">Colors reflect weekly status</div>
+        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
+          {headerDate.toLocaleString(undefined, { month: "long", year: "numeric" })}
+        </div>
+        <div className="text-xs text-slate-500 dark:text-slate-400">
+          Colors reflect weekly status
+        </div>
       </div>
-      <div className="grid grid-cols-7 text-[11px] text-slate-500 mb-2 font-medium">
+      <div className="grid grid-cols-7 text-[11px] text-slate-500 dark:text-slate-400 mb-2 font-medium">
         {dow.map((d) => (<div key={d} className="text-center py-1">{d}</div>))}
       </div>
       <div className="grid grid-cols-7 gap-1">
@@ -754,14 +790,14 @@ function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?
 
   if (!sorted.length) {
     return (
-      <div className="bg-white rounded-lg border border-slate-200 p-8 text-center">
-        <p className="text-slate-600">No reports to show yet.</p>
+      <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 text-center transition-colors">
+        <p className="text-slate-600 dark:text-slate-300">No reports to show yet.</p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white rounded-lg border border-slate-200 divide-y">
+    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 transition-colors">
       {sorted.map((r: { isoWeekKey: boolean | React.Key | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; normStatus: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; tasks: any; }) => {
         const start = typeof r.isoWeekKey === "string" ? parseISOWeekStart(r.isoWeekKey) : null;
         const dates = start ? `${start.toLocaleDateString()} – ${new Date(start.getFullYear(), start.getMonth(), start.getDate()+6).toLocaleDateString()}` : r.isoWeekKey;
@@ -771,20 +807,20 @@ function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?
           <div key={String(r.isoWeekKey)} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
             <div className="min-w-0">
               <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-semibold text-slate-900">{r.isoWeekKey}</div>
+                <div className="font-semibold text-slate-900 dark:text-slate-100">{r.isoWeekKey}</div>
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${statusPill(String(r.normStatus || ""))}`}>
                   {r.normStatus === "APPROVED" ? "Reviewed (Prüfungsamt)" : r.normStatus}
                 </span>
-                <span className="text-xs text-slate-500">{dates}</span>
-                <span className="text-xs text-slate-600">• {hours}</span>
+                <span className="text-xs text-slate-500 dark:text-slate-400">{dates}</span>
+                <span className="text-xs text-slate-600 dark:text-slate-300">• {hours}</span>
               </div>
-              <div className="text-sm text-slate-700 mt-1">
-                {truncate(r.tasks, 180) || <span className="italic text-slate-500">No tasks yet</span>}
+              <div className="text-sm text-slate-700 dark:text-slate-200 mt-1">
+                {truncate(r.tasks, 180) || <span className="italic text-slate-500 dark:text-slate-400">No tasks yet</span>}
               </div>
             </div>
             <div className="flex items-center gap-2 shrink-0">
               <button
-                className="px-3 py-1.5 text-sm rounded-md border border-slate-300 hover:bg-slate-50"
+                className="px-3 py-1.5 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                 onClick={() => { if (typeof r.isoWeekKey === "string" && onOpen) onOpen(r.isoWeekKey); }}
               >Open</button>
             </div>
@@ -932,13 +968,13 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40">
-      <div className="w-[96vw] max-w-4xl rounded-lg bg-white shadow-2xl border border-slate-200">
-        <div className="px-5 py-4 border-b border-slate-200 flex items-center justify-between">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+      <div className="w-[96vw] max-w-4xl rounded-lg bg-white dark:bg-slate-950 shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors">
+        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
           <div>
-            <div className="text-sm text-slate-500">Praxisbericht</div>
+            <div className="text-sm text-slate-500 dark:text-slate-400">Praxisbericht</div>
             <div className="flex items-center gap-3">
-              <div className="font-semibold text-slate-900">{weekKey}</div>
+              <div className="font-semibold text-slate-900 dark:text-white">{weekKey}</div>
               {report?.status && (
                 <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${
                   report.status === "DRAFT" ? "bg-blue-100 text-blue-900 border-blue-500" :
@@ -952,29 +988,29 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               )}
             </div>
             {weekDates?.length === 7 && (
-              <div className="text-xs text-slate-500 mt-0.5">
+              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 {weekDates[0].toLocaleDateString()} – {weekDates[6].toLocaleDateString()}
               </div>
             )}
           </div>
           <div className="flex items-center gap-3">
-            <div className="text-xs text-slate-600">
+            <div className="text-xs text-slate-600 dark:text-slate-300">
               Total:&nbsp;
-              <span className="font-semibold text-slate-900">
+              <span className="font-semibold text-slate-900 dark:text-white">
                 {Math.floor(totalMinutes/60)}h {totalMinutes%60}m
               </span>
             </div>
-            <button className="text-slate-500 hover:text-slate-700" onClick={onClose}>✕</button>
+            <button className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors" onClick={onClose}>✕</button>
           </div>
         </div>
         <div className="p-5">
           <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="text-sm font-medium text-slate-900">Weekly hours</div>
+            <div className="text-sm font-medium text-slate-900 dark:text-white">Weekly hours</div>
             <div className="flex flex-wrap items-center gap-2">
               <button
                 type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50"
+                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                 onClick={() => {
                   const monday = daysState.Mon || {};
                   if (!monday.from || !monday.till) {
@@ -994,7 +1030,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               >Apply Mon to all</button>
               <button
                 type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50"
+                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                 onClick={() => {
                   setDaysState((prev) => {
                     const next = { ...prev };
@@ -1007,7 +1043,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               >Clear all times</button>
               <button
                 type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 hover:bg-slate-50"
+                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
                 onClick={() => {
                   setDaysState((prev) => {
                     const next = { ...prev };
@@ -1025,9 +1061,9 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               >Fill 09:00–17:00 (Mon–Fri)</button>
             </div>
           </div>
-          <div className="overflow-auto rounded-md border border-slate-200">
+          <div className="overflow-auto rounded-md border border-slate-200 dark:border-slate-800">
             <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 text-slate-600 sticky top-0 z-10">
+              <thead className="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 sticky top-0 z-10">
                 <tr>
                   <th className="text-left px-3 py-2 font-medium">Day</th>
                   <th className="text-left px-3 py-2 font-medium">From</th>
@@ -1041,18 +1077,18 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               </thead>
               <tbody>
                 {dayKeys.map((k, idx) => (
-                  <tr key={k} className={`border-t transition-colors ${daysState[k]?.holiday ? "bg-slate-50 opacity-70" : "hover:bg-slate-50/70"}`}>
+                  <tr key={k} className={`border-t border-slate-200 dark:border-slate-800 transition-colors ${daysState[k]?.holiday ? "bg-slate-50 dark:bg-slate-900/60 opacity-70" : "hover:bg-slate-50/70 dark:hover:bg-slate-800/80"}`}>
                     <td className="px-3 py-2 whitespace-nowrap">
-                      <div className="font-semibold text-slate-900">{k}</div>
-                      <div className="text-[11px] text-slate-500">{weekDates[idx]?.toLocaleDateString?.() || ""}</div>
+                      <div className="font-semibold text-slate-900 dark:text-slate-100">{k}</div>
+                      <div className="text-[11px] text-slate-500 dark:text-slate-400">{weekDates[idx]?.toLocaleDateString?.() || ""}</div>
                     </td>
                     <td className="px-3 py-2 align-middle">
-                      <input type="time" className="w-full rounded-md border border-slate-300 px-2 py-1" value={daysState[k]?.from || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], from: e.target.value } }))} />
+                      <input type="time" className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1" value={daysState[k]?.from || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], from: e.target.value } }))} />
                     </td>
                     <td className="px-3 py-2 align-middle">
-                      <input type="time" className="w-full rounded-md border border-slate-300 px-2 py-1" value={daysState[k]?.till || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], till: e.target.value } }))} />
+                      <input type="time" className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1" value={daysState[k]?.till || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], till: e.target.value } }))} />
                     </td>
-                    <td className="px-3 py-2 align-middle text-slate-700">
+                    <td className="px-3 py-2 align-middle text-slate-700 dark:text-slate-200">
                       {(() => {
                         const d = daysState[k];
                         if (!d || d.holiday) return "–";
@@ -1063,7 +1099,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
                       })()}
                     </td>
                     <td className="px-3 py-2 align-middle text-center">
-                      <input type="checkbox" className="accent-slate-900" checked={!!daysState[k]?.holiday} onChange={(e) => setDaysState((prev) => {
+                      <input type="checkbox" className="accent-slate-900 dark:accent-slate-100" checked={!!daysState[k]?.holiday} onChange={(e) => setDaysState((prev) => {
                         const checked = e.target.checked;
                         const next = { ...prev, [k]: { ...prev[k], holiday: checked } };
                         if (checked) {
@@ -1074,11 +1110,11 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
                       })} />
                     </td>
                     <td className="px-3 py-2 align-middle text-center">
-                      <input type="checkbox" className="accent-slate-900" checked={!!daysState[k]?.hold} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], hold: e.target.checked } }))} />
+                      <input type="checkbox" className="accent-slate-900 dark:accent-slate-100" checked={!!daysState[k]?.hold} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], hold: e.target.checked } }))} />
                     </td>
                     <td className="px-3 py-2">
                       <select
-                        className="w-full rounded-md border border-slate-300 px-2 py-1"
+                        className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1"
                         value={daysState[k]?.mood || ""}
                         onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], mood: e.target.value } }))}
                       >
@@ -1092,7 +1128,7 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
                     <td className="px-3 py-2">
                       <input
                         type="text"
-                        className="w-full rounded-md border border-slate-300 px-2 py-1"
+                        className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1"
                         placeholder="Notes"
                         value={daysState[k]?.notes || ""}
                         onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], notes: e.target.value } }))}
@@ -1103,30 +1139,30 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
               </tbody>
             </table>
           </div>
-          <div className="flex justify-end text-xs text-slate-600 mt-2">
+          <div className="flex justify-end text-xs text-slate-600 dark:text-slate-300 mt-2">
             {(() => {
               const h = Math.floor(totalMinutes / 60);
               const m = totalMinutes % 60;
-              return <span>Weekly total: <span className="font-medium text-slate-800">{h}h {m}m</span></span>;
+              return <span>Weekly total: <span className="font-medium text-slate-800 dark:text-slate-100">{h}h {m}m</span></span>;
             })()}
           </div>
 
           <div>
             <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700">Tasks (brief weekly summary, min 10 chars to submit)</label>
-              <span className={`text-[11px] ${taskLen >= 10 ? "text-emerald-700" : "text-slate-500"}`}>{taskLen}/10</span>
+              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">Tasks (brief weekly summary, min 10 chars to submit)</label>
+              <span className={`text-[11px] ${taskLen >= 10 ? "text-emerald-700" : "text-slate-500 dark:text-slate-400"}`}>{taskLen}/10</span>
             </div>
             <textarea
-              className="w-full min-h-[120px] rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400"
+              className="w-full min-h-[120px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600"
               value={tasks}
               onChange={(e) => setTasks(e.target.value)}
               placeholder="Describe your practical work this week..."
             />
             <div className="mt-2 grid grid-cols-2 gap-3 max-w-sm">
               <div>
-                <label className="block text-sm font-medium text-slate-700 mb-1">Grade (optional)</label>
+                <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Grade (optional)</label>
                 <select
-                  className="w-full rounded-md border border-slate-300 px-2 py-1"
+                  className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-2 py-1"
                   value={grade}
                   onChange={(e) => setGrade(e.target.value)}
                 >
@@ -1140,16 +1176,16 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
                 </select>
               </div>
             </div>
-          </div>
-          <div className="text-xs text-slate-500">You can <span className="font-semibold text-sky-700">save as Draft</span> now or <span className="font-semibold text-emerald-700">Submit (green)</span> when ready.</div>
+            </div>
+          <div className="text-xs text-slate-500 dark:text-slate-400">You can <span className="font-semibold text-sky-700 dark:text-sky-400">save as Draft</span> now or <span className="font-semibold text-emerald-700 dark:text-emerald-400">Submit (green)</span> when ready.</div>
           </div>
         </div>
-        <div className="px-5 py-4 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-          <div className="flex-1 text-xs text-slate-500 sm:text-right">Draft keeps your work private until you submit.</div>
+        <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
+          <div className="flex-1 text-xs text-slate-500 dark:text-slate-400 sm:text-right">Draft keeps your work private until you submit.</div>
           <div className="flex items-center justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm rounded-md border border-slate-300 text-slate-700 hover:bg-slate-50">Cancel</button>
-            <button disabled={saving} onClick={() => handleSave("DRAFT")} className="px-4 py-2 text-sm rounded-md border border-sky-300 text-sky-900 hover:bg-sky-50 disabled:opacity-60">{saving && saveMode === "DRAFT" ? "Saving draft..." : "Save draft"}</button>
-            <button disabled={saving || taskLen < 10} title={taskLen < 10 ? "Enter at least 10 characters" : undefined} onClick={() => handleSave("SUBMITTED")} className={`px-4 py-2 text-sm rounded-md text-white hover:opacity-90 ${saving || taskLen < 10 ? "bg-slate-500" : "bg-slate-900"}`}>{saving && saveMode !== "DRAFT" ? "Submitting..." : "Submit"}</button>
+            <button onClick={onClose} className="px-4 py-2 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
+            <button disabled={saving} onClick={() => handleSave("DRAFT")} className="px-4 py-2 text-sm rounded-md border border-sky-300 dark:border-sky-700 text-sky-900 dark:text-sky-200 bg-white dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-slate-800 disabled:opacity-60 transition-colors">{saving && saveMode === "DRAFT" ? "Saving draft..." : "Save draft"}</button>
+            <button disabled={saving || taskLen < 10} title={taskLen < 10 ? "Enter at least 10 characters" : undefined} onClick={() => handleSave("SUBMITTED")} className={`px-4 py-2 text-sm rounded-md text-white hover:opacity-90 ${saving || taskLen < 10 ? "bg-slate-500" : "bg-slate-900 dark:bg-slate-100 dark:text-slate-900"}`}>{saving && saveMode !== "DRAFT" ? "Submitting..." : "Submit"}</button>
           </div>
         </div>
       </div>

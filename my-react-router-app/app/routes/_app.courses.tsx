@@ -10,6 +10,7 @@ import {
   PencilLine,
   MessageSquare,
   BookOpen,
+  ArrowRight,
   Book,
   GraduationCap,
   Presentation,
@@ -29,6 +30,7 @@ import {
   BarChart3,
   CheckCircle,
   ChevronRight,
+  Sparkles,
 } from "lucide-react";
 import { saveRecentFile } from "../lib/recentFiles";
 import { saveRecentCourse } from "../lib/recentCourses";
@@ -1062,8 +1064,7 @@ export default function Courses() {
   if (!selectedCourse) {
     // List view styled closer to IU card grid
     return (
-      
-        <div className="min-h-screen">
+      <div className="min-h-screen bg-slate-50 dark:bg-[#0b0f19]">
           <div className="max-w-7xl mx-auto px-6 py-12">
             <div className="mb-8">
               <h1 className="text-4xl font-black text-slate-900 dark:text-white mb-2">
@@ -1127,120 +1128,110 @@ export default function Courses() {
                   <div
                     key={course.id}
                     onClick={() => handleCourseClick(course)}
-                    className="cursor-pointer rounded-2xl border border-slate-200 dark:border-slate-700 hover:border-cyan-400 dark:hover:border-cyan-500 shadow-md hover:shadow-2xl transition-all duration-300 overflow-hidden bg-white dark:bg-slate-800 hover:translate-y-[-6px] group flex flex-col h-full"
+                    className="relative rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-950 text-slate-900 dark:text-slate-100 shadow-sm group transition-all duration-300 hover:shadow-xl hover:-translate-y-1 cursor-pointer h-full flex flex-col"
                   >
-                    {/* Header Banner with Gradient */}
-                    <div className="h-40 w-full bg-gradient-to-br from-cyan-500 via-cyan-400 to-slate-400 dark:from-cyan-600 dark:via-cyan-500 dark:to-slate-600 relative overflow-hidden flex-shrink-0">
-                      <div className="absolute inset-0 opacity-0 group-hover:opacity-20 bg-white dark:bg-white transition-opacity duration-300" />
+                    {/* Top Border Line */}
+                    <div 
+                      className={`h-1 w-full rounded-t-xl ${
+                        course.color === "blue" ? "bg-blue-500" :
+                        course.color === "purple" ? "bg-purple-500" :
+                        course.color === "green" ? "bg-emerald-500" :
+                        course.color === "orange" ? "bg-orange-500" :
+                        course.color === "pink" ? "bg-pink-500" :
+                        "bg-slate-400"
+                      }`} 
+                    />
 
-                      {/* Decorative Pattern */}
-                      <div className="absolute inset-0 opacity-10">
-                        <div className="absolute top-2 right-2 w-16 h-16 rounded-full border-2 border-white/40" />
-                        <div className="absolute bottom-3 left-3 w-12 h-12 rounded-full bg-white/20" />
-                      </div>
-
-                      {/* Status Badge */}
-                      <div className="absolute top-4 right-4 z-10">
-                        {course.active ? (
-                          <div className="flex items-center gap-2 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-white/20">
-                            <span className="w-2.5 h-2.5 bg-emerald-500 rounded-full animate-pulse" />
-                            <span className="text-xs font-bold text-emerald-700 dark:text-emerald-400">
-                              {language === "de" ? "Aktiv" : "Active"}
-                            </span>
-                          </div>
-                        ) : (
-                          <div className="flex items-center gap-2 bg-white/95 dark:bg-slate-900/90 backdrop-blur-sm px-4 py-2 rounded-full shadow-lg border border-white/20">
-                            <CheckCircle className="w-3.5 h-3.5 text-slate-600 dark:text-slate-400" />
-                            <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                              {language === "de"
-                                ? "Abgeschlossen"
-                                : "Completed"}
-                            </span>
-                          </div>
+                    <div className="p-5 flex flex-col h-full">
+                      {/* Header: Status */}
+                      <div className="flex items-center justify-end mb-3">
+                        {course.active && (
+                          <span className="text-[10px] px-2 py-1 rounded bg-amber-100 text-amber-800 border border-amber-200 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800 uppercase tracking-wider">
+                            {language === "de" ? "Aktiv" : "Active"}
+                          </span>
+                        )}
+                         {!course.active && course.progress >= 100 && (
+                          <span className="text-[10px] px-2 py-1 rounded bg-emerald-100 text-emerald-800 border border-emerald-200 font-bold dark:bg-emerald-900/30 dark:text-emerald-300 dark:border-emerald-800 uppercase tracking-wider">
+                            {language === "de" ? "Fertig" : "Done"}
+                          </span>
                         )}
                       </div>
-                    </div>
 
-                    {/* Content Area */}
-                    <div className="p-6 flex flex-col flex-grow">
-                      {/* Course Code and Credits - Enhanced */}
-                      <div className="flex items-start justify-between mb-4 gap-3">
-                        <div>
-                          <div className="text-xs font-bold text-cyan-600 dark:text-cyan-400 uppercase tracking-widest mb-1">
-                            {course.code}
-                          </div>
-                          <div className="h-1 w-12 bg-gradient-to-r from-cyan-500 to-cyan-400 rounded-full" />
-                        </div>
-                        <div className="flex items-center gap-2 text-xs font-semibold text-slate-600 dark:text-slate-400 bg-slate-100 dark:bg-slate-700 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-600">
-                          <BookOpen className="h-4 w-4 text-cyan-600 dark:text-cyan-400" />
-                          {course.credits} CP
-                        </div>
-                      </div>
-
-                      {/* Title - Enhanced */}
-                      <h3 className="text-lg font-bold text-slate-900 dark:text-slate-50 mb-4 line-clamp-2 group-hover:text-cyan-700 dark:group-hover:text-cyan-300 transition-colors leading-tight">
+                      {/* Title */}
+                      <h3 className="text-xl font-extrabold text-slate-900 dark:text-slate-100 group-hover:underline mb-2 line-clamp-2">
                         {course.title}
                       </h3>
 
-                      {/* Instructor - Enhanced */}
-                      <div className="flex items-center gap-3 mb-6 pb-6 border-b border-slate-100 dark:border-slate-700">
-                        <div className="w-10 h-10 rounded-full bg-gradient-to-br from-cyan-400 to-cyan-600 dark:from-cyan-500 dark:to-cyan-700 flex items-center justify-center flex-shrink-0 shadow-md border-2 border-white dark:border-slate-800">
-                          <span className="text-xs font-bold text-white">
-                            {course.instructor?.charAt(0) || "?"}
-                          </span>
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <p className="text-xs uppercase tracking-wider text-slate-500 dark:text-slate-400 font-semibold mb-0.5">
-                            {language === "de" ? "Dozent/in" : "Instructor"}
-                          </p>
-                          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 truncate">
-                            {course.instructor}
-                          </p>
-                        </div>
+                      {/* Meta Info */}
+                      <div className="text-xs text-slate-500 dark:text-slate-400 flex items-center gap-3 mb-3">
+                        <span className="flex items-center gap-1">
+                          <CalendarDays className="h-3 w-3" />
+                          {course.startDate}
+                        </span>
+                        <span className="flex items-center gap-1">
+                          <UserIcon className="h-3 w-3" />
+                          {course.instructor}
+                        </span>
                       </div>
 
-                      {/* Progress Section - Enhanced */}
-                      {course.progress > 0 && (
-                        <div className="space-y-4 flex-grow">
-                          <div>
-                            <div className="flex items-center justify-between mb-2">
-                              <span className="text-xs uppercase tracking-wide font-bold text-slate-600 dark:text-slate-400">
-                                {language === "de" ? "Fortschritt" : "Progress"}
-                              </span>
-                              <span className="text-sm font-bold text-cyan-600 dark:text-cyan-400 bg-cyan-50 dark:bg-cyan-950/40 px-3 py-1.5 rounded-lg border border-cyan-200 dark:border-cyan-900/50">
-                                {course.progress}%
-                              </span>
-                            </div>
-                            <div className="h-3 bg-slate-200 dark:bg-slate-700 rounded-full overflow-hidden border border-slate-200 dark:border-slate-600">
-                              <div
-                                className="h-full bg-gradient-to-r from-cyan-500 via-cyan-400 to-cyan-600 dark:from-cyan-600 dark:via-cyan-500 dark:to-cyan-700 transition-all duration-700 rounded-full shadow-lg"
-                                style={{ width: `${course.progress}%` }}
-                              />
-                            </div>
-                          </div>
+                      {/* Description */}
+                      <p className="text-sm text-slate-600 dark:text-slate-400 line-clamp-3 mb-4 flex-grow">
+                        {course.description}
+                      </p>
 
-                          {/* Date and Status Info - Enhanced */}
-                          <div className="flex items-center justify-between text-xs pt-2 gap-2">
-                            <span className="inline-flex items-center gap-1.5 bg-slate-50 dark:bg-slate-700 px-3 py-2 rounded-lg font-semibold text-slate-600 dark:text-slate-300 border border-slate-200 dark:border-slate-600">
-                              <CalendarDays className="h-4 w-4 flex-shrink-0" />
-                              {course.startDate}
-                            </span>
-                            {course.progress === 100 && (
-                              <span className="inline-flex items-center gap-1.5 bg-emerald-50 dark:bg-emerald-950/40 px-3 py-2 rounded-lg font-bold text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900/50">
-                                <CheckCircle className="h-4 w-4 flex-shrink-0" />
-                                {language === "de" ? "Fertig" : "Complete"}
-                              </span>
-                            )}
+                      {/* Progress Bar */}
+                      {course.active && (
+                        <div className="mb-4">
+                          <div className="flex justify-between text-[10px] uppercase tracking-wider font-bold text-slate-500 dark:text-slate-400 mb-1">
+                            <span>{language === "de" ? "Fortschritt" : "Progress"}</span>
+                            <span>{course.progress}%</span>
+                          </div>
+                          <div className="h-1.5 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                            <div 
+                              className={`h-full rounded-full ${
+                                course.color === "blue" ? "bg-blue-500" :
+                                course.color === "purple" ? "bg-purple-500" :
+                                course.color === "green" ? "bg-emerald-500" :
+                                course.color === "orange" ? "bg-orange-500" :
+                                course.color === "pink" ? "bg-pink-500" :
+                                "bg-slate-400"
+                              }`}
+                              style={{ width: `${course.progress}%` }}
+                            />
                           </div>
                         </div>
                       )}
 
-                      {/* Footer CTA - Enhanced */}
-                      <div className="mt-auto pt-6 border-t border-slate-100 dark:border-slate-700">
-                        <button className="w-full py-3 px-4 bg-gradient-to-r from-cyan-500 to-cyan-600 dark:from-cyan-600 dark:to-cyan-700 text-white font-bold rounded-lg hover:from-cyan-600 hover:to-cyan-700 dark:hover:from-cyan-700 dark:hover:to-cyan-800 transition-all duration-200 group-hover:shadow-lg text-sm uppercase tracking-wide flex items-center justify-center gap-2">
-                          <span>{language === "de" ? "Öffnen" : "Open"}</span>
-                          <ChevronRight className="h-4 w-4" />
+                      {/* Footer Action */}
+                      <div className="mt-auto pt-4 flex items-center justify-between border-t border-slate-100 dark:border-slate-800/50">
+                        <button
+                          className="px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-900 dark:text-slate-100 border border-slate-200 dark:border-slate-700 text-sm font-bold hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors flex items-center gap-2"
+                        >
+                          {language === "de" ? "Kurs öffnen" : "Open Course"}
+                          <span className={`flex items-center justify-center w-6 h-6 rounded-full text-white shadow-sm ${
+                            course.color === "blue" ? "bg-gradient-to-r from-blue-500 to-blue-600" :
+                            course.color === "purple" ? "bg-gradient-to-r from-purple-500 to-purple-600" :
+                            course.color === "green" ? "bg-gradient-to-r from-emerald-500 to-emerald-600" :
+                            course.color === "orange" ? "bg-gradient-to-r from-orange-500 to-orange-600" :
+                            course.color === "pink" ? "bg-gradient-to-r from-pink-500 to-pink-600" :
+                            "bg-gradient-to-r from-slate-500 to-slate-600"
+                          }`}>
+                            <ArrowRight className="h-3.5 w-3.5" />
+                          </span>
                         </button>
+
+                        {/* Magic Credits Badge */}
+                        <div className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg shadow-lg shadow-cyan-500/20 backdrop-blur-md border border-white/10 ${
+                             course.color === "blue" ? "bg-gradient-to-br from-blue-500 to-cyan-400 text-white" :
+                             course.color === "purple" ? "bg-gradient-to-br from-purple-500 to-fuchsia-400 text-white" :
+                             course.color === "green" ? "bg-gradient-to-br from-emerald-500 to-teal-400 text-white" :
+                             course.color === "orange" ? "bg-gradient-to-br from-orange-500 to-amber-400 text-white" :
+                             course.color === "pink" ? "bg-gradient-to-br from-pink-500 to-rose-400 text-white" :
+                             "bg-gradient-to-br from-slate-600 to-slate-500 text-white"
+                        }`}>
+                          <Sparkles className="h-3.5 w-3.5 animate-pulse" />
+                          <span className="text-xs font-black tracking-wide">{course.credits} CP</span>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -1256,9 +1247,9 @@ export default function Courses() {
 
   return (
    
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/20 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-cyan-50/20 dark:from-[#0b0f19] dark:via-[#0b0f19] dark:to-[#0b0f19]">
         {/* Header */}
-        <header className="bg-white dark:bg-slate-800 shadow-sm border-b border-slate-200 dark:border-slate-700 sticky top-0 z-50">
+        <header className="bg-white dark:bg-slate-900 shadow-sm border-b border-slate-200 dark:border-slate-800 sticky top-0 z-50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between py-5">
               <div className="flex items-center gap-4">
@@ -1299,7 +1290,7 @@ export default function Courses() {
         </header>
 
         {/* Navigation Tabs */}
-        <nav className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <nav className="bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="flex overflow-x-auto space-x-1">
               {[
@@ -1328,8 +1319,8 @@ export default function Courses() {
                   onClick={() => setActiveTab(tab.id)}
                   className={`px-4 py-3 text-sm font-semibold whitespace-nowrap border-b-2 transition-all duration-300 flex items-center gap-2 ${
                     activeTab === tab.id
-                      ? "border-cyan-500 text-cyan-600 dark:text-cyan-400"
-                      : "border-transparent text-slate-600 dark:text-slate-400 hover:text-cyan-600 dark:hover:text-cyan-400 hover:border-cyan-200 dark:hover:border-cyan-800"
+                      ? "bg-slate-900 text-white dark:bg-white dark:text-slate-900 border-slate-900 dark:border-white shadow-sm"
+                      : "border-transparent text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white hover:border-slate-300 dark:hover:border-slate-600"
                   }`}
                 >
                   <tab.icon className="h-4 w-4" />
@@ -1346,7 +1337,7 @@ export default function Courses() {
           {activeTab === "overview" && (
             <div className="space-y-8">
               {/* Exam Information Alert */}
-              <div className="bg-gradient-to-br from-red-50 dark:from-red-950/30 via-orange-50 dark:via-orange-950/20 to-red-50/30 dark:to-red-950/20 rounded-2xl border-2 border-red-200 dark:border-red-900/50 p-8 shadow-md hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-gradient-to-br from-red-50 to-orange-50 dark:from-[#141824] dark:via-[#161c2a] dark:to-[#131826] rounded-2xl border-2 border-red-200 dark:border-red-700/60 p-8 shadow-xl transition-shadow duration-300">
                 <div className="flex items-center gap-4 mb-6">
                   <AlertCircle className="h-8 w-8 text-red-600 dark:text-red-400 flex-shrink-0" />
                   <h3 className="text-2xl font-black text-red-900 dark:text-red-100">
@@ -1356,7 +1347,7 @@ export default function Courses() {
                   </h3>
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                  <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-red-100 dark:border-red-900/50 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-white dark:bg-[#0f1724] rounded-xl p-6 border border-red-100 dark:border-red-800/50 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-2 mb-2">
                       <CalendarDays className="h-4 w-4 text-red-600 dark:text-red-400" />
                       <p className="text-xs uppercase tracking-wider font-semibold text-red-600 dark:text-red-400">
@@ -1367,7 +1358,7 @@ export default function Courses() {
                       {course.examDate || "15. Feb 2025"}
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-red-100 dark:border-red-900/50 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-white dark:bg-[#0f1724] rounded-xl p-6 border border-red-100 dark:border-red-800/50 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-2 mb-2">
                       <Clock className="h-4 w-4 text-red-600 dark:text-red-400" />
                       <p className="text-xs uppercase tracking-wider font-semibold text-red-600 dark:text-red-400">
@@ -1378,7 +1369,7 @@ export default function Courses() {
                       {course.examTime || "09:00 Uhr"}
                     </p>
                   </div>
-                  <div className="bg-white dark:bg-slate-800 rounded-xl p-6 border border-red-100 dark:border-red-900/50 shadow-sm hover:shadow-md transition-shadow">
+                  <div className="bg-white dark:bg-[#0f1724] rounded-xl p-6 border border-red-100 dark:border-red-800/50 shadow-sm hover:shadow-md transition-shadow">
                     <div className="flex items-center gap-2 mb-2">
                       <MapPin className="h-4 w-4 text-red-600 dark:text-red-400" />
                       <p className="text-xs uppercase tracking-wider font-semibold text-red-600 dark:text-red-400">
@@ -1394,43 +1385,43 @@ export default function Courses() {
 
               {/* Quick Stats */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <div className="bg-gradient-to-br from-white dark:from-slate-800 to-slate-50 dark:to-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="bg-white dark:bg-[#0d111a] rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-wide">
                       {t.credits}
                     </p>
                     <BookOpen className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
                   </div>
-                  <p className="text-4xl font-black text-cyan-600 dark:text-cyan-400">
+                  <p className="text-4xl font-black text-cyan-600 dark:text-cyan-300">
                     {course.credits}
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-white dark:from-slate-800 to-slate-50 dark:to-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="bg-white dark:bg-[#0d111a] rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-wide">
                       {t.progress}
                     </p>
                     <BarChart3 className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
                   </div>
-                  <p className="text-4xl font-black text-cyan-600 dark:text-cyan-400">
+                  <p className="text-4xl font-black text-cyan-600 dark:text-cyan-300">
                     {course.progress}%
                   </p>
                 </div>
-                <div className="bg-gradient-to-br from-white dark:from-slate-800 to-slate-50 dark:to-slate-900 rounded-2xl p-8 border border-slate-200 dark:border-slate-700 shadow-sm hover:shadow-md transition-all duration-300">
+                <div className="bg-white dark:bg-[#0d111a] rounded-2xl p-8 border border-slate-200 dark:border-slate-800 shadow-sm hover:shadow-md transition-all duration-300">
                   <div className="flex items-center justify-between mb-4">
                     <p className="text-slate-600 dark:text-slate-400 text-sm font-semibold uppercase tracking-wide">
                       {t.semester}
                     </p>
                     <CalendarDays className="h-6 w-6 text-cyan-600 dark:text-cyan-400" />
                   </div>
-                  <p className="text-2xl font-black text-cyan-600 dark:text-cyan-400">
+                  <p className="text-2xl font-black text-cyan-600 dark:text-cyan-300">
                     W24/25
                   </p>
                 </div>
               </div>
 
               {/* Tutor Information */}
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 p-8 hover:shadow-lg transition-shadow duration-300">
+                <div className="bg-white dark:bg-[#0d121c] rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-8 hover:shadow-lg transition-shadow duration-300">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-white mb-6 flex items-center gap-3">
                   <GraduationCap className="h-7 w-7 text-cyan-600 dark:text-cyan-400" />
                   {language === "de" ? "Dozent" : "Instructor"}
@@ -1450,7 +1441,7 @@ export default function Courses() {
                 </div>
 
                 {/* Contact Information */}
-                <div className="bg-gradient-to-br from-cyan-50 dark:from-cyan-950/30 to-slate-50 dark:to-slate-900 rounded-xl p-6 border border-cyan-100 dark:border-cyan-900/50">
+                <div className="bg-white dark:bg-[#0f1828] rounded-xl p-6 border border-cyan-100 dark:border-slate-800">
                   <p className="text-sm font-bold text-slate-900 dark:text-slate-100 mb-4 uppercase tracking-wide">
                     {language === "de" ? "Kontakt" : "Contact"}
                   </p>
@@ -1474,7 +1465,7 @@ export default function Courses() {
                 </div>
               </div>
 
-              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-md border border-slate-200 dark:border-slate-700 p-8 hover:shadow-lg transition-shadow duration-300">
+              <div className="bg-white dark:bg-[#0d111a] rounded-2xl shadow-md border border-slate-200 dark:border-slate-800 p-8 hover:shadow-lg transition-shadow duration-300">
                 <h3 className="text-2xl font-black text-slate-900 dark:text-slate-100 mb-6">
                   {t.courseDescription}
                 </h3>
@@ -1482,7 +1473,7 @@ export default function Courses() {
                   {course.description}
                 </p>
                 <div className="grid grid-cols-2 gap-6">
-                  <div className="bg-gradient-to-br from-cyan-50 dark:from-cyan-950/30 to-slate-50 dark:to-slate-900 rounded-xl p-6 border border-cyan-100 dark:border-cyan-900/50">
+                  <div className="bg-white dark:bg-[#0f1828] rounded-xl p-6 border border-cyan-100 dark:border-slate-800">
                     <p className="text-xs uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400 mb-2">
                       {t.startDate}
                     </p>
@@ -1490,7 +1481,7 @@ export default function Courses() {
                       {course.startDate}
                     </p>
                   </div>
-                  <div className="bg-gradient-to-br from-cyan-50 dark:from-cyan-950/30 to-slate-50 dark:to-slate-900 rounded-xl p-6 border border-cyan-100 dark:border-cyan-900/50">
+                  <div className="bg-white dark:bg-[#0f1828] rounded-xl p-6 border border-cyan-100 dark:border-slate-800">
                     <p className="text-xs uppercase tracking-wider font-bold text-cyan-600 dark:text-cyan-400 mb-2">
                       {t.endDate}
                     </p>
@@ -1505,7 +1496,7 @@ export default function Courses() {
 
           {/* Resources Tab - Expandable Sections */}
           {activeTab === "resources" && (
-            <div className="bg-white dark:bg-slate-800 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-md overflow-hidden divide-y divide-slate-200 dark:divide-slate-700">
+            <div className="bg-white dark:bg-[#0d121c] rounded-2xl border border-slate-200 dark:border-slate-800 shadow-md overflow-hidden divide-y divide-slate-200 dark:divide-slate-800">
               {(() => {
                 const courseSections = [
                   {
@@ -1630,11 +1621,11 @@ export default function Courses() {
                     <div key={section.id} className="p-0">
                       <button
                         onClick={() => toggleSection(section.id)}
-                        className="w-full px-6 py-4 flex items-center justify-between hover:bg-cyan-50/30 transition-colors duration-300 text-left group"
+                        className="w-full px-6 py-4 flex items-center justify-between hover:bg-cyan-50/30 dark:hover:bg-slate-800 transition-colors duration-300 text-left group"
                       >
                         <div className="flex items-center gap-3">
-                          <section.icon className="h-5 w-5 text-cyan-600 group-hover:scale-110 transition-transform" />
-                          <span className="text-base font-semibold text-slate-900">
+                          <section.icon className="h-5 w-5 text-cyan-600 dark:text-cyan-300 group-hover:scale-110 transition-transform" />
+                          <span className="text-base font-semibold text-slate-900 dark:text-slate-100">
                             {section.label}
                           </span>
                         </div>
@@ -1647,7 +1638,7 @@ export default function Courses() {
                         </div>
                       </button>
                       {isExpanded && (
-                        <div className="px-6 py-4 bg-slate-50/50">
+                        <div className="px-6 py-4 bg-slate-50/50 dark:bg-slate-900/50">
                           {section.items.length > 0 ? (
                             <div className="space-y-2">
                               {section.items.map((item) => {
@@ -1711,37 +1702,37 @@ export default function Courses() {
                                 return (
                                   <div
                                     key={item.id}
-                                    className="flex items-start gap-3 py-4 px-4 hover:bg-white rounded-lg cursor-pointer border border-transparent hover:border-cyan-200 transition-all duration-300 group"
+                                    className="flex items-start gap-3 py-4 px-4 hover:bg-white dark:hover:bg-slate-800 rounded-lg cursor-pointer border border-transparent hover:border-cyan-200 dark:hover:border-cyan-700 transition-all duration-300 group"
                                     onClick={handleFileClick}
                                   >
-                                    <div className="mt-1 p-2 rounded-lg bg-cyan-50 group-hover:bg-cyan-100 transition-colors">
+                                    <div className="mt-1 p-2 rounded-lg bg-cyan-50 dark:bg-cyan-900/30 group-hover:bg-cyan-100 dark:group-hover:bg-cyan-800/50 transition-colors">
                                       {item.type === "podcast" ? (
-                                        <Play className="h-5 w-5 text-cyan-600" />
+                                        <Play className="h-5 w-5 text-cyan-600 dark:text-cyan-300" />
                                       ) : (
-                                        <FileText className="h-5 w-5 text-cyan-600" />
+                                        <FileText className="h-5 w-5 text-cyan-600 dark:text-cyan-300" />
                                       )}
                                     </div>
                                     <div className="flex-1 min-w-0">
                                       <a
                                         href={item.url || "#"}
                                         onClick={(e) => e.stopPropagation()}
-                                        className="text-sm text-cyan-600 hover:text-cyan-800 hover:underline font-semibold line-clamp-2 transition-colors"
+                                        className="text-sm text-cyan-600 dark:text-cyan-300 hover:text-cyan-800 dark:hover:text-cyan-200 hover:underline font-semibold line-clamp-2 transition-colors"
                                       >
                                         {item.title}
                                       </a>
                                       <div className="flex items-center gap-4 mt-2 flex-wrap">
                                         {item.duration && (
-                                          <span className="text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded">
+                                          <span className="text-xs text-slate-500 dark:text-slate-300 bg-slate-100/50 dark:bg-slate-800/70 px-2 py-1 rounded">
                                             ⏱️ {item.duration}
                                           </span>
                                         )}
                                         {item.size && (
-                                          <span className="text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded">
+                                          <span className="text-xs text-slate-500 dark:text-slate-300 bg-slate-100/50 dark:bg-slate-800/70 px-2 py-1 rounded">
                                             📦 {item.size}
                                           </span>
                                         )}
                                         {item.updatedDate && (
-                                          <span className="text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded">
+                                          <span className="text-xs text-slate-500 dark:text-slate-300 bg-slate-100/50 dark:bg-slate-800/70 px-2 py-1 rounded">
                                             🔄{" "}
                                             {language === "de"
                                               ? "Aktualisiert:"
@@ -1750,7 +1741,7 @@ export default function Courses() {
                                           </span>
                                         )}
                                         {item.lastUpdated && (
-                                          <span className="text-xs text-slate-500 bg-slate-100/50 px-2 py-1 rounded">
+                                          <span className="text-xs text-slate-500 dark:text-slate-300 bg-slate-100/50 dark:bg-slate-800/70 px-2 py-1 rounded">
                                             ⏰{" "}
                                             {language === "de"
                                               ? "Zuletzt:"
@@ -1760,7 +1751,7 @@ export default function Courses() {
                                         )}
                                       </div>
                                       {item.isExternal && (
-                                        <span className="ml-2 text-xs text-slate-500">
+                                        <span className="ml-2 text-xs text-slate-500 dark:text-slate-300">
                                           External tool
                                         </span>
                                       )}
@@ -1770,7 +1761,7 @@ export default function Courses() {
                               })}
                             </div>
                           ) : (
-                            <p className="text-sm text-slate-500 mt-2 py-2">
+                            <p className="text-sm text-slate-500 dark:text-slate-400 mt-2 py-2">
                               Noch keine Einträge
                             </p>
                           )}
@@ -1786,7 +1777,7 @@ export default function Courses() {
           {/* Videos Tab */}
           {activeTab === "videos" && (
             <div className="space-y-6">
-              <h3 className="text-xl font-black text-slate-900 mb-6">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">
                 🎥 {t.videos}
               </h3>
               <div className="space-y-2">
@@ -1820,19 +1811,19 @@ export default function Courses() {
                     return (
                       <div
                         key={resource.id}
-                        className="bg-white rounded-lg p-4 border border-blue-100 hover:shadow-md transition cursor-pointer flex items-center justify-between"
+                        className="bg-white dark:bg-slate-800 rounded-lg p-4 border border-blue-100 dark:border-slate-700 hover:shadow-md transition cursor-pointer flex items-center justify-between"
                         onClick={handleVideoClick}
                       >
                         <div>
-                          <p className="font-semibold text-slate-900">
+                          <p className="font-semibold text-slate-900 dark:text-slate-100">
                             {resource.title}
                           </p>
-                          <p className="text-sm text-slate-500">
+                          <p className="text-sm text-slate-500 dark:text-slate-300">
                             ⏱️ {resource.duration}
                           </p>
                         </div>
                         <button
-                          className="px-3 py-1 bg-blue-100 text-blue-700 font-semibold rounded hover:bg-blue-200"
+                          className="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 font-semibold rounded hover:bg-blue-200 dark:hover:bg-blue-900/60"
                           onClick={(e) => {
                             e.stopPropagation();
                             handleVideoClick();
@@ -1846,7 +1837,7 @@ export default function Courses() {
                 {(!course.resources ||
                   course.resources.filter((r) => r.type === "video").length ===
                     0) && (
-                  <p className="text-slate-500 text-center py-8">
+                  <p className="text-slate-500 dark:text-slate-400 text-center py-8">
                     Noch keine Videos verfügbar
                   </p>
                 )}
@@ -1858,13 +1849,13 @@ export default function Courses() {
           {activeTab === "coursefeed" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-lg font-black text-slate-900">
+                <h3 className="text-lg font-black text-slate-900 dark:text-white">
                   📰 Course Feed®
                 </h3>
               </div>
 
-              <div className="bg-white rounded-lg p-8 border border-slate-200 text-center max-w-md mx-auto">
-                <h3 className="text-sm font-semibold text-slate-600 mb-4">
+              <div className="bg-white dark:bg-slate-800 rounded-lg p-8 border border-slate-200 dark:border-slate-700 text-center max-w-md mx-auto">
+                <h3 className="text-sm font-semibold text-slate-600 dark:text-slate-300 mb-4">
                   Course Feed®
                 </h3>
 
@@ -1878,14 +1869,14 @@ export default function Courses() {
                 </div>
 
                 {/* Description */}
-                <p className="text-slate-600 text-sm mb-6 leading-relaxed">
+                <p className="text-slate-600 dark:text-slate-300 text-sm mb-6 leading-relaxed">
                   {language === "de"
                     ? "Interagieren Sie mit Ihren Online-Tutoren und Mitstudierenden, stellen Sie Fragen und nehmen Sie an Live-Lehrveranstaltungen teil."
                     : "Interact with your online tutors and fellow students, ask questions and participate in live teaching events."}
                 </p>
 
                 {/* Sign Up Button */}
-                <button className="w-full px-6 py-3 bg-slate-900 text-white font-semibold rounded hover:bg-slate-800 transition">
+                <button className="w-full px-6 py-3 bg-slate-900 dark:bg-white text-white dark:text-slate-900 font-semibold rounded hover:bg-slate-800 dark:hover:bg-slate-100 transition">
                   {language === "de" ? "Anmelden" : "Sign up"}
                 </button>
               </div>
@@ -1895,20 +1886,20 @@ export default function Courses() {
           {/* Abgabe (Submissions) Tab */}
           {activeTab === "abgabe" && (
             <div className="space-y-4">
-              <h3 className="text-xl font-black text-slate-900 mb-6">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">
                 ✍️ {language === "de" ? "Abgabe" : "Submissions"}
               </h3>
               {course.assignments.map((assignment) => (
                 <div
                   key={assignment.id}
-                  className="bg-white rounded-lg p-6 border border-blue-100"
+                  className="bg-white dark:bg-slate-800 rounded-lg p-6 border border-blue-100 dark:border-slate-700"
                 >
                   <div className="flex items-start justify-between mb-4">
                     <div>
-                      <h4 className="font-bold text-slate-900 mb-1">
+                      <h4 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
                         {assignment.title}
                       </h4>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
                         📅 {assignment.dueDate}
                       </p>
                     </div>
@@ -1930,22 +1921,22 @@ export default function Courses() {
                   </div>
 
                   {assignment.submissions.length > 0 ? (
-                    <div className="bg-slate-50 rounded-lg p-4 space-y-3">
+                    <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 space-y-3">
                       {assignment.submissions.map((sub, idx) => (
                         <div key={idx}>
                           <div className="flex items-center justify-between mb-2">
-                            <p className="text-sm font-semibold text-slate-900">
+                            <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
                               {t.submitted}: {sub.date}
                             </p>
                             {sub.grade && (
-                              <p className="text-lg font-bold text-blue-600">
+                              <p className="text-lg font-bold text-blue-600 dark:text-blue-300">
                                 {t.grade}: {sub.grade}
                               </p>
                             )}
                           </div>
                           {sub.similarity !== null && (
                             <div className="flex items-center gap-2 mb-2">
-                              <span className="text-sm font-semibold text-slate-600">
+                              <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
                                 Turnitin:
                               </span>
                               <span
@@ -1961,14 +1952,14 @@ export default function Courses() {
                               </span>
                             </div>
                           )}
-                          <p className="text-sm text-slate-600">
+                          <p className="text-sm text-slate-600 dark:text-slate-300">
                             {t.feedback}: {sub.feedback}
                           </p>
                         </div>
                       ))}
                     </div>
                   ) : (
-                    <button className="w-full px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700">
+                    <button className="w-full px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800">
                       ⬆️ {t.uploadAssignment}
                     </button>
                   )}
@@ -1980,7 +1971,7 @@ export default function Courses() {
           {/* Online Tests & Evaluationen Tab */}
           {activeTab === "online-tests" && (
             <div className="space-y-6">
-              <h3 className="text-xl font-black text-slate-900 mb-6">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">
                 📋{" "}
                 {language === "de"
                   ? "Online Tests & Evaluationen"
@@ -1988,33 +1979,33 @@ export default function Courses() {
               </h3>
 
               {/* Exam Date Information Card */}
-              <div className="bg-gradient-to-r from-red-50 to-orange-50 rounded-lg border-2 border-red-200 p-6 mb-6">
+              <div className="bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950/40 dark:to-orange-950/30 rounded-lg border-2 border-red-200 dark:border-red-900/60 p-6 mb-6">
                 <div className="flex items-start gap-4">
                   <div className="text-3xl">📅</div>
                   <div className="flex-1">
-                    <h4 className="text-lg font-black text-red-900 mb-2">
+                    <h4 className="text-lg font-black text-red-900 dark:text-red-100 mb-2">
                       {language === "de" ? "Prüfungstermin" : "Exam Date"}
                     </h4>
                     <div className="grid grid-cols-2 gap-4">
                       <div>
-                        <p className="text-sm font-semibold text-slate-700">
+                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                           {language === "de" ? "Datum" : "Date"}
                         </p>
-                        <p className="text-lg font-black text-red-700">
+                        <p className="text-lg font-black text-red-700 dark:text-red-200">
                           {course.examDate || "15. Februar 2025"}
                         </p>
                       </div>
                       <div>
-                        <p className="text-sm font-semibold text-slate-700">
+                        <p className="text-sm font-semibold text-slate-700 dark:text-slate-300">
                           {language === "de" ? "Uhrzeit" : "Time"}
                         </p>
-                        <p className="text-lg font-black text-red-700">
+                        <p className="text-lg font-black text-red-700 dark:text-red-200">
                           {course.examTime || "09:00 - 11:00 Uhr"}
                         </p>
                       </div>
                     </div>
-                    <div className="mt-4 p-3 bg-white rounded border border-red-200">
-                      <p className="text-sm text-slate-700">
+                    <div className="mt-4 p-3 bg-white dark:bg-slate-800 rounded border border-red-200 dark:border-red-800">
+                      <p className="text-sm text-slate-700 dark:text-slate-300">
                         <span className="font-semibold">
                           ⚠️ {language === "de" ? "Ort:" : "Location:"}
                         </span>{" "}
@@ -2032,25 +2023,25 @@ export default function Courses() {
                     (r) => r.type === "onlineTest" || r.type === "test"
                   ) || [];
                 return (
-                  <div className="bg-white rounded-lg border border-slate-200">
-                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                      <h4 className="font-black text-slate-900">
+                  <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700">
+                    <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60">
+                      <h4 className="font-black text-slate-900 dark:text-slate-100">
                         🧪 {language === "de" ? "Online Tests" : "Online Tests"}
                       </h4>
                     </div>
                     {onlineTests.length > 0 ? (
-                      <div className="divide-y divide-slate-200">
+                      <div className="divide-y divide-slate-200 dark:divide-slate-700">
                         {onlineTests.map((test) => (
                           <div
                             key={test.id}
-                            className="p-6 hover:bg-slate-50 transition"
+                            className="p-6 hover:bg-slate-50 dark:hover:bg-slate-900 transition"
                           >
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <h5 className="font-bold text-slate-900 mb-1">
+                                <h5 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
                                   {test.title}
                                 </h5>
-                                <p className="text-sm text-slate-600">
+                                <p className="text-sm text-slate-600 dark:text-slate-300">
                                   ⏱️ {test.duration || "45 Minuten"}
                                 </p>
                               </div>
@@ -2062,7 +2053,7 @@ export default function Courses() {
                               href={test.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 dark:hover:bg-blue-700/80 transition"
                             >
                               ▶️{" "}
                               {language === "de"
@@ -2073,7 +2064,7 @@ export default function Courses() {
                         ))}
                       </div>
                     ) : (
-                      <div className="p-6 text-center text-slate-500">
+                      <div className="p-6 text-center text-slate-500 dark:text-slate-400">
                         <p>
                           {language === "de"
                             ? "Keine Online Tests verfügbar"
@@ -2091,25 +2082,25 @@ export default function Courses() {
                   course.resources?.filter((r) => r.type === "evaluation") ||
                   [];
                 return (
-                  <div className="bg-white rounded-lg border border-slate-200 mt-6">
-                    <div className="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                      <h4 className="font-black text-slate-900">
+                  <div className="bg-white dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 mt-6">
+                    <div className="px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/60">
+                      <h4 className="font-black text-slate-900 dark:text-slate-100">
                         ⭐ {language === "de" ? "Evaluationen" : "Evaluations"}
                       </h4>
                     </div>
                     {evaluations.length > 0 ? (
-                      <div className="divide-y divide-slate-200">
+                      <div className="divide-y divide-slate-200 dark:divide-slate-700">
                         {evaluations.map((evaluation) => (
                           <div
                             key={evaluation.id}
-                            className="p-6 hover:bg-slate-50 transition"
+                            className="p-6 hover:bg-slate-50 dark:hover:bg-slate-900 transition"
                           >
                             <div className="flex items-start justify-between mb-3">
                               <div>
-                                <h5 className="font-bold text-slate-900 mb-1">
+                                <h5 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
                                   {evaluation.title}
                                 </h5>
-                                <p className="text-sm text-slate-600">
+                                <p className="text-sm text-slate-600 dark:text-slate-300">
                                   {evaluation.description || language === "de"
                                     ? "Bitte bewerten Sie diesen Kurs"
                                     : "Please rate this course"}
@@ -2123,7 +2114,7 @@ export default function Courses() {
                               href={evaluation.url}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 transition"
+                              className="inline-flex items-center gap-2 px-4 py-2 bg-purple-600 text-white font-semibold rounded-lg hover:bg-purple-700 dark:hover:bg-purple-700/80 transition"
                             >
                               📝{" "}
                               {language === "de" ? "Teilnehmen" : "Participate"}
@@ -2132,7 +2123,7 @@ export default function Courses() {
                         ))}
                       </div>
                     ) : (
-                      <div className="p-6 text-center text-slate-500">
+                      <div className="p-6 text-center text-slate-500 dark:text-slate-400">
                         <p>
                           {language === "de"
                             ? "Keine Evaluationen verfügbar"
@@ -2150,7 +2141,7 @@ export default function Courses() {
           {activeTab === "notes" && (
             <div className="space-y-4">
               <div
-                className="bg-white rounded-lg border border-blue-100 overflow-hidden"
+                className="bg-white dark:bg-slate-800 rounded-lg border border-blue-100 dark:border-slate-700 overflow-hidden"
                 style={{ height: "800px" }}
               >
                 <iframe
@@ -2172,7 +2163,7 @@ export default function Courses() {
           {activeTab === "forum" && (
             <div className="space-y-4">
               <div className="flex items-center justify-between mb-6">
-                <h3 className="text-xl font-black text-slate-900">
+                <h3 className="text-xl font-black text-slate-900 dark:text-white">
                   💬 {t.forum}
                 </h3>
                 <button className="px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-semibold rounded-lg hover:from-blue-700 hover:to-blue-800">
@@ -2185,25 +2176,25 @@ export default function Courses() {
                   key={topic.id}
                   className={`rounded-lg p-4 border hover:shadow-md transition cursor-pointer ${
                     topic.status === "pinned"
-                      ? "bg-yellow-50 border-yellow-200"
-                      : "bg-white border-blue-100"
+                      ? "bg-yellow-50 dark:bg-yellow-900/30 border-yellow-200 dark:border-yellow-800"
+                      : "bg-white dark:bg-slate-800 border-blue-100 dark:border-slate-700"
                   }`}
                 >
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 mb-1">
                         {topic.status === "pinned" && <span>📌</span>}
-                        <h4 className="font-bold text-slate-900">
+                        <h4 className="font-bold text-slate-900 dark:text-slate-100">
                           {topic.title}
                         </h4>
                       </div>
-                      <p className="text-sm text-slate-600">
+                      <p className="text-sm text-slate-600 dark:text-slate-300">
                         👤 {topic.author}
                       </p>
                     </div>
                   </div>
 
-                  <div className="flex gap-6 text-sm text-slate-500">
+                  <div className="flex gap-6 text-sm text-slate-500 dark:text-slate-300">
                     <span>
                       💬 {topic.replies} {t.replies}
                     </span>

@@ -348,7 +348,7 @@ export default function Dashboard() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-8 mt-4">
           <div className="flex-1">
-            <h1 className="text-[36px] font-bold text-slate-900 dark:text-white leading-tight mb-2">
+            <h1 className="text-[36px] font-bold text-transparent bg-clip-text bg-gradient-to-r from-slate-900 to-slate-600 dark:from-white dark:to-slate-300 leading-tight mb-2">
               {getGreeting()},{" "}
               {user?.name ? user.name.split(" ")[0] : "Student"} 👋
             </h1>
@@ -369,9 +369,9 @@ export default function Dashboard() {
                 title="Spline robot"
                 className="rounded-full pointer-events-none"
                 style={{
-                  background: "transparent",
+                  background: "black",
                   transform: "scale(1.05)",
-                  overflow: "hidden",
+                                    overflow: "hidden",
                 }}
               ></iframe>
             </div>
@@ -382,51 +382,59 @@ export default function Dashboard() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {stats.map((stat, idx) => {
             const gradientClasses = {
-              blue: "from-blue-50 to-indigo-50",
-              orange: "from-orange-50 to-amber-50",
-              purple: "from-purple-50 to-pink-50",
-              green: "from-green-50 to-emerald-50",
+              blue: "from-blue-500 to-indigo-600",
+              orange: "from-orange-500 to-amber-600",
+              purple: "from-purple-500 to-pink-600",
+              green: "from-emerald-500 to-teal-600",
             };
-            const borderClasses = {
-              blue: "border-blue-200",
-              orange: "border-orange-200",
-              purple: "border-purple-200",
-              green: "border-green-200",
+            
+            const bgClasses = {
+               blue: "bg-blue-50/50 dark:bg-transparent border-blue-200 dark:border-blue-800",
+               orange: "bg-orange-50/50 dark:bg-transparent border-orange-200 dark:border-orange-800",
+               purple: "bg-purple-50/50 dark:bg-transparent border-purple-200 dark:border-purple-800",
+               green: "bg-emerald-50/50 dark:bg-transparent border-emerald-200 dark:border-emerald-800",
             };
+
             const textClasses = {
               blue: "text-blue-700 dark:text-blue-300",
               orange: "text-orange-700 dark:text-orange-300",
               purple: "text-purple-700 dark:text-purple-300",
-              green: "text-green-700 dark:text-green-300",
+              green: "text-emerald-700 dark:text-emerald-300",
             };
 
             return (
               <Link
                 key={idx}
                 to={stat.link}
-                className={`group relative overflow-hidden rounded-2xl bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border ${borderClasses[stat.color as keyof typeof borderClasses]} border-white/40 dark:border-slate-800 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300`}
+                className={`group relative overflow-hidden rounded-2xl border p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300 ${bgClasses[stat.color as keyof typeof bgClasses]}`}
               >
                 <div className="flex items-start justify-between mb-4">
                   <div
-                    className={`p-3 rounded-xl bg-gradient-to-br ${stat.bgGradient} text-white shadow-lg`}
+                    className={`p-3 rounded-xl bg-gradient-to-br ${gradientClasses[stat.color as keyof typeof gradientClasses]} text-white shadow-lg group-hover:shadow-xl transition-shadow`}
                   >
                     <stat.icon className="h-6 w-6" />
                   </div>
                   <span
-                    className={`text-xs font-semibold px-2 py-1 rounded-full bg-white dark:bg-white/10 border border-slate-200/60 dark:border-white/10 backdrop-blur-sm ${textClasses[stat.color as keyof typeof textClasses]}`}
+                    className={`text-xs font-bold px-2 py-1 rounded-full bg-white/80 dark:bg-black/20 border border-white/50 dark:border-white/10 backdrop-blur-sm ${textClasses[stat.color as keyof typeof textClasses]}`}
                   >
                     {stat.change}
                   </span>
                 </div>
                 <div
-                  className={`text-3xl font-bold ${textClasses[stat.color as keyof typeof textClasses]} mb-1`}
+                  className={`text-3xl font-black ${textClasses[stat.color as keyof typeof textClasses]} mb-1`}
                 >
                   {stat.value}
                 </div>
-                <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+                <div className="text-sm font-medium text-slate-600 dark:text-slate-400">
                   {stat.label}
                 </div>
-                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent dark:via-white to-transparent opacity-0 dark:opacity-100 transition-opacity" />
+                
+                {/* Bottom Edge Glow Effect - Matches user image */}
+                <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-white/50" />
+                <div className="absolute bottom-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-[2px] dark:via-white/80" />
+                
+                {/* Subtle background gradient blob */}
+                <div className={`absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br ${gradientClasses[stat.color as keyof typeof gradientClasses]} opacity-5 blur-2xl rounded-full group-hover:opacity-10 transition-opacity`} />
               </Link>
             );
           })}
@@ -437,25 +445,31 @@ export default function Dashboard() {
           {/* Campus card */}
           <Link
             to={campusStat.link}
-            className="group relative overflow-hidden rounded-2xl bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border border-blue-200 border-white/40 dark:border-slate-800 p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+            className="group relative overflow-hidden rounded-2xl border border-blue-200 dark:border-blue-800 bg-blue-50/50 dark:bg-transparent p-6 hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
           >
             <div className="flex items-start justify-between mb-4">
               <div
-                className={`p-3 rounded-xl bg-gradient-to-br ${campusStat.bgGradient} text-white shadow-lg`}
+                className={`p-3 rounded-xl bg-gradient-to-br ${campusStat.bgGradient} text-white shadow-lg group-hover:shadow-xl transition-shadow`}
               >
                 <campusStat.icon className="h-6 w-6" />
               </div>
-              <span className="text-xs font-semibold px-2 py-1 rounded-full bg-white dark:bg-white/10 border border-slate-200/60 dark:border-white/10 backdrop-blur-sm text-blue-700 dark:text-blue-300">
+              <span className="text-xs font-bold px-2 py-1 rounded-full bg-white/80 dark:bg-black/20 border border-white/50 dark:border-white/10 backdrop-blur-sm text-blue-700 dark:text-blue-300">
                 Räume
               </span>
             </div>
-            <div className="text-2xl font-bold text-blue-700 dark:text-blue-300 mb-1">
+            <div className="text-2xl font-black text-blue-700 dark:text-blue-300 mb-1">
               Campus
             </div>
-            <div className="text-sm text-slate-600 dark:text-slate-300 font-medium">
+            <div className="text-sm font-medium text-slate-600 dark:text-slate-400">
               {user?.campusArea || "Raumbuchung am Campus"}
             </div>
-            <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent dark:via-white to-transparent opacity-0 dark:opacity-100 transition-opacity" />
+            
+             {/* Bottom Edge Glow Effect */}
+             <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-white/50" />
+             <div className="absolute bottom-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-[2px] dark:via-white/80" />
+
+             {/* Decorative gradient blob */}
+             <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-500 opacity-10 blur-2xl rounded-full group-hover:opacity-20 transition-opacity" />
           </Link>
 
           {/* Up to 3 news cards, same size as stats */}
@@ -463,19 +477,19 @@ export default function Dashboard() {
             <Link
               key={item.slug ?? i}
               to={item.slug ? `/news/${encodeURIComponent(item.slug)}` : "/news"}
-              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border border-white/40 dark:border-slate-800 p-6 min-h-[150px] hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
+              className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-transparent p-6 min-h-[150px] hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
             >
               <div className="flex items-start justify-between mb-3">
                 <div className="flex items-start gap-2 pr-4">
-                  <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                    <Bell className="h-4 w-4 text-indigo-600 dark:text-indigo-400" />
+                  <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
+                    <Bell className="h-4 w-4" />
                   </div>
                   <div>
-                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100 line-clamp-2">
+                    <p className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">
                       {item.title}
                     </p>
                     {item.category && (
-                      <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-semibold">
+                      <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded bg-white/50 dark:bg-black/20 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-indigo-100 dark:border-indigo-800">
                         {item.category}
                       </span>
                     )}
@@ -483,16 +497,22 @@ export default function Dashboard() {
                 </div>
               </div>
               <div className="mt-4 flex items-center justify-between text-xs">
-                <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400">
+                <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
                   <Calendar className="h-3.5 w-3.5" />
                   <span>{item.date}</span>
                 </span>
-                <span className="inline-flex items-center gap-1 text-xs font-semibold text-indigo-600 dark:text-indigo-400 group-hover:underline">
+                <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline decoration-2 underline-offset-2">
                   Weiterlesen
                   <ArrowRight className="h-3 w-3" />
                 </span>
               </div>
-              <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-transparent dark:via-white to-transparent opacity-0 dark:opacity-100 transition-opacity" />
+
+               {/* Bottom Edge Glow Effect */}
+               <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-white/50" />
+               <div className="absolute bottom-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-[2px] dark:via-white/80" />
+
+               {/* Decorative gradient blob */}
+               <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-500 opacity-5 blur-2xl rounded-full group-hover:opacity-15 transition-opacity" />
             </Link>
           ))}
         </div>
@@ -501,11 +521,11 @@ export default function Dashboard() {
           {/* Main Column */}
           <div className="lg:col-span-8 space-y-6">
             {/* Today's Schedule */}
-            <div className="bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6">
+            <div className="bg-white/60 backdrop-blur-md dark:bg-slate-950/60 border border-white/50 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/30">
-                    <CalendarDays className="h-5 w-5 text-blue-600 dark:text-blue-400" />
+                  <div className="p-2 rounded-lg bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                    <CalendarDays className="h-5 w-5" />
                   </div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     Heute
@@ -513,7 +533,7 @@ export default function Dashboard() {
                 </div>
                 <Link
                   to="/courses/schedule"
-                  className="text-sm font-semibold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-1"
+                  className="text-sm font-bold text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 inline-flex items-center gap-1"
                 >
                   Alle anzeigen
                   <ArrowRight className="h-4 w-4" />
@@ -526,14 +546,14 @@ export default function Dashboard() {
                       key={cls.id}
                       className={`flex items-start gap-4 p-4 rounded-xl border-l-4 ${
                         cls.color === "blue"
-                          ? "bg-blue-50 dark:bg-blue-900/20 border-blue-500"
+                          ? "bg-blue-50/50 dark:bg-blue-950/30 border-blue-500"
                           : cls.color === "purple"
-                            ? "bg-purple-50 dark:bg-purple-900/20 border-purple-500"
-                            : "bg-green-50 dark:bg-green-900/20 border-green-500"
+                            ? "bg-purple-50/50 dark:bg-purple-950/30 border-purple-500"
+                            : "bg-green-50/50 dark:bg-green-950/30 border-green-500"
                       } hover:shadow-md transition-shadow`}
                     >
                       <div
-                        className={`p-2 rounded-lg bg-white dark:bg-slate-800 ${
+                        className={`p-2 rounded-lg bg-white dark:bg-slate-900 shadow-sm ${
                           cls.color === "blue"
                             ? "text-blue-600"
                             : cls.color === "purple"
@@ -545,22 +565,22 @@ export default function Dashboard() {
                       </div>
                       <div className="flex-1 min-w-0">
                         <div className="flex items-start justify-between gap-2 mb-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                          <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                             {cls.title}
                           </h3>
                           <span
-                            className={`text-xs font-semibold px-2 py-0.5 rounded ${
+                            className={`text-xs font-bold px-2 py-0.5 rounded ${
                               cls.color === "blue"
-                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400"
+                                ? "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300"
                                 : cls.color === "purple"
-                                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400"
-                                  : "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                  ? "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300"
+                                  : "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300"
                             }`}
                           >
                             {cls.type}
                           </span>
                         </div>
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400 mt-2">
+                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400 mt-2 font-medium">
                           <span className="flex items-center gap-1">
                             <Clock className="h-3.5 w-3.5" />
                             {cls.time}
@@ -579,27 +599,27 @@ export default function Dashboard() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-slate-500 dark:text-slate-400 dark:text-slate-400">
+                <div className="text-center py-8 text-slate-500 dark:text-slate-400">
                   <CalendarDays className="h-12 w-12 mx-auto mb-2 opacity-50" />
-                  <p className="text-sm">Keine Termine für heute</p>
+                  <p className="text-sm font-medium">Keine Termine für heute</p>
                 </div>
               )}
             </div>
 
             {/* Upcoming Assignments */}
-            <div className="bg-white/80 backdrop-blur-sm dark:bg-slate-950/80 border border-slate-200/60 dark:border-slate-800 rounded-2xl p-6">
+            <div className="bg-white/60 backdrop-blur-md dark:bg-slate-950/60 border border-white/50 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/30">
-                    <CheckSquare className="h-5 w-5 text-orange-600 dark:text-orange-400" />
+                  <div className="p-2 rounded-lg bg-orange-100 dark:bg-orange-900/50 text-orange-600 dark:text-orange-400">
+                    <CheckSquare className="h-5 w-5" />
                   </div>
-                  <h2 className="text-lg font-bold text-black dark:text-white">
+                  <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     Bevorstehende Aufgaben
                   </h2>
                 </div>
                 <Link
                   to="/tasks"
-                  className="text-sm font-semibold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 inline-flex items-center gap-1"
+                  className="text-sm font-bold text-orange-600 dark:text-orange-400 hover:text-orange-700 dark:hover:text-orange-300 inline-flex items-center gap-1"
                 >
                   Alle anzeigen
                   <ArrowRight className="h-4 w-4" />
@@ -611,8 +631,8 @@ export default function Dashboard() {
                     key={assignment.id}
                     className={`flex items-start gap-4 p-4 rounded-xl border ${
                       assignment.priority === "high"
-                        ? "bg-red-50 border-red-200 dark:bg-slate-950/70 dark:border-red-500/60"
-                        : "bg-slate-50 border-slate-200 dark:bg-slate-950/70 dark:border-slate-700"
+                        ? "bg-red-50/50 border-red-200 dark:bg-red-950/20 dark:border-red-900/50"
+                        : "bg-slate-50/50 border-slate-200 dark:bg-slate-900/30 dark:border-slate-800"
                     } hover:shadow-md transition-shadow`}
                   >
                     <button
@@ -624,21 +644,21 @@ export default function Dashboard() {
                       {assignment.completed ? (
                         <CheckCircle2 className="h-5 w-5 text-green-600 dark:text-green-400" />
                       ) : (
-                        <Circle className="h-5 w-5 text-slate-400 dark:text-slate-500 dark:text-slate-400" />
+                        <Circle className="h-5 w-5 text-slate-400 dark:text-slate-500" />
                       )}
                     </button>
                     <div className="flex-1 min-w-0 flex items-start justify-between gap-4">
                       {/* Left column: task info */}
                       <div>
                         <div className="flex items-start gap-2 mb-1">
-                          <h3 className="font-semibold text-slate-900 dark:text-white text-sm">
+                          <h3 className="font-bold text-slate-900 dark:text-white text-sm">
                             {assignment.title}
                           </h3>
                         </div>
-                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                        <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-600 dark:text-slate-400 font-medium">
                           <span>{assignment.course}</span>
                           <span>•</span>
-                          <span className="px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 text-[11px] font-semibold">
+                          <span className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[11px] font-bold border border-slate-200 dark:border-slate-700">
                             {assignment.workType}
                           </span>
                         </div>
@@ -646,7 +666,11 @@ export default function Dashboard() {
 
                       {/* Right column: due / exam date */}
                       <div className="text-right text-xs min-w-[120px]">
-                        <div className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 text-[10px] font-semibold mb-1">
+                        <div className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-bold mb-1 ${
+                            assignment.kind === "Klausurtermin" 
+                            ? "bg-red-100 text-red-700 dark:bg-red-900/50 dark:text-red-300" 
+                            : "bg-slate-100 text-slate-700 dark:bg-slate-800 dark:text-slate-300"
+                        }`}>
                           <Calendar className="h-3 w-3" />
                           <span>
                             {assignment.kind === "Klausurtermin"
@@ -654,11 +678,11 @@ export default function Dashboard() {
                               : "Abgabe"}
                           </span>
                         </div>
-                        <div className="text-sm font-semibold text-slate-900 dark:text-white">
+                        <div className="text-sm font-bold text-slate-900 dark:text-white">
                           {assignment.dueDate}
                         </div>
                         <div
-                          className={`mt-1 font-semibold ${
+                          className={`mt-1 font-bold ${
                             assignment.daysLeft === 0
                               ? "text-red-600 dark:text-red-400"
                               : assignment.daysLeft <= 3
@@ -680,11 +704,11 @@ export default function Dashboard() {
             </div>
 
             {/* Zuletzt besuchte Kurse Section */}
-            <div className="bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border border-white/40 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
+            <div className="bg-white/60 backdrop-blur-md dark:bg-slate-950/60 border border-white/50 dark:border-slate-800 rounded-2xl p-6 shadow-sm">
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
-                  <div className="p-2 rounded-lg bg-blue-100 border border-blue-300 dark:bg-blue-500/20 dark:border-blue-400/40">
-                    <History className="h-5 w-5 text-blue-700 dark:text-blue-200" />
+                  <div className="p-2 rounded-lg bg-blue-100 border border-blue-200 dark:bg-blue-900/50 dark:border-blue-800 text-blue-700 dark:text-blue-300">
+                    <History className="h-5 w-5" />
                   </div>
                   <h2 className="text-lg font-bold text-slate-900 dark:text-white">
                     Zuletzt besuchte Kurse
@@ -692,7 +716,7 @@ export default function Dashboard() {
                 </div>
                 <Link
                   to="/courses"
-                  className="text-sm font-semibold text-blue-600 hover:text-blue-700 dark:text-blue-300 dark:hover:text-blue-200 inline-flex items-center gap-1"
+                  className="text-sm font-bold text-blue-600 hover:text-blue-700 dark:text-blue-400 dark:hover:text-blue-300 inline-flex items-center gap-1"
                 >
                   Alle Kurse
                   <ArrowRight className="h-4 w-4" />
@@ -702,15 +726,15 @@ export default function Dashboard() {
                 {recentCourses.length === 0 ? (
                   <div className="text-center py-8 px-4">
                     <BookOpen className="h-12 w-12 text-slate-300 mx-auto mb-3" />
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2">
+                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-2 font-medium">
                       Noch keine Kurse besucht
                     </p>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                    <p className="text-xs text-slate-500 dark:text-slate-500">
                       Öffne einen Kurs, um ihn hier zu sehen
                     </p>
                     <Link
                       to="/courses"
-                      className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-semibold hover:bg-blue-700 transition-colors"
+                      className="inline-block mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg text-sm font-bold hover:bg-blue-700 transition-colors shadow-lg shadow-blue-600/20"
                     >
                       Kurse entdecken
                     </Link>
@@ -744,32 +768,32 @@ export default function Dashboard() {
 
                     const colorClasses = {
                       blue:
-                        "bg-blue-50 border-blue-200 hover:border-blue-300 dark:bg-slate-950/70 dark:border-blue-500/50 dark:hover:border-blue-400",
+                        "bg-blue-50/50 border-blue-200 hover:border-blue-300 dark:bg-blue-950/30 dark:border-blue-800 dark:hover:border-blue-700",
                       purple:
-                        "bg-purple-50 border-purple-200 hover:border-purple-300 dark:bg-slate-950/70 dark:border-purple-500/50 dark:hover:border-purple-400",
+                        "bg-purple-50/50 border-purple-200 hover:border-purple-300 dark:bg-purple-950/30 dark:border-purple-800 dark:hover:border-purple-700",
                       green:
-                        "bg-green-50 border-green-200 hover:border-green-300 dark:bg-slate-950/70 dark:border-emerald-500/50 dark:hover:border-emerald-400",
+                        "bg-green-50/50 border-green-200 hover:border-green-300 dark:bg-green-950/30 dark:border-green-800 dark:hover:border-green-700",
                       orange:
-                        "bg-orange-50 border-orange-200 hover:border-orange-300 dark:bg-slate-950/70 dark:border-orange-500/50 dark:hover:border-orange-400",
+                        "bg-orange-50/50 border-orange-200 hover:border-orange-300 dark:bg-orange-950/30 dark:border-orange-800 dark:hover:border-orange-700",
                       pink:
-                        "bg-pink-50 border-pink-200 hover:border-pink-300 dark:bg-slate-950/70 dark:border-pink-500/50 dark:hover:border-pink-400",
+                        "bg-pink-50/50 border-pink-200 hover:border-pink-300 dark:bg-pink-950/30 dark:border-pink-800 dark:hover:border-pink-700",
                       indigo:
-                        "bg-indigo-50 border-indigo-200 hover:border-indigo-300 dark:bg-slate-950/70 dark:border-indigo-500/50 dark:hover:border-indigo-400",
+                        "bg-indigo-50/50 border-indigo-200 hover:border-indigo-300 dark:bg-indigo-950/30 dark:border-indigo-800 dark:hover:border-indigo-700",
                     };
 
                     const iconColorClasses = {
                       blue:
-                        "bg-blue-100 text-blue-700 dark:bg-blue-500/20 dark:text-blue-200",
+                        "bg-blue-100 text-blue-700 dark:bg-blue-900/50 dark:text-blue-300",
                       purple:
-                        "bg-purple-100 text-purple-700 dark:bg-purple-500/20 dark:text-purple-200",
+                        "bg-purple-100 text-purple-700 dark:bg-purple-900/50 dark:text-purple-300",
                       green:
-                        "bg-green-100 text-green-700 dark:bg-emerald-500/20 dark:text-emerald-200",
+                        "bg-green-100 text-green-700 dark:bg-green-900/50 dark:text-green-300",
                       orange:
-                        "bg-orange-100 text-orange-700 dark:bg-orange-500/20 dark:text-orange-200",
+                        "bg-orange-100 text-orange-700 dark:bg-orange-900/50 dark:text-orange-300",
                       pink:
-                        "bg-pink-100 text-pink-700 dark:bg-pink-500/20 dark:text-pink-200",
+                        "bg-pink-100 text-pink-700 dark:bg-pink-900/50 dark:text-pink-300",
                       indigo:
-                        "bg-indigo-100 text-indigo-700 dark:bg-indigo-500/20 dark:text-indigo-200",
+                        "bg-indigo-100 text-indigo-700 dark:bg-indigo-900/50 dark:text-indigo-300",
                     };
 
                     const courseQuery = new URLSearchParams({
@@ -780,7 +804,7 @@ export default function Dashboard() {
                       <Link
                         key={course.id}
                         to={`/courses?${courseQuery}`}
-                        className={`block border-2 rounded-xl p-4 transition-all ${
+                        className={`block border rounded-xl p-4 transition-all hover:shadow-md ${
                           colorClasses[
                             course.color as keyof typeof colorClasses
                           ] || colorClasses.blue

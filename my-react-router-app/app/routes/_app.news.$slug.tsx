@@ -130,19 +130,19 @@ export default function NewsDetail() {
       ) : (
         <div className="max-w-3xl mx-auto px-4 pt-4">
           <div className="flex items-center justify-between">
-            <span className="text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200 font-semibold">
+            <span className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold dark:text-slate-200">
               {item.category || "General"}
             </span>
             {item.featured && (
-              <span className="text-[10px] px-2 py-1 rounded bg-amber-100 border border-amber-200 text-amber-800 font-bold">
+              <span className="text-[10px] px-2 py-1 rounded bg-amber-100 border border-amber-200 text-amber-800 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
                 FEATURED
               </span>
             )}
           </div>
-          <h1 className="mt-2 text-3xl font-black text-slate-900">
+          <h1 className="mt-2 text-3xl font-black text-slate-900 dark:text-slate-100">
             {item.title}
           </h1>
-          <div className="mt-2 text-sm text-slate-500 flex items-center gap-1">
+          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
             <svg
               xmlns="http://www.w3.org/2000/svg"
               width="14"
@@ -170,7 +170,7 @@ export default function NewsDetail() {
         <div className="flex items-center justify-between mt-4">
           <Link
             to={`/news${backSearch}`}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 px-3 py-1.5 rounded-lg bg-slate-100 hover:bg-slate-200 border border-slate-200"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -189,7 +189,7 @@ export default function NewsDetail() {
           </Link>
           <button
             onClick={copyLink}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 px-3 py-1.5 rounded-lg bg-white hover:bg-slate-50 border border-slate-200"
+            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
           >
             {copied ? (
               <>
@@ -231,10 +231,10 @@ export default function NewsDetail() {
         </div>
 
         {item.excerpt && (
-          <p className="mt-6 text-lg text-slate-700">{item.excerpt}</p>
+          <p className="mt-6 text-lg text-slate-700 dark:text-slate-300">{item.excerpt}</p>
         )}
 
-        <div className="prose prose-slate mt-6 whitespace-pre-wrap">
+        <div className="prose prose-slate dark:prose-invert mt-6 whitespace-pre-wrap">
           {item.content}
         </div>
 
@@ -243,7 +243,7 @@ export default function NewsDetail() {
             {tags.map((t) => (
               <span
                 key={t}
-                className="text-xs px-2 py-1 rounded bg-slate-100 border border-slate-200 font-semibold"
+                className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-transparent border border-slate-200 dark:border-slate-700 font-semibold dark:text-slate-300"
               >
                 #{t}
               </span>

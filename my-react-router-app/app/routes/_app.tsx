@@ -25,9 +25,6 @@ import {
 import { useTheme } from "~/contexts/ThemeContext";
 import ThemeToggle from "~/components/ThemeToggle";
 
-
-
-
 export default function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -38,8 +35,7 @@ export default function AppShell() {
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  // THEME FROM CONTEXT (WORKS NOW)
-  const { isDark, tokens } = useTheme();
+  const { isDark } = useTheme();
 
   // -----------------------------
   // NAVIGATION ITEMS
@@ -110,8 +106,13 @@ export default function AppShell() {
   // -----------------------------
   // ACTIVE LINK CHECKER
   // -----------------------------
-  const isActive = (to: string) =>
-    location.pathname === to || location.pathname.startsWith(to + "/");
+  const isActive = (to: string) => {
+    // Prevent "My Courses" from being active when on "Course Schedule"
+    if (to === "/courses" && location.pathname.startsWith("/courses/schedule")) {
+      return false;
+    }
+    return location.pathname === to || location.pathname.startsWith(to + "/");
+  };
 
   // -----------------------------
   // DYNAMIC ROOM BOOKING LINK
@@ -139,13 +140,7 @@ export default function AppShell() {
   // RENDER UI
   // -----------------------------
   return (
-    <div
-      className="min-h-screen flex relative"
-      style={{
-        backgroundImage: tokens.background.shellGradient,
-        backgroundColor: tokens.background.page,
-      }}
-    >
+    <div className="min-h-screen flex relative bg-background text-foreground bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-background to-background dark:from-blue-900/20 dark:via-background dark:to-background">
       <div className="relative z-10 flex flex-1">
         {/* Overlay - mobile only */}
         {sidebarOpen && (
@@ -157,27 +152,26 @@ export default function AppShell() {
 
         {/* SIDEBAR */}
         <aside
-          className={`${
-            isDark
-              ? "bg-slate-900 text-slate-100 border-slate-800"
-              : "bg-gradient-to-b from-white via-slate-50/50 to-white text-slate-800 border-slate-200 shadow-2xl"
-          } ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-          fixed md:static inset-y-0 left-0 w-72 z-50 flex flex-col border-r transition-transform duration-300`}
+          className={`
+            bg-card text-card-foreground border-r border-border
+            ${sidebarOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
+            fixed md:static inset-y-0 left-0 w-72 z-50 flex flex-col transition-transform duration-300
+          `}
         >
           {/* Logo */}
-          <div className="h-24 flex items-center justify-between px-6 border-b dark:border-slate-800 border-slate-200">
+          <div className="h-24 flex items-center justify-between px-6 border-b border-border">
             <Link to="/dashboard" className="flex items-center gap-3 group">
               <div className="relative">
-                <div className="h-12 w-12 rounded-xl bg-gradient-to-br from-slate-500 via-slate-600 to-slate-700 flex items-center justify-center text-white font-extrabold">
+                <div className="h-12 w-12 rounded-xl bg-primary flex items-center justify-center text-primary-foreground font-extrabold">
                   IU
                 </div>
-                <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-white animate-pulse"></div>
+                <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-background animate-pulse"></div>
               </div>
               <div className="text-xs font-bold leading-tight">
-                <div className="dark:text-white text-slate-900">
+                <div className="text-foreground">
                   INTERNATIONAL
                 </div>
-                <div className="dark:text-slate-300 text-slate-700">
+                <div className="text-muted-foreground">
                   UNIVERSITY
                 </div>
               </div>
@@ -186,7 +180,7 @@ export default function AppShell() {
             {/* close btn mobile */}
             <button
               onClick={() => setSidebarOpen(false)}
-              className="md:hidden p-2 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800"
+              className="md:hidden p-2 rounded-lg hover:bg-accent hover:text-accent-foreground"
             >
               <X className="h-5 w-5" />
             </button>
@@ -206,12 +200,8 @@ export default function AppShell() {
                   }}
                   className={`group flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                     active
-                      ? isDark
-                        ? "bg-slate-700 border-l-4 border-cyan-400 text-white"
-                        : "bg-cyan-50 border-l-4 border-cyan-500 text-slate-900"
-                      : isDark
-                        ? "hover:bg-slate-800 text-slate-300"
-                        : "hover:bg-slate-50 text-slate-700"
+                      ? "bg-primary/10 text-primary border-l-4 border-primary"
+                      : "hover:bg-accent hover:text-accent-foreground text-muted-foreground"
                   }`}
                 >
                   <item.icon className="h-5 w-5" />
@@ -228,16 +218,12 @@ export default function AppShell() {
         <section className="flex-1 flex flex-col min-w-0">
           {/* Top bar */}
           <header
-            className={`h-20 flex items-center justify-between px-4 md:px-6 border-b sticky top-0 z-30 ${
-              isDark
-                ? "bg-slate-900/95 border-slate-800 text-slate-100"
-                : "bg-white/95 border-slate-200"
-            }`}
+            className="h-20 flex items-center justify-between px-4 md:px-6 border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
           >
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
-                className="md:hidden p-2.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800"
+                className="md:hidden p-2.5 rounded-xl hover:bg-accent hover:text-accent-foreground"
               >
                 <Menu className="h-5 w-5" />
               </button>
@@ -246,7 +232,7 @@ export default function AppShell() {
                 <div className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
                   DS WINFO Business Informatics
                 </div>
-                <div className="text-xs text-slate-500 dark:text-slate-400">
+                <div className="text-xs text-muted-foreground">
                   Hamburg Campus
                 </div>
               </div>
@@ -258,10 +244,10 @@ export default function AppShell() {
 
               <Link
                 to="/messages"
-                className="relative p-2.5 rounded-xl border hover:bg-blue-50 dark:hover:bg-slate-800"
+                className="relative p-2.5 rounded-xl border border-border hover:bg-accent hover:text-accent-foreground"
               >
                 <MessageSquare className="h-5 w-5" />
-                <span className="absolute top-1 right-1 h-3 w-3 bg-red-500 rounded-full border-2 border-white"></span>
+                <span className="absolute top-1 right-1 h-3 w-3 bg-destructive rounded-full border-2 border-background"></span>
               </Link>
 
               {/* Profile button */}
@@ -275,9 +261,9 @@ export default function AppShell() {
               {menuOpen && (
                 <div
                   ref={menuRef}
-                  className="absolute right-4 md:right-6 top-20 z-50 w-72 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-xl"
+                  className="absolute right-4 md:right-6 top-20 z-50 w-72 bg-popover text-popover-foreground border border-border rounded-2xl shadow-xl"
                 >
-                  <div className="px-5 py-4 border-b dark:border-slate-700">
+                  <div className="px-5 py-4 border-b border-border">
                     <div className="flex items-center gap-3">
                       <div className="h-12 w-12 rounded-full bg-gradient-to-br from-blue-500 to-indigo-600 flex items-center justify-center text-white font-bold">
                         {userName
@@ -298,27 +284,25 @@ export default function AppShell() {
                       to="/settings"
                       icon={SettingsIcon}
                       label="Settings"
-                      isDark={isDark}
                     />
                     <MenuItem
                       to="/curriculum"
                       icon={BookOpenCheck}
                       label="Studienplan"
-                      isDark={isDark}
                     />
                     <MenuItem
                       to="/module-handbook"
                       icon={FileText}
                       label="Modulhandbuch"
-                      isDark={isDark} danger={undefined}                    />
+                    />
                     <MenuItem
                       to="/student-id"
                       icon={BadgeCheck}
                       label="Studentenausweis"
-                      isDark={isDark} danger={undefined}                    />
+                    />
 
                     <div
-                      className={`px-5 py-2 text-xs font-semibold ${isDark ? "text-slate-400" : "text-slate-500"}`}
+                      className="px-5 py-2 text-xs font-semibold text-muted-foreground"
                     >
                       Bescheinigungen
                     </div>
@@ -327,20 +311,19 @@ export default function AppShell() {
                       to="/certificates/transcript"
                       icon={FileText}
                       label="Transkript"
-                      isDark={isDark} danger={undefined}                    />
+                    />
                     <MenuItem
                       to="/certificates/immatriculation"
                       icon={FileText}
                       label="Immatrikulationsbescheinigung"
-                      isDark={isDark} danger={undefined}                    />
+                    />
 
-                    <div className="border-t border-slate-200 dark:border-slate-800 my-1" />
+                    <div className="border-t border-border my-1" />
 
                     <MenuItem
                       to="/logout"
                       icon={LogOut}
                       label="Log out"
-                      isDark={isDark}
                       danger
                     />
                   </div>
@@ -366,22 +349,17 @@ type MenuItemProps = {
   to: string;
   icon: React.ComponentType<{ className?: string }>;
   label: string;
-  isDark: boolean;
   danger?: boolean;
 };
 
-function MenuItem({ to, icon: Icon, label, isDark, danger }: MenuItemProps) {
+function MenuItem({ to, icon: Icon, label, danger }: MenuItemProps) {
   return (
     <Link
       to={to}
       className={`group flex items-center gap-3 px-5 py-3 text-sm transition-all border-l-4 border-transparent ${
         danger
-          ? isDark
-            ? "text-red-400 hover:bg-red-500/10 hover:border-red-500"
-            : "text-red-600 hover:bg-red-50 hover:border-red-400"
-          : isDark
-            ? "hover:bg-slate-800 text-slate-200"
-            : "hover:bg-blue-50 text-slate-700"
+          ? "text-destructive hover:bg-destructive/10 hover:border-destructive"
+          : "hover:bg-accent hover:text-accent-foreground text-foreground"
       }`}
     >
       <Icon className="h-4 w-4" />
