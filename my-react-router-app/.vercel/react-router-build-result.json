@@ -17,12 +17,17 @@
       "routes/reset-password.$token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.dashboard": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.curriculum": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.raumbuchung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.room-booking": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.module-handbook": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.student-id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.study-organization": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.info-center": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.courses": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.courses.$courseId": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.courses.schedule": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.antragsverwaltung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.certificates.immatriculation": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.certificates.transcript": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.news": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -56,7 +61,9 @@
       "routes/api/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/user": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/verify-reset-token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api/cron/daily-reminders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/api/cron/daily-reminders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/forum": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/forum.posts": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -126,6 +133,13 @@
         "path": "dashboard",
         "config": {}
       },
+      "routes/_app.curriculum": {
+        "id": "routes/_app.curriculum",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.curriculum.tsx",
+        "path": "curriculum",
+        "config": {}
+      },
       "routes/_app.raumbuchung": {
         "id": "routes/_app.raumbuchung",
         "parentId": "routes/_app",
@@ -138,6 +152,13 @@
         "parentId": "routes/_app",
         "file": "app/routes/_app.room-booking.tsx",
         "path": "room-booking",
+        "config": {}
+      },
+      "routes/_app.module-handbook": {
+        "id": "routes/_app.module-handbook",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.module-handbook.tsx",
+        "path": "module-handbook",
         "config": {}
       },
       "routes/_app.student-id": {
@@ -154,6 +175,13 @@
         "path": "study-organization",
         "config": {}
       },
+      "routes/_app.info-center": {
+        "id": "routes/_app.info-center",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.info-center.tsx",
+        "path": "info-center",
+        "config": {}
+      },
       "routes/_app.courses": {
         "id": "routes/_app.courses",
         "parentId": "routes/_app",
@@ -161,11 +189,25 @@
         "path": "courses",
         "config": {}
       },
+      "routes/_app.courses.$courseId": {
+        "id": "routes/_app.courses.$courseId",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.courses.$courseId.tsx",
+        "path": "courses/:courseId",
+        "config": {}
+      },
       "routes/_app.courses.schedule": {
         "id": "routes/_app.courses.schedule",
         "parentId": "routes/_app",
         "file": "app/routes/_app.courses.schedule.tsx",
         "path": "courses/schedule",
+        "config": {}
+      },
+      "routes/_app.antragsverwaltung": {
+        "id": "routes/_app.antragsverwaltung",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.antragsverwaltung.tsx",
+        "path": "antragsverwaltung",
         "config": {}
       },
       "routes/_app.certificates.immatriculation": {
@@ -440,13 +482,31 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/api/forum": {
+        "id": "routes/api/forum",
+        "parentId": "root",
+        "file": "app/routes/api/forum.tsx",
+        "path": "api/forum",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/forum.posts": {
+        "id": "routes/api/forum.posts",
+        "parentId": "root",
+        "file": "app/routes/api/forum.posts.tsx",
+        "path": "api/forum/posts",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
   "reactRouterConfig": {
-    "appDirectory": "C:/Dell/iu/website-bauen/my-react-router-app/app",
+    "appDirectory": "C:/Users/Dell/website-remix-data-base/website-bauen/my-react-router-app/app",
     "basename": "/",
-    "buildDirectory": "C:/Dell/iu/website-bauen/my-react-router-app/build",
+    "buildDirectory": "C:/Users/Dell/website-remix-data-base/website-bauen/my-react-router-app/build",
     "future": {
       "v8_middleware": false,
       "unstable_optimizeDeps": false,
@@ -502,6 +562,12 @@
         "file": "routes/_app.dashboard.tsx",
         "path": "dashboard"
       },
+      "routes/_app.curriculum": {
+        "id": "routes/_app.curriculum",
+        "parentId": "routes/_app",
+        "file": "routes/_app.curriculum.tsx",
+        "path": "curriculum"
+      },
       "routes/_app.raumbuchung": {
         "id": "routes/_app.raumbuchung",
         "parentId": "routes/_app",
@@ -513,6 +579,12 @@
         "parentId": "routes/_app",
         "file": "routes/_app.room-booking.tsx",
         "path": "room-booking"
+      },
+      "routes/_app.module-handbook": {
+        "id": "routes/_app.module-handbook",
+        "parentId": "routes/_app",
+        "file": "routes/_app.module-handbook.tsx",
+        "path": "module-handbook"
       },
       "routes/_app.student-id": {
         "id": "routes/_app.student-id",
@@ -526,17 +598,35 @@
         "file": "routes/_app.study-organization.tsx",
         "path": "study-organization"
       },
+      "routes/_app.info-center": {
+        "id": "routes/_app.info-center",
+        "parentId": "routes/_app",
+        "file": "routes/_app.info-center.tsx",
+        "path": "info-center"
+      },
       "routes/_app.courses": {
         "id": "routes/_app.courses",
         "parentId": "routes/_app",
         "file": "routes/_app.courses.tsx",
         "path": "courses"
       },
+      "routes/_app.courses.$courseId": {
+        "id": "routes/_app.courses.$courseId",
+        "parentId": "routes/_app",
+        "file": "routes/_app.courses.$courseId.tsx",
+        "path": "courses/:courseId"
+      },
       "routes/_app.courses.schedule": {
         "id": "routes/_app.courses.schedule",
         "parentId": "routes/_app",
         "file": "routes/_app.courses.schedule.tsx",
         "path": "courses/schedule"
+      },
+      "routes/_app.antragsverwaltung": {
+        "id": "routes/_app.antragsverwaltung",
+        "parentId": "routes/_app",
+        "file": "routes/_app.antragsverwaltung.tsx",
+        "path": "antragsverwaltung"
       },
       "routes/_app.certificates.immatriculation": {
         "id": "routes/_app.certificates.immatriculation",
@@ -747,6 +837,18 @@
         "parentId": "root",
         "file": "routes/api/cron/daily-reminders.tsx",
         "path": "api/cron/daily-reminders"
+      },
+      "routes/api/forum": {
+        "id": "routes/api/forum",
+        "parentId": "root",
+        "file": "routes/api/forum.tsx",
+        "path": "api/forum"
+      },
+      "routes/api/forum.posts": {
+        "id": "routes/api/forum.posts",
+        "parentId": "root",
+        "file": "routes/api/forum.posts.tsx",
+        "path": "api/forum/posts"
       }
     },
     "routeDiscovery": {
@@ -790,12 +892,20 @@
                 "path": "dashboard"
               },
               {
+                "file": "routes/_app.curriculum.tsx",
+                "path": "curriculum"
+              },
+              {
                 "file": "routes/_app.raumbuchung.tsx",
                 "path": "raumbuchung"
               },
               {
                 "file": "routes/_app.room-booking.tsx",
                 "path": "room-booking"
+              },
+              {
+                "file": "routes/_app.module-handbook.tsx",
+                "path": "module-handbook"
               },
               {
                 "file": "routes/_app.student-id.tsx",
@@ -806,12 +916,24 @@
                 "path": "study-organization"
               },
               {
+                "file": "routes/_app.info-center.tsx",
+                "path": "info-center"
+              },
+              {
                 "file": "routes/_app.courses.tsx",
                 "path": "courses"
               },
               {
+                "file": "routes/_app.courses.$courseId.tsx",
+                "path": "courses/:courseId"
+              },
+              {
                 "file": "routes/_app.courses.schedule.tsx",
                 "path": "courses/schedule"
+              },
+              {
+                "file": "routes/_app.antragsverwaltung.tsx",
+                "path": "antragsverwaltung"
               },
               {
                 "file": "routes/_app.certificates.immatriculation.tsx",
@@ -957,6 +1079,14 @@
           {
             "file": "routes/api/cron/daily-reminders.tsx",
             "path": "api/cron/daily-reminders"
+          },
+          {
+            "file": "routes/api/forum.tsx",
+            "path": "api/forum"
+          },
+          {
+            "file": "routes/api/forum.posts.tsx",
+            "path": "api/forum/posts"
           }
         ]
       }

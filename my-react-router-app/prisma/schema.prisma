@@ -44,6 +44,13 @@ model User {
   reminderTimezone String   @default("Europe/Berlin")
 
   tasks            StudentTask[]
+  
+  // Forum relations
+  forumTopics      ForumTopic[]
+  forumPosts       ForumPost[]
+  
+  // Contact submissions
+  contactSubmissions ContactSubmission[]
 }
 
 model Teacher {
@@ -231,4 +238,56 @@ model FAQ {
   updatedAt DateTime @updatedAt
 
   @@index([category])
+}
+
+// Forum Models
+model ForumTopic {
+  id        Int         @id @default(autoincrement())
+  title     String
+  content   String
+  courseId  Int
+  author    User        @relation(fields: [authorId], references: [id])
+  authorId  Int
+  views     Int         @default(0)
+  pinned    Boolean     @default(false)
+  createdAt DateTime    @default(now())
+  updatedAt DateTime    @updatedAt
+  posts     ForumPost[]
+
+  @@index([courseId])
+}
+
+model ForumPost {
+  id        Int        @id @default(autoincrement())
+  content   String
+  topic     ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+  topicId   Int
+  author    User       @relation(fields: [authorId], references: [id])
+  authorId  Int
+  likes     Int        @default(0)
+  createdAt DateTime   @default(now())
+  updatedAt DateTime   @updatedAt
+}
+
+// Contact Form Submissions
+enum ContactStatus {
+  PENDING
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+model ContactSubmission {
+  id        Int           @id @default(autoincrement())
+  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  userId    Int
+  subject   String
+  message   String
+  status    ContactStatus @default(PENDING)
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
 }

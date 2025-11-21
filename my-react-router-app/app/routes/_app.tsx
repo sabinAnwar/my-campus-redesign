@@ -8,7 +8,7 @@ import {
   GraduationCap,
   Info,
   HelpCircle,
-  MessageSquare,
+  Headphones,
   User as UserIcon,
   FolderOpen,
   FileSearch,
@@ -55,6 +55,7 @@ export default function AppShell() {
     },
     { to: "/info-center", label: "Info Center", icon: Info },
     { to: "/faq", label: "Help & FAQ", icon: HelpCircle },
+    { to: "/messages", label: "Kontakt IU", icon: Headphones },
   ];
 
   // -----------------------------
@@ -243,10 +244,10 @@ export default function AppShell() {
               <ThemeToggle />
 
               <Link
-                to="/messages"
+                to="/contact"
                 className="relative p-2.5 rounded-xl border border-border hover:bg-accent hover:text-accent-foreground"
               >
-                <MessageSquare className="h-5 w-5" />
+                <Headphones className="h-5 w-5" />
                 <span className="absolute top-1 right-1 h-3 w-3 bg-destructive rounded-full border-2 border-background"></span>
               </Link>
 

@@ -20,7 +20,9 @@ export default [
     route("study-organization", "routes/_app.study-organization.tsx"),
     route("info-center", "routes/_app.info-center.tsx"),
     route("courses", "routes/_app.courses.tsx"),
+    route("courses/:courseId", "routes/_app.courses.$courseId.tsx"),
     route("courses/schedule", "routes/_app.courses.schedule.tsx"),
+    route("antragsverwaltung", "routes/_app.antragsverwaltung.tsx"),
 
     // Certificates
     route(
@@ -54,7 +56,7 @@ export default [
     route("toast-direct", "routes/_app.toast-direct.tsx"),
     route("toast-test", "routes/_app.toast-test.tsx"),
     route("settings", "routes/_app.settings.tsx"),
-    route("messages", "routes/_app.messages.tsx"),
+  
   ]),
 
   // API routes (handled by React Router in dev/SSR)
@@ -75,4 +77,8 @@ export default [
   route("api/user", "routes/api/user.tsx"),
   route("api/verify-reset-token", "routes/api/verify-reset-token.tsx"),
   route("api/cron/daily-reminders", "routes/api/cron/daily-reminders.tsx"),
+  route("api/forum", "routes/api/forum.tsx"),
+  route("api/forum/posts", "routes/api/forum.posts.tsx"),
+  route("api/contact/submit", "routes/api/contact.submit.tsx"),
+  route("api/applications/submit", "routes/api/applications.submit.tsx"),
 ] satisfies RouteConfig;
