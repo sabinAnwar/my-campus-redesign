@@ -10,7 +10,7 @@ jobs:
     steps:
       - name: Call reminder endpoint
         env:
-          APP_URL: https://iu-mycampus.me/api/cron/daily-reminders?secret
+          APP_URL: https://iu-mycampus.me/api/cron/daily-reminders?secret=
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
-        run: |
+        run: 
           curl -fsSL "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
