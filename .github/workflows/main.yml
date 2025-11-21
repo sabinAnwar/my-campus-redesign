@@ -17,9 +17,9 @@ jobs:
         run: |
           echo "APP_URL: $APP_URL"
           echo "CRON_SECRET length: ${#CRON_SECRET}"
-
           echo "Calling endpoint..."
           curl -v "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
+
 
 
      
