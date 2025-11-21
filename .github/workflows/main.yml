@@ -10,13 +10,16 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Call reminder endpoint
+      - name: Debug and call endpoint
         env:
           APP_URL: https://iu-mycampus.me
           CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
-          echo "Triggering Daily Reminder CRON..."
-          echo "Endpoint: ${APP_URL}/api/cron/daily-reminders"
-          
-          # Call your cron endpoint
+          echo "APP_URL: $APP_URL"
+          echo "CRON_SECRET length: ${#CRON_SECRET}"
+
+          echo "Calling endpoint..."
           curl -v "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
+
+
+     
