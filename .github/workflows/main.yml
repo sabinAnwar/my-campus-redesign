@@ -9,8 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Call reminder endpoint
+        env:
+          APP_URL: https://iu-mycampus.me/api/cron/daily-reminders?secret
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
         run: |
           curl -fsSL "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
-        env:
-          APP_URL: https://iu-mycampus.me
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
