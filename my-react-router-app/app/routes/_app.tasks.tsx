@@ -6,6 +6,7 @@ import {
   BookOpen,
   Upload,
 } from "lucide-react";
+import { TaskKind } from "@prisma/client";
 import { useLoaderData } from "react-router-dom";
 import { prisma } from "~/lib/prisma";
 import { calculateDaysLeft } from "~/lib/tasksSample";
@@ -14,7 +15,10 @@ type LoaderSubmission = {
   id: number;
   title: string;
   course: string;
+  courseCode?: string;
+  professor?: string;
   type: string;
+  dueDateIso: string;
   dueDate: string;
   correctionDate: string;
 };
@@ -29,19 +33,100 @@ type UISubmission = LoaderSubmission & {
   similarity?: number;
 };
 
+const courseMeta: Record<
+  string,
+  { courseCode?: string; professor?: string }
+> = {
+  "E-Commerce": { courseCode: "ECOM301", professor: "Prof. Dr. Wagner" },
+  "Commerce Engineering": { courseCode: "COMM410", professor: "Prof. Dr. Lehmann" },
+};
+
 export const loader = async () => {
   try {
+    const formatGermanDate = (date: Date) =>
+      date.toLocaleDateString("de-DE", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+      });
+
+    const writingTypes = [
+      "Hausarbeit",
+      "Seminararbeit",
+      "Bachelorarbeit",
+      "Masterarbeit",
+      "Projektbericht",
+      "Projektarbeit",
+    ];
+
+    const canonicalTasks = [
+      {
+        title: "Hausarbeit: Customer Journey im Omnichannel Commerce",
+        course: "E-Commerce",
+        kind: TaskKind.ABGABE,
+        type: "Hausarbeit",
+        dueDate: new Date("2025-12-05"),
+      },
+      {
+        title: "Projektarbeit: Commerce Plattform Redesign",
+        course: "Commerce Engineering",
+        kind: TaskKind.ABGABE,
+        type: "Projektarbeit",
+        dueDate: new Date("2025-12-20"),
+      },
+    ];
+
+    // Ensure canonical tasks exist with up-to-date dates
+    await Promise.all(
+      canonicalTasks.map(async (task) => {
+        const existing = await prisma.studentTask.findFirst({
+          where: {
+            title: task.title,
+            course: task.course,
+            type: task.type,
+          },
+        });
+
+        if (existing) {
+          await prisma.studentTask.update({
+            where: { id: existing.id },
+            data: { dueDate: task.dueDate, kind: task.kind },
+          });
+        } else {
+          await prisma.studentTask.create({ data: task });
+        }
+      })
+    );
+
+    const allowedTitles = canonicalTasks.map((t) => t.title);
+    const allowedCourses = Object.keys(courseMeta);
+
     const rows = await prisma.studentTask.findMany({
+      where: {
+        kind: TaskKind.ABGABE,
+        type: { in: writingTypes },
+        course: { in: allowedCourses },
+        title: { in: allowedTitles },
+      },
       orderBy: { dueDate: "asc" },
     });
-    const submissions: LoaderSubmission[] = rows.map((t: { id: any; title: any; course: any; type: any; dueDate: { toISOString: () => string | any[]; }; }) => ({
-      id: t.id,
-      title: t.title,
-      course: t.course,
-      type: t.type,
-      dueDate: t.dueDate.toISOString().slice(0, 10),
-      correctionDate: t.dueDate.toISOString().slice(0, 10),
-    }));
+    const submissions: LoaderSubmission[] = rows.map((t: { id: any; title: any; course: string; type: any; dueDate: { toISOString: () => string | any[]; }; }) => {
+      const meta = courseMeta[t.course] ?? {};
+      const dueDate = new Date(t.dueDate);
+      const correctionDate = new Date(dueDate);
+      correctionDate.setDate(dueDate.getDate() + 14); // give realistic correction window
+      return {
+        id: t.id,
+        title: t.title,
+        course: t.course,
+        courseCode: meta.courseCode,
+        professor: meta.professor,
+        type: t.type,
+        dueDateIso: dueDate.toISOString().slice(0, 10),
+        dueDate: formatGermanDate(dueDate),
+        correctionDate: formatGermanDate(correctionDate),
+      };
+    });
     return { submissions };
   } catch {
     return { submissions: [] };
@@ -50,12 +135,32 @@ export const loader = async () => {
 
 export default function Tasks() {
   const { submissions: initialSubmissions } = useLoaderData() as LoaderData;
+
+  const loadSavedStatus = () => {
+    if (typeof window === "undefined") return {} as Record<number, { status: "pending" | "submitted"; similarity?: number }>;
+    try {
+      return JSON.parse(localStorage.getItem("submissionStatus") || "{}") as Record<
+        number,
+        { status: "pending" | "submitted"; similarity?: number }
+      >;
+    } catch {
+      return {};
+    }
+  };
+
+  const persistStatus = (next: Record<number, { status: "pending" | "submitted"; similarity?: number }>) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("submissionStatus", JSON.stringify(next));
+  };
+
+  const saved = loadSavedStatus();
   // Submissions from database (with extra UI fields)
   const [submissions, setSubmissions] = useState<UISubmission[]>(
     initialSubmissions.map((s) => ({
       ...s,
-      status: "pending",
-      daysUntilDue: calculateDaysLeft(s.dueDate),
+      status: saved[s.id]?.status ?? "pending",
+      similarity: saved[s.id]?.similarity,
+      daysUntilDue: calculateDaysLeft(s.dueDateIso || s.dueDate),
     }))
   );
 
@@ -112,8 +217,8 @@ export default function Tasks() {
     }
 
     // Update status
-    setSubmissions((prev) =>
-      prev.map((s) =>
+    setSubmissions((prev) => {
+      const next = prev.map((s) =>
         s.id === selectedSubmission.id
           ? {
               ...s,
@@ -121,34 +226,53 @@ export default function Tasks() {
               similarity: Math.floor(Math.random() * 10 + 5),
             }
           : s
-      )
-    );
+      );
+
+      const persisted: Record<number, { status: "pending" | "submitted"; similarity?: number }> = {};
+      next.forEach((s) => {
+        if (s.status === "submitted") {
+          persisted[s.id] = { status: s.status, similarity: s.similarity };
+        }
+      });
+      persistStatus(persisted);
+      return next;
+    });
     setShowModal(false);
     alert("Deine Abgabe wurde erfolgreich in Turnitin hochgeladen!");
   };
 
   return (
-
+    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
       <div className="max-w-7xl mx-auto px-6 py-10">
-        <header className="text-center mb-12">
-          <h1 className="text-4xl font-extrabold text-slate-900 mb-2">
-            Wissenschaftliche Arbeiten & Klausurfristen
-          </h1>
-          <p className="text-slate-600">
-            Verwalte deine Abgaben, lade Dateien hoch und behalte Fristen im
-            Blick
-          </p>
+        <header className="mb-10 border-b border-neutral-300 dark:border-neutral-800 pb-6">
+          <div className="flex items-baseline justify-between gap-6">
+            <div>
+              <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-400">
+                Campus Bulletin
+              </p>
+              <h1 className="mt-3 text-4xl font-black leading-tight text-neutral-900 dark:text-white">
+                Wissenschaftliche Arbeiten & Klausurfristen
+              </h1>
+              <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300 max-w-3xl">
+                Verwalte deine Abgaben, lade Dateien hoch und behalte Fristen im Blick –
+                gestaltet wie eine sachliche Nachrichtenübersicht in hell und dunkel.
+              </p>
+            </div>
+            <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
+              Ausgabe | Today
+            </span>
+          </div>
         </header>
 
         <div className="grid lg:grid-cols-8 gap-8">
           {/* Submissions */}
           <div className="lg:col-span-5 space-y-8">
-            <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6">
-                <div className="p-2 rounded-lg bg-blue-50 border border-blue-200">
-                  <FileText className="h-5 w-5 text-blue-700" />
+            <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-4">
+                <div className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
+                  <FileText className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
                   Wissenschaftliche Arbeiten (Turnitin)
                 </h2>
               </div>
@@ -157,27 +281,35 @@ export default function Tasks() {
                 {submissions.map((item) => (
                   <div
                     key={item.id}
-                    className="rounded-xl border border-slate-200 p-5 bg-gradient-to-br from-white to-slate-50 hover:shadow-md transition-all"
+                    className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-950/40 hover:-translate-y-0.5 transition-transform"
                   >
                     <div className="flex justify-between items-start mb-3">
                       <div>
-                        <h3 className="text-sm font-bold text-slate-900 mb-1">
+                        <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-1">
                           {item.title}
                         </h3>
-                        <p className="text-xs text-slate-600 mb-1">
+                        <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
                           {item.course}
+                          {item.courseCode ? ` · ${item.courseCode}` : ""}
                         </p>
-                        <span className="px-2 py-0.5 rounded-md bg-slate-100 border border-slate-300 text-slate-700 text-xs font-semibold">
-                          {item.type}
-                        </span>
+                        <div className="flex items-center gap-2">
+                          <span className="px-2 py-0.5 rounded-sm bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 text-[11px] font-semibold">
+                            {item.type}
+                          </span>
+                          {item.professor && (
+                            <span className="text-[11px] text-neutral-600 dark:text-neutral-300">
+                              {item.professor}
+                            </span>
+                          )}
+                        </div>
                       </div>
 
                       <div>
                         <span
-                          className={`px-2 py-1 rounded-md text-xs font-semibold border ${
+                          className={`px-2 py-1 rounded-sm text-xs font-semibold ${
                             item.status === "submitted"
-                              ? "bg-green-50 text-green-700 border-green-300"
-                              : "bg-amber-50 text-amber-700 border-amber-300"
+                          ? "bg-neutral-900 text-white border border-neutral-900"
+                          : "bg-neutral-100 text-neutral-800 border border-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
                           }`}
                         >
                           {item.status === "submitted"
@@ -188,44 +320,69 @@ export default function Tasks() {
                     </div>
 
                     {/* Dates */}
-                    <div className="grid grid-cols-2 gap-4 mt-3 border-t border-slate-200 pt-3">
+                    <div className="grid grid-cols-2 gap-4 mt-3 border-t border-neutral-200 dark:border-neutral-800 pt-3">
                       <div>
-                        <Calendar className="h-4 w-4 text-slate-600 inline mr-2" />
-                        <span className="text-xs font-semibold text-slate-700">
+                        <Calendar className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
+                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
                           Abgabefrist:
                         </span>
-                        <p className="text-sm font-bold text-slate-900 mt-1">
+                        <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
                           {item.dueDate}
                         </p>
                       </div>
                       <div>
-                        <CheckSquare className="h-4 w-4 text-slate-600 inline mr-2" />
-                        <span className="text-xs font-semibold text-slate-700">
+                        <CheckSquare className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
+                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
                           Korrektur:
                         </span>
-                        <p className="text-sm font-bold text-slate-900 mt-1">
+                        <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
                           {item.correctionDate}
                         </p>
                       </div>
                     </div>
+                    <div className="mt-3 flex items-center gap-2 text-xs font-semibold">
+                      <span
+                        className={`px-2 py-1 rounded-sm border ${
+                          item.daysUntilDue > 5
+                            ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:border-emerald-800"
+                            : item.daysUntilDue > 0
+                            ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-100 dark:border-amber-800"
+                            : "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-100 dark:border-rose-800"
+                        }`}
+                      >
+                        ⏳ {item.daysUntilDue > 0 ? `${item.daysUntilDue} Tage` : "Überfällig"}
+                      </span>
+                      <span className="px-2 py-1 rounded-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700">
+                        📁 {item.course}
+                      </span>
+                    </div>
 
                     {item.status === "pending" && (
-                      <div className="mt-4 pt-3 border-t border-slate-200">
-                        <button
-                          onClick={() => openModal(item)}
-                          className="w-full py-2 text-sm font-semibold bg-gradient-to-r from-slate-900 to-slate-700 text-white rounded-lg hover:from-slate-800 hover:to-slate-600 transition-all"
-                        >
-                          Abgabe verwalten
-                        </button>
+                      <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                        {item.daysUntilDue > 0 ? (
+                          <button
+                            onClick={() => openModal(item)}
+                            className="w-full py-2 text-sm font-semibold bg-neutral-900 text-white rounded-md hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
+                          >
+                            Abgabe verwalten
+                          </button>
+                        ) : (
+                          <button
+                            disabled
+                            className="w-full py-2 text-sm font-semibold bg-neutral-400 dark:bg-neutral-700 text-white rounded-md cursor-not-allowed"
+                          >
+                            Frist verpasst – keine Abgabe möglich
+                          </button>
+                        )}
                       </div>
                     )}
 
                     {item.status === "submitted" && (
-                      <div className="mt-3 pt-3 border-t border-slate-200 flex justify-between items-center">
-                        <span className="text-xs text-slate-600 font-semibold">
+                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800 flex justify-between items-center">
+                        <span className="text-xs text-neutral-600 dark:text-neutral-300 font-semibold">
                           Turnitin Ähnlichkeit:
                         </span>
-                        <span className="px-2 py-1 rounded-md text-xs font-bold bg-green-50 text-green-700 border border-green-300">
+                      <span className="px-2 py-1 rounded-sm text-xs font-bold bg-neutral-900 text-white border border-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 dark:border-neutral-200">
                           {item.similarity}%
                         </span>
                       </div>
@@ -238,12 +395,12 @@ export default function Tasks() {
 
           {/* Sidebar */}
           <div className="lg:col-span-3 space-y-8">
-            <section className="bg-white border border-slate-200 rounded-2xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="p-2 rounded-lg bg-amber-50 border border-amber-200">
-                  <BookOpen className="h-5 w-5 text-amber-700" />
+            <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
+              <div className="flex items-center gap-3 mb-4 border-b border-neutral-200 dark:border-neutral-800 pb-3">
+                <div className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
+                  <BookOpen className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
                 </div>
-                <h2 className="text-xl font-bold text-slate-900">
+                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
                   Klausurfristen
                 </h2>
               </div>
@@ -251,22 +408,29 @@ export default function Tasks() {
                 {exams.map((exam) => (
                   <div
                     key={exam.id}
-                    className="border border-slate-200 rounded-xl p-4 bg-slate-50"
+                    className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 bg-white dark:bg-neutral-950/40"
                   >
-                    <h3 className="text-sm font-bold text-slate-900 mb-1">
+                    <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-1">
                       {exam.title}
                     </h3>
-                    <p className="text-xs text-slate-600 mb-1">
+                    <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
                       {exam.course} – {exam.duration}
                     </p>
-                    <p className="text-sm font-bold text-slate-900">
+                    <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50">
                       {exam.date}
                     </p>
-                    <p className="text-xs text-slate-500 mt-1">
-                      {exam.daysUntilExam > 0
-                        ? `${exam.daysUntilExam} Tage verbleibend`
-                        : "Heute / vorbei"}
-                    </p>
+                    <div className="mt-2 flex flex-wrap gap-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700">
+                        🗺️ {exam.location}
+                      </span>
+                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold border ${
+                        exam.daysUntilExam > 0
+                          ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border-neutral-300 dark:border-neutral-700"
+                          : "bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-neutral-900 dark:border-white"
+                      }`}>
+                        ⏳ {exam.daysUntilExam > 0 ? `${exam.daysUntilExam} Tage` : "Heute / vorbei"}
+                      </span>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -276,14 +440,21 @@ export default function Tasks() {
 
         {/* 🔹 Modal: Upload */}
         {showModal && (
-          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-2xl shadow-2xl p-8 w-full max-w-lg relative animate-fadeIn">
-              <h2 className="text-xl font-bold text-slate-900 mb-2">
-                Turnitin Abgabe verwalten
-              </h2>
-              <p className="text-sm text-slate-600 mb-6">
-                Reiche deine wissenschaftliche Arbeit sicher über Turnitin ein.
-              </p>
+          <div className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl p-8 w-full max-w-lg relative animate-fadeIn border border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-full bg-neutral-900 dark:bg-white flex items-center justify-center text-white dark:text-neutral-900 font-black shadow-sm">
+                  T
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
+                    Turnitin Abgabe verwalten
+                  </h2>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                    Reiche deine wissenschaftliche Arbeit sicher über Turnitin ein.
+                  </p>
+                </div>
+              </div>
 
               {/* Eidesstattliche Erklärung + Datenschutz */}
               <div className="space-y-4 mb-6">
@@ -297,11 +468,11 @@ export default function Tasks() {
                         honor: e.target.checked,
                       }))
                     }
-                    className="mt-1 accent-blue-600"
+                    className="mt-1 accent-neutral-900 dark:accent-white"
                   />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
                     Ich bestätige die{" "}
-                    <strong className="text-slate-900">
+                    <strong className="text-neutral-900 dark:text-neutral-100">
                       Eidesstattliche Erklärung
                     </strong>{" "}
                     zur eigenständigen Erstellung meiner Arbeit.
@@ -318,11 +489,11 @@ export default function Tasks() {
                         privacy: e.target.checked,
                       }))
                     }
-                    className="mt-1 accent-blue-600"
+                    className="mt-1 accent-neutral-900 dark:accent-white"
                   />
-                  <span className="text-sm text-slate-700">
+                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
                     Ich akzeptiere die{" "}
-                    <strong className="text-slate-900">
+                    <strong className="text-neutral-900 dark:text-neutral-100">
                       Datenschutzbestimmungen
                     </strong>{" "}
                     für den Upload in Turnitin.
@@ -334,15 +505,15 @@ export default function Tasks() {
               <div
                 className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${
                   uploadedFile
-                    ? "border-green-400 bg-green-50/40"
-                    : "border-slate-300 hover:border-blue-400 hover:bg-blue-50/30"
+                    ? "border-neutral-600 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/40"
+                    : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 dark:hover:border-neutral-500 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
                 }`}
               >
                 {!uploadedFile && (
                   <>
-                    <div className="flex flex-col items-center justify-center space-y-2 animate-pulse-slow">
-                      <Upload className="h-10 w-10 text-blue-500" />
-                      <p className="text-sm text-slate-700">
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <Upload className="h-10 w-10 text-neutral-700 dark:text-neutral-200" />
+                      <p className="text-sm text-neutral-700 dark:text-neutral-200">
                         Datei hier ablegen oder klicken, um hochzuladen
                       </p>
                     </div>
@@ -355,7 +526,7 @@ export default function Tasks() {
                     />
                     <label
                       htmlFor="file-upload"
-                      className="cursor-pointer inline-block mt-4 bg-gradient-to-r from-blue-600 to-indigo-600 text-white text-sm px-4 py-2 rounded-md font-semibold shadow hover:from-blue-700 hover:to-indigo-700 transition-all"
+                      className="cursor-pointer inline-block mt-4 bg-neutral-900 text-white text-sm px-4 py-2 rounded-md font-semibold shadow-sm hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
                     >
                       Datei auswählen
                     </label>
@@ -366,10 +537,10 @@ export default function Tasks() {
                 {uploadedFile && (
                   <div className="space-y-3 animate-fadeIn">
                     <div className="flex items-center justify-center gap-2 mt-3">
-                      <div className="flex items-center gap-2 bg-white border border-green-300 px-3 py-2 rounded-lg shadow-sm">
+                      <div className="flex items-center gap-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 px-3 py-2 rounded-lg shadow-sm">
                         <svg
                           xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-green-600"
+                          className="h-5 w-5 text-neutral-900 dark:text-white"
                           fill="none"
                           viewBox="0 0 24 24"
                           stroke="currentColor"
@@ -382,10 +553,10 @@ export default function Tasks() {
                           />
                         </svg>
                         <div className="text-left">
-                          <p className="text-sm font-medium text-slate-900">
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
                             {uploadedFile.name}
                           </p>
-                          <p className="text-xs text-slate-500">
+                          <p className="text-xs text-neutral-600 dark:text-neutral-300">
                             {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
                           </p>
                         </div>
@@ -393,15 +564,14 @@ export default function Tasks() {
                     </div>
 
                     {/* Simulated Progress Bar */}
-                    <div className="w-full bg-slate-200 rounded-full h-2 mt-4 overflow-hidden">
+                    <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 mt-4 overflow-hidden">
                       <div
-                        className="h-2 bg-gradient-to-r from-blue-500 to-green-400 animate-progress"
+                        className="h-2 bg-neutral-900 dark:bg-white animate-progress"
                         style={{ width: "100%" }}
                       ></div>
                     </div>
-                    <p className="text-xs text-green-600 mt-2 animate-fadeIn">
-                      ✅ Upload abgeschlossen – Datei wurde erfolgreich
-                      übertragen.
+                    <p className="text-xs text-neutral-700 dark:text-neutral-200 mt-2 animate-fadeIn">
+                      ✅ Upload abgeschlossen – Datei wurde erfolgreich übertragen.
                     </p>
                   </div>
                 )}
@@ -411,7 +581,7 @@ export default function Tasks() {
               <div className="flex justify-end gap-3 mt-8">
                 <button
                   onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-md text-sm font-semibold bg-slate-200 hover:bg-slate-300"
+                  className="px-4 py-2 rounded-md text-sm font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 hover:bg-neutral-300 dark:hover:bg-neutral-700"
                 >
                   Abbrechen
                 </button>
@@ -420,8 +590,8 @@ export default function Tasks() {
                   disabled={!accepted.honor || !accepted.privacy}
                   className={`px-4 py-2 rounded-md text-sm font-semibold shadow text-white transition-all ${
                     accepted.honor && accepted.privacy
-                      ? "bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
-                      : "bg-slate-400 cursor-not-allowed"
+                      ? "bg-neutral-900 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                      : "bg-neutral-400 dark:bg-neutral-700 cursor-not-allowed"
                   }`}
                 >
                   Hochladen & Bestätigen
@@ -431,9 +601,8 @@ export default function Tasks() {
           </div>
         )}
       </div>
-   
+    </div>
   );
 }
 
         
-

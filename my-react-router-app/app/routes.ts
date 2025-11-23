@@ -12,14 +12,20 @@ export default [
   route("", "routes/_app.tsx", [
     // Core dashboard & navigation
     route("dashboard", "routes/_app.dashboard.tsx"),
-    // route("curriculum", "routes/_app.curriculum.tsx"),
+    route("curriculum", "routes/_app.curriculum.tsx"),
     route("raumbuchung", "routes/_app.raumbuchung.tsx"),
     route("room-booking", "routes/_app.room-booking.tsx"),
-    // route("module-handbook", "routes/_app.module-handbook.tsx"),
+    route("module-handbook", "routes/_app.module-handbook.tsx"),
     route("student-id", "routes/_app.student-id.tsx"),
     route("study-organization", "routes/_app.study-organization.tsx"),
+    route("info-center", "routes/_app.info-center.tsx"),
+    route("benefits", "routes/_app.benefits.tsx"),
+    route("security", "routes/_app.security.tsx"),
+    route("exams", "routes/_app.exams.tsx"),
     route("courses", "routes/_app.courses.tsx"),
+    route("courses/:courseId", "routes/_app.courses.$courseId.tsx"),
     route("courses/schedule", "routes/_app.courses.schedule.tsx"),
+    route("antragsverwaltung", "routes/_app.antragsverwaltung.tsx"),
 
     // Certificates
     route(
@@ -44,6 +50,7 @@ export default [
     route("contact", "routes/_app.contact.tsx"),
     route("tasks", "routes/_app.tasks.tsx"),
     route("files/recent", "routes/_app.files.recent.tsx"),
+    route("social-media", "routes/_app.social-media.tsx"),
     route("basic-test", "routes/_app.basic-test.tsx"),
     route("form-test", "routes/_app.form-test.tsx"),
     route("console-diagnostic", "routes/_app.console-diagnostic.tsx"),
@@ -53,6 +60,7 @@ export default [
     route("toast-direct", "routes/_app.toast-direct.tsx"),
     route("toast-test", "routes/_app.toast-test.tsx"),
     route("settings", "routes/_app.settings.tsx"),
+  
   ]),
 
   // API routes (handled by React Router in dev/SSR)
@@ -73,4 +81,8 @@ export default [
   route("api/user", "routes/api/user.tsx"),
   route("api/verify-reset-token", "routes/api/verify-reset-token.tsx"),
   route("api/cron/daily-reminders", "routes/api/cron/daily-reminders.tsx"),
+  route("api/forum", "routes/api/forum.tsx"),
+  route("api/forum/posts", "routes/api/forum.posts.tsx"),
+  route("api/contact/submit", "routes/api/contact.submit.tsx"),
+  route("api/applications/submit", "routes/api/applications.submit.tsx"),
 ] satisfies RouteConfig;

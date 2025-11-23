@@ -1,0 +1,121 @@
+import { PrismaClient } from "@prisma/client";
+import type { ActionFunctionArgs } from "react-router";
+
+const prisma = new PrismaClient();
+
+// Helper to get user from session
+async function getUser(request: Request) {
+  const cookieHeader = request.headers.get("Cookie") || "";
+  let sessionToken = cookieHeader
+    .split("; ")
+    .find((c) => c.startsWith("session="))
+    ?.split("=")[1];
+
+  if (!sessionToken) {
+    sessionToken = request.headers.get("X-Session-Token");
+  }
+
+  if (!sessionToken) return null;
+
+  const session = await prisma.session.findUnique({
+    where: { token: sessionToken },
+    include: { user: true },
+  });
+
+  if (!session || new Date() > session.expiresAt) return null;
+  return session.user;
+}
+
+export async function action({ request }: ActionFunctionArgs) {
+  const user = await getUser(request);
+  if (!user) {
+    return Response.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
+  if (request.method === "POST") {
+    try {
+      const data = await request.json();
+      const { topicId, content } = data;
+
+      if (!topicId || !content) {
+        return Response.json({ error: "Missing fields" }, { status: 400 });
+      }
+
+      const post = await prisma.forumPost.create({
+        data: {
+          topic: {
+            connect: { id: Number(topicId) },
+          },
+          content,
+          author: {
+            connect: { id: Number(user.id) },
+          },
+        },
+        include: {
+          author: { select: { name: true } },
+        },
+      });
+      
+      // Update topic updated_at
+      await prisma.forumTopic.update({
+        where: { id: Number(topicId) },
+        data: { updatedAt: new Date() },
+      });
+
+      return Response.json({ 
+        post: {
+          id: post.id,
+          author: post.author?.name || "Unknown",
+          content: post.content,
+          timestamp: post.createdAt.toLocaleString("de-DE"),
+          likes: 0,
+        },
+      });
+    } catch (error) {
+      console.error("Error creating post:", error);
+      return Response.json({ error: "Failed to create post" }, { status: 500 });
+    }
+  }
+  
+  if (request.method === "PUT") {
+    const data = await request.json();
+    const { postId, action } = data;
+
+    if (action === "like" && postId) {
+      try {
+        // Check if user already liked this post
+        const existingLike = await prisma.forumPostLike.findUnique({
+          where: {
+            postId_userId: {
+              postId: Number(postId),
+              userId: Number(user.id),
+            },
+          },
+        });
+
+        if (!existingLike) {
+          // Create like record and increment count
+          await prisma.$transaction([
+            prisma.forumPostLike.create({
+              data: {
+                postId: Number(postId),
+                userId: Number(user.id),
+              },
+            }),
+            prisma.forumPost.update({
+              where: { id: Number(postId) },
+              data: { likes: { increment: 1 } },
+            }),
+          ]);
+        }
+
+        return Response.json({ success: true });
+      } catch (error) {
+        console.error("Error liking post:", error);
+        return Response.json({ error: "Failed to like post" }, { status: 500 });
+      }
+    }
+  }
+
+  return Response.json({ error: "Method not allowed" }, { status: 405 });
+}

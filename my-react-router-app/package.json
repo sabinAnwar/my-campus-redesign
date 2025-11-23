@@ -6,7 +6,6 @@
     "build": "react-router build",
     "dev": "react-router dev",
     "start": "react-router-serve build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
-
     "typecheck": "react-router typegen && tsc"
   },
   "dependencies": {
@@ -31,7 +30,8 @@
     "isbot": "^5.1.27",
     "jspdf": "^3.0.3",
     "lucide-react": "^0.462.0",
-    "nodemailer": "^7.0.9",
+    "nodemailer": "^7.0.10",
+    "pptxgenjs": "^4.0.1",
     "prisma": "^6.15.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
@@ -45,7 +45,7 @@
     "@react-router/dev": "^7.7.1",
     "@types/cookie-parser": "^1.4.10",
     "@types/express": "^5.0.5",
-    "@types/nodemailer": "^7.0.3",
+    "@types/nodemailer": "^7.0.4",
     "@types/react-dom": "^19.1.9",
     "autoprefixer": "^10.4.21",
     "eslint": "^9.39.1",
