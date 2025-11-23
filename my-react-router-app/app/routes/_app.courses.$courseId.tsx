@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import {
   CalendarDays,
   ClipboardList,
@@ -33,16 +33,220 @@ import {
   MoreVertical,
   Flag,
   Trash2,
+  Upload,
 } from "lucide-react";
+import { TaskKind } from "@prisma/client";
 import { saveRecentFile } from "../lib/recentFiles";
+import { prisma } from "~/lib/prisma";
+import { calculateDaysLeft } from "~/lib/tasksSample";
 import { TRANSLATIONS, getCourseConfig } from "../data/coursesConfig";
 
-export const loader = async () => {
-  return null;
+type CourseSubmission = {
+  id: number;
+  title: string;
+  course: string;
+  type: string;
+  courseCode?: string;
+  professor?: string;
+  dueDateIso: string;
+  dueDate: string;
+  correctionDate: string;
+  status: "pending" | "submitted";
+  similarity?: number;
+  daysUntilDue: number;
+  submissions: any[];
+};
+
+export const loader = async ({ params }: { params: { courseId?: string } }) => {
+  const formatGermanDate = (date: Date) =>
+    date.toLocaleDateString("de-DE", {
+      year: "numeric",
+      month: "2-digit",
+      day: "2-digit",
+    });
+
+  const courseNameMap: Record<number, { course: string; courseCode?: string; professor?: string }> = {
+    4: { course: "E-Commerce", courseCode: "ECOM301", professor: "Prof. Dr. Wagner" },
+  };
+
+  const courseIdNum = params.courseId ? Number(params.courseId) : NaN;
+  const meta = courseNameMap[courseIdNum];
+
+  if (!meta) {
+    return { submissions: [] };
+  }
+
+  // Canonical tasks (shared with Tasks page) so dates/types stay in sync
+  const canonicalTasks = [
+    {
+      title: "Hausarbeit: Customer Journey im Omnichannel Commerce",
+      course: "E-Commerce",
+      kind: TaskKind.ABGABE,
+      type: "Hausarbeit",
+      dueDate: new Date("2025-12-05"),
+    },
+    {
+      title: "Projektarbeit: Commerce Plattform Redesign",
+      course: "Commerce Engineering",
+      kind: TaskKind.ABGABE,
+      type: "Projektarbeit",
+      dueDate: new Date("2025-12-20"),
+    },
+  ].filter((t) => t.course === meta.course);
+
+  await Promise.all(
+    canonicalTasks.map(async (task) => {
+      const existing = await prisma.studentTask.findFirst({
+        where: { title: task.title, course: task.course, type: task.type },
+      });
+      if (existing) {
+        await prisma.studentTask.update({
+          where: { id: existing.id },
+          data: { dueDate: task.dueDate, kind: task.kind },
+        });
+      } else {
+        await prisma.studentTask.create({ data: task });
+      }
+    })
+  );
+
+  const allowedTitles = canonicalTasks.map((t) => t.title);
+
+  const rows = await prisma.studentTask.findMany({
+    where: { kind: TaskKind.ABGABE, course: meta.course, title: { in: allowedTitles } },
+    orderBy: { dueDate: "asc" },
+  });
+
+  const submissions: CourseSubmission[] = rows.map((row) => ({
+    id: row.id,
+    title: row.title,
+    course: row.course,
+    type: row.type,
+    courseCode: meta.courseCode,
+    professor: meta.professor,
+    dueDateIso: new Date(row.dueDate).toISOString().slice(0, 10),
+    dueDate: formatGermanDate(new Date(row.dueDate)),
+    correctionDate: formatGermanDate(
+      new Date(new Date(row.dueDate).setDate(new Date(row.dueDate).getDate() + 14))
+    ),
+    status: "pending",
+    similarity: undefined,
+    // ensure UI fields expected by the tab
+    submissions: [],
+    daysUntilDue: calculateDaysLeft(new Date(row.dueDate).toISOString().slice(0, 10)),
+  }));
+
+  return { submissions };
 };
 
 export default function CourseDetail() {
   const { courseId } = useParams();
+  const loaderData = (useLoaderData() as { submissions?: CourseSubmission[] }) || {};
+  const courseSubmissions: CourseSubmission[] = loaderData.submissions ?? [];
+
+  const loadSavedStatus = () => {
+    if (typeof window === "undefined") return {} as Record<number, { status: "pending" | "submitted"; similarity?: number }>;
+    try {
+      return JSON.parse(localStorage.getItem("submissionStatus") || "{}") as Record<
+        number,
+        { status: "pending" | "submitted"; similarity?: number }
+      >;
+    } catch {
+      return {};
+    }
+  };
+
+  const persistStatus = (next: Record<number, { status: "pending" | "submitted"; similarity?: number }>) => {
+    if (typeof window === "undefined") return;
+    localStorage.setItem("submissionStatus", JSON.stringify(next));
+  };
+
+  const [savedStatus, setSavedStatus] = useState<Record<number, { status: "pending" | "submitted"; similarity?: number }>>(
+    loadSavedStatus()
+  );
+
+  useEffect(() => {
+    const syncFromStorage = () => setSavedStatus(loadSavedStatus());
+    window.addEventListener("storage", syncFromStorage);
+    window.addEventListener("focus", syncFromStorage);
+    document.addEventListener("visibilitychange", syncFromStorage);
+    return () => {
+      window.removeEventListener("storage", syncFromStorage);
+      window.removeEventListener("focus", syncFromStorage);
+      document.removeEventListener("visibilitychange", syncFromStorage);
+    };
+  }, []);
+
+  const [submissions, setSubmissions] = useState<CourseSubmission[]>(
+    courseSubmissions.map((s) => ({
+      ...s,
+      status: savedStatus[s.id]?.status ?? "pending",
+      similarity: savedStatus[s.id]?.similarity,
+    }))
+  );
+  const [showModal, setShowModal] = useState(false);
+  const [selectedSubmission, setSelectedSubmission] = useState<CourseSubmission | null>(null);
+  const [accepted, setAccepted] = useState<{ honor: boolean; privacy: boolean }>({
+    honor: false,
+    privacy: false,
+  });
+  const [uploadedFile, setUploadedFile] = useState<File | null>(null);
+  // keep UI in sync if loader data changes (e.g., after seed or navigation)
+  useEffect(() => {
+    setSubmissions(
+      courseSubmissions.map((s) => ({
+        ...s,
+        status: savedStatus[s.id]?.status ?? "pending",
+        similarity: savedStatus[s.id]?.similarity,
+      }))
+    );
+  }, [courseSubmissions, savedStatus]);
+
+  const openModal = (submission: CourseSubmission) => {
+    setSelectedSubmission(submission);
+    setShowModal(true);
+    setAccepted({ honor: false, privacy: false });
+    setUploadedFile(null);
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0] ?? null;
+    if (file) setUploadedFile(file);
+  };
+
+  const handleSubmit = () => {
+    if (!accepted.honor || !accepted.privacy) {
+      alert(
+        language === "de"
+          ? "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz."
+          : "Please accept the honor and privacy statements."
+      );
+      return;
+    }
+    if (!uploadedFile) {
+      alert(language === "de" ? "Bitte lade deine Datei hoch." : "Please upload your file.");
+      return;
+    }
+    if (!selectedSubmission) return;
+
+    const similarity = Math.floor(Math.random() * 10 + 5);
+    setSubmissions((prev) => {
+      const updated = prev.map((s) =>
+        s.id === selectedSubmission.id ? { ...s, status: "submitted", similarity } : s
+      );
+      const persisted: Record<number, { status: "pending" | "submitted"; similarity?: number }> = {};
+      updated.forEach((s) => {
+        if (s.status === "submitted") {
+          persisted[s.id] = { status: s.status, similarity: s.similarity };
+        }
+      });
+      persistStatus(persisted);
+      setSavedStatus(persisted);
+      return updated;
+    });
+    setShowModal(false);
+    alert(language === "de" ? "Abgabe gespeichert." : "Submission saved.");
+  };
   const [language, setLanguage] = useState<"de" | "en">("de");
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
@@ -357,6 +561,161 @@ export default function CourseDetail() {
           </div>
         )}
 
+        {/* Modal: Upload */}
+        {showModal && (
+          <div className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
+            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl p-8 w-full max-w-lg relative animate-fadeIn border border-neutral-200 dark:border-neutral-800">
+              <div className="flex items-center gap-3 mb-4">
+                <div className="h-10 w-10 rounded-full bg-neutral-900 dark:bg-white flex items-center justify-center text-white dark:text-neutral-900 font-black shadow-sm">
+                  T
+                </div>
+                <div>
+                  <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
+                    {language === "de" ? "Abgabe verwalten" : "Manage submission"}
+                  </h2>
+                  <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                    {selectedSubmission?.title}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-6">
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={accepted.honor}
+                    onChange={(e) =>
+                      setAccepted((prev) => ({
+                        ...prev,
+                        honor: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 accent-neutral-900 dark:accent-white"
+                  />
+                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
+                    {language === "de"
+                      ? "Ich bestätige die Eidesstattliche Erklärung."
+                      : "I confirm the honor statement."}
+                  </span>
+                </label>
+
+                <label className="flex items-start gap-2 cursor-pointer">
+                  <input
+                    type="checkbox"
+                    checked={accepted.privacy}
+                    onChange={(e) =>
+                      setAccepted((prev) => ({
+                        ...prev,
+                        privacy: e.target.checked,
+                      }))
+                    }
+                    className="mt-1 accent-neutral-900 dark:accent-white"
+                  />
+                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
+                    {language === "de"
+                      ? "Ich akzeptiere den Datenschutz für den Upload."
+                      : "I accept the privacy terms for upload."}
+                  </span>
+                </label>
+              </div>
+
+              <div
+                className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${
+                  uploadedFile
+                    ? "border-neutral-600 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/40"
+                    : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 dark:hover:border-neutral-500 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
+                }`}
+              >
+                {!uploadedFile && (
+                  <>
+                    <div className="flex flex-col items-center justify-center space-y-2">
+                      <Upload className="h-10 w-10 text-neutral-700 dark:text-neutral-200" />
+                      <p className="text-sm text-neutral-700 dark:text-neutral-200">
+                        {language === "de"
+                          ? "Datei hier ablegen oder klicken, um hochzuladen"
+                          : "Drop file here or click to upload"}
+                      </p>
+                    </div>
+                    <input
+                      type="file"
+                      accept=".pdf,.doc,.docx"
+                      onChange={handleFileChange}
+                      className="hidden"
+                      id="course-file-upload"
+                    />
+                    <label
+                      htmlFor="course-file-upload"
+                      className="cursor-pointer inline-block mt-4 bg-neutral-900 text-white text-sm px-4 py-2 rounded-md font-semibold shadow-sm hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
+                    >
+                      {language === "de" ? "Datei auswählen" : "Choose file"}
+                    </label>
+                  </>
+                )}
+
+                {uploadedFile && (
+                  <div className="space-y-3 animate-fadeIn">
+                    <div className="flex items-center justify-center gap-2 mt-3">
+                      <div className="flex items-center gap-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 px-3 py-2 rounded-lg shadow-sm">
+                        <svg
+                          xmlns="http://www.w3.org/2000/svg"
+                          className="h-5 w-5 text-neutral-900 dark:text-white"
+                          fill="none"
+                          viewBox="0 0 24 24"
+                          stroke="currentColor"
+                        >
+                          <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M5 13l4 4L19 7"
+                          />
+                        </svg>
+                        <div className="text-left">
+                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
+                            {uploadedFile.name}
+                          </p>
+                          <p className="text-xs text-neutral-600 dark:text-neutral-300">
+                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 mt-4 overflow-hidden">
+                      <div
+                        className="h-2 bg-neutral-900 dark:bg-white animate-progress"
+                        style={{ width: "100%" }}
+                      ></div>
+                    </div>
+                    <p className="text-xs text-neutral-700 dark:text-neutral-200 mt-2 animate-fadeIn">
+                      ✅ {language === "de" ? "Upload abgeschlossen." : "Upload complete."}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end gap-3 mt-8">
+                <button
+                  onClick={() => setShowModal(false)}
+                  className="px-4 py-2 rounded-md text-sm font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 hover:bg-neutral-300 dark:hover:bg-neutral-700"
+                >
+                  {language === "de" ? "Abbrechen" : "Cancel"}
+                </button>
+                <button
+                  onClick={handleSubmit}
+                  disabled={!accepted.honor || !accepted.privacy}
+                  className={`px-4 py-2 rounded-md text-sm font-semibold shadow text-white transition-all ${
+                    accepted.honor && accepted.privacy
+                      ? "bg-neutral-900 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
+                      : "bg-neutral-400 dark:bg-neutral-700 cursor-not-allowed"
+                  }`}
+                >
+                  {language === "de" ? "Hochladen & Bestätigen" : "Upload & Confirm"}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
         {/* Resources Tab - Expandable Sections */}
         {activeTab === "resources" && (
           <div className="rounded-2xl border border-border bg-card shadow-md overflow-hidden divide-y divide-border">
@@ -734,79 +1093,107 @@ export default function CourseDetail() {
             <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">
               ✍️ {language === "de" ? "Abgabe" : "Submissions"}
             </h3>
-            {course.assignments.map((assignment: any) => (
+            {submissions.length === 0 && (
+              <div className="bg-slate-50 dark:bg-slate-900/50 border border-slate-200 dark:border-slate-800 rounded-lg p-6 text-center text-slate-600 dark:text-slate-300">
+                {language === "de"
+                  ? "Keine Abgaben für diesen Kurs vorhanden."
+                  : "No submissions for this course yet."}
+              </div>
+            )}
+            {submissions.map((assignment: any) => (
               <div
                 key={assignment.id}
-                className="bg-white dark:bg-transparent rounded-lg p-6 border border-blue-100 dark:border-slate-700"
+                className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-950/40"
               >
-                <div className="flex items-start justify-between mb-4">
+                <div className="flex justify-between items-start mb-3">
                   <div>
-                    <h4 className="font-bold text-slate-900 dark:text-slate-100 mb-1">
+                    <h4 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-1">
                       {assignment.title}
                     </h4>
-                    <p className="text-sm text-slate-600 dark:text-slate-300">
-                      📅 {assignment.dueDate}
+                    <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
+                      {assignment.course}
+                      {assignment.courseCode ? ` · ${assignment.courseCode}` : ""}
                     </p>
+                    <div className="flex items-center gap-2">
+                      <span className="px-2 py-0.5 rounded-sm bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 text-[11px] font-semibold">
+                        {assignment.type}
+                      </span>
+                      {assignment.professor && (
+                        <span className="text-[11px] text-neutral-600 dark:text-neutral-300">
+                          {assignment.professor}
+                        </span>
+                      )}
+                    </div>
                   </div>
                   <span
-                    className={`text-xs font-semibold px-3 py-1 rounded-full ${
+                    className={`px-2 py-1 rounded-sm text-xs font-semibold ${
                       assignment.status === "submitted"
-                        ? "bg-green-100 text-green-700"
-                        : assignment.status === "graded"
-                          ? "bg-blue-100 text-blue-700"
-                          : "bg-orange-100 text-orange-700"
+                        ? "bg-neutral-900 text-white border border-neutral-900"
+                        : "bg-neutral-100 text-neutral-800 border border-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
                     }`}
                   >
-                    {assignment.status === "submitted"
-                      ? t.submitted
-                      : assignment.status === "graded"
-                        ? t.graded
-                        : t.pending}
+                    {assignment.status === "submitted" ? t.submitted : t.pending}
                   </span>
                 </div>
 
-                {assignment.submissions.length > 0 ? (
-                  <div className="bg-slate-50 dark:bg-slate-900/50 rounded-lg p-4 space-y-3">
-                    {assignment.submissions.map((sub: any, idx: number) => (
-                      <div key={idx}>
-                        <div className="flex items-center justify-between mb-2">
-                          <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                            {t.submitted}: {sub.date}
-                          </p>
-                          {sub.grade && (
-                            <p className="text-lg font-bold text-blue-600 dark:text-blue-300">
-                              {t.grade}: {sub.grade}
-                            </p>
-                          )}
-                        </div>
-                        {sub.similarity !== null && (
-                          <div className="flex items-center gap-2 mb-2">
-                            <span className="text-sm font-semibold text-slate-600 dark:text-slate-300">
-                              Turnitin:
-                            </span>
-                            <span
-                              className={`text-sm font-bold px-2 py-1 rounded ${
-                                sub.similarity < 15
-                                  ? "bg-green-100 text-green-700"
-                                  : sub.similarity < 30
-                                    ? "bg-yellow-100 text-yellow-700"
-                                    : "bg-red-100 text-red-700"
-                              }`}
-                            >
-                              {sub.similarity}%
-                            </span>
-                          </div>
-                        )}
-                        <p className="text-sm text-slate-600 dark:text-slate-300">
-                          {t.feedback}: {sub.feedback}
-                        </p>
-                      </div>
-                    ))}
+                <div className="grid grid-cols-2 gap-4 mt-3 border-t border-neutral-200 dark:border-neutral-800 pt-3">
+                  <div>
+                    <CalendarDays className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
+                    <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                      {language === "de" ? "Abgabefrist:" : "Due Date:"}
+                    </span>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
+                      {assignment.dueDate}
+                    </p>
                   </div>
-                ) : (
-                  <button className="w-full px-4 py-2 bg-blue-600 dark:bg-blue-700 text-white font-semibold rounded-lg hover:bg-blue-700 dark:hover:bg-blue-800">
-                    ⬆️ {t.uploadAssignment}
-                  </button>
+                  <div>
+                    <ClipboardList className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
+                    <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
+                      {language === "de" ? "Korrektur:" : "Correction:"}
+                    </span>
+                    <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
+                      {assignment.correctionDate}
+                    </p>
+                  </div>
+                </div>
+                <div className="mt-3 flex items-center gap-2 text-xs font-semibold">
+                  <span
+                    className={`px-2 py-1 rounded-sm border ${
+                      assignment.daysUntilDue > 5
+                        ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:border-emerald-800"
+                        : assignment.daysUntilDue > 0
+                          ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-100 dark:border-amber-800"
+                          : "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-100 dark:border-rose-800"
+                    }`}
+                  >
+                    ⏳{" "}
+                    {assignment.daysUntilDue > 0
+                      ? `${assignment.daysUntilDue} Tage`
+                      : "Überfällig"}
+                  </span>
+                  <span className="px-2 py-1 rounded-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700">
+                    📁 {assignment.course}
+                  </span>
+                </div>
+
+                {assignment.status !== "submitted" && (
+                  <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-800">
+                    {assignment.daysUntilDue > 0 ? (
+                      <button
+                        className="w-full py-2 text-sm font-semibold bg-neutral-900 text-white rounded-md hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
+                        onClick={() => openModal(assignment)}
+                      >
+                        Abgabe verwalten
+                      </button>
+                    ) : (
+                      <button
+                        disabled
+                        className="w-full py-2 text-sm font-semibold bg-neutral-400 dark:bg-neutral-700 text-white rounded-md cursor-not-allowed"
+                      >
+                        Frist verpasst – keine Abgabe möglich
+                      </button>
+                    )}
+                  </div>
                 )}
               </div>
             ))}
@@ -1419,6 +1806,4 @@ export default function CourseDetail() {
         )}
       </main>
     </div>
-  );
-}
-
+  )};

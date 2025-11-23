@@ -1,5 +1,5 @@
 import React, { useRef } from "react";
-import { useLoaderData } from "react-router-dom";
+import { Link, useLoaderData } from "react-router-dom";
 
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 import jsPDF from "jspdf";
@@ -90,6 +90,27 @@ export default function StudentIdPage() {
             <p className="text-lg text-slate-600">
               IU Internationale Hochschule · Offizieller Studierendenausweis
             </p>
+            <div className="mt-4 flex justify-center">
+              <Link
+                to="/benefits"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-indigo-200 bg-white text-indigo-700 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+              >
+                Student Benefits ansehen
+                <svg
+                  className="w-4 h-4"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 5l7 7-7 7"
+                  />
+                </svg>
+              </Link>
+            </div>
           </header>
 
           {/* CARD DISPLAY */}

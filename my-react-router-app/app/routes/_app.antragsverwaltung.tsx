@@ -14,7 +14,7 @@ const formDefinitions: Record<string, any> = {
       { name: "startDate", label: "Gewünschtes Startdatum", type: "date", required: true },
       { name: "documents", label: "Dokumente hochladen", type: "file", required: false },
     ],
-    microsoftFormUrl: "https://forms.office.com/Pages/ResponsePage.aspx?id=YOUR_FORM_ID_1",
+    microsoftFormUrl: "https://forms.office.com/e/z0xk9ttuJY",
   },
   "2": {
     title: "Antrag auf Nachteilsausgleich",

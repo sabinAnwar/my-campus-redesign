@@ -43,7 +43,9 @@ export async function action({ request }: ActionFunctionArgs) {
 
       const post = await prisma.forumPost.create({
         data: {
-          topicId: Number(topicId),
+          topic: {
+            connect: { id: Number(topicId) },
+          },
           content,
           author: {
             connect: { id: Number(user.id) },

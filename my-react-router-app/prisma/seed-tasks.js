@@ -17,25 +17,18 @@ async function main() {
 
   const tasks = [
     {
-      title: "Hausarbeit: Digitale Transformation im E-Commerce",
+      title: "Hausarbeit: Customer Journey im Omnichannel Commerce",
       course: "E-Commerce",
       kind: TaskKind.ABGABE,
       type: "Hausarbeit",
-      dueDate: new Date("2025-11-15"),
+      dueDate: new Date("2025-12-05"),
     },
     {
-      title: "Seminararbeit: Datenbankmodellierung für große Unternehmen",
-      course: "Datenbankdesign",
+      title: "Projektarbeit: Commerce Plattform Redesign",
+      course: "Commerce Engineering",
       kind: TaskKind.ABGABE,
-      type: "Seminararbeit",
-      dueDate: new Date("2025-11-18"),
-    },
-    {
-      title: "Klausur: Wirtschaftsinformatik II",
-      course: "Wirtschaftsinformatik",
-      kind: TaskKind.KLAUSUR,
-      type: "Klausur",
-      dueDate: new Date("2025-11-19"),
+      type: "Projektarbeit",
+      dueDate: new Date("2025-12-20"),
     },
   ];
 
@@ -74,4 +67,3 @@ main()
   .finally(async () => {
     await prisma.$disconnect();
   });
-

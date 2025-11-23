@@ -133,31 +133,10 @@ export async function action({ request }: ActionFunctionArgs) {
     
     if (action === "view" && topicId) {
       try {
-        // Check if user already viewed this topic
-        const existingView = await prisma.forumTopicView.findUnique({
-          where: {
-            topicId_userId: {
-              topicId: String(topicId),
-              userId: user.id
-            }
-          }
+        await prisma.forumTopic.update({
+          where: { id: Number(topicId) },
+          data: { views: { increment: 1 } }
         });
-
-        if (!existingView) {
-          // Create view record and increment count
-          await prisma.$transaction([
-            prisma.forumTopicView.create({
-              data: {
-                topicId: String(topicId),
-                userId: user.id
-              }
-            }),
-            prisma.forumTopic.update({
-              where: { id: String(topicId) },
-              data: { views: { increment: 1 } }
-            })
-          ]);
-        }
         
         return Response.json({ success: true });
       } catch (error) {

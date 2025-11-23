@@ -355,6 +355,15 @@ export default function Dashboard() {
             <p className="text-slate-600 dark:text-slate-400 text-sm">
               Hier ist eine Übersicht über deinen Studienalltag.
             </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              <Link
+                to="/benefits"
+                className="inline-flex items-center gap-2 px-4 py-2 rounded-xl border border-primary/40 bg-primary/10 text-primary font-semibold hover:bg-primary/15 transition-colors"
+              >
+                Student Benefits anzeigen
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+            </div>
           </div>
 
           {/* Robot Section */}
@@ -1097,7 +1106,6 @@ export default function Dashboard() {
 
   );
 }
-
 
 
 

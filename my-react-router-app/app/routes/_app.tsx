@@ -13,6 +13,7 @@ import {
   FolderOpen,
   FileSearch,
   Settings as SettingsIcon,
+  Gift,
   BookOpenCheck,
   FileText,
   BadgeCheck,
@@ -21,6 +22,7 @@ import {
   X,
   CheckSquare,
   DoorOpen,
+  Instagram,
 } from "lucide-react";
 import { useTheme } from "~/contexts/ThemeContext";
 import ThemeToggle from "~/components/ThemeToggle";
@@ -46,16 +48,14 @@ export default function AppShell() {
     { to: "/courses", label: "My Courses", icon: BookOpen },
     { to: "/files/recent", label: "Recent Files", icon: FileSearch },
     { to: "/tasks", label: "Tasks & Assignments", icon: CheckSquare },
-    { to: "/news", label: "News & Updates", icon: Newspaper },
     { to: "/praxisbericht2", label: "Praxisbericht", icon: FolderOpen },
-    {
-      to: "/study-organization",
-      label: "Study Organization",
-      icon: GraduationCap,
-    },
     { to: "/info-center", label: "Info Center", icon: Info },
+    { to: "/benefits", label: "Student Benefits", icon: Gift },
+    { to: "/social-media", label: "Social Media & Campus", icon: Instagram },
+    { to: "/news", label: "News & Updates", icon: Newspaper },
     { to: "/faq", label: "Help & FAQ", icon: HelpCircle },
-    { to: "/messages", label: "Kontakt IU", icon: Headphones },
+    { to: "/study-organization", label: "Study Organization", icon: BookOpenCheck },
+    { to: "/contact", label: "Contact", icon: UserIcon },
   ];
 
   // -----------------------------
