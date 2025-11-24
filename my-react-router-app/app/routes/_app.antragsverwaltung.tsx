@@ -5,49 +5,22 @@ import { Search, Clock, CheckCircle, XCircle, AlertCircle, FileText, ChevronRigh
 const formDefinitions: Record<string, any> = {
   "1": {
     title: "Anmeldung zur Abschlussarbeit Erst- und Zweitversuch",
-    fields: [
-      { name: "studentName", label: "Name", type: "text", required: true },
-      { name: "matrikelNummer", label: "Matrikelnummer", type: "text", required: true },
-      { name: "thesisTitle", label: "Titel der Abschlussarbeit", type: "text", required: true },
-      { name: "supervisor", label: "Betreuer", type: "text", required: true },
-      { name: "company", label: "Unternehmen", type: "text", required: false },
-      { name: "startDate", label: "Gewünschtes Startdatum", type: "date", required: true },
-      { name: "documents", label: "Dokumente hochladen", type: "file", required: false },
-    ],
+ 
     microsoftFormUrl: "https://forms.office.com/e/z0xk9ttuJY",
   },
   "2": {
     title: "Antrag auf Nachteilsausgleich",
-    fields: [
-      { name: "studentName", label: "Name", type: "text", required: true },
-      { name: "matrikelNummer", label: "Matrikelnummer", type: "text", required: true },
-      { name: "disability", label: "Art der Beeinträchtigung", type: "textarea", required: true },
-      { name: "requestedAccommodation", label: "Beantragte Maßnahmen", type: "textarea", required: true },
-      { name: "medicalCertificate", label: "Ärztliches Attest", type: "file", required: true },
-    ],
+   
     microsoftFormUrl: "https://forms.office.com/Pages/ResponsePage.aspx?id=YOUR_FORM_ID_2",
   },
   "3": {
     title: "Antrag auf Verlängerung der Bearbeitungszeit",
-    fields: [
-      { name: "studentName", label: "Name", type: "text", required: true },
-      { name: "matrikelNummer", label: "Matrikelnummer", type: "text", required: true },
-      { name: "currentDeadline", label: "Aktuelle Frist", type: "date", required: true },
-      { name: "requestedExtension", label: "Beantragte Verlängerung (Wochen)", type: "number", required: true },
-      { name: "reason", label: "Begründung", type: "textarea", required: true },
-      { name: "supportingDocuments", label: "Nachweise", type: "file", required: false },
-    ],
+ 
     microsoftFormUrl: "https://forms.office.com/Pages/ResponsePage.aspx?id=YOUR_FORM_ID_3",
   },
   // Add more form definitions for other application types...
   "default": {
     title: "Allgemeiner Antrag",
-    fields: [
-      { name: "studentName", label: "Name", type: "text", required: true },
-      { name: "matrikelNummer", label: "Matrikelnummer", type: "text", required: true },
-      { name: "requestDetails", label: "Details des Antrags", type: "textarea", required: true },
-      { name: "documents", label: "Dokumente", type: "file", required: false },
-    ],
     microsoftFormUrl: null,
   },
 };
@@ -363,99 +336,7 @@ export default function AntragsVerwaltung() {
               )}
 
               {/* Form */}
-              <form onSubmit={handleSubmitForm} className="space-y-6">
-                {currentFormDef.fields.map((field: any) => (
-                  <div key={field.name}>
-                    <label className="block text-xs font-bold text-muted-foreground mb-2 uppercase tracking-wider">
-                      {field.label}
-                      {field.required && <span className="text-rose-500 ml-1">*</span>}
-                    </label>
-                    
-                    {field.type === "text" && (
-                      <input
-                        type="text"
-                        required={field.required}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-muted-foreground/50"
-                        placeholder={`${field.label} eingeben...`}
-                      />
-                    )}
-
-                    {field.type === "number" && (
-                      <input
-                        type="number"
-                        required={field.required}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all placeholder:text-muted-foreground/50"
-                        placeholder={`${field.label} eingeben...`}
-                      />
-                    )}
-
-                    {field.type === "date" && (
-                      <input
-                        type="date"
-                        required={field.required}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all"
-                      />
-                    )}
-
-                    {field.type === "textarea" && (
-                      <textarea
-                        required={field.required}
-                        value={formData[field.name] || ""}
-                        onChange={(e) => handleInputChange(field.name, e.target.value)}
-                        rows={4}
-                        className="w-full px-4 py-3.5 rounded-xl border border-border bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all resize-none placeholder:text-muted-foreground/50"
-                        placeholder={`${field.label} eingeben...`}
-                      />
-                    )}
-
-                    {field.type === "file" && (
-                      <div className="relative">
-                        <input
-                          type="file"
-                          required={field.required}
-                          onChange={(e) => handleInputChange(field.name, e.target.files?.[0])}
-                          className="w-full px-4 py-3.5 rounded-xl border border-border bg-background/50 text-foreground focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary transition-all file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:bg-primary file:text-primary-foreground file:font-medium hover:file:bg-primary/90 file:cursor-pointer"
-                        />
-                        <Upload className="absolute right-4 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground pointer-events-none" />
-                      </div>
-                    )}
-                  </div>
-                ))}
-
-                {/* Actions */}
-                <div className="flex gap-3 justify-end pt-6 border-t border-border/50">
-                  <button
-                    type="button"
-                    onClick={handleCloseForm}
-                    className="px-6 py-2.5 rounded-xl font-bold text-muted-foreground hover:bg-accent hover:text-foreground transition-colors"
-                  >
-                    Abbrechen
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={isSubmitting}
-                    className="px-8 py-2.5 bg-primary text-primary-foreground font-bold rounded-xl hover:bg-primary/90 transition-all shadow-lg shadow-primary/20 active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    {isSubmitting ? (
-                      <>
-                        <div className="w-4 h-4 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
-                        Wird eingereicht...
-                      </>
-                    ) : (
-                      <>
-                        <Send className="w-4 h-4" />
-                        Antrag einreichen
-                      </>
-                    )}
-                  </button>
-                </div>
-              </form>
+           
             </div>
           </div>
         </div>
