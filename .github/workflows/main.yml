@@ -2,25 +2,19 @@ name: Daily Reminders
 
 on:
   schedule:
-    - cron: "*/5 * * * *"   # every 5 minutes
+    - cron: "*/5 * * * *" # every 5 minutes
   workflow_dispatch:
 
 jobs:
-  ping:
+  trigger:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Debug and call endpoint
+      - name: Call daily reminders
         env:
           APP_URL: https://iu-mycampus.me
-          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+          CRON_SECRET: ${{ secrets.CRON_SECRET }} # must match your app env
         run: |
-          echo "APP_URL: $APP_URL"
-          echo "CRON_SECRET length: ${#CRON_SECRET}"
-          echo "Calling endpoint..."
-          curl -v "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
-
-
-
-
-     
+          set -euo pipefail
+          echo "Calling ${APP_URL}/api/cron/daily-reminders"
+          curl -f -sS -H "x-vercel-cron: 1" \
+            "${APP_URL}/api/cron/daily-reminders?secret=${CRON_SECRET}"
