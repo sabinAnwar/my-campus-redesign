@@ -1,8 +1,101 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Mail, Phone, MessageSquare, Clock, AlertCircle, MapPin, Send, CheckCircle2, BookOpen, FileText, Home, Folder, Wrench, HelpCircle } from 'lucide-react';
+import { useLanguage } from "~/contexts/LanguageContext";
 
 export default function Contact() {
+  const { language } = useLanguage();
+  const t = {
+    de: {
+      back: "Zurück zum Dashboard",
+      title: "Support & Kontakt",
+      subtitle: "Wir helfen dir gerne bei Fragen und Problemen. Unser Team steht dir zur Verfügung.",
+      available: "Support verfügbar",
+      writeUs: "Schreib uns eine Nachricht",
+      autoAttach: "Deine IU-Anmeldedaten (Name & E-Mail) hängen wir automatisch an.",
+      responseTime: "Durchschn. Antwortzeit: 1h",
+      sentTitle: "Nachricht gesendet!",
+      sentBody: "Wir melden uns schnellstmöglich bei dir.",
+      subject: "Betreff",
+      subjectPlaceholder: "-- Wähle ein Thema --",
+      subjectOptions: {
+        studienplan: "Studienplan",
+        klausuren: "Klausuren",
+        raumbuchung: "Raumbuchung",
+        dateien: "Dateien & Materialien",
+        technisch: "Technische Probleme",
+        sonstiges: "Sonstiges",
+      },
+      message: "Nachricht",
+      messagePlaceholder: "Beschreibe dein Anliegen ausführlich...",
+      sending: "Wird gesendet...",
+      send: "Nachricht senden",
+      errorGeneric: "Fehler beim Senden der Nachricht",
+      errorNetwork: "Netzwerkfehler. Bitte versuche es später erneut.",
+      supportHours: "Support-Zeiten",
+      monFri: "Montag - Freitag",
+      sat: "Samstag",
+      sun: "Sonntag",
+      closed: "Geschlossen",
+      emergency: "Notfall-Hotline",
+      emergencyDesc: "Bitte nur bei technischen Notfällen nutzen",
+      chatTitle: "Chat & Self-Service",
+      chatDesc: "Schnelle Antworten über unseren Chatbot und das FAQ.",
+      resourcesTitle: "Beliebte Ressourcen",
+      studentId: "Studentenausweis",
+      modules: "Module & Fächer",
+      handbook: "Modulhandbuch",
+      toolsTitle: "Tools & Services",
+      housing: "Housing",
+      praxis: "Praxisberichte",
+      portal: "Bibliothek / Portale",
+    },
+    en: {
+      back: "Back to dashboard",
+      title: "Support & Contact",
+      subtitle: "We’re here to help with questions or issues. Our team is available for you.",
+      available: "Support available",
+      writeUs: "Send us a message",
+      autoAttach: "We’ll attach your IU account data (name & email) automatically.",
+      responseTime: "Avg. response time: 1h",
+      sentTitle: "Message sent!",
+      sentBody: "We’ll get back to you as soon as possible.",
+      subject: "Subject",
+      subjectPlaceholder: "-- Choose a topic --",
+      subjectOptions: {
+        studienplan: "Study plan",
+        klausuren: "Exams",
+        raumbuchung: "Room booking",
+        dateien: "Files & materials",
+        technisch: "Technical issues",
+        sonstiges: "Other",
+      },
+      message: "Message",
+      messagePlaceholder: "Describe your issue in detail...",
+      sending: "Sending...",
+      send: "Send message",
+      errorGeneric: "Failed to send message",
+      errorNetwork: "Network error. Please try again later.",
+      supportHours: "Support hours",
+      monFri: "Monday - Friday",
+      sat: "Saturday",
+      sun: "Sunday",
+      closed: "Closed",
+      emergency: "Emergency hotline",
+      emergencyDesc: "Use only for technical emergencies",
+      chatTitle: "Chat & self-service",
+      chatDesc: "Get quick answers via chatbot and FAQ.",
+      resourcesTitle: "Popular resources",
+      studentId: "Student ID",
+      modules: "Modules & subjects",
+      handbook: "Module handbook",
+      toolsTitle: "Tools & services",
+      housing: "Housing",
+      praxis: "Practical reports",
+      portal: "Library / portals",
+    },
+  }[language];
+
   const [formData, setFormData] = useState({
     subject: '',
     message: ''
@@ -40,11 +133,11 @@ export default function Contact() {
         }, 5000);
       } else {
         const data = await response.json();
-        setError(data.error || 'Fehler beim Senden der Nachricht');
+        setError(data.error || t.errorGeneric);
       }
     } catch (err) {
       console.error('Contact form error:', err);
-      setError('Netzwerkfehler. Bitte versuche es später erneut.');
+      setError(t.errorNetwork);
     } finally {
       setIsSubmitting(false);
     }
@@ -61,16 +154,16 @@ export default function Contact() {
               className="inline-flex items-center gap-2 text-muted-foreground hover:text-foreground font-semibold transition-colors text-sm mb-4 group"
             >
               <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-              Zurück zum Dashboard
+              {t.back}
             </Link>
             <h1 className="text-4xl font-black text-foreground mb-2">Support & Kontakt</h1>
             <p className="text-muted-foreground text-lg">
-              Wir helfen dir gerne bei Fragen und Problemen. Unser Team steht dir zur Verfügung.
+              {t.subtitle}
             </p>
           </div>
           <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border border-emerald-200 dark:border-emerald-800 bg-emerald-50 dark:bg-emerald-950/20">
             <span className="h-2 w-2 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse"></span>
-            <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">Support verfügbar</span>
+            <span className="text-sm font-semibold text-emerald-700 dark:text-emerald-300">{t.available}</span>
           </div>
         </div>
 
@@ -80,14 +173,14 @@ export default function Contact() {
             <div className="bg-card border border-border rounded-2xl shadow-xl p-6 md:p-8 hover:shadow-2xl transition-all duration-300">
               <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6 pb-6 border-b border-border">
                 <div className="space-y-1">
-                  <h2 className="text-2xl font-black text-card-foreground">Schreib uns eine Nachricht</h2>
+                  <h2 className="text-2xl font-black text-card-foreground">{t.writeUs}</h2>
                   <p className="text-muted-foreground text-sm">
-                    Deine IU-Anmeldedaten (Name & E-Mail) hängen wir automatisch an.
+                    {t.autoAttach}
                   </p>
                 </div>
                 <div className="px-4 py-2 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 text-sm font-semibold inline-flex items-center gap-2 border border-emerald-200 dark:border-emerald-800 shadow-sm">
                   <span className="h-2 w-2 rounded-full bg-emerald-600 dark:bg-emerald-400 animate-pulse" />
-                  Durchschn. Antwortzeit: 1h
+                  {t.responseTime}
                 </div>
               </div>
 
@@ -97,10 +190,10 @@ export default function Contact() {
                     <CheckCircle2 className="w-10 h-10 text-emerald-600 dark:text-emerald-400" />
                   </div>
                   <h3 className="text-2xl font-black text-emerald-700 dark:text-emerald-300 mb-2">
-                    Nachricht gesendet!
+                    {t.sentTitle}
                   </h3>
                   <p className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                    Wir melden uns schnellstmöglich bei dir.
+                    {t.sentBody}
                   </p>
                 </div>
               ) : (
@@ -114,7 +207,7 @@ export default function Contact() {
 
                   <div className="space-y-2">
                     <label className="block text-sm font-bold text-card-foreground uppercase tracking-wide">
-                      Betreff
+                      {t.subject}
                     </label>
                     <select
                       name="subject"
@@ -123,19 +216,19 @@ export default function Contact() {
                       required
                       className="w-full px-4 py-3.5 border border-input bg-background text-foreground rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none transition-all cursor-pointer"
                     >
-                      <option value="">-- Wähle ein Thema --</option>
-                      <option value="studienplan">Studienplan</option>
-                      <option value="klausuren">Klausuren</option>
-                      <option value="raumbuchung">Raumbuchung</option>
-                      <option value="dateien">Dateien & Materialien</option>
-                      <option value="technisch">Technische Probleme</option>
-                      <option value="sonstiges">Sonstiges</option>
+                      <option value="">{t.subjectPlaceholder}</option>
+                      <option value="studienplan">{t.subjectOptions.studienplan}</option>
+                      <option value="klausuren">{t.subjectOptions.klausuren}</option>
+                      <option value="raumbuchung">{t.subjectOptions.raumbuchung}</option>
+                      <option value="dateien">{t.subjectOptions.dateien}</option>
+                      <option value="technisch">{t.subjectOptions.technisch}</option>
+                      <option value="sonstiges">{t.subjectOptions.sonstiges}</option>
                     </select>
                   </div>
 
                   <div className="space-y-2">
                     <label className="block text-sm font-bold text-card-foreground uppercase tracking-wide">
-                      Nachricht
+                      {t.message}
                     </label>
                     <textarea
                       name="message"
@@ -144,7 +237,7 @@ export default function Contact() {
                       required
                       rows={8}
                       className="w-full px-4 py-3.5 border border-input bg-background text-foreground rounded-xl focus:border-primary focus:ring-2 focus:ring-primary/20 outline-none resize-none transition-all placeholder:text-muted-foreground"
-                      placeholder="Beschreibe dein Anliegen ausführlich..."
+                      placeholder={t.messagePlaceholder}
                     />
                   </div>
 
@@ -156,12 +249,12 @@ export default function Contact() {
                     {isSubmitting ? (
                       <>
                         <div className="w-5 h-5 border-2 border-primary-foreground/30 border-t-primary-foreground rounded-full animate-spin"></div>
-                        Wird gesendet...
+                        {t.sending}
                       </>
                     ) : (
                       <>
                         <Send className="w-5 h-5" />
-                        Nachricht senden
+                        {t.send}
                       </>
                     )}
                   </button>
@@ -176,20 +269,20 @@ export default function Contact() {
                   <div className="p-2 bg-blue-100 dark:bg-blue-950/30 rounded-lg">
                     <Clock className="w-6 h-6 text-blue-600 dark:text-blue-400" />
                   </div>
-                  <h3 className="text-xl font-black text-card-foreground">Support-Zeiten</h3>
+                  <h3 className="text-xl font-black text-card-foreground">{t.supportHours}</h3>
                 </div>
                 <div className="space-y-3 text-sm">
                   <div className="flex justify-between items-center p-3 rounded-lg bg-background border border-border">
-                    <span className="font-bold text-foreground">Montag - Freitag</span>
+                    <span className="font-bold text-foreground">{t.monFri}</span>
                     <span className="text-muted-foreground font-semibold">08:00 - 18:00</span>
                   </div>
                   <div className="flex justify-between items-center p-3 rounded-lg bg-background border border-border">
-                    <span className="font-bold text-foreground">Samstag</span>
+                    <span className="font-bold text-foreground">{t.sat}</span>
                     <span className="text-muted-foreground font-semibold">10:00 - 14:00</span>
                   </div>
                   <div className="flex justify-between items-center p-3 rounded-lg bg-muted/50 border border-border">
-                    <span className="font-bold text-muted-foreground">Sonntag</span>
-                    <span className="text-muted-foreground font-semibold">Geschlossen</span>
+                    <span className="font-bold text-muted-foreground">{t.sun}</span>
+                    <span className="text-muted-foreground font-semibold">{t.closed}</span>
                   </div>
                 </div>
               </div>
@@ -201,15 +294,15 @@ export default function Contact() {
                     <AlertCircle className="w-6 h-6 text-rose-600 dark:text-rose-400" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-black text-rose-900 dark:text-rose-100">Notfall-Kontakt</h3>
+                    <h3 className="text-xl font-black text-rose-900 dark:text-rose-100">{t.emergency}</h3>
                     <p className="text-rose-700 dark:text-rose-300 text-xs font-semibold">
-                      Für dringende Fälle (24/7)
+                      {t.emergencyDesc}
                     </p>
                   </div>
                 </div>
                 <div className="bg-white dark:bg-rose-950/30 border border-rose-200 dark:border-rose-800 rounded-lg p-4">
                   <p className="text-xs font-bold text-rose-600 dark:text-rose-400 mb-2 uppercase tracking-wide">
-                    Notfall-Hotline
+                    {t.emergency}
                   </p>
                   <a
                     href="tel:+4940999999999"
@@ -231,7 +324,7 @@ export default function Contact() {
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <Phone className="w-6 h-6 text-primary" />
                 </div>
-                <h3 className="text-xl font-black text-card-foreground">Direkter Kontakt</h3>
+                <h3 className="text-xl font-black text-card-foreground">{t.chatTitle}</h3>
               </div>
               <div className="space-y-4 text-sm">
                 <div className="p-4 rounded-xl bg-background border border-border hover:border-primary/30 hover:shadow-md transition-all duration-200">
