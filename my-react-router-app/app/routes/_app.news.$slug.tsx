@@ -1,5 +1,6 @@
 import { Link, useLoaderData, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
@@ -22,6 +23,28 @@ export async function loader({ params, request }) {
 
 export default function NewsDetail() {
   const data = useLoaderData();
+  const { language } = useLanguage();
+  const locale = language === "de" ? "de-DE" : "en-US";
+  const t = {
+    de: {
+      notFound: "News-Artikel nicht gefunden.",
+      back: "Zurück zu den News",
+      errorFallback: "Fehler beim Laden der News.",
+      categoryFallback: "Allgemein",
+      featured: "FEATURED",
+      copy: "Link kopieren",
+      copied: "Kopiert!",
+    },
+    en: {
+      notFound: "News article not found.",
+      back: "Back to News",
+      errorFallback: "Failed to load news.",
+      categoryFallback: "General",
+      featured: "FEATURED",
+      copy: "Copy link",
+      copied: "Copied!",
+    },
+  }[language];
   const location = useLocation();
   const backSearch = location.search || "";
   const [copied, setCopied] = useState(false);
@@ -29,12 +52,12 @@ export default function NewsDetail() {
     return (
     
         <div className="max-w-3xl mx-auto">
-          <p className="text-slate-600">News article not found.</p>
+          <p className="text-slate-600">{t.notFound}</p>
           <Link
             to={`/news${backSearch}`}
             className="inline-block mt-4 text-sm font-bold text-slate-900 underline"
           >
-            Back to News
+            {t.back}
           </Link>
         </div>
     
@@ -44,12 +67,12 @@ export default function NewsDetail() {
     return (
      
         <div className="max-w-3xl mx-auto">
-          <p className="text-slate-600">{data.error}</p>
+          <p className="text-slate-600">{data.error || t.errorFallback}</p>
           <Link
             to={`/news${backSearch}`}
             className="inline-block mt-4 text-sm font-bold text-slate-900 underline"
           >
-            Back to News
+            {t.back}
           </Link>
         </div>
       
@@ -92,11 +115,11 @@ export default function NewsDetail() {
             <div className="max-w-3xl mx-auto w-full px-4 pb-6">
               <div className="flex items-center gap-3 mb-2">
                 <span className="text-[11px] px-2 py-1 rounded bg-white/80 text-slate-800 border border-white/80 font-semibold backdrop-blur">
-                  {item.category || "General"}
+                  {item.category || t.categoryFallback}
                 </span>
                 {item.featured && (
                   <span className="text-[10px] px-2 py-1 rounded bg-amber-200/90 border border-amber-300 text-amber-900 font-bold backdrop-blur">
-                    FEATURED
+                    {t.featured}
                   </span>
                 )}
               </div>
@@ -121,7 +144,7 @@ export default function NewsDetail() {
                   <path d="M8 2v4"></path>
                   <path d="M3 10h18"></path>
                 </svg>
-                <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
+                <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
                 {item.author ? <span>• {item.author}</span> : null}
               </div>
             </div>
@@ -131,11 +154,11 @@ export default function NewsDetail() {
         <div className="max-w-3xl mx-auto px-4 pt-4">
           <div className="flex items-center justify-between">
             <span className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold dark:text-slate-200">
-              {item.category || "General"}
+              {item.category || t.categoryFallback}
             </span>
             {item.featured && (
               <span className="text-[10px] px-2 py-1 rounded bg-amber-100 border border-amber-200 text-amber-800 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
-                FEATURED
+                {t.featured}
               </span>
             )}
           </div>
@@ -160,7 +183,7 @@ export default function NewsDetail() {
               <path d="M8 2v4"></path>
               <path d="M3 10h18"></path>
             </svg>
-            <span>{new Date(item.publishedAt).toLocaleDateString()}</span>
+            <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
             {item.author ? <span>• {item.author}</span> : null}
           </div>
         </div>
@@ -185,7 +208,7 @@ export default function NewsDetail() {
             >
               <path d="m15 18-6-6 6-6" />
             </svg>
-            All News
+            {t.back}
           </Link>
           <button
             onClick={copyLink}
@@ -193,7 +216,7 @@ export default function NewsDetail() {
           >
             {copied ? (
               <>
-                Copied
+                {t.copied}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"
@@ -210,7 +233,7 @@ export default function NewsDetail() {
               </>
             ) : (
               <>
-                Copy link
+                {t.copy}
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
                   width="16"

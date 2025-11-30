@@ -40,6 +40,7 @@ import { saveRecentFile } from "../lib/recentFiles";
 import { prisma } from "~/lib/prisma";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import { TRANSLATIONS, getCourseConfig } from "../data/coursesConfig";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 type CourseSubmission = {
   id: number;
@@ -143,6 +144,7 @@ export default function CourseDetail() {
   const { courseId } = useParams();
   const loaderData = (useLoaderData() as { submissions?: CourseSubmission[] }) || {};
   const courseSubmissions: CourseSubmission[] = loaderData.submissions ?? [];
+  const { language } = useLanguage();
 
   const loadSavedStatus = () => {
     if (typeof window === "undefined") return {} as Record<number, { status: "pending" | "submitted"; similarity?: number }>;
@@ -247,7 +249,6 @@ export default function CourseDetail() {
     setShowModal(false);
     alert(language === "de" ? "Abgabe gespeichert." : "Submission saved.");
   };
-  const [language, setLanguage] = useState<"de" | "en">("de");
   const [activeTab, setActiveTab] = useState("overview");
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({});
   const navigate = useNavigate();
@@ -980,16 +981,62 @@ export default function CourseDetail() {
 
         {/* Videos Tab */}
         {activeTab === "videos" && (
-          <div className="space-y-6">
-            <h3 className="text-xl font-black text-slate-900 dark:text-white mb-6">
-              🎥 {t.videos}
-            </h3>
-            <div className="space-y-2">
+          <div className="space-y-8">
+            <div className="flex items-center justify-between">
+              <h3 className="text-xl font-black text-slate-900 dark:text-white">
+                🎥 {t.videos}
+              </h3>
+              <span className="text-sm font-medium text-slate-500 dark:text-slate-400 bg-slate-100 dark:bg-slate-800 px-3 py-1 rounded-full">
+                {course.resources?.filter((r: any) => r.type === "video").length || 0} Videos
+              </span>
+            </div>
+
+            {/* Special video for Course 8 - Compact Version */}
+            {String(courseId) === "8" && (
+              <div className="max-w-2xl mr-auto group">
+                <div className="relative rounded-xl overflow-hidden shadow-xl ring-1 ring-slate-900/5 dark:ring-white/10 bg-slate-900 transition-all duration-300 hover:shadow-2xl hover:ring-slate-900/10 dark:hover:ring-white/20">
+                  {/* Video Container */}
+                  <div className="aspect-video w-full relative">
+                    <iframe 
+                      width="100%" 
+                      height="100%" 
+                      src="https://www.youtube.com/embed/Uq6661KAkYM" 
+                      title="Course Video" 
+                      frameBorder="0" 
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                      allowFullScreen
+                      className="absolute inset-0 w-full h-full"
+                    ></iframe>
+                  </div>
+                  
+                  {/* Compact Content Section */}
+                  <div className="relative p-4 bg-gradient-to-b from-white to-slate-50 dark:from-slate-800 dark:to-slate-900 border-t border-slate-100 dark:border-slate-700/50">
+                    <div className="flex items-start justify-between gap-3">
+                      <div>
+                        <div className="flex items-center gap-2 mb-1.5">
+                          <span className="px-1.5 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-300 border border-red-200 dark:border-red-800">
+                            Featured
+                          </span>
+                        </div>
+                        <h4 className="text-base font-bold text-slate-900 dark:text-white mb-1 line-clamp-1">
+                          Course Introduction
+                        </h4>
+                        <p className="text-xs text-slate-600 dark:text-slate-400 line-clamp-2">
+                          Comprehensive overview of the course structure and key topics.
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Video Grid for many videos */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {course.resources
                 ?.filter((r: any) => r.type === "video")
                 .map((resource: any) => {
                   const handleVideoClick = () => {
-                    // Track video as recently opened
                     saveRecentFile(
                       {
                         id: resource.id,
@@ -998,52 +1045,53 @@ export default function CourseDetail() {
                         url: resource.url,
                         duration: resource.duration,
                       },
-                      course.title, // course name
-                      null // studiengang
+                      course.title,
+                      null
                     );
 
-                    // Open video
                     if (resource.url && resource.url !== "#") {
-                      window.open(
-                        resource.url,
-                        "_blank",
-                        "noopener,noreferrer"
-                      );
+                      window.open(resource.url, "_blank", "noopener,noreferrer");
                     }
                   };
 
                   return (
                     <div
                       key={resource.id}
-                      className="bg-white dark:bg-transparent rounded-lg p-4 border border-blue-100 dark:border-slate-700 hover:shadow-md transition cursor-pointer flex items-center justify-between"
+                      className="group bg-white dark:bg-slate-800/50 rounded-xl border border-slate-200 dark:border-slate-700 hover:border-blue-400 dark:hover:border-blue-500 hover:shadow-lg dark:hover:shadow-blue-900/20 transition-all duration-300 cursor-pointer overflow-hidden flex flex-col"
                       onClick={handleVideoClick}
                     >
-                      <div>
-                        <p className="font-semibold text-slate-900 dark:text-slate-100">
-                          {resource.title}
-                        </p>
-                        <p className="text-sm text-slate-500 dark:text-slate-300">
-                          ⏱️ {resource.duration}
-                        </p>
+                      {/* Thumbnail Placeholder / Icon Area */}
+                      <div className="aspect-video bg-slate-100 dark:bg-slate-800 flex items-center justify-center group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-colors relative">
+                        <div className="w-12 h-12 rounded-full bg-white dark:bg-slate-600 flex items-center justify-center shadow-sm group-hover:scale-110 transition-transform">
+                           <Play className="w-5 h-5 text-slate-900 dark:text-white ml-0.5" />
+                        </div>
+                        <span className="absolute bottom-2 right-2 text-[10px] font-bold bg-black/70 text-white px-1.5 py-0.5 rounded">
+                          {resource.duration || "10:00"}
+                        </span>
                       </div>
-                      <button
-                        className="px-3 py-1 bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 font-semibold rounded hover:bg-blue-200 dark:hover:bg-blue-900/60"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleVideoClick();
-                        }}
-                      >
-                        ▶️ {language === "de" ? "Abspielen" : "Play"}
-                      </button>
+
+                      <div className="p-4 flex flex-col flex-1">
+                        <h4 className="font-bold text-slate-900 dark:text-slate-100 mb-1 line-clamp-2 text-sm group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors">
+                          {resource.title}
+                        </h4>
+                        <div className="mt-auto pt-3 flex items-center justify-between">
+                           <span className="text-xs text-slate-500 dark:text-slate-400">Video</span>
+                           <button className="text-xs font-semibold text-blue-600 dark:text-blue-400 hover:underline">
+                             {language === "de" ? "Ansehen" : "Watch"}
+                           </button>
+                        </div>
+                      </div>
                     </div>
                   );
                 })}
               {(!course.resources ||
                 course.resources.filter((r: any) => r.type === "video")
                   .length === 0) && (
-                <p className="text-slate-500 dark:text-slate-400 text-center py-8">
-                  Noch keine Videos verfügbar
-                </p>
+                <div className="col-span-full text-center py-12 bg-slate-50 dark:bg-slate-900/30 rounded-xl border border-dashed border-slate-300 dark:border-slate-700">
+                  <p className="text-slate-500 dark:text-slate-400">
+                    {language === "de" ? "Noch keine Videos verfügbar" : "No videos available yet"}
+                  </p>
+                </div>
               )}
             </div>
           </div>

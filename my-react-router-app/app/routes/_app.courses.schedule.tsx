@@ -10,6 +10,7 @@ import {
   ChevronRight,
   Grid3x3,
 } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 export const loader = async () => null;
 
@@ -325,6 +326,100 @@ function listMonthsForBlocks(blocks: StudyBlock[]) {
 }
 
 export default function CourseScheduleEnhanced() {
+  const { language } = useLanguage();
+  const t = {
+    de: {
+      heroKicker: "Studienplan & Termine",
+      heroTitle: "Dein Semester-Planer",
+      showOptional: "Freiwillige Veranstaltungsangebote einblenden",
+      planChoose: "Plan wählen",
+      planHint: "Wähle deinen Studienplan, dann Monatsansicht einstellen.",
+      viewMulti: "Alle Monate",
+      viewSingle: "Einzelner Monat",
+      optional: "Optional",
+      duration: "Dauer",
+      location: "Ort",
+      professor: "Dozent",
+      mandatory: "Pflicht",
+      optionalLabel: "Optional",
+      nextLecture: "Nächste Vorlesung / Termin",
+      paletteTitle: "Farben für Praxis, Vorlesungen und Prüfungsphasen.",
+    },
+    en: {
+      heroKicker: "Study plan & dates",
+      heroTitle: "Your semester planner",
+      showOptional: "Show optional sessions",
+      planChoose: "Choose plan",
+      planHint: "Pick your plan, then set the month view.",
+      viewMulti: "All months",
+      viewSingle: "Single month",
+      optional: "Optional",
+      duration: "Duration",
+      location: "Location",
+      professor: "Instructor",
+      mandatory: "Mandatory",
+      optionalLabel: "Optional",
+      nextLecture: "Next lecture / event",
+      paletteTitle: "Colors for practice, lectures, and exam phases.",
+    },
+  }[language];
+  const statusLabels: Record<DayStatus, { de: string; en: string }> = {
+    praxis: { de: "Praxiszeit", en: "Practical phase" },
+    vorlesung: { de: "Vorlesungstermine", en: "Lecture dates" },
+    theoriephase: { de: "Theoriewoche", en: "Theory week" },
+    klausurphase: { de: "Prüfungsphase", en: "Exam phase" },
+    nachpruefung: { de: "Nachprüfungsphase", en: "Resit phase" },
+    wochenende: { de: "Wochenenden (frei von Praxis)", en: "Weekends (off practice)" },
+    feiertag: { de: "Feiertag", en: "Public holiday" },
+    urlaubstag: { de: "Urlaubstage / keine Praxis", en: "Vacation days / no practice" },
+  };
+  const translateText = (de: string, en: string) =>
+    language === "de" ? de : en;
+  const translateEvent = (e: CourseEvent) => ({
+    ...e,
+    title:
+      language === "de"
+        ? e.title
+        : e.title.replace("Praxis-Workshop (optional)", "Practice workshop (optional)"),
+    type:
+      language === "de"
+        ? e.type
+        : e.type === "Lecture"
+          ? "Lecture"
+          : e.type === "Seminar"
+            ? "Seminar"
+            : e.type === "Lab"
+              ? "Lab"
+              : e.type,
+    duration:
+      language === "de"
+        ? e.duration
+        : e.duration === "8 LE"
+          ? "8 periods"
+          : e.duration === "2h"
+            ? "2h"
+            : e.duration,
+    description:
+      language === "de"
+        ? e.description
+        : e.description === "Vorlesung in Präsenz"
+          ? "Lecture on campus"
+          : e.description === "Optionaler Praxisblock mit Übungen."
+            ? "Optional practice block with exercises."
+            : e.description,
+    location:
+      language === "de"
+        ? e.location
+        : e.location === "Online"
+          ? "Online"
+          : e.location,
+    professor:
+      language === "de"
+        ? e.professor
+        : e.professor === "Team Praxis"
+          ? "Practice team"
+          : e.professor,
+  });
   const today = new Date();
   const [selectedPlanId, setSelectedPlanId] = useState<string>(
     STUDY_PLANS[0]?.id || ""
@@ -355,13 +450,13 @@ export default function CourseScheduleEnhanced() {
   const todayISO = toISODate(today);
   const eventsByDate = useMemo(() => {
     const map = new Map<string, CourseEvent[]>();
-    EVENTS.forEach((e) => {
+    EVENTS.map(translateEvent).forEach((e) => {
       const list = map.get(e.date) || [];
       list.push(e);
       map.set(e.date, list);
     });
     return map;
-  }, []);
+  }, [language]);
   const [selectedDate, setSelectedDate] = useState<string>(toISODate(today));
   const dayEvents = eventsByDate.get(selectedDate) || [];
   const mandatoryDayEvents = dayEvents.filter((e) => e.mandatory);
@@ -385,6 +480,7 @@ export default function CourseScheduleEnhanced() {
   const monthList = studyMonths;
   const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(0);
   const [showOptional, setShowOptional] = useState<boolean>(true);
+  const locale = language === "de" ? "de-DE" : "en-US";
   useEffect(() => {
     setCurrentMonthIdx(0);
   }, [selectedPlanId]);
@@ -395,6 +491,8 @@ export default function CourseScheduleEnhanced() {
     const palette = { ...DEFAULT_PALETTE, ...(plan?.paletteOverrides || {}) };
     return palette[status] || DEFAULT_PALETTE.praxis;
   };
+  const labelForStatus = (status: DayStatus) =>
+    language === "de" ? statusLabels[status]?.de || status : statusLabels[status]?.en || status;
 
   return (
     <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
@@ -404,10 +502,10 @@ export default function CourseScheduleEnhanced() {
             <CalendarIcon className="h-10 w-10 text-slate-900 dark:text-white" />
             <div>
               <div className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                Studienplan & Termine
+                {t.heroKicker}
               </div>
               <h1 className="text-3xl md:text-4xl font-black leading-tight text-slate-900 dark:text-white">
-                Dein Semester-Planer
+                {t.heroTitle}
               </h1>
               <label className="mt-2 inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
                 <input
@@ -416,7 +514,7 @@ export default function CourseScheduleEnhanced() {
                   onChange={() => setShowOptional((v) => !v)}
                   className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                 />
-                Freiwillige Veranstaltungsangebote einblenden
+                {t.showOptional}
               </label>
             </div>
           </div>
@@ -425,7 +523,7 @@ export default function CourseScheduleEnhanced() {
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div className="flex flex-col gap-2">
                 <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em]">
-                  Plan wählen
+                  {t.planChoose}
                 </span>
                 <div className="flex flex-wrap items-center gap-3">
                   <div className="relative group">
@@ -443,7 +541,7 @@ export default function CourseScheduleEnhanced() {
                     <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none group-hover:text-blue-500 transition-colors" />
                   </div>
                   <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:inline-block">
-                    Wähle deinen Studienplan, dann Monatsansicht einstellen.
+                    {t.planHint}
                   </span>
                 </div>
               </div>
@@ -459,7 +557,7 @@ export default function CourseScheduleEnhanced() {
                     }`}
                   >
                     <Grid3x3 className="h-3.5 w-3.5" />
-                    Alle Monate
+                    {t.viewMulti}
                   </button>
                   <button
                     onClick={() => setViewMode("single")}
@@ -470,7 +568,7 @@ export default function CourseScheduleEnhanced() {
                     }`}
                   >
                     <CalendarIcon className="h-3.5 w-3.5" />
-                    Monatsfokus
+                    {t.viewSingle}
                   </button>
                 </div>
                 
@@ -487,14 +585,17 @@ export default function CourseScheduleEnhanced() {
                   <div className="text-xs text-center min-w-[120px]">
                     <div className="font-bold text-slate-900 dark:text-white">
                     {monthList[currentMonthIdx]
-                      ? monthList[currentMonthIdx].toLocaleDateString("de-DE", {
+                      ? monthList[currentMonthIdx].toLocaleDateString(locale, {
                           month: "long",
                           year: "numeric",
                         })
                       : "-"}
                     </div>
                     <div className="text-[10px] text-slate-500 font-medium">
-                      Monat {currentMonthIdx + 1} von {monthList.length}
+                      {translateText(
+                        `Monat ${currentMonthIdx + 1} von ${monthList.length}`,
+                        `Month ${currentMonthIdx + 1} of ${monthList.length}`
+                      )}
                     </div>
                   </div>
                   <button
@@ -519,10 +620,10 @@ export default function CourseScheduleEnhanced() {
             <div className="flex items-center justify-between mb-4">
               <div>
                 <div className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  Studienplan
+                  {translateText("Studienplan", "Study plan")}
                 </div>
                 <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                  {selectedPlan?.label || "Studienplan"}
+                  {selectedPlan?.label || translateText("Studienplan", "Study plan")}
                 </h2>
                 {selectedPlan?.description && (
                   <p className="text-sm text-slate-600 dark:text-slate-400">
@@ -536,7 +637,7 @@ export default function CourseScheduleEnhanced() {
                         key={year}
                         className="px-3 py-1 rounded-full text-[12px] font-semibold bg-slate-900 text-white dark:bg-slate-700"
                       >
-                        Jahr {year}
+                        {translateText("Jahr", "Year")} {year}
                       </span>
                     ))}
                   </div>
@@ -550,7 +651,7 @@ export default function CourseScheduleEnhanced() {
                   const hideBadges =
                     month.getFullYear() === 2026 && month.getMonth() === 4;
                   const days = getMonthDays(month);
-                  const label = month.toLocaleDateString("de-DE", {
+                  const label = month.toLocaleDateString(locale, {
                     month: "short",
                     year: "numeric",
                   });
@@ -568,13 +669,17 @@ export default function CourseScheduleEnhanced() {
                       </div>
                       <div className="px-3 py-3 bg-white dark:bg-slate-900">
                         <div className="grid grid-cols-7 text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map(
-                            (d) => (
-                              <div key={d} className="text-center">
-                                {d}
+                          {Array.from({ length: 7 }).map((_, idx) => {
+                            const date = new Date(2024, 0, idx + 1); // any week
+                            const label = date.toLocaleDateString(locale, {
+                              weekday: "short",
+                            });
+                            return (
+                              <div key={idx} className="text-center">
+                                {label}
                               </div>
-                            )
-                          )}
+                            );
+                          })}
                         </div>
                         <div className="grid grid-cols-7 gap-1">
                           {Array.from({
@@ -628,7 +733,7 @@ export default function CourseScheduleEnhanced() {
                                       ? "ring-1 ring-blue-300/60"
                                       : ""
                                 }`}
-                                title={`${dayPalette?.label || "Kein Eintrag"}${hasEvent ? " · " + dayEvents.length + " Termin(e)" : ""}`}
+                                title={`${labelForStatus(selectedStatus || "praxis")}${hasEvent ? " · " + dayEvents.length + (language === "de" ? " Termin(e)" : " event(s)") : ""}`}
                               >
                                 <div className="flex items-center justify-center gap-1">
                                   <span>{d.getDate()}</span>
@@ -641,11 +746,11 @@ export default function CourseScheduleEnhanced() {
                                 </div>
                                 {mandatoryCount > 0 ? (
                                   <span className="mt-1 text-[9px] font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                    Pflicht
+                                    {t.mandatory}
                                   </span>
                                 ) : optionalCount > 0 ? (
                                   <span className="mt-1 text-[9px] font-bold text-emerald-900 dark:text-emerald-100 bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                    Optional
+                                    {t.optionalLabel}
                                   </span>
                                 ) : null}
                               </div>
@@ -805,11 +910,11 @@ export default function CourseScheduleEnhanced() {
                               </div>
                               {mandatoryCount > 0 ? (
                                 <span className="mt-1 text-[9px] font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                  Pflicht
+                                  {t.mandatory}
                                 </span>
                               ) : optionalCount > 0 ? (
                                 <span className="mt-1 text-[9px] font-bold text-emerald-900 dark:text-emerald-100 bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                  Optional
+                                  {t.optionalLabel}
                                 </span>
                               ) : null}
                             </div>
@@ -825,10 +930,10 @@ export default function CourseScheduleEnhanced() {
               <div className="flex items-center justify-between">
                 <div>
                   <div className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
-                    Legende
+                    {translateText("Legende", "Legend")}
                   </div>
                   <p className="text-sm text-slate-600 dark:text-slate-400">
-                    Farben für Praxis, Vorlesungen und Prüfungsphasen.
+                    {t.paletteTitle}
                   </p>
                 </div>
                 <button
@@ -838,7 +943,7 @@ export default function CourseScheduleEnhanced() {
                   <ChevronDown
                     className={`h-4 w-4 transition-transform ${showLegend ? "rotate-180" : ""}`}
                   />
-                  {showLegend ? "Verbergen" : "Anzeigen"}
+                  {showLegend ? translateText("Verbergen", "Hide") : translateText("Anzeigen", "Show")}
                 </button>
               </div>
               {showLegend && (
@@ -854,10 +959,10 @@ export default function CourseScheduleEnhanced() {
                       />
                       <div className="space-y-1">
                         <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                          {val.label}
+                          {labelForStatus(key as DayStatus)}
                         </div>
                         <div className="text-xs text-slate-500 dark:text-slate-400">
-                          Termine und Phasen schnell erkennbar.
+                          {translateText("Termine und Phasen schnell erkennbar.", "Phases and events at a glance.")}
                         </div>
                       </div>
                     </div>
@@ -870,18 +975,15 @@ export default function CourseScheduleEnhanced() {
             {nextMandatoryEvent && (
               <div className="rounded-2xl border border-blue-100 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/30 px-4 py-3 shadow-sm">
                 <div className="text-[11px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-200">
-                  Nächste Vorlesung / Termin
+                  {t.nextLecture}
                 </div>
                 <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                  {new Date(nextMandatoryEvent.date).toLocaleDateString(
-                    "de-DE",
-                    {
-                      weekday: "long",
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    }
-                  )}{" "}
+                  {new Date(nextMandatoryEvent.date).toLocaleDateString(locale, {
+                    weekday: "long",
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric",
+                  })}{" "}
                   · {nextMandatoryEvent.time}
                 </div>
               </div>
@@ -892,15 +994,18 @@ export default function CourseScheduleEnhanced() {
               <div className="flex items-center justify-between mb-2">
                 <div>
                   <div className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    Termine am gewählten Tag
+                    {translateText("Termine am gewählten Tag", "Events on selected day")}
                   </div>
                   <div className="text-lg font-black text-slate-900 dark:text-white">
-                    {new Date(selectedDate).toLocaleDateString("de-DE", {
-                      weekday: "long",
-                      day: "2-digit",
-                      month: "2-digit",
-                      year: "numeric",
-                    })}
+                    {new Date(selectedDate).toLocaleDateString(
+                      language === "de" ? "de-DE" : "en-US",
+                      {
+                        weekday: "long",
+                        day: "2-digit",
+                        month: "2-digit",
+                        year: "numeric",
+                      }
+                    )}
                   </div>
                 </div>
               </div>
@@ -908,7 +1013,7 @@ export default function CourseScheduleEnhanced() {
                 {mandatoryDayEvents.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                      Pflichttermine
+                      {translateText("Pflichttermine", "Mandatory events")}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {mandatoryDayEvents.map((e) => (
@@ -931,7 +1036,7 @@ export default function CourseScheduleEnhanced() {
                 {optionalDayEvents.length > 0 && (
                   <div className="space-y-2">
                     <div className="text-xs font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">
-                      Optionale Termine
+                      {translateText("Optionale Termine", "Optional events")}
                     </div>
                     <div className="flex flex-wrap gap-2">
                       {optionalDayEvents.map((e) => (
@@ -1088,7 +1193,7 @@ export default function CourseScheduleEnhanced() {
 
                 {dayEvents.length === 0 && (
                   <div className="text-sm text-slate-600 dark:text-slate-400">
-                    Keine Termine für diesen Tag hinterlegt.
+                    {translateText("Keine Termine für diesen Tag hinterlegt.", "No events scheduled for this day.")}
                   </div>
                 )}
                 

@@ -17,8 +17,9 @@ import {
   Zap,
   Globe,
   Shield,
-  Terminal,
 } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 export const loader = async () => {
   try {
@@ -31,56 +32,6 @@ export const loader = async () => {
     return { faqs: [] };
   }
 };
-
-const FEATURE_CARDS = [
-  {
-    icon: <Zap className="h-5 w-5" />,
-    title: "Sofortige Antworten",
-    body: "Verifizierte Antworten in Echtzeit.",
-    color: "blue",
-    delay: "0s",
-  },
-  {
-    icon: <Cpu className="h-5 w-5" />,
-    title: "Intelligent",
-    body: "KI-gestütztes IU-Wissen.",
-    color: "violet",
-    delay: "0.1s",
-  },
-  {
-    icon: <Globe className="h-5 w-5" />,
-    title: "Umfassend",
-    body: "Von Bewerbung bis Abschluss.",
-    color: "emerald",
-    delay: "0.2s",
-  },
-  {
-    icon: <Shield className="h-5 w-5" />,
-    title: "24/7 Support",
-    body: "Rund um die Uhr für dich da.",
-    color: "amber",
-    delay: "0.3s",
-  },
-];
-
-const SUGGESTIONS = [
-  {
-    text: "IU Mail einrichten",
-    question: "Wie nutze ich meine IU E-Mail-Adresse?",
-  },
-  {
-    text: "Prüfung wiederholen",
-    question: "Wie oft kann ich eine Prüfung wiederholen?",
-  },
-  {
-    text: "Erasmus Programm",
-    question: "Ist die IU Teil des Erasmus-Programms?",
-  },
-  {
-    text: "Praxisbericht",
-    question: "Wie reiche ich meinen Praxisbericht ein?",
-  },
-];
 
 const BackgroundGradient = () => (
   <div className="fixed inset-0 -z-10 overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-500">
@@ -97,7 +48,56 @@ const CARD_COLORS = {
   amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-t-amber-500",
 };
 
-const HomePage = ({ onNavigate }) => (
+const TEXT = {
+  de: {
+    heroLine1: "Dein Studium.",
+    heroLine2: "Einfach erklärt.",
+    heroSubtitle:
+      "Der intelligente Begleiter für deinen Studienerfolg. Stelle Fragen zu Organisation, Prüfungen und Campusleben.",
+    chatCta: "Chat starten",
+    greeting: "Hallo! Ich bin dein IU Assistant. Wie kann ich dir heute helfen?",
+    noAnswer:
+      "Entschuldigung, dazu habe ich keine Informationen gefunden. Bitte versuche es anders zu formulieren oder wende dich an den Support.",
+    placeholder: "Frag deinen IU Assistant...",
+    suggestions: [
+      { text: "IU Mail einrichten", question: "Wie nutze ich meine IU E-Mail-Adresse?" },
+      { text: "Prüfung wiederholen", question: "Wie oft kann ich eine Prüfung wiederholen?" },
+      { text: "Erasmus Programm", question: "Ist die IU Teil des Erasmus-Programms?" },
+      { text: "Praxisbericht", question: "Wie reiche ich meinen Praxisbericht ein?" },
+    ],
+    features: [
+      { title: "Sofortige Antworten", body: "Verifizierte Antworten in Echtzeit.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
+      { title: "Intelligent", body: "KI-gestütztes IU-Wissen.", color: "violet", delay: "0.1s", icon: <Cpu className="h-5 w-5" /> },
+      { title: "Umfassend", body: "Von Bewerbung bis Abschluss.", color: "emerald", delay: "0.2s", icon: <Globe className="h-5 w-5" /> },
+      { title: "24/7 Support", body: "Rund um die Uhr für dich da.", color: "amber", delay: "0.3s", icon: <Shield className="h-5 w-5" /> },
+    ],
+  },
+  en: {
+    heroLine1: "Your studies.",
+    heroLine2: "Simply explained.",
+    heroSubtitle:
+      "The intelligent companion for your academic success. Ask about organization, exams, and campus life.",
+    chatCta: "Start chat",
+    greeting: "Hi! I'm your IU Assistant. How can I help today?",
+    noAnswer:
+      "Sorry, I couldn’t find information on that. Try rephrasing or contact support.",
+    placeholder: "Ask your IU Assistant...",
+    suggestions: [
+      { text: "Set up IU mail", question: "How do I use my IU email address?" },
+      { text: "Retake exams", question: "How many times can I retake an exam?" },
+      { text: "Erasmus program", question: "Is IU part of the Erasmus program?" },
+      { text: "Practical report", question: "How do I submit my practical report?" },
+    ],
+    features: [
+      { title: "Instant answers", body: "Verified responses in real time.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
+      { title: "Intelligent", body: "AI-powered IU knowledge.", color: "violet", delay: "0.1s", icon: <Cpu className="h-5 w-5" /> },
+      { title: "Comprehensive", body: "From application to graduation.", color: "emerald", delay: "0.2s", icon: <Globe className="h-5 w-5" /> },
+      { title: "24/7 support", body: "Always here to help.", color: "amber", delay: "0.3s", icon: <Shield className="h-5 w-5" /> },
+    ],
+  },
+};
+
+const HomePage = ({ onNavigate, t, features }) => (
   <section className="relative flex min-h-[80vh] flex-col items-center justify-center p-6 text-center">
     <div className="relative z-10 max-w-3xl space-y-10">
       <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/50 px-4 py-1.5 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5">
@@ -108,14 +108,14 @@ const HomePage = ({ onNavigate }) => (
       </div>
 
       <h1 className="text-5xl font-bold tracking-tight text-slate-900 dark:text-white md:text-7xl">
-        Dein Studium. <br />
+        {t.heroLine1} <br />
         <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-violet-400">
-          Einfach erklärt.
+          {t.heroLine2}
         </span>
       </h1>
 
       <p className="mx-auto max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
-        Der intelligente Begleiter für deinen Studienerfolg. Stelle Fragen zu Organisation, Prüfungen und Campusleben.
+        {t.heroSubtitle}
       </p>
 
       <div className="flex flex-wrap justify-center gap-4">
@@ -123,13 +123,13 @@ const HomePage = ({ onNavigate }) => (
           onClick={() => onNavigate("chat")}
           className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/30 dark:bg-white dark:text-slate-900 dark:shadow-blue-500/10"
         >
-          Chat starten
+          {t.chatCta}
           <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
         </button>
       </div>
 
       <div className="grid gap-4 pt-8 sm:grid-cols-2 lg:grid-cols-4">
-        {FEATURE_CARDS.map((card, idx) => (
+          {features.map((card, idx) => (
           <div
             key={idx}
             className={`group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-[#09090b] border-t-4 ${CARD_COLORS[card.color].split(' ').pop()}`}
@@ -173,10 +173,10 @@ const IULogo = ({ className = "w-8 h-8" }: { className?: string }) => (
   </svg>
 );
 
-const ChatPage = ({ onNavigate, faqs }) => {
+const ChatPage = ({ onNavigate, faqs, t }) => {
   const [messages, setMessages] = useState([
     {
-      text: "Hallo! Ich bin dein IU Assistant. Wie kann ich dir heute helfen?",
+      text: t.greeting,
       isUser: false,
     },
   ]);
@@ -220,7 +220,7 @@ const ChatPage = ({ onNavigate, faqs }) => {
         }
       }
 
-      return "Entschuldigung, dazu habe ich keine Informationen gefunden. Bitte versuche es anders zu formulieren oder wende dich an den Support.";
+      return t.noAnswer;
     },
     [faqs]
   );
@@ -256,7 +256,7 @@ const ChatPage = ({ onNavigate, faqs }) => {
   const handleClear = () => {
     setMessages([
       {
-        text: "Hallo! Ich bin dein IU Assistant. Wie kann ich dir heute helfen?",
+        text: t.greeting,
         isUser: false,
       },
     ]);
@@ -367,8 +367,8 @@ const ChatPage = ({ onNavigate, faqs }) => {
 
       {/* Input Area */}
       <div className="relative z-30 border-t border-slate-100 bg-white p-6 dark:border-white/10 dark:bg-[#09090b]">
-        <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
-          {SUGGESTIONS.map((sug) => (
+      <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+          {t.suggestions.map((sug) => (
             <button
               key={sug.text}
               onClick={() => handleSuggestion(sug.question)}
@@ -385,7 +385,7 @@ const ChatPage = ({ onNavigate, faqs }) => {
               value={inputValue}
               onChange={(event) => setInputValue(event.target.value)}
               onKeyDown={onKeyDown}
-              placeholder="Frag deinen IU Assistant..."
+              placeholder={t.placeholder}
               rows={1}
               className="max-h-32 min-h-[3rem] w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-400"
               style={{ height: 'auto', minHeight: '3rem' }}
@@ -411,6 +411,8 @@ const ChatPage = ({ onNavigate, faqs }) => {
 export default function FAQRoute() {
   const { faqs } = useLoaderData();
   const [currentPage, setCurrentPage] = useState("home");
+  const { language } = useLanguage();
+  const t = TEXT[language];
 
   const navigate = (page) => setCurrentPage(page);
 
@@ -419,9 +421,11 @@ export default function FAQRoute() {
       <BackgroundGradient />
       {/* Reduced padding from p-4 md:p-8 to p-2 md:p-4 to minimize space */}
       <div className="relative z-10 p-2 md:p-4">
-        {currentPage === "home" && <HomePage onNavigate={navigate} />}
+        {currentPage === "home" && (
+          <HomePage onNavigate={navigate} t={t} features={t.features} />
+        )}
         {currentPage === "chat" && (
-          <ChatPage onNavigate={navigate} faqs={faqs} />
+          <ChatPage onNavigate={navigate} faqs={faqs} t={t} />
         )}
       </div>
     </div>

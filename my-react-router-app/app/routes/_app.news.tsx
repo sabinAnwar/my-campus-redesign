@@ -7,6 +7,8 @@ import {
   useSubmit,
 } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 /* -----------------------------------
    Types
@@ -60,6 +62,34 @@ export async function loader({
 
 export default function NewsList() {
   const { items, total, page, pageSize } = useLoaderData() as NewsResponse;
+  const { language } = useLanguage();
+  const locale = language === "de" ? "de-DE" : "en-US";
+  const t = {
+    de: {
+      title: "News",
+      searchPlaceholder: "News durchsuchen...",
+      search: "Suchen",
+      reset: "Zurücksetzen",
+      noResults: "Keine News gefunden.",
+      categoryFallback: "Allgemein",
+      featured: "FEATURED",
+      readMore: "Weiterlesen",
+      loading: "Lade...",
+      close: "Schließen",
+    },
+    en: {
+      title: "News",
+      searchPlaceholder: "Search news...",
+      search: "Search",
+      reset: "Reset",
+      noResults: "No news found.",
+      categoryFallback: "General",
+      featured: "FEATURED",
+      readMore: "Read more",
+      loading: "Loading…",
+      close: "Close",
+    },
+  }[language];
 
   const [params] = useSearchParams();
   const submit = useSubmit();
@@ -197,7 +227,7 @@ export default function NewsList() {
               type="text"
               name="search"
               defaultValue={q}
-              placeholder="Search news..."
+              placeholder={t.searchPlaceholder}
               className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
               onChange={(e) => {
                 if (e.target.value === "") {
@@ -210,21 +240,21 @@ export default function NewsList() {
             />
 
             <button className="px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90">
-              Search
+              {t.search}
             </button>
 
             <Link
               to="/news"
               className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
             >
-              Reset
+              {t.reset}
             </Link>
           </form>
         </div>
 
         {/* Results grid */}
         {items.length === 0 ? (
-          <p className="text-muted-foreground">No news found.</p>
+          <p className="text-muted-foreground">{t.noResults}</p>
         ) : (
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
             {items.map((n, i) => (
@@ -238,12 +268,12 @@ export default function NewsList() {
                   {/* Category */}
                   <div className="flex items-center justify-between mb-2">
                     <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
-                      {n.category || "General"}
+                      {n.category || t.categoryFallback}
                     </span>
 
                     {n.featured && (
                       <span className="text-[10px] px-2 py-1 rounded bg-amber-100 text-amber-800 border border-amber-200 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
-                        FEATURED
+                        {t.featured}
                       </span>
                     )}
                   </div>
@@ -261,7 +291,7 @@ export default function NewsList() {
 
                   {/* Date */}
                   <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                    {new Date(n.publishedAt).toLocaleDateString()}
+                    {new Date(n.publishedAt).toLocaleDateString(locale)}
                     {n.author && <span>• {n.author}</span>}
                   </div>
 
@@ -278,7 +308,7 @@ export default function NewsList() {
                       onClick={() => openModal(n.slug, i)}
                       className="px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground border border-border text-sm font-semibold hover:bg-secondary/80"
                     >
-                      Read more →
+                      {t.readMore} →
                     </button>
                   </div>
                 </div>
@@ -363,6 +393,21 @@ function NewsModal({
   onNext,
   closeBtnRef,
 }: ModalProps) {
+  const { language } = useLanguage();
+  const locale = language === "de" ? "de-DE" : "en-US";
+  const t = {
+    de: {
+      categoryFallback: "Allgemein",
+      loading: "Lade...",
+      close: "Schließen",
+    },
+    en: {
+      categoryFallback: "General",
+      loading: "Loading…",
+      close: "Close",
+    },
+  }[language];
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       {/* Overlay */}
@@ -374,7 +419,7 @@ function NewsModal({
         <div className="flex items-center justify-between px-5 py-4 border-b border-border">
           <div className="flex items-center gap-3">
             <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
-              {article?.category || "General"}
+              {article?.category || t.categoryFallback}
             </span>
           </div>
 
@@ -422,7 +467,7 @@ function NewsModal({
 
         {/* Content */}
         <div className="px-5 py-6">
-          {loading && <p className="text-muted-foreground">Loading…</p>}
+          {loading && <p className="text-muted-foreground">{t.loading}</p>}
           {error && <p className="text-destructive">{error}</p>}
 
           {!loading && !error && article && (
@@ -430,7 +475,7 @@ function NewsModal({
               <h3 className="text-2xl font-bold text-card-foreground">{article.title}</h3>
 
               <div className="mt-2 text-xs text-muted-foreground">
-                {new Date(article.publishedAt).toLocaleDateString()}
+                {new Date(article.publishedAt).toLocaleDateString(locale)}
                 {article.author && ` • ${article.author}`}
               </div>
 
@@ -450,7 +495,7 @@ function NewsModal({
         {/* Footer */}
         <div className="px-5 py-4 border-t border-border flex justify-end">
           <button onClick={onClose} className="px-4 py-2 rounded-lg border border-input hover:bg-accent hover:text-accent-foreground">
-            Close
+            {t.close}
           </button>
         </div>
       </div>

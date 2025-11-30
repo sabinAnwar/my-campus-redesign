@@ -8,17 +8,21 @@ import {
 } from "lucide-react";
 import { saveRecentCourse } from "../lib/recentCourses";
 import { TRANSLATIONS, getCourseConfig } from "../data/coursesConfig";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 export const loader = async () => {
   return null;
 };
 
 export default function Courses() {
-  const [language, setLanguage] = useState<"de" | "en">("de");
+  const { language } = useLanguage();
   const [listFilter, setListFilter] = useState("active"); // active | completed
   const navigate = useNavigate();
   const t = TRANSLATIONS[language];
   const courses = getCourseConfig(language);
+  const heroText = language === "de"
+    ? "Verwalte und überwache deine Kurse"
+    : "Manage and track your courses";
 
   // Function to handle course selection and track it
   const handleCourseClick = (course: any) => {
@@ -43,7 +47,7 @@ export default function Courses() {
             {t.modules || t.myCourses}
           </h1>
           <p className="text-slate-600 dark:text-slate-400">
-            Verwalte und überwache deine Kurse
+            {heroText}
           </p>
         </div>
 
