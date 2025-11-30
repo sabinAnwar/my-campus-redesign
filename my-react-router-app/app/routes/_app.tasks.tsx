@@ -10,6 +10,7 @@ import { TaskKind } from "@prisma/client";
 import { useLoaderData } from "react-router-dom";
 import { prisma } from "~/lib/prisma";
 import { calculateDaysLeft } from "~/lib/tasksSample";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 type LoaderSubmission = {
   id: number;
@@ -21,6 +22,7 @@ type LoaderSubmission = {
   dueDateIso: string;
   dueDate: string;
   correctionDate: string;
+  correctionDateIso: string;
 };
 
 type LoaderData = {
@@ -33,13 +35,86 @@ type UISubmission = LoaderSubmission & {
   similarity?: number;
 };
 
-const courseMeta: Record<
-  string,
-  { courseCode?: string; professor?: string }
-> = {
-  "E-Commerce": { courseCode: "ECOM301", professor: "Prof. Dr. Wagner" },
-  "Commerce Engineering": { courseCode: "COMM410", professor: "Prof. Dr. Lehmann" },
+const TEXT = {
+  de: {
+    bulletin: "Campus Bulletin",
+    title: "Wissenschaftliche Arbeiten & Klausurfristen",
+    subtitle:
+      "Verwalte deine Abgaben, lade Dateien hoch und behalte Fristen im Blick – gestaltet wie eine sachliche Nachrichtenübersicht in hell und dunkel.",
+    issue: "Ausgabe | Today",
+    submissionsHeader: "Wissenschaftliche Arbeiten (Turnitin)",
+    submitted: "Abgegeben",
+    pending: "Ausstehend",
+    dueDate: "Abgabefrist:",
+    correction: "Korrektur:",
+    daysLeft: (d: number) => (d > 0 ? `${d} Tage` : "Überfällig"),
+    manageSubmission: "Abgabe verwalten",
+    deadlineMissed: "Frist verpasst – keine Abgabe möglich",
+    similarity: "Turnitin Ähnlichkeit:",
+    examsHeader: "Klausurfristen",
+    daysUntilExam: (d: number) => (d > 0 ? `${d} Tage` : "Heute / vorbei"),
+    modalTitle: "Turnitin Abgabe verwalten",
+    modalSubtitle:
+      "Reiche deine wissenschaftliche Arbeit sicher über Turnitin ein.",
+    honor:
+      "Ich bestätige die Eidesstattliche Erklärung zur eigenständigen Erstellung meiner Arbeit.",
+    privacy:
+      "Ich akzeptiere die Datenschutzbestimmungen für den Upload in Turnitin.",
+    dropHere: "Datei hier ablegen oder klicken, um hochzuladen",
+    orDrag: "oder Datei ablegen",
+    chooseFile: "Datei auswählen",
+    selected: "Ausgewählte Datei:",
+    cancel: "Abbrechen",
+    upload: "Hochladen",
+    toastSuccess: "Deine Abgabe wurde erfolgreich in Turnitin hochgeladen!",
+    alertAccept:
+      "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz.",
+    alertUpload: "Bitte lade deine Datei hoch, bevor du fortfährst.",
+    alertSelect: "Keine Abgabe ausgewählt.",
+  },
+  en: {
+    bulletin: "Campus Bulletin",
+    title: "Academic Papers & Exam Deadlines",
+    subtitle:
+      "Manage your submissions, upload files, and track deadlines — styled like a clear news overview in light and dark.",
+    issue: "Issue | Today",
+    submissionsHeader: "Academic Papers (Turnitin)",
+    submitted: "Submitted",
+    pending: "Pending",
+    dueDate: "Due date:",
+    correction: "Correction:",
+    daysLeft: (d: number) => (d > 0 ? `${d} days` : "Overdue"),
+    manageSubmission: "Manage submission",
+    deadlineMissed: "Deadline missed — no submission possible",
+    similarity: "Turnitin similarity:",
+    examsHeader: "Exam deadlines",
+    daysUntilExam: (d: number) => (d > 0 ? `${d} days` : "Today / past"),
+    modalTitle: "Manage Turnitin submission",
+    modalSubtitle: "Submit your academic paper securely via Turnitin.",
+    honor:
+      "I confirm the declaration of honor for independently creating my work.",
+    privacy: "I accept the privacy policy for uploading to Turnitin.",
+    dropHere: "Drop file here or click to upload",
+    orDrag: "or drag & drop",
+    chooseFile: "Choose file",
+    selected: "Selected file:",
+    cancel: "Cancel",
+    upload: "Upload",
+    toastSuccess: "Your submission was uploaded to Turnitin successfully!",
+    alertAccept: "Please accept the declaration of honor and privacy notice.",
+    alertUpload: "Please upload your file before continuing.",
+    alertSelect: "No submission selected.",
+  },
 };
+
+const courseMeta: Record<string, { courseCode?: string; professor?: string }> =
+  {
+    "E-Commerce": { courseCode: "ECOM301", professor: "Prof. Dr. Wagner" },
+    "Commerce Engineering": {
+      courseCode: "COMM410",
+      professor: "Prof. Dr. Lehmann",
+    },
+  };
 
 export const loader = async () => {
   try {
@@ -110,23 +185,32 @@ export const loader = async () => {
       },
       orderBy: { dueDate: "asc" },
     });
-    const submissions: LoaderSubmission[] = rows.map((t: { id: any; title: any; course: string; type: any; dueDate: { toISOString: () => string | any[]; }; }) => {
-      const meta = courseMeta[t.course] ?? {};
-      const dueDate = new Date(t.dueDate);
-      const correctionDate = new Date(dueDate);
-      correctionDate.setDate(dueDate.getDate() + 14); // give realistic correction window
-      return {
-        id: t.id,
-        title: t.title,
-        course: t.course,
-        courseCode: meta.courseCode,
-        professor: meta.professor,
-        type: t.type,
-        dueDateIso: dueDate.toISOString().slice(0, 10),
-        dueDate: formatGermanDate(dueDate),
-        correctionDate: formatGermanDate(correctionDate),
-      };
-    });
+    const submissions: LoaderSubmission[] = rows.map(
+      (t: {
+        id: any;
+        title: any;
+        course: string;
+        type: any;
+        dueDate: { toISOString: () => string | any[] };
+      }) => {
+        const meta = courseMeta[t.course] ?? {};
+        const dueDate = new Date(t.dueDate);
+        const correctionDate = new Date(dueDate);
+        correctionDate.setDate(dueDate.getDate() + 14); // give realistic correction window
+        return {
+          id: t.id,
+          title: t.title,
+          course: t.course,
+          courseCode: meta.courseCode,
+          professor: meta.professor,
+          type: t.type,
+          dueDateIso: dueDate.toISOString().slice(0, 10),
+          dueDate: formatGermanDate(dueDate),
+          correctionDate: formatGermanDate(correctionDate),
+          correctionDateIso: correctionDate.toISOString().slice(0, 10),
+        };
+      }
+    );
     return { submissions };
   } catch {
     return { submissions: [] };
@@ -135,11 +219,55 @@ export const loader = async () => {
 
 export default function Tasks() {
   const { submissions: initialSubmissions } = useLoaderData() as LoaderData;
+  const { language } = useLanguage();
+  const t = TEXT[language];
+  const formatDate = (iso: string) =>
+    iso
+      ? new Date(iso).toLocaleDateString(
+          language === "de" ? "de-DE" : "en-US",
+          {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          }
+        )
+      : "";
+
+
+  const titleMap: Record<string, { en: string }> = {
+    "Hausarbeit: Customer Journey im Omnichannel Commerce": {
+      en: "Term Paper: Customer Journey in Omnichannel Commerce",
+    },
+    "Projektarbeit: Commerce Plattform Redesign": {
+      en: "Project Work: Commerce Platform Redesign",
+    },
+  };
+
+  const courseMap: Record<string, { en: string }> = {
+    "E-Commerce": { en: "E-Commerce" },
+    "Commerce Engineering": { en: "Commerce Engineering" },
+    Wirtschaftsinformatik: { en: "Business Informatics" },
+  };
+
+  const typeMap: Record<string, { en: string }> = {
+    Hausarbeit: { en: "Term Paper" },
+    Projektarbeit: { en: "Project Work" },
+    Klausur: { en: "Exam" },
+  };
+
+  const translate = (value: string, map: Record<string, { en: string }>) =>
+    language === "de" ? value : map[value]?.en || value;
 
   const loadSavedStatus = () => {
-    if (typeof window === "undefined") return {} as Record<number, { status: "pending" | "submitted"; similarity?: number }>;
+    if (typeof window === "undefined")
+      return {} as Record<
+        number,
+        { status: "pending" | "submitted"; similarity?: number }
+      >;
     try {
-      return JSON.parse(localStorage.getItem("submissionStatus") || "{}") as Record<
+      return JSON.parse(
+        localStorage.getItem("submissionStatus") || "{}"
+      ) as Record<
         number,
         { status: "pending" | "submitted"; similarity?: number }
       >;
@@ -148,7 +276,12 @@ export default function Tasks() {
     }
   };
 
-  const persistStatus = (next: Record<number, { status: "pending" | "submitted"; similarity?: number }>) => {
+  const persistStatus = (
+    next: Record<
+      number,
+      { status: "pending" | "submitted"; similarity?: number }
+    >
+  ) => {
     if (typeof window === "undefined") return;
     localStorage.setItem("submissionStatus", JSON.stringify(next));
   };
@@ -166,8 +299,12 @@ export default function Tasks() {
 
   // UI state for modal/upload handling
   const [showModal, setShowModal] = useState<boolean>(false);
-  const [selectedSubmission, setSelectedSubmission] = useState<LoaderSubmission | null>(null);
-  const [accepted, setAccepted] = useState<{ honor: boolean; privacy: boolean }>({
+  const [selectedSubmission, setSelectedSubmission] =
+    useState<LoaderSubmission | null>(null);
+  const [accepted, setAccepted] = useState<{
+    honor: boolean;
+    privacy: boolean;
+  }>({
     honor: false,
     privacy: false,
   });
@@ -185,8 +322,25 @@ export default function Tasks() {
       daysUntilExam: calculateDaysLeft("2025-11-19"),
     },
   ];
+  const examsDisplay = exams.map((exam) => ({
+    ...exam,
+    title: translate(exam.title, {
+      "Klausur: Wirtschaftsinformatik II": {
+        en: "Exam: Business Informatics II",
+      },
+    }),
+    course: translate(exam.course, courseMap),
+    type: translate(exam.type, typeMap),
+    duration: translate(exam.duration, { "90 Minuten": { en: "90 minutes" } }),
+    location: translate(exam.location, {
+      "Online (Proctorio)": { en: "Online (Proctorio)" },
+    }),
+    date: formatDate(exam.date),
+  }));
 
-  const openModal = (submission: React.SetStateAction<LoaderSubmission | null>) => {
+  const openModal = (
+    submission: React.SetStateAction<LoaderSubmission | null>
+  ) => {
     setSelectedSubmission(submission);
     setShowModal(true);
     setAccepted({ honor: false, privacy: false });
@@ -200,19 +354,17 @@ export default function Tasks() {
 
   const handleSubmit = () => {
     if (!accepted.honor || !accepted.privacy) {
-      alert(
-        "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz."
-      );
+      alert(t.alertAccept);
       return;
     }
     if (!uploadedFile) {
-      alert("Bitte lade deine Datei hoch, bevor du fortfährst.");
+      alert(t.alertUpload);
       return;
     }
 
     // Ensure a submission is selected before accessing it
     if (!selectedSubmission) {
-      alert("Keine Abgabe ausgewählt.");
+      alert(t.alertSelect);
       return;
     }
 
@@ -228,7 +380,10 @@ export default function Tasks() {
           : s
       );
 
-      const persisted: Record<number, { status: "pending" | "submitted"; similarity?: number }> = {};
+      const persisted: Record<
+        number,
+        { status: "pending" | "submitted"; similarity?: number }
+      > = {};
       next.forEach((s) => {
         if (s.status === "submitted") {
           persisted[s.id] = { status: s.status, similarity: s.similarity };
@@ -238,7 +393,7 @@ export default function Tasks() {
       return next;
     });
     setShowModal(false);
-    alert("Deine Abgabe wurde erfolgreich in Turnitin hochgeladen!");
+    alert(t.toastSuccess);
   };
 
   return (
@@ -248,18 +403,17 @@ export default function Tasks() {
           <div className="flex items-baseline justify-between gap-6">
             <div>
               <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-400">
-                Campus Bulletin
+                {t.bulletin}
               </p>
               <h1 className="mt-3 text-4xl font-black leading-tight text-neutral-900 dark:text-white">
-                Wissenschaftliche Arbeiten & Klausurfristen
+                {t.title}
               </h1>
               <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300 max-w-3xl">
-                Verwalte deine Abgaben, lade Dateien hoch und behalte Fristen im Blick –
-                gestaltet wie eine sachliche Nachrichtenübersicht in hell und dunkel.
+                {t.subtitle}
               </p>
             </div>
             <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
-              Ausgabe | Today
+              {t.issue}
             </span>
           </div>
         </header>
@@ -273,7 +427,7 @@ export default function Tasks() {
                   <FileText className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
                 </div>
                 <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                  Wissenschaftliche Arbeiten (Turnitin)
+                  {t.submissionsHeader}
                 </h2>
               </div>
 
@@ -286,15 +440,15 @@ export default function Tasks() {
                     <div className="flex justify-between items-start mb-3">
                       <div>
                         <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-1">
-                          {item.title}
+                          {translate(item.title, titleMap)}
                         </h3>
                         <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
-                          {item.course}
+                          {translate(item.course, courseMap)}
                           {item.courseCode ? ` · ${item.courseCode}` : ""}
                         </p>
                         <div className="flex items-center gap-2">
                           <span className="px-2 py-0.5 rounded-sm bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 text-[11px] font-semibold">
-                            {item.type}
+                            {translate(item.type, typeMap)}
                           </span>
                           {item.professor && (
                             <span className="text-[11px] text-neutral-600 dark:text-neutral-300">
@@ -308,13 +462,13 @@ export default function Tasks() {
                         <span
                           className={`px-2 py-1 rounded-sm text-xs font-semibold ${
                             item.status === "submitted"
-                          ? "bg-neutral-900 text-white border border-neutral-900"
-                          : "bg-neutral-100 text-neutral-800 border border-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
+                              ? "bg-neutral-900 text-white border border-neutral-900"
+                              : "bg-neutral-100 text-neutral-800 border border-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
                           }`}
                         >
                           {item.status === "submitted"
-                            ? "Abgegeben"
-                            : "Ausstehend"}
+                            ? t.submitted
+                            : t.pending}
                         </span>
                       </div>
                     </div>
@@ -324,19 +478,19 @@ export default function Tasks() {
                       <div>
                         <Calendar className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
                         <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                          Abgabefrist:
+                          {t.dueDate}
                         </span>
                         <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
-                          {item.dueDate}
+                          {formatDate(item.dueDateIso)}
                         </p>
                       </div>
                       <div>
                         <CheckSquare className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
                         <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                          Korrektur:
+                          {t.correction}
                         </span>
                         <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
-                          {item.correctionDate}
+                          {formatDate(item.correctionDateIso)}
                         </p>
                       </div>
                     </div>
@@ -346,11 +500,11 @@ export default function Tasks() {
                           item.daysUntilDue > 5
                             ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:border-emerald-800"
                             : item.daysUntilDue > 0
-                            ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-100 dark:border-amber-800"
-                            : "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-100 dark:border-rose-800"
+                              ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-100 dark:border-amber-800"
+                              : "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-100 dark:border-rose-800"
                         }`}
                       >
-                        ⏳ {item.daysUntilDue > 0 ? `${item.daysUntilDue} Tage` : "Überfällig"}
+                        ⏳ {t.daysLeft(item.daysUntilDue)}
                       </span>
                       <span className="px-2 py-1 rounded-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700">
                         📁 {item.course}
@@ -364,14 +518,14 @@ export default function Tasks() {
                             onClick={() => openModal(item)}
                             className="w-full py-2 text-sm font-semibold bg-neutral-900 text-white rounded-md hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
                           >
-                            Abgabe verwalten
+                            {t.manageSubmission}
                           </button>
                         ) : (
                           <button
                             disabled
                             className="w-full py-2 text-sm font-semibold bg-neutral-400 dark:bg-neutral-700 text-white rounded-md cursor-not-allowed"
                           >
-                            Frist verpasst – keine Abgabe möglich
+                            {t.deadlineMissed}
                           </button>
                         )}
                       </div>
@@ -380,9 +534,9 @@ export default function Tasks() {
                     {item.status === "submitted" && (
                       <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800 flex justify-between items-center">
                         <span className="text-xs text-neutral-600 dark:text-neutral-300 font-semibold">
-                          Turnitin Ähnlichkeit:
+                          {t.similarity}
                         </span>
-                      <span className="px-2 py-1 rounded-sm text-xs font-bold bg-neutral-900 text-white border border-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 dark:border-neutral-200">
+                        <span className="px-2 py-1 rounded-sm text-xs font-bold bg-neutral-900 text-white border border-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 dark:border-neutral-200">
                           {item.similarity}%
                         </span>
                       </div>
@@ -401,11 +555,11 @@ export default function Tasks() {
                   <BookOpen className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
                 </div>
                 <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                  Klausurfristen
+                  {t.examsHeader}
                 </h2>
               </div>
               <div className="space-y-4">
-                {exams.map((exam) => (
+                {examsDisplay.map((exam) => (
                   <div
                     key={exam.id}
                     className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 bg-white dark:bg-neutral-950/40"
@@ -423,12 +577,14 @@ export default function Tasks() {
                       <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700">
                         🗺️ {exam.location}
                       </span>
-                      <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold border ${
-                        exam.daysUntilExam > 0
-                          ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border-neutral-300 dark:border-neutral-700"
-                          : "bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-neutral-900 dark:border-white"
-                      }`}>
-                        ⏳ {exam.daysUntilExam > 0 ? `${exam.daysUntilExam} Tage` : "Heute / vorbei"}
+                      <span
+                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold border ${
+                          exam.daysUntilExam > 0
+                            ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border-neutral-300 dark:border-neutral-700"
+                            : "bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-neutral-900 dark:border-white"
+                        }`}
+                      >
+                        ⏳ {t.daysUntilExam(exam.daysUntilExam)}
                       </span>
                     </div>
                   </div>
@@ -448,10 +604,10 @@ export default function Tasks() {
                 </div>
                 <div>
                   <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                    Turnitin Abgabe verwalten
+                    {t.modalTitle}
                   </h2>
                   <p className="text-sm text-neutral-600 dark:text-neutral-300">
-                    Reiche deine wissenschaftliche Arbeit sicher über Turnitin ein.
+                    {t.modalSubtitle}
                   </p>
                 </div>
               </div>
@@ -471,11 +627,7 @@ export default function Tasks() {
                     className="mt-1 accent-neutral-900 dark:accent-white"
                   />
                   <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                    Ich bestätige die{" "}
-                    <strong className="text-neutral-900 dark:text-neutral-100">
-                      Eidesstattliche Erklärung
-                    </strong>{" "}
-                    zur eigenständigen Erstellung meiner Arbeit.
+                    {t.honor}
                   </span>
                 </label>
 
@@ -492,11 +644,7 @@ export default function Tasks() {
                     className="mt-1 accent-neutral-900 dark:accent-white"
                   />
                   <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                    Ich akzeptiere die{" "}
-                    <strong className="text-neutral-900 dark:text-neutral-100">
-                      Datenschutzbestimmungen
-                    </strong>{" "}
-                    für den Upload in Turnitin.
+                    {t.privacy}
                   </span>
                 </label>
               </div>
@@ -514,7 +662,7 @@ export default function Tasks() {
                     <div className="flex flex-col items-center justify-center space-y-2">
                       <Upload className="h-10 w-10 text-neutral-700 dark:text-neutral-200" />
                       <p className="text-sm text-neutral-700 dark:text-neutral-200">
-                        Datei hier ablegen oder klicken, um hochzuladen
+                        {t.dropHere}
                       </p>
                     </div>
                     <input
@@ -528,7 +676,7 @@ export default function Tasks() {
                       htmlFor="file-upload"
                       className="cursor-pointer inline-block mt-4 bg-neutral-900 text-white text-sm px-4 py-2 rounded-md font-semibold shadow-sm hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
                     >
-                      Datei auswählen
+                      {t.chooseFile}
                     </label>
                   </>
                 )}
@@ -571,7 +719,10 @@ export default function Tasks() {
                       ></div>
                     </div>
                     <p className="text-xs text-neutral-700 dark:text-neutral-200 mt-2 animate-fadeIn">
-                      ✅ Upload abgeschlossen – Datei wurde erfolgreich übertragen.
+                      ✅{" "}
+                      {language === "de"
+                        ? "Upload abgeschlossen – Datei wurde erfolgreich übertragen."
+                        : "Upload complete — file transferred successfully."}
                     </p>
                   </div>
                 )}
@@ -583,7 +734,7 @@ export default function Tasks() {
                   onClick={() => setShowModal(false)}
                   className="px-4 py-2 rounded-md text-sm font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 hover:bg-neutral-300 dark:hover:bg-neutral-700"
                 >
-                  Abbrechen
+                  {t.cancel}
                 </button>
                 <button
                   onClick={handleSubmit}
@@ -594,7 +745,7 @@ export default function Tasks() {
                       : "bg-neutral-400 dark:bg-neutral-700 cursor-not-allowed"
                   }`}
                 >
-                  Hochladen & Bestätigen
+                  {t.upload}
                 </button>
               </div>
             </div>

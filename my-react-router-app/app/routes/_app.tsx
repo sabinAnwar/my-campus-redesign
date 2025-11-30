@@ -24,8 +24,125 @@ import {
   DoorOpen,
   Instagram,
 } from "lucide-react";
-import { useTheme } from "~/contexts/ThemeContext";
 import ThemeToggle from "~/components/ThemeToggle";
+import LanguageToggle from "~/components/LanguageToggle";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+type NavKey =
+  | "dashboard"
+  | "courseSchedule"
+  | "courses"
+  | "recentFiles"
+  | "tasks"
+  | "praxisReport"
+  | "infoCenter"
+  | "benefits"
+  | "socialMedia"
+  | "news"
+  | "faq"
+  | "studyOrg"
+  | "contact"
+  | "roomBooking";
+
+const BASE_NAV_ITEMS: Array<{
+  key: NavKey;
+  to: string;
+  icon: React.ComponentType<{ className?: string }>;
+}> = [
+  { to: "/dashboard", key: "dashboard", icon: Home },
+  { to: "/courses/schedule", key: "courseSchedule", icon: CalendarDays },
+  { to: "/courses", key: "courses", icon: BookOpen },
+  { to: "/files/recent", key: "recentFiles", icon: FileSearch },
+  { to: "/tasks", key: "tasks", icon: CheckSquare },
+  { to: "/praxisbericht2", key: "praxisReport", icon: FolderOpen },
+  { to: "/info-center", key: "infoCenter", icon: Info },
+  { to: "/benefits", key: "benefits", icon: Gift },
+  { to: "/social-media", key: "socialMedia", icon: Instagram },
+  { to: "/news", key: "news", icon: Newspaper },
+  { to: "/faq", key: "faq", icon: HelpCircle },
+  { to: "/study-organization", key: "studyOrg", icon: BookOpenCheck },
+  { to: "/contact", key: "contact", icon: UserIcon },
+];
+
+const SHELL_TRANSLATIONS: Record<
+  "de" | "en",
+  {
+    programTitle: string;
+    campus: string;
+    nav: Record<NavKey, string>;
+    menu: {
+      settings: string;
+      curriculum: string;
+      moduleHandbook: string;
+      studentId: string;
+      certificates: string;
+      transcript: string;
+      immatriculation: string;
+      logout: string;
+    };
+  }
+> = {
+  de: {
+    programTitle: "DS WINFO Wirtschaftsinformatik",
+    campus: "Campus Hamburg",
+    nav: {
+      dashboard: "Dashboard",
+      courseSchedule: "Kursplan",
+      courses: "Meine Kurse",
+      recentFiles: "Neueste Dateien",
+      tasks: "Aufgaben & Abgaben",
+      praxisReport: "Praxisbericht",
+      infoCenter: "Info Center",
+      benefits: "Vorteile für Studierende",
+      socialMedia: "Social Media & Campus",
+      news: "News & Updates",
+      faq: "Hilfe & FAQ",
+      studyOrg: "Studienorganisation",
+      contact: "Kontakt",
+      roomBooking: "Raumbuchung",
+    },
+    menu: {
+      settings: "Einstellungen",
+      curriculum: "Studienplan",
+      moduleHandbook: "Modulhandbuch",
+      studentId: "Studentenausweis",
+      certificates: "Bescheinigungen",
+      transcript: "Transkript",
+      immatriculation: "Immatrikulationsbescheinigung",
+      logout: "Abmelden",
+    },
+  },
+  en: {
+    programTitle: "DS WINFO Business Informatics",
+    campus: "Hamburg Campus",
+    nav: {
+      dashboard: "Dashboard",
+      courseSchedule: "Course Schedule",
+      courses: "My Courses",
+      recentFiles: "Recent Files",
+      tasks: "Tasks & Assignments",
+      praxisReport: "Practical Report",
+      infoCenter: "Info Center",
+      benefits: "Student Benefits",
+      socialMedia: "Social Media & Campus",
+      news: "News & Updates",
+      faq: "Help & FAQ",
+      studyOrg: "Study Organization",
+      contact: "Contact",
+      roomBooking: "Room Booking",
+    },
+    menu: {
+      settings: "Settings",
+      curriculum: "Curriculum",
+      moduleHandbook: "Module Handbook",
+      studentId: "Student ID",
+      certificates: "Certificates",
+      transcript: "Transcript",
+      immatriculation: "Enrollment Certificate",
+      logout: "Log out",
+    },
+  },
+};
 
 export default function AppShell() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -37,26 +154,8 @@ export default function AppShell() {
   const location = useLocation();
   const menuRef = useRef<HTMLDivElement>(null);
 
-  const { isDark } = useTheme();
-
-  // -----------------------------
-  // NAVIGATION ITEMS
-  // -----------------------------
-  const navItems = [
-    { to: "/dashboard", label: "Dashboard", icon: Home },
-    { to: "/courses/schedule", label: "Course Schedule", icon: CalendarDays },
-    { to: "/courses", label: "My Courses", icon: BookOpen },
-    { to: "/files/recent", label: "Recent Files", icon: FileSearch },
-    { to: "/tasks", label: "Tasks & Assignments", icon: CheckSquare },
-    { to: "/praxisbericht2", label: "Praxisbericht", icon: FolderOpen },
-    { to: "/info-center", label: "Info Center", icon: Info },
-    { to: "/benefits", label: "Student Benefits", icon: Gift },
-    { to: "/social-media", label: "Social Media & Campus", icon: Instagram },
-    { to: "/news", label: "News & Updates", icon: Newspaper },
-    { to: "/faq", label: "Help & FAQ", icon: HelpCircle },
-    { to: "/study-organization", label: "Study Organization", icon: BookOpenCheck },
-    { to: "/contact", label: "Contact", icon: UserIcon },
-  ];
+  const { language } = useLanguage();
+  const shellText = SHELL_TRANSLATIONS[language];
 
   // -----------------------------
   // CLOSE PROFILE MENU ON OUTSIDE CLICK
@@ -109,7 +208,10 @@ export default function AppShell() {
   // -----------------------------
   const isActive = (to: string) => {
     // Prevent "My Courses" from being active when on "Course Schedule"
-    if (to === "/courses" && location.pathname.startsWith("/courses/schedule")) {
+    if (
+      to === "/courses" &&
+      location.pathname.startsWith("/courses/schedule")
+    ) {
       return false;
     }
     return location.pathname === to || location.pathname.startsWith(to + "/");
@@ -119,23 +221,28 @@ export default function AppShell() {
   // DYNAMIC ROOM BOOKING LINK
   // -----------------------------
   const computedNavItems = useMemo(() => {
-    const items = [...navItems];
+    const labels = SHELL_TRANSLATIONS[language].nav;
+    const items = BASE_NAV_ITEMS.map((item) => ({
+      ...item,
+      label: labels[item.key],
+    }));
 
     if (roomBookingEnabled) {
       const bookingTo = campusArea
         ? `/raumbuchung?campus=${encodeURIComponent(campusArea)}`
         : "/raumbuchung";
 
-      const insertIndex = items.findIndex((i) => i.to === "/praxisbericht2") + 1;
+      const insertIndex = items.findIndex((i) => i.key === "praxisReport") + 1;
       items.splice(insertIndex, 0, {
         to: bookingTo,
-        label: "Raumbuchen",
+        key: "roomBooking",
+        label: labels.roomBooking,
         icon: DoorOpen,
       });
     }
 
     return items;
-  }, [navItems, roomBookingEnabled, campusArea]);
+  }, [campusArea, language, roomBookingEnabled]);
 
   // -----------------------------
   // RENDER UI
@@ -169,12 +276,8 @@ export default function AppShell() {
                 <div className="absolute -top-1 -right-1 h-4 w-4 bg-green-500 rounded-full border-2 border-background animate-pulse"></div>
               </div>
               <div className="text-xs font-bold leading-tight">
-                <div className="text-foreground">
-                  INTERNATIONAL
-                </div>
-                <div className="text-muted-foreground">
-                  UNIVERSITY
-                </div>
+                <div className="text-foreground">INTERNATIONAL</div>
+                <div className="text-muted-foreground">UNIVERSITY</div>
               </div>
             </Link>
 
@@ -218,9 +321,7 @@ export default function AppShell() {
         {/* MAIN CONTENT */}
         <section className="flex-1 flex flex-col min-w-0">
           {/* Top bar */}
-          <header
-            className="h-20 flex items-center justify-between px-4 md:px-6 border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60"
-          >
+          <header className="h-20 flex items-center justify-between px-4 md:px-6 border-b border-border sticky top-0 z-30 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
             <div className="flex items-center gap-4">
               <button
                 onClick={() => setSidebarOpen(!sidebarOpen)}
@@ -231,16 +332,17 @@ export default function AppShell() {
 
               <div className="hidden sm:block">
                 <div className="text-sm font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
-                  DS WINFO Business Informatics
+                  {shellText.programTitle}
                 </div>
                 <div className="text-xs text-muted-foreground">
-                  Hamburg Campus
+                  {shellText.campus}
                 </div>
               </div>
             </div>
 
             {/* Right side */}
             <div className="flex items-center gap-3">
+              <LanguageToggle />
               <ThemeToggle />
 
               <Link
@@ -284,39 +386,37 @@ export default function AppShell() {
                     <MenuItem
                       to="/settings"
                       icon={SettingsIcon}
-                      label="Settings"
+                      label={shellText.menu.settings}
                     />
                     <MenuItem
                       to="/curriculum"
                       icon={BookOpenCheck}
-                      label="Studienplan"
+                      label={shellText.menu.curriculum}
                     />
                     <MenuItem
                       to="/module-handbook"
                       icon={FileText}
-                      label="Modulhandbuch"
+                      label={shellText.menu.moduleHandbook}
                     />
                     <MenuItem
                       to="/student-id"
                       icon={BadgeCheck}
-                      label="Studentenausweis"
+                      label={shellText.menu.studentId}
                     />
 
-                    <div
-                      className="px-5 py-2 text-xs font-semibold text-muted-foreground"
-                    >
-                      Bescheinigungen
+                    <div className="px-5 py-2 text-xs font-semibold text-muted-foreground">
+                      {shellText.menu.certificates}
                     </div>
 
                     <MenuItem
                       to="/certificates/transcript"
                       icon={FileText}
-                      label="Transkript"
+                      label={shellText.menu.transcript}
                     />
                     <MenuItem
                       to="/certificates/immatriculation"
                       icon={FileText}
-                      label="Immatrikulationsbescheinigung"
+                      label={shellText.menu.immatriculation}
                     />
 
                     <div className="border-t border-border my-1" />
@@ -324,7 +424,7 @@ export default function AppShell() {
                     <MenuItem
                       to="/logout"
                       icon={LogOut}
-                      label="Log out"
+                      label={shellText.menu.logout}
                       danger
                     />
                   </div>

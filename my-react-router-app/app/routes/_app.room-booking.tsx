@@ -36,6 +36,9 @@ const TIME_SLOTS = [
 ];
 
 // Mock lectures dataset - Raum A1, A2, A3, etc.
+// Mock lectures dataset - Raum A1, A2, A3, etc.
+const TODAY_ISO = new Date().toISOString().split("T")[0];
+
 const LECTURES = [
   {
     id: 1,
@@ -44,7 +47,7 @@ const LECTURES = [
     title: "Mathe – Analysis I",
     startTime: "08:00",
     endTime: "10:00",
-    date: "2025-11-07",
+    date: TODAY_ISO,
   },
   {
     id: 2,
@@ -53,7 +56,7 @@ const LECTURES = [
     title: "Data Analytics",
     startTime: "11:00",
     endTime: "13:00",
-    date: "2025-11-07",
+    date: TODAY_ISO,
   },
   {
     id: 3,
@@ -62,7 +65,7 @@ const LECTURES = [
     title: "Webentwicklung",
     startTime: "09:30",
     endTime: "11:30",
-    date: "2025-11-07",
+    date: TODAY_ISO,
   },
   {
     id: 4,
@@ -71,7 +74,7 @@ const LECTURES = [
     title: "Datenbanken",
     startTime: "10:00",
     endTime: "12:00",
-    date: "2025-11-07",
+    date: TODAY_ISO,
   },
 ];
 
@@ -145,10 +148,16 @@ export async function loader({ request }: { request: Request }) {
       }
     }
 
-    // Fetch bookings from database for this user
+    // Fetch all bookings to show occupancy for everyone
     const bookings = await prisma.roomBooking.findMany({
-      where: {
-        userId: userId,
+      include: {
+        user: {
+          select: {
+            id: true,
+            name: true,
+            username: true,
+          },
+        },
       },
       orderBy: {
         date: "asc",
@@ -156,9 +165,7 @@ export async function loader({ request }: { request: Request }) {
     });
 
     console.log(
-      "📚 Loading bookings from database for userId:",
-      userId,
-      "- Found:",
+      "📚 Loading all bookings - Found:",
       bookings.length
     );
 
@@ -531,15 +538,16 @@ export default function RoomBooking() {
 
     bookings
       .filter((b: any) => b.campus === selectedLocation)
-      .forEach((b: any) =>
+      .forEach((b: any) => {
+        const isMyBooking = b.userId === userId;
         rows.push({
           room: b.roomName,
-          purpose: "Gebucht (du)",
-          person: `User #${userId}`,
+          purpose: isMyBooking ? "Gebucht (du)" : "Gebucht",
+          person: b.user ? (b.user.name || b.user.username) : `User #${b.userId}`,
           until: `${b.startTime}–${b.endTime}`,
           key: `book-${b.id}`,
-        })
-      );
+        });
+      });
 
     const seen = new Set();
     return rows.filter((r) => {
@@ -564,18 +572,33 @@ export default function RoomBooking() {
     // Normalize to string for comparisons (covers numbers, elements, etc.)
     const name = String(roomName);
 
-    // Check if room has lecture
-    const lecture = todayLectures.find((l) => l.roomName === name);
+    // Helper function to check if two time ranges overlap
+    const timesOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+      return start1 < end2 && start2 < end1;
+    };
+
+    // Check if room has lecture that conflicts with selected time
+    const lecture = todayLectures.find((l) => {
+      if (l.roomName !== name) return false;
+      // Only consider it occupied if the lecture time overlaps with selected time
+      return timesOverlap(l.startTime, l.endTime, startTime, endTime);
+    });
     if (lecture) {
       return { status: "belegt", lecture, booking: null };
     }
 
-    // Check if room is booked by user
-    const booking = bookings.find(
-      (b: any) => b.roomName === name && b.campus === selectedLocation
-    );
+    // Check if room is booked by anyone during the selected time
+    const booking = bookings.find((b: any) => {
+      if (b.roomName !== name || b.campus !== selectedLocation) return false;
+      // Only consider it occupied if the booking time overlaps with selected time
+      return timesOverlap(b.startTime, b.endTime, startTime, endTime);
+    });
     if (booking) {
-      return { status: "gebucht", lecture: null, booking };
+      if (booking.userId === userId) {
+        return { status: "gebucht", lecture: null, booking };
+      } else {
+        return { status: "belegt-user", lecture: null, booking };
+      }
     }
 
     return { status: "frei", lecture: null, booking: null };
@@ -777,110 +800,174 @@ export default function RoomBooking() {
             const { status, lecture, booking } = getRoomStatus(room.name);
 
             const stateStyles =
-              status === "belegt"
+              status === "belegt" || status === "belegt-user"
                 ? {
-                    border: "border-orange-400",
-                    text: "text-orange-600",
-                    badge: "bg-orange-100 dark:bg-orange-900/40 text-orange-700 dark:text-orange-200",
+                    border: "border-orange-300 dark:border-orange-700",
+                    bg: "bg-gradient-to-br from-white via-orange-50/30 to-orange-100/50 dark:from-slate-900 dark:via-orange-950/20 dark:to-orange-900/30",
+                    text: "text-orange-600 dark:text-orange-400",
+                    badge: "bg-orange-500 text-white shadow-lg shadow-orange-500/30",
+                    glow: "shadow-orange-200 dark:shadow-orange-900/50",
                   }
                 : status === "gebucht"
                 ? {
-                    border: "border-fuchsia-400",
-                    text: "text-fuchsia-600",
-                    badge: "bg-fuchsia-100 dark:bg-fuchsia-900/40 text-fuchsia-700 dark:text-fuchsia-200",
+                    border: "border-fuchsia-300 dark:border-fuchsia-700",
+                    bg: "bg-gradient-to-br from-white via-fuchsia-50/30 to-fuchsia-100/50 dark:from-slate-900 dark:via-fuchsia-950/20 dark:to-fuchsia-900/30",
+                    text: "text-fuchsia-600 dark:text-fuchsia-400",
+                    badge: "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30",
+                    glow: "shadow-fuchsia-200 dark:shadow-fuchsia-900/50",
                   }
                 : {
-                    border: "border-emerald-400",
-                    text: "text-emerald-600",
-                    badge: "bg-emerald-100 dark:bg-emerald-900/40 text-emerald-700 dark:text-emerald-200",
+                    border: "border-emerald-300 dark:border-emerald-700",
+                    bg: "bg-gradient-to-br from-white via-emerald-50/30 to-emerald-100/50 dark:from-slate-900 dark:via-emerald-950/20 dark:to-emerald-900/30",
+                    text: "text-emerald-600 dark:text-emerald-400",
+                    badge: "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30",
+                    glow: "shadow-emerald-200 dark:shadow-emerald-900/50",
                   };
 
             return (
               <div
                 key={room.id}
-                className={`rounded-2xl bg-white dark:bg-slate-900 border-2 ${stateStyles.border} shadow-sm hover:shadow-lg transition-all duration-200 p-5 flex flex-col gap-4`}
+                className={`group relative rounded-2xl ${stateStyles.bg} border-2 ${stateStyles.border} shadow-lg ${stateStyles.glow} hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 p-6 flex flex-col gap-4 overflow-hidden`}
               >
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400 font-semibold">
-                      {selectedLocation}
-                    </p>
-                    <h3 className={`text-xl font-bold ${stateStyles.text}`}>
+                {/* Decorative gradient overlay */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-white/5 pointer-events-none" />
+                
+                {/* Content */}
+                <div className="relative z-10 flex items-start justify-between gap-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-1">
+                      <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
+                      <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 font-bold">
+                        {selectedLocation}
+                      </p>
+                    </div>
+                    <h3 className={`text-2xl font-black ${stateStyles.text} mb-2 tracking-tight`}>
                       {room.name}
                     </h3>
-                    <div className="text-sm text-slate-600 dark:text-slate-300 flex items-center gap-2">
-                      <Users className="h-4 w-4" />
-                      {room.capacity} Plätze
+                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
+                      <div className="flex items-center gap-1.5 bg-white/60 dark:bg-slate-800/60 px-2.5 py-1 rounded-full backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50">
+                        <Users className="h-3.5 w-3.5" />
+                        <span className="font-semibold text-xs">{room.capacity} Plätze</span>
+                      </div>
                     </div>
                   </div>
-                  <span className={`px-3 py-1 rounded-full text-xs font-semibold ${stateStyles.badge}`}>
+                  <div className={`px-3 py-1.5 rounded-full text-xs font-bold ${stateStyles.badge} flex items-center gap-1.5`}>
+                    {status === "gebucht" && <Check className="h-3 w-3" />}
                     {status === "gebucht"
                       ? "Gebucht"
-                      : status === "belegt"
+                      : status === "belegt" || status === "belegt-user"
                       ? "Belegt"
                       : "Frei"}
-                  </span>
+                  </div>
                 </div>
 
-                {lecture ? (
-                  <div className="bg-orange-50 dark:bg-orange-950/30 border border-orange-200 dark:border-orange-800 rounded-xl p-3">
-                    <p className="text-sm text-orange-800 dark:text-orange-200 font-semibold">
-                      Vorlesung: {lecture.title}
-                    </p>
-                    <p className="text-xs text-orange-700 dark:text-orange-300">
-                      {lecture.startTime} – {lecture.endTime}
-                    </p>
-                  </div>
-                ) : status === "gebucht" && booking ? (
-                  <div className="bg-fuchsia-50 dark:bg-fuchsia-950/30 border border-fuchsia-200 dark:border-fuchsia-800 rounded-xl p-3 space-y-1">
-                    <p className="text-sm text-fuchsia-800 dark:text-fuchsia-100 font-semibold">
-                      ✓ Gebucht von dir
-                    </p>
-                    <p className="text-xs text-fuchsia-700 dark:text-fuchsia-200">
-                      {booking.startTime} – {booking.endTime}
-                    </p>
-                    <p className="text-xs text-fuchsia-700 dark:text-fuchsia-200">
-                      {new Date(booking.date).toLocaleDateString("de-DE", {
-                        weekday: "short",
-                        day: "2-digit",
-                        month: "2-digit",
-                      })}
-                    </p>
-                  </div>
-                ) : (
-                  <div className="bg-emerald-50 dark:bg-emerald-950/20 border border-emerald-200 dark:border-emerald-800 rounded-xl p-3">
-                    <p className="text-sm text-emerald-800 dark:text-emerald-100 font-semibold">
-                      Frei – jetzt buchen
-                    </p>
-                    <p className="text-xs text-emerald-700 dark:text-emerald-200">
-                      Empfohlene Slots: {startTime} – {endTime}
-                    </p>
-                  </div>
-                )}
+                {/* Status Details */}
+                <div className="relative z-10">
+                  {lecture ? (
+                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-orange-200 dark:border-orange-800 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
+                          <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-orange-900 dark:text-orange-100 font-bold mb-0.5">
+                            {lecture.title}
+                          </p>
+                          <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
+                            {lecture.startTime} – {lecture.endTime}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : status === "gebucht" && booking ? (
+                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-fuchsia-200 dark:border-fuchsia-800 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-fuchsia-100 dark:bg-fuchsia-900/40 rounded-lg">
+                          <Check className="h-4 w-4 text-fuchsia-600 dark:text-fuchsia-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-fuchsia-900 dark:text-fuchsia-100 font-bold mb-0.5">
+                            Deine Buchung
+                          </p>
+                          <p className="text-xs text-fuchsia-700 dark:text-fuchsia-300 font-semibold">
+                            {booking.startTime} – {booking.endTime}
+                          </p>
+                          <p className="text-xs text-fuchsia-600 dark:text-fuchsia-400 mt-1">
+                            {new Date(booking.date).toLocaleDateString("de-DE", {
+                              weekday: "short",
+                              day: "2-digit",
+                              month: "2-digit",
+                            })}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : status === "belegt-user" && booking ? (
+                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-orange-200 dark:border-orange-800 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
+                          <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-orange-900 dark:text-orange-100 font-bold mb-0.5">
+                            {booking.user?.name || booking.user?.username || "Student"}
+                          </p>
+                          <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
+                            {booking.startTime} – {booking.endTime}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  ) : (
+                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 shadow-sm">
+                      <div className="flex items-start gap-3">
+                        <div className="p-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-lg">
+                          <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
+                        </div>
+                        <div className="flex-1">
+                          <p className="text-sm text-emerald-900 dark:text-emerald-100 font-bold mb-0.5">
+                            Verfügbar
+                          </p>
+                          <p className="text-xs text-emerald-700 dark:text-emerald-300 font-semibold">
+                            {startTime} – {endTime}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
 
-                <div className="mt-auto flex gap-2">
+                {/* Action Button */}
+                <div className="relative z-10 mt-auto">
                   {status === "gebucht" && booking ? (
                     <button
                       onClick={() => handleCancelBooking(room.name)}
                       disabled={isLoading}
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-red-600 hover:bg-red-700 text-white font-semibold px-4 py-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-5 py-3 transition-all shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                     >
                       {isLoading ? "Wird storniert..." : "Buchung stornieren"}
                     </button>
                   ) : status === "belegt" ? (
                     <button
                       disabled
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-semibold px-4 py-2 cursor-not-allowed"
+                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-5 py-3 cursor-not-allowed border-2 border-slate-300 dark:border-slate-700"
                     >
                       Belegt durch Vorlesung
+                    </button>
+                  ) : status === "belegt-user" ? (
+                    <button
+                      disabled
+                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-5 py-3 cursor-not-allowed border-2 border-slate-300 dark:border-slate-700"
+                    >
+                      Bereits gebucht
                     </button>
                   ) : (
                     <button
                       onClick={() => handleBookRoom(room)}
                       disabled={isLoading}
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-lg bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-4 py-2 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold px-5 py-3 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
                     >
-                      {isLoading ? "Wird gebucht..." : "Buchen"}
+                      {isLoading ? "Wird gebucht..." : "Jetzt buchen"}
                     </button>
                   )}
                 </div>

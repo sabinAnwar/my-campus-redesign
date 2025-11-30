@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import { useFetcher } from "react-router-dom";
 
 import { showSuccessToast, showErrorToast } from "../lib/toast";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 const TRANSLATIONS = {
   de: {
@@ -100,9 +101,8 @@ export const loader = async () => {
 
 export default function Settings() {
   const fetcher = useFetcher();
-  type Language = keyof typeof TRANSLATIONS;
   const REMINDER_CACHE_KEY = "iu-reminder-preferences";
-  const [language, setLanguage] = useState<Language>("de");
+  const { language } = useLanguage();
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderHour, setReminderHour] = useState(18);
   const [reminderMinute, setReminderMinute] = useState(0);
@@ -112,14 +112,6 @@ export default function Settings() {
   const [notifCalendar, setNotifCalendar] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
-
-  // Auto-select language from browser once on mount
-  useEffect(() => {
-    if (typeof navigator !== "undefined") {
-      const prefersEnglish = (navigator.language || "").toLowerCase().startsWith("en");
-      setLanguage(prefersEnglish ? "en" : "de");
-    }
-  }, []);
 
   // Load cached reminder values immediately (before network), so UI doesn't snap back to defaults on reload
   useEffect(() => {

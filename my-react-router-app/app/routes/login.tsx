@@ -1,12 +1,29 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router";
+import { Link, useNavigate, useLoaderData } from "react-router";
 import { showErrorToast, showSuccessToast } from "~/lib/toast";
+import { prisma } from "~/lib/prisma";
 
 export const loader = async () => {
-  return null;
+  try {
+    const [totalUsers, onlineUsers] = await Promise.all([
+      prisma.user.count(),
+      prisma.session.count({
+        where: {
+          expiresAt: {
+            gt: new Date(),
+          },
+        },
+      }),
+    ]);
+    return { totalUsers, onlineUsers };
+  } catch (error) {
+    console.error("Failed to fetch login stats:", error);
+    return { totalUsers: 500, onlineUsers: 42 }; // Fallback
+  }
 };
 
 export default function Login() {
+  const { totalUsers, onlineUsers } = useLoaderData() as { totalUsers: number; onlineUsers: number };
   const navigate = useNavigate();
   const [error, setError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -50,10 +67,8 @@ export default function Login() {
         showSuccessToast("Login successful! Redirecting...");
 
         // Wait for cookies to be set, then navigate
-        setTimeout(() => {
-          console.log("🔄 Login: Navigating to dashboard");
-          navigate("/dashboard", { replace: true });
-        }, 500);
+        console.log("🔄 Login: Navigating to dashboard");
+        navigate("/dashboard", { replace: true });
         return;
       }
 
@@ -116,7 +131,7 @@ export default function Login() {
 
           {/* Subheading */}
           <p className="text-lg text-cyan-100 font-semibold mb-10 drop-shadow-md">
-            Join 500+ IU Dual Degree Students
+            Join {totalUsers}+ IU Dual Degree Students
           </p>
 
           {/* Motivational Quotes - Enhanced */}
@@ -198,7 +213,7 @@ export default function Login() {
           <div className="mt-8 text-center">
             <div className="inline-block">
               <p className="text-5xl font-black text-cyan-300 drop-shadow-lg">
-                500+
+                {totalUsers}+
               </p>
               <p className="text-xs text-cyan-100 font-semibold mt-2 uppercase tracking-wider">
                 Active Dual Degree Students
@@ -206,7 +221,7 @@ export default function Login() {
               <div className="mt-3 inline-flex items-center gap-2 bg-green-500/30 px-4 py-2 rounded-full border border-green-400/60 backdrop-blur-sm">
                 <span className="h-2.5 w-2.5 rounded-full bg-green-300 block animate-pulse" />
                 <span className="text-xs text-green-100 font-bold">
-                  Currently online
+                  {onlineUsers} Currently online
                 </span>
               </div>
             </div>

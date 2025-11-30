@@ -80,20 +80,20 @@ export default function StudentIdPage() {
 
   return (
   
-      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 py-20">
+      <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 py-20">
         <div className="max-w-7xl mx-auto px-6">
           {/* HEADER */}
           <header className="text-center mb-14">
-            <h1 className="text-5xl font-extrabold text-slate-900 tracking-tight mb-3">
+            <h1 className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
               Digitaler Studentenausweis
             </h1>
-            <p className="text-lg text-slate-600">
+            <p className="text-lg text-slate-600 dark:text-slate-300">
               IU Internationale Hochschule · Offizieller Studierendenausweis
             </p>
             <div className="mt-4 flex justify-center">
               <Link
                 to="/benefits"
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-indigo-200 bg-white text-indigo-700 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
               >
                 Student Benefits ansehen
                 <svg
@@ -117,12 +117,12 @@ export default function StudentIdPage() {
           <section className="grid md:grid-cols-2 gap-10 mb-16">
             {/* FRONT */}
             <div className="flex flex-col items-center">
-              <h2 className="text-xl font-semibold text-slate-800 mb-4">
+              <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
                 Vorderseite
               </h2>
               <div
                 ref={frontRef}
-                className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
+                className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 dark:border-slate-700/50 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
               >
                 {/* Top Section */}
                 <div className="flex justify-between items-start">
@@ -189,12 +189,12 @@ export default function StudentIdPage() {
 
             {/* BACK */}
             <div className="flex flex-col items-center">
-              <h2 className="text-xl font-semibold text-slate-800 mb-4">
+              <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
                 Rückseite
               </h2>
               <div
                 ref={backRef}
-                className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
+                className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 dark:border-slate-700/50 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
               >
                 <div>
                   <h3 className="text-lg font-bold mb-3">Kontakt & Info</h3>
@@ -241,7 +241,7 @@ export default function StudentIdPage() {
           <div className="flex justify-center mb-20">
             <button
               onClick={handleDownloadPDF}
-              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 transform hover:scale-105 transition-all duration-200"
+              className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transform hover:scale-105 transition-all duration-200"
             >
               <svg
                 className="w-5 h-5"
@@ -264,10 +264,10 @@ export default function StudentIdPage() {
           {/* NOTES & INFO */}
           <section className="max-w-4xl mx-auto">
             <div className="grid md:grid-cols-2 gap-8">
-              <div className="bg-white rounded-2xl shadow-lg p-8 border border-slate-100">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-slate-100 dark:border-slate-700">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-blue-600"
+                    className="w-5 h-5 text-blue-600 dark:text-blue-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -281,30 +281,30 @@ export default function StudentIdPage() {
                   </svg>
                   Nutzungshinweise
                 </h3>
-                <ul className="space-y-3 text-slate-700 text-sm leading-relaxed">
+                <ul className="space-y-3 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                     Nur in Verbindung mit einem Lichtbildausweis gültig
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                     Bewahre deinen Ausweis sicher auf
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                     Bei Verlust informiere umgehend dein Studienzentrum
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-blue-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
                     Berechtigt zu Vergünstigungen (ÖPNV, Kultur, Freizeit)
                   </li>
                 </ul>
               </div>
 
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 rounded-2xl shadow-lg p-8 border border-blue-200/50">
-                <h3 className="text-lg font-semibold text-slate-900 mb-4 flex items-center gap-2">
+              <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-2xl shadow-lg p-8 border border-blue-200/50 dark:border-blue-800/50">
+                <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
                   <svg
-                    className="w-5 h-5 text-indigo-600"
+                    className="w-5 h-5 text-indigo-600 dark:text-indigo-400"
                     fill="none"
                     viewBox="0 0 24 24"
                     stroke="currentColor"
@@ -318,21 +318,21 @@ export default function StudentIdPage() {
                   </svg>
                   Vorteile & Features
                 </h3>
-                <ul className="space-y-3 text-slate-700 text-sm leading-relaxed">
+                <ul className="space-y-3 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
                     Weltweit anerkannt als offizieller Studierendenausweis
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
                     Zugang zu Studentenrabatten und -angeboten
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
                     QR-Code zur einfachen Verifizierung
                   </li>
                   <li className="flex items-start gap-3">
-                    <div className="w-1.5 h-1.5 bg-indigo-600 rounded-full mt-2 flex-shrink-0"></div>
+                    <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
                     Immer verfügbar auf allen Ihren Geräten
                   </li>
                 </ul>

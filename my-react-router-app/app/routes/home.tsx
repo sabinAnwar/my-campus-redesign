@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { getUser } from "../lib/auth";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 type Language = "de" | "en";
 
@@ -81,7 +82,7 @@ type User = {
 export default function Home() {
   const navigate = useNavigate();
   const [user, setUser] = useState<User | null>(null);
-  const [language, setLanguage] = useState<Language>("de");
+  const { language, setLanguage } = useLanguage();
   const [activeTab, setActiveTab] = useState("overview");
   const t = TRANSLATIONS[language];
 

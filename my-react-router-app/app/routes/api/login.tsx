@@ -1,9 +1,7 @@
 import bcryptjs from "bcryptjs";
 
-import { PrismaClient } from "@prisma/client";
+import { prisma } from "~/lib/prisma";
 import crypto from "crypto";
-
-const prisma = new PrismaClient();
 
 // Loader for GET requests (just blocks HTML)
 export async function loader(): Promise<Response> {
