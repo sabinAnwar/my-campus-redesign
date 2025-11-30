@@ -1171,6 +1171,16 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       req.query.minute !== undefined
         ? parseInt(String(req.query.minute), 10)
         : null;
+    const overrideWindow =
+      req.query.window !== undefined
+        ? parseInt(String(req.query.window), 10)
+        : null;
+    const windowMinutes =
+      Number.isFinite(overrideWindow) && overrideWindow! >= 0
+        ? overrideWindow!
+        : Number.isFinite(Number(process.env.REMINDER_WINDOW_MINUTES))
+        ? Number(process.env.REMINDER_WINDOW_MINUTES)
+        : 0;
     const debugMode = req.query.debug === "1";
     const nowUtc = new Date();
 
@@ -1300,7 +1310,12 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       const currentMinute = getMinuteInTimezone(tz);
       const targetHour = overrideHour ?? u.reminderHour ?? 18;
       const targetMinute = overrideMinute ?? u.reminderMinute ?? 0;
-      if (currentHour !== targetHour || currentMinute !== targetMinute) {
+      const currentTotal = currentHour * 60 + currentMinute;
+      const targetTotal = targetHour * 60 + targetMinute;
+      const diffForward = (currentTotal - targetTotal + 1440) % 1440;
+      const diffBackward = (targetTotal - currentTotal + 1440) % 1440;
+      const minuteDistance = Math.min(diffForward, diffBackward);
+      if (minuteDistance > windowMinutes) {
         userDebug.push({
           userId: u.id,
           email: u.email,
@@ -1309,6 +1324,8 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           currentMinute,
           targetHour,
           targetMinute,
+          windowMinutes,
+          minuteDistance,
           reason: "time-mismatch",
         });
         continue;
@@ -1331,6 +1348,8 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           currentMinute,
           targetHour,
           targetMinute,
+          windowMinutes,
+          minuteDistance: 0,
           reason: "already-submitted",
         });
         continue;
