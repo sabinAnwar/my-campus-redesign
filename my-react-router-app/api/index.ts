@@ -1171,6 +1171,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       req.query.minute !== undefined
         ? parseInt(String(req.query.minute), 10)
         : null;
+    const debugMode = req.query.debug === "1";
     const nowUtc = new Date();
 
     const targetUserIdRaw = req.query.userId;
@@ -1292,14 +1293,26 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     }
 
     // Check which users are due and haven't submitted this week
+    const userDebug: Array<Record<string, unknown>> = [];
     for (const u of users) {
       const tz = u.reminderTimezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
       const targetHour = overrideHour ?? u.reminderHour ?? 18;
       const targetMinute = overrideMinute ?? u.reminderMinute ?? 0;
-      if (currentHour !== targetHour || currentMinute !== targetMinute)
+      if (currentHour !== targetHour || currentMinute !== targetMinute) {
+        userDebug.push({
+          userId: u.id,
+          email: u.email,
+          tz,
+          currentHour,
+          currentMinute,
+          targetHour,
+          targetMinute,
+          reason: "time-mismatch",
+        });
         continue;
+      }
 
       // Has user submitted this week?
       const submitted = await prisma.praxisReport.findFirst({
@@ -1309,7 +1322,19 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           status: { in: ["SUBMITTED", "APPROVED"] },
         },
       });
-      if (submitted) continue;
+      if (submitted) {
+        userDebug.push({
+          userId: u.id,
+          email: u.email,
+          tz,
+          currentHour,
+          currentMinute,
+          targetHour,
+          targetMinute,
+          reason: "already-submitted",
+        });
+        continue;
+      }
 
       // Send reminder email
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
@@ -1337,6 +1362,16 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       try {
         const info = await transporter.sendMail(mailOptions);
         sent++;
+        userDebug.push({
+          userId: u.id,
+          email: u.email,
+          tz,
+          currentHour,
+          currentMinute,
+          targetHour,
+          targetMinute,
+          reason: "sent",
+        });
         if (emailService === "test") {
           const preview = nodemailer.getTestMessageUrl(info);
           if (preview) previewUrls.push(preview);
@@ -1356,16 +1391,20 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       }
     }
 
-    console.log("✅ daily-reminders complete", {
+    const summary = {
       sent,
       usersChecked: users.length,
       previews: previewUrls.length,
-    });
+    };
+    if (debugMode) summary["userDebug"] = userDebug;
+
+    console.log("✅ daily-reminders complete", summary);
     return res.json({
       success: true,
       sent,
       usersChecked: users.length,
       ...(previewUrls.length > 0 ? { previews: previewUrls } : {}),
+      ...(debugMode ? { userDebug } : {}),
     });
   } catch (error) {
     console.error("/api/cron/daily-reminders error", error);
