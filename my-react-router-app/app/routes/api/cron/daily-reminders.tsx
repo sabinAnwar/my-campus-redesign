@@ -132,6 +132,8 @@ export const loader = async ({ request }: { request: Request }) => {
 
     let sent = 0;
     const emailService = process.env.EMAIL_SERVICE || "test";
+    console.log(`📧 Email service: ${emailService}`);
+
     const previewUrls: string[] = [];
     let transporter;
     if (emailService === "gmail") {
@@ -164,9 +166,26 @@ export const loader = async ({ request }: { request: Request }) => {
       const tz = u.reminderTimezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
+      
+      // Round current minute down to nearest 5 to create a 5-minute bucket
+      // This handles cases where the cron runs slightly late (e.g. 18:01 instead of 18:00)
+      const currentBucket = Math.floor(currentMinute / 5) * 5;
+
       const targetHour = overrideHour ? parseInt(overrideHour, 10) : u.reminderHour ?? 18;
       const targetMinute = overrideMinute ? parseInt(overrideMinute, 10) : u.reminderMinute ?? 0;
-      if (currentHour !== targetHour || currentMinute !== targetMinute) continue;
+
+      // Check if target time falls within the current 5-minute bucket
+      // We check if the hour matches AND if the target minute is in [bucket, bucket + 5)
+      const hourMatches = currentHour === targetHour;
+      const minuteMatches = targetMinute >= currentBucket && targetMinute < currentBucket + 5;
+
+      if (!hourMatches || !minuteMatches) {
+        // Debug logging for specific user if needed, or just skip
+        // console.log(`Skipping ${u.email}: Now ${currentHour}:${currentMinute} (Bucket ${currentBucket}), Target ${targetHour}:${targetMinute}`);
+        continue;
+      }
+
+      console.log(`🔔 Sending reminder to ${u.email} (Target: ${targetHour}:${targetMinute}, Now: ${currentHour}:${currentMinute})`);
 
       const submitted = await prisma.praxisReport.findFirst({
         where: {
@@ -175,7 +194,10 @@ export const loader = async ({ request }: { request: Request }) => {
           status: { in: ["SUBMITTED", "APPROVED"] },
         },
       });
-      if (submitted) continue;
+      if (submitted) {
+        console.log(`- Already submitted: ${u.email}`);
+        continue;
+      }
 
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
       const portalLink = `${appUrl}/praxisbericht2`;
