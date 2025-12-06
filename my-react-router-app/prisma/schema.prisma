@@ -51,6 +51,12 @@ model User {
   
   // Contact submissions
   contactSubmissions ContactSubmission[]
+  
+  // Dual Student relations
+  praxisPartner     PraxisPartner?
+  praxisHoursLogs   PraxisHoursLog[]
+  praxisHoursTarget PraxisHoursTarget?
+  scheduleEvents    ScheduleEvent[]
 }
 
 model Teacher {
@@ -290,4 +296,78 @@ model ContactSubmission {
   @@index([userId])
   @@index([status])
   @@index([createdAt])
+}
+
+// Praxis Partner (Dual Student Company)
+model PraxisPartner {
+  id           Int      @id @default(autoincrement())
+  userId       Int      @unique
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  companyName  String
+  department   String?
+  supervisor   String?
+  email        String?
+  phone        String?
+  address      String?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+// Praxis Hours Tracking (for dual students)
+model PraxisHoursLog {
+  id          Int      @id @default(autoincrement())
+  userId      Int
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  date        DateTime
+  hours       Float
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([userId, date])
+}
+
+// Praxis Hours Target (semester goals)
+model PraxisHoursTarget {
+  id              Int      @id @default(autoincrement())
+  userId          Int      @unique
+  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  requiredHours   Int      @default(900)  // per semester
+  targetPerWeek   Int      @default(40)
+  semesterStart   DateTime
+  semesterEnd     DateTime
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+}
+
+// Schedule Event (for course schedule / Stundenplan)
+enum ScheduleEventType {
+  VORLESUNG
+  SEMINAR
+  UEBUNG
+  TUTORIUM
+  WORKSHOP
+  PRUEFUNG
+  SONSTIGES
+}
+
+model ScheduleEvent {
+  id          Int               @id @default(autoincrement())
+  userId      Int?
+  user        User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String
+  courseCode  String?           // e.g., "DLBINGDT01"
+  date        DateTime
+  startTime   String            // e.g., "10:00"
+  endTime     String            // e.g., "11:30"
+  location    String?           // e.g., "Hammerbrook"
+  eventType   ScheduleEventType @default(VORLESUNG)
+  professor   String?
+  isRecurring Boolean           @default(false)
+  recurringDays String?         // JSON array of days ["MO", "WE", "FR"]
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@index([userId, date])
+  @@index([date])
 }

@@ -23,6 +23,7 @@ import {
   CheckSquare,
   DoorOpen,
   Instagram,
+  Library,
 } from "lucide-react";
 import ThemeToggle from "~/components/ThemeToggle";
 import LanguageToggle from "~/components/LanguageToggle";
@@ -42,7 +43,8 @@ type NavKey =
   | "faq"
   | "studyOrg"
   | "contact"
-  | "roomBooking";
+  | "roomBooking"
+  | "library";
 
 const BASE_NAV_ITEMS: Array<{
   key: NavKey;
@@ -61,6 +63,7 @@ const BASE_NAV_ITEMS: Array<{
   { to: "/news", key: "news", icon: Newspaper },
   { to: "/faq", key: "faq", icon: HelpCircle },
   { to: "/study-organization", key: "studyOrg", icon: BookOpenCheck },
+  { to: "/library", key: "library", icon: Library },
   { to: "/contact", key: "contact", icon: UserIcon },
 ];
 
@@ -98,6 +101,7 @@ const SHELL_TRANSLATIONS: Record<
       news: "News & Updates",
       faq: "Hilfe & FAQ",
       studyOrg: "Studienorganisation",
+      library: "Bibliothek & Services",
       contact: "Kontakt",
       roomBooking: "Raumbuchung",
     },
@@ -128,6 +132,7 @@ const SHELL_TRANSLATIONS: Record<
       news: "News & Updates",
       faq: "Help & FAQ",
       studyOrg: "Study Organization",
+      library: "Library & Services",
       contact: "Contact",
       roomBooking: "Room Booking",
     },

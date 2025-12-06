@@ -60,7 +60,10 @@ export default [
     route("toast-direct", "routes/_app.toast-direct.tsx"),
     route("toast-test", "routes/_app.toast-test.tsx"),
     route("settings", "routes/_app.settings.tsx"),
-  
+    route("redux-demo", "routes/_app.redux-demo.tsx"),
+    route("library", "routes/_app.library.tsx"),
+    route("vertiefungswahl", "routes/_app.vertiefungswahl.tsx"),
+    route("klausuranmeldung", "routes/_app.klausuranmeldung.tsx"),
   ]),
 
   // API routes (handled by React Router in dev/SSR)

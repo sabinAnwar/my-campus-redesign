@@ -216,7 +216,7 @@ export default function Settings() {
     } else if (fetcher?.data?.error) {
       showErrorToast(fetcher.data.error);
     }
-  }, [fetcher?.data, language, reminderEnabled, reminderHour, reminderMinute]);
+  }, [fetcher?.data, language]);
 
   const handleNotificationsSave = () => {
     const message =

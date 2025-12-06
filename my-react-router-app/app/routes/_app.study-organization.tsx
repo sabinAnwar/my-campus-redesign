@@ -1,5 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 import {
   FileText,
@@ -11,17 +12,48 @@ import {
 
 export const loader = async () => null;
 
+// Translations
+const TRANSLATIONS = {
+  de: {
+    title: "Studienorganisation",
+    subtitle: "Verwalten Sie Ihre Studienangelegenheiten online",
+    applicationManagement: "Antragsverwaltung",
+    applicationManagementDesc: "Verwalten Sie Ihre Anträge und Formulare online",
+    gradeManagement: "Notenverwaltung",
+    gradeManagementDesc: "Ihre Prüfungsergebnisse und Notenübersicht",
+    specializationSelection: "Vertiefungswahl",
+    specializationSelectionDesc: "Wählen Sie Ihre Vertiefungsrichtung",
+    examRegistration: "Klausuranmeldung",
+    examRegistrationDesc: "Melden Sie sich zu Prüfungen an",
+  },
+  en: {
+    title: "Study Organization",
+    subtitle: "Manage your academic affairs online",
+    applicationManagement: "Application Management",
+    applicationManagementDesc: "Manage your applications and forms online",
+    gradeManagement: "Grade Management",
+    gradeManagementDesc: "Your exam results and grade overview",
+    specializationSelection: "Specialization Selection",
+    specializationSelectionDesc: "Choose your specialization",
+    examRegistration: "Additional Courses",
+    examRegistrationDesc: "Apply for additional courses",
+  },
+};
+
 export default function StudyOrganization() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+
   return (
 
       <main className="max-w-7xl mx-auto px-6 py-12">
         {/* Header */}
         <div className="mb-12">
           <h1 className="text-4xl font-black text-black dark:text-white mb-3">
-            Studienorganisation
+            {t.title}
           </h1>
           <p className="text-lg text-slate-700 dark:text-slate-300">
-            Verwalten Sie Ihre Studienangelegenheiten online
+            {t.subtitle}
           </p>
         </div>
 
@@ -41,10 +73,10 @@ export default function StudyOrganization() {
                 <ChevronRight className="w-6 h-6 text-white/80 group-hover:translate-x-2 transition-transform" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                Antragsverwaltung
+                {t.applicationManagement}
               </h3>
               <p className="text-base text-white/95 leading-relaxed">
-                Verwalten Sie Ihre Anträge und Formulare online
+                {t.applicationManagementDesc}
               </p>
             </div>
           </Link>
@@ -63,10 +95,10 @@ export default function StudyOrganization() {
                 <ChevronRight className="w-6 h-6 text-white/80 group-hover:translate-x-2 transition-transform" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                Notenverwaltung
+                {t.gradeManagement}
               </h3>
               <p className="text-base text-white/95 leading-relaxed">
-                Ihre Prüfungsergebnisse und Notenübersicht
+                {t.gradeManagementDesc}
               </p>
             </div>
           </Link>
@@ -85,10 +117,10 @@ export default function StudyOrganization() {
                 <ChevronRight className="w-6 h-6 text-white/80 group-hover:translate-x-2 transition-transform" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                Vertiefungswahl
+                {t.specializationSelection}
               </h3>
               <p className="text-base text-white/95 leading-relaxed">
-                Wählen Sie Ihre Vertiefungsrichtung
+                {t.specializationSelectionDesc}
               </p>
             </div>
           </Link>
@@ -107,10 +139,10 @@ export default function StudyOrganization() {
                 <ChevronRight className="w-6 h-6 text-white/80 group-hover:translate-x-2 transition-transform" />
               </div>
               <h3 className="text-2xl font-bold text-white mb-3">
-                Klausuranmeldung
+                {t.examRegistration}
               </h3>
               <p className="text-base text-white/95 leading-relaxed">
-                Melden Sie sich zu Prüfungen an
+                {t.examRegistrationDesc}
               </p>
             </div>
           </Link>

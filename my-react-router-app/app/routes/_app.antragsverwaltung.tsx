@@ -1,6 +1,60 @@
 import { useState } from "react";
 import { Search, Clock, CheckCircle, XCircle, AlertCircle, FileText, ChevronRight, Filter, Calendar, Info, X, Upload, Send } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
 
+// Translations
+const TRANSLATIONS = {
+  de: {
+    title: "Antragsverwaltung",
+    subtitle: "Verwalten Sie Ihre Anträge und Formulare an einem Ort",
+    search: "Anträge durchsuchen...",
+    allStatus: "Alle Status",
+    pending: "In Bearbeitung",
+    approved: "Genehmigt",
+    rejected: "Abgelehnt",
+    allCategories: "Alle Kategorien",
+    totalApplications: "Gesamt",
+    pendingCount: "In Bearbeitung",
+    approvedCount: "Genehmigt",
+    rejectedCount: "Abgelehnt",
+    lastUpdated: "Zuletzt aktualisiert",
+    startApplication: "Beantragen",
+    moreInfo: "Mehr Info",
+    noResults: "Keine Anträge gefunden",
+    noResultsHint: "Versuchen Sie andere Suchbegriffe oder Filter",
+    submitApplication: "Antrag einreichen",
+    cancel: "Abbrechen",
+    submitting: "Wird eingereicht...",
+    requiredField: "Pflichtfeld",
+    uploadFile: "Datei hochladen",
+    successMessage: "Antrag erfolgreich eingereicht!",
+  },
+  en: {
+    title: "Application Management",
+    subtitle: "Manage your applications and forms in one place",
+    search: "Search applications...",
+    allStatus: "All Status",
+    pending: "Pending",
+    approved: "Approved",
+    rejected: "Rejected",
+    allCategories: "All Categories",
+    totalApplications: "Total",
+    pendingCount: "Pending",
+    approvedCount: "Approved",
+    rejectedCount: "Rejected",
+    lastUpdated: "Last updated",
+    startApplication: "Apply",
+    moreInfo: "More Info",
+    noResults: "No applications found",
+    noResultsHint: "Try different search terms or filters",
+    submitApplication: "Submit Application",
+    cancel: "Cancel",
+    submitting: "Submitting...",
+    requiredField: "Required field",
+    uploadFile: "Upload file",
+    successMessage: "Application submitted successfully!",
+  },
+};
 // Form field definitions for each application type
 const formDefinitions: Record<string, any> = {
   "1": {
@@ -73,6 +127,9 @@ const mockItems = [
 ];
 
 export default function AntragsVerwaltung() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [categoryFilter, setCategoryFilter] = useState("all");
@@ -95,7 +152,7 @@ export default function AntragsVerwaltung() {
     rejected: mockItems.filter(i => i.status === "rejected").length,
   };
 
-  const getStatusIcon = (status) => {
+  const getStatusIcon = (status: string) => {
     switch (status) {
       case "approved": return <CheckCircle className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />;
       case "rejected": return <XCircle className="w-5 h-5 text-rose-600 dark:text-rose-400" />;
@@ -103,15 +160,15 @@ export default function AntragsVerwaltung() {
     }
   };
 
-  const getStatusText = (status) => {
+  const getStatusText = (status: string) => {
     switch (status) {
-      case "approved": return "Genehmigt";
-      case "rejected": return "Abgelehnt";
-      default: return "In Bearbeitung";
+      case "approved": return t.approved;
+      case "rejected": return t.rejected;
+      default: return t.pending;
     }
   };
 
-  const getStatusBadgeClass = (status) => {
+  const getStatusBadgeClass = (status: string) => {
     switch (status) {
       case "approved": return "bg-emerald-50 dark:bg-emerald-950/30 text-emerald-700 dark:text-emerald-300 border-emerald-200 dark:border-emerald-800";
       case "rejected": return "bg-rose-50 dark:bg-rose-950/30 text-rose-700 dark:text-rose-300 border-rose-200 dark:border-rose-800";
@@ -181,8 +238,8 @@ export default function AntragsVerwaltung() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex items-center justify-between mb-6">
             <div>
-              <h1 className="text-4xl font-bold text-card-foreground mb-2">Antragsverwaltung</h1>
-              <p className="text-muted-foreground">Verwalten und verfolgen Sie alle Ihre Anträge</p>
+              <h1 className="text-4xl font-bold text-card-foreground mb-2">{t.title}</h1>
+              <p className="text-muted-foreground">{t.subtitle}</p>
             </div>
             <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-lg border border-border bg-background/50">
               <Calendar className="w-4 h-4 text-muted-foreground" />
@@ -194,28 +251,28 @@ export default function AntragsVerwaltung() {
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
             <div className="p-4 rounded-xl border border-border bg-card hover:bg-accent/50 transition-all">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-muted-foreground">Gesamt</span>
+                <span className="text-sm font-medium text-muted-foreground">{t.totalApplications}</span>
                 <FileText className="w-4 h-4 text-muted-foreground" />
               </div>
               <div className="text-2xl font-bold text-card-foreground">{stats.total}</div>
             </div>
             <div className="p-4 rounded-xl border border-amber-200 dark:border-amber-800 bg-amber-50/50 dark:bg-amber-950/20 hover:bg-amber-100/50 dark:hover:bg-amber-950/30 transition-all">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-amber-700 dark:text-amber-300">In Bearbeitung</span>
+                <span className="text-sm font-medium text-amber-700 dark:text-amber-300">{t.pendingCount}</span>
                 <Clock className="w-4 h-4 text-amber-600 dark:text-amber-400" />
               </div>
               <div className="text-2xl font-bold text-amber-700 dark:text-amber-300">{stats.pending}</div>
             </div>
             <div className="p-4 rounded-xl border border-emerald-200 dark:border-emerald-800 bg-emerald-50/50 dark:bg-emerald-950/20 hover:bg-emerald-100/50 dark:hover:bg-emerald-950/30 transition-all">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">Genehmigt</span>
+                <span className="text-sm font-medium text-emerald-700 dark:text-emerald-300">{t.approvedCount}</span>
                 <CheckCircle className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
               </div>
               <div className="text-2xl font-bold text-emerald-700 dark:text-emerald-300">{stats.approved}</div>
             </div>
             <div className="p-4 rounded-xl border border-rose-200 dark:border-rose-800 bg-rose-50/50 dark:bg-rose-950/20 hover:bg-rose-100/50 dark:hover:bg-rose-950/30 transition-all">
               <div className="flex items-center justify-between mb-1">
-                <span className="text-sm font-medium text-rose-700 dark:text-rose-300">Abgelehnt</span>
+                <span className="text-sm font-medium text-rose-700 dark:text-rose-300">{t.rejectedCount}</span>
                 <XCircle className="w-4 h-4 text-rose-600 dark:text-rose-400" />
               </div>
               <div className="text-2xl font-bold text-rose-700 dark:text-rose-300">{stats.rejected}</div>

@@ -1,0 +1,8 @@
+{
+  "servers": {
+    "redux-toolkit Docs": {
+      "type": "sse",
+      "url": "https://gitmcp.io/reduxjs/redux-toolkit"
+    }
+  }
+}

@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import FirstSemesterOnboarding from "~/components/FirstSemesterOnboarding";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 import {
   Calendar,
@@ -29,11 +30,136 @@ import {
   DoorOpen,
   History,
   Library,
+  Briefcase,
+  Building2,
+  CalendarCheck,
+  Timer,
+  Coffee,
+  BookMarked,
+  ClipboardCheck,
+  Phone,
+  Mail,
+  ExternalLink,
+  Laptop,
+  Building,
+  Newspaper,
+  Sparkles,
+  ChevronLeft,
+  ChevronRight as ChevronRightIcon,
 } from "lucide-react";
+import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/lib/studyPlans";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import { prisma } from "~/lib/prisma";
 import { useLoaderData } from "react-router-dom";
 import { ACTIVE_COURSES_COUNT } from "~/lib/coursesMeta";
+
+// Dashboard Translations
+const TRANSLATIONS = {
+  de: {
+    goodMorning: "Guten Morgen",
+    goodAfternoon: "Guten Tag",
+    goodEvening: "Guten Abend",
+    overview: "Hier ist eine Übersicht über deinen Studienalltag.",
+    studentBenefits: "Student Benefits anzeigen",
+    activeCourses: "Aktive Kurse",
+    tasks: "Aufgaben",
+    todayAppointments: "Heute",
+    appointments: "Termine",
+    avgGrade: "Ø Note",
+    average: "Durchschnitt",
+    campus: "Campus",
+    rooms: "Räume",
+    loading: "Loading...",
+    currentNews: "Aktuelle News",
+    allNews: "Alle",
+    read: "Lesen",
+    phaseProgress: "Phasen-Fortschritt",
+    day: "Tag",
+    of: "von",
+    daysLeft: "Noch",
+    days: "Tage",
+    current: "Aktuell",
+    nextPhase: "Nächste Phase",
+    praxisPartner: "Praxispartner",
+    supervisor: "Ansprechpartner",
+    praxisHours: "Praxis-Stunden",
+    hoursLogged: "Stunden erfasst",
+    thisWeek: "Diese Woche",
+    targetPerWeek: "Ziel/Woche",
+    todayClasses: "Heutiger Stundenplan",
+    noClassesToday: "Heute keine Veranstaltungen",
+    showFullSchedule: "Vollständigen Stundenplan anzeigen",
+    upcomingTasks: "Anstehende Aufgaben",
+    due: "fällig",
+    daysShort: "Tage",
+    showAllTasks: "Alle Aufgaben anzeigen",
+    quickActions: "Quick Actions",
+    courses: "Kurse",
+    schedule: "Stundenplan",
+    library: "Online Bibliothek",
+    roomBooking: "Raumbuchung",
+    studentId: "Studentenausweis",
+    recentlyVisited: "Kürzlich besucht",
+    noRecentCourses: "Noch keine Kurse besucht",
+    viewAllCourses: "Alle Kurse anzeigen",
+    weekOverview: "Wochenübersicht",
+    campusInfo: "Campus Informationen",
+    noCampusSelected: "Kein Campus ausgewählt",
+    selectCampus: "Campus auswählen",
+  },
+  en: {
+    goodMorning: "Good morning",
+    goodAfternoon: "Good afternoon",
+    goodEvening: "Good evening",
+    overview: "Here's an overview of your study routine.",
+    studentBenefits: "View Student Benefits",
+    activeCourses: "Active Courses",
+    tasks: "Tasks",
+    todayAppointments: "Today",
+    appointments: "Appointments",
+    avgGrade: "Avg Grade",
+    average: "Average",
+    campus: "Campus",
+    rooms: "Rooms",
+    loading: "Loading...",
+    currentNews: "Current News",
+    allNews: "All",
+    read: "Read",
+    phaseProgress: "Phase Progress",
+    day: "Day",
+    of: "of",
+    daysLeft: "Left",
+    days: "days",
+    current: "Current",
+    nextPhase: "Next Phase",
+    praxisPartner: "Practice Partner",
+    supervisor: "Contact Person",
+    praxisHours: "Practice Hours",
+    hoursLogged: "hours logged",
+    thisWeek: "This Week",
+    targetPerWeek: "Target/Week",
+    todayClasses: "Today's Schedule",
+    noClassesToday: "No classes today",
+    showFullSchedule: "View Full Schedule",
+    upcomingTasks: "Upcoming Tasks",
+    due: "due",
+    daysShort: "days",
+    showAllTasks: "View All Tasks",
+    quickActions: "Quick Actions",
+    courses: "Courses",
+    schedule: "Schedule",
+    library: "Online Library",
+    roomBooking: "Room Booking",
+    studentId: "Student ID",
+    recentlyVisited: "Recently Visited",
+    noRecentCourses: "No courses visited yet",
+    viewAllCourses: "View All Courses",
+    weekOverview: "Week Overview",
+    campusInfo: "Campus Information",
+    noCampusSelected: "No campus selected",
+    selectCampus: "Select Campus",
+  },
+};
 
 type DashboardTask = {
   id: number;
@@ -44,23 +170,45 @@ type DashboardTask = {
   dueDate: string;
 };
 
-type DashboardNewsItem = {
-  slug: string;
+type PraxisPartnerData = {
+  companyName: string;
+  department: string | null;
+  supervisor: string | null;
+  email: string | null;
+  phone: string | null;
+  address: string | null;
+};
+
+type PraxisHoursData = {
+  required: number;
+  logged: number;
+  thisWeek: number;
+  targetPerWeek: number;
+};
+
+type ScheduleEventData = {
+  id: number;
   title: string;
+  courseCode: string | null;
   date: string;
-  category?: string | null;
-  description?: string | null;
-  featured?: boolean;
+  startTime: string;
+  endTime: string;
+  location: string | null;
+  eventType: string;
+  professor: string | null;
 };
 
 type DashboardLoaderData = {
   tasks: DashboardTask[];
-  news: DashboardNewsItem[];
+  tasksTotal: number;
+  praxisPartner: PraxisPartnerData | null;
+  praxisHours: PraxisHoursData;
+  scheduleEvents: ScheduleEventData[];
+  averageGrade: number | null;
 };
 
 export const loader = async ({ request }: { request: Request }) => {
   let tasks: DashboardTask[] = [];
-  let news: DashboardNewsItem[] = [];
   let tasksTotal = 0;
 
   try {
@@ -94,34 +242,154 @@ export const loader = async ({ request }: { request: Request }) => {
     tasksTotal = 0;
   }
 
+  // Load Dual Student Data (Praxis Partner, Hours, Schedule)
+  let praxisPartner: PraxisPartnerData | null = null;
+  let praxisHours: PraxisHoursData = {
+    required: 900,
+    logged: 0,
+    thisWeek: 0,
+    targetPerWeek: 40,
+  };
+  let scheduleEvents: ScheduleEventData[] = [];
+
   try {
-    const url = new URL(request.url);
-    const res = await fetch(`${url.origin}/api/news?page=1&pageSize=4`);
-    if (res.ok) {
-      const data = await res.json();
-      news = (data.items || []).map((n: any) => ({
-        slug: n.slug,
-        title: n.title,
-        date: n.publishedAt
-          ? new Date(n.publishedAt).toLocaleDateString("de-DE")
-          : "",
-        category: n.category ?? null,
-        description: n.excerpt ?? null,
-        featured: n.featured ?? false,
-      }));
+    // For now, get data for first user (in production, get from session)
+    const firstUser = await prisma.user.findFirst();
+    const userId = firstUser?.id;
+
+    if (userId) {
+      // Get Praxis Partner
+      const partner = await prisma.praxisPartner.findUnique({
+        where: { userId },
+      });
+      if (partner) {
+        praxisPartner = {
+          companyName: partner.companyName,
+          department: partner.department,
+          supervisor: partner.supervisor,
+          email: partner.email,
+          phone: partner.phone,
+          address: partner.address,
+        };
+      }
+
+      // Get Praxis Hours Target and Logs
+      const target = await prisma.praxisHoursTarget.findUnique({
+        where: { userId },
+      });
+
+      // Get total logged hours
+      const totalHours = await prisma.praxisHoursLog.aggregate({
+        where: { userId },
+        _sum: { hours: true },
+      });
+
+      // Get this week's hours
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      const weekHours = await prisma.praxisHoursLog.aggregate({
+        where: {
+          userId,
+          date: { gte: startOfWeek },
+        },
+        _sum: { hours: true },
+      });
+
+      praxisHours = {
+        required: target?.requiredHours ?? 900,
+        logged: Math.round(totalHours._sum.hours ?? 0),
+        thisWeek: Math.round(weekHours._sum.hours ?? 0),
+        targetPerWeek: target?.targetPerWeek ?? 40,
+      };
+
+      // Get Schedule Events for next 5 days
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endDate = new Date(today);
+      endDate.setDate(endDate.getDate() + 5);
+
+      const events = await prisma.scheduleEvent.findMany({
+        where: {
+          userId,
+          date: {
+            gte: today,
+            lt: endDate,
+          },
+        },
+        orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      });
+
+      scheduleEvents = events.map(
+        (e: {
+          id: number;
+          title: string;
+          courseCode: string | null;
+          date: Date;
+          startTime: string;
+          endTime: string;
+          location: string | null;
+          eventType: string;
+          professor: string | null;
+        }) => ({
+          id: e.id,
+          title: e.title,
+          courseCode: e.courseCode,
+          date: e.date.toISOString(),
+          startTime: e.startTime,
+          endTime: e.endTime,
+          location: e.location,
+          eventType: e.eventType,
+          professor: e.professor,
+        })
+      );
     }
-  } catch {
-    news = [];
+  } catch (error) {
+    console.error("Error loading dual student data:", error);
   }
 
-  return { tasks, news, tasksTotal };
+  // Calculate average grade from marks (fallback to hardcoded value from notenverwaltung)
+  let averageGrade: number | null = 1.58; // Default from notenverwaltung studentData
+  try {
+    const marks = await prisma.mark.findMany({
+      select: { value: true },
+    });
+    if (marks.length > 0) {
+      const sum = marks.reduce(
+        (acc: number, m: { value: number }) => acc + m.value,
+        0
+      );
+      averageGrade = sum / marks.length;
+    }
+  } catch (error) {
+    // Keep default value of 1.58
+  }
+
+  return {
+    tasks,
+    tasksTotal,
+    praxisPartner,
+    praxisHours,
+    scheduleEvents,
+    averageGrade,
+  };
 };
 import { getRecentCourses } from "~/lib/recentCourses";
 
 export default function Dashboard() {
-  const { tasks, news, tasksTotal } = useLoaderData() as DashboardLoaderData & {
-    tasksTotal: number;
-  };
+  const {
+    tasks,
+    tasksTotal,
+    praxisPartner,
+    praxisHours,
+    scheduleEvents,
+    averageGrade,
+  } = useLoaderData() as DashboardLoaderData;
+
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
 
   type User = { name: string; campusArea?: string } | null;
   const [user, setUser] = useState<User>(null);
@@ -136,6 +404,19 @@ export default function Dashboard() {
   };
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
   const navigate = useNavigate();
+  
+  // News Slider State
+  type NewsItemType = {
+    slug: string;
+    title: string;
+    excerpt?: string;
+    category?: string;
+    publishedAt: string;
+    featured?: boolean;
+  };
+  const [newsItems, setNewsItems] = useState<NewsItemType[]>([]);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+  const [newsLoading, setNewsLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -185,13 +466,59 @@ export default function Dashboard() {
     setRecentCourses(getRecentCourses(6));
   }, [navigate]);
 
+  // Fetch News Items
+  useEffect(() => {
+    const fetchNews = async () => {
+      try {
+        const response = await fetch("/api/news?page=1");
+        if (response.ok) {
+          const data = await response.json();
+          setNewsItems(data.items || []);
+        }
+      } catch (err) {
+        console.error("Error fetching news:", err);
+      } finally {
+        setNewsLoading(false);
+      }
+    };
+    fetchNews();
+  }, []);
+
+  // Auto-slide news every 5 seconds
+  useEffect(() => {
+    if (newsItems.length <= 1) return;
+    const interval = setInterval(() => {
+      setCurrentNewsIndex((prev) => (prev + 1) % newsItems.length);
+    }, 5000);
+    return () => clearInterval(interval);
+  }, [newsItems.length]);
+
+  const nextNews = () => {
+    setCurrentNewsIndex((prev) => (prev + 1) % newsItems.length);
+  };
+
+  const prevNews = () => {
+    setCurrentNewsIndex((prev) => (prev - 1 + newsItems.length) % newsItems.length);
+  };
+
+  const getCategoryColor = (category?: string) => {
+    const key = (category || "").toLowerCase();
+    if (key.includes("exam")) return "from-amber-500 to-orange-500";
+    if (key.includes("it") || key.includes("tech")) return "from-indigo-500 to-purple-500";
+    if (key.includes("scholar")) return "from-emerald-500 to-green-500";
+    if (key.includes("library")) return "from-violet-500 to-purple-500";
+    if (key.includes("career")) return "from-cyan-500 to-blue-500";
+    if (key.includes("academic") || key.includes("module")) return "from-blue-500 to-indigo-500";
+    return "from-primary to-purple-600";
+  };
+
   if (loading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
           <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
           <p className="text-lg font-semibold text-slate-700 dark:text-slate-300 dark:text-slate-300">
-            Loading...
+            {t.loading}
           </p>
         </div>
       </div>
@@ -201,9 +528,9 @@ export default function Dashboard() {
   // Get greeting based on time of day
   const getGreeting = () => {
     const hour = new Date().getHours();
-    if (hour < 12) return "Guten Morgen";
-    if (hour < 18) return "Guten Tag";
-    return "Guten Abend";
+    if (hour < 12) return t.goodMorning;
+    if (hour < 18) return t.goodAfternoon;
+    return t.goodEvening;
   };
 
   // Active course count (shared with courses page meta)
@@ -212,7 +539,7 @@ export default function Dashboard() {
   // Stats
   const statsBase = [
     {
-      label: "Aktive Kurse",
+      label: t.activeCourses,
       value: String(activeCourses ?? 0),
       change: "+2",
       icon: BookOpen,
@@ -221,37 +548,93 @@ export default function Dashboard() {
       link: "/courses",
     },
     {
-      label: "Aufgaben",
+      label: t.tasks,
       value: String(tasksTotal ?? 0),
-      change: "5 fällig",
+      change: `5 ${t.due}`,
       icon: CheckSquare,
       color: "orange",
       bgGradient: "from-orange-500 to-orange-600",
       link: "/tasks",
     },
     {
-      label: "Heute",
+      label: t.todayAppointments,
       value: "3",
-      change: "Termine",
+      change: t.appointments,
       icon: CalendarDays,
       color: "purple",
       bgGradient: "from-purple-500 to-purple-600",
       link: "/courses/schedule",
     },
     {
-      label: "Fortschritt",
-      value: "72%",
-      change: "+5%",
-      icon: TrendingUp,
+      label: t.avgGrade,
+      value: averageGrade ? averageGrade.toFixed(1) : "-",
+      change: t.average,
+      icon: Award,
       color: "green",
-      bgGradient: "from-green-500 to-green-600",
-      link: "/curriculum",
+      bgGradient: "from-green-500 to-emerald-600",
+      link: "/notenverwaltung",
     },
   ];
 
   const bookingLink = user?.campusArea
     ? `/raumbuchung?campus=${encodeURIComponent(user.campusArea)}`
     : "/raumbuchung";
+
+  // Dual Student Logic
+  const currentPlan = STUDY_PLANS[0]; // Default to first plan
+  const today = new Date();
+  const todayIso = toISODate(today);
+
+  // Find current block
+  const currentBlock = currentPlan.blocks.find((b) => {
+    return todayIso >= b.start && todayIso <= b.end;
+  });
+
+  const currentStatus = currentBlock?.status || "vorlesung"; // Default
+  const statusConfig =
+    currentPlan.paletteOverrides?.[currentStatus] ||
+    DEFAULT_PALETTE[currentStatus];
+
+  // Find next phase
+  const nextBlock = currentPlan.blocks.find(
+    (b) => b.start > todayIso && b.status !== currentStatus
+  );
+
+  // Calculate progress
+  let phaseProgress = 0;
+  let phaseDaysLeft = 0;
+  let phaseTotalDays = 0;
+
+  if (currentBlock) {
+    const start = new Date(currentBlock.start).getTime();
+    const end = new Date(currentBlock.end).getTime();
+    const now = today.getTime();
+    phaseTotalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
+    const daysPassed = Math.ceil((now - start) / (1000 * 60 * 60 * 24));
+    phaseDaysLeft = Math.max(0, phaseTotalDays - daysPassed);
+    phaseProgress = Math.min(
+      100,
+      Math.max(0, (daysPassed / phaseTotalDays) * 100)
+    );
+  }
+
+  // Dual Student Company Info (from database)
+  const companyInfo = praxisPartner
+    ? {
+        name: praxisPartner.companyName,
+        department: praxisPartner.department || "Abteilung nicht angegeben",
+        supervisor: praxisPartner.supervisor || "Nicht angegeben",
+        email: praxisPartner.email || "",
+        phone: praxisPartner.phone || "",
+        address: praxisPartner.address || "",
+      }
+    : null;
+
+  // Praxis Hours Progress (from database)
+  const praxisProgress =
+    praxisHours.required > 0
+      ? Math.round((praxisHours.logged / praxisHours.required) * 100)
+      : 0;
 
   const stats = [...statsBase];
 
@@ -265,36 +648,61 @@ export default function Dashboard() {
     link: bookingLink,
   };
 
-  // Upcoming classes today
-  const todayClasses = [
-    {
-      id: 1,
-      title: "Webentwicklung - Vorlesung",
-      time: "10:00 - 11:30",
-      location: "Hammerbrook",
-      type: "Vorlesung",
-      professor: "Prof. Dr. Schmidt",
-      color: "blue",
-    },
-    {
-      id: 2,
-      title: "Datenbankdesign - Seminar",
-      time: "14:00 - 15:00",
-      location: "Waterloohain",
-      type: "Seminar",
-      professor: "Prof. Dr. Müller",
-      color: "purple",
-    },
-    {
-      id: 3,
-      title: "Mathematik - Übung",
-      time: "16:00 - 17:30",
-      location: "Hamburg-Mitte",
-      type: "Übung",
-      professor: "Dr. Weber",
-      color: "green",
-    },
-  ];
+  // Today's classes from database schedule events
+  const todayStart = new Date();
+  todayStart.setHours(0, 0, 0, 0);
+  const todayEnd = new Date();
+  todayEnd.setHours(23, 59, 59, 999);
+
+  const todayClasses = scheduleEvents
+    .filter((e) => {
+      const eventDate = new Date(e.date);
+      return eventDate >= todayStart && eventDate <= todayEnd;
+    })
+    .map((e, idx) => ({
+      id: e.id,
+      title: `${e.title}${e.courseCode ? ` - ${e.courseCode}` : ""}`,
+      time: `${e.startTime} - ${e.endTime}`,
+      location: e.location || "Nicht angegeben",
+      type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
+      professor: e.professor || "",
+      color: idx % 3 === 0 ? "blue" : idx % 3 === 1 ? "purple" : "green",
+    }));
+
+  // Weekly Schedule Mini-View (from database)
+  const getWeekDays = () => {
+    const days = [];
+    const dayNames = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
+    for (let i = 0; i < 5; i++) {
+      const date = new Date();
+      date.setDate(date.getDate() + i);
+      const dayStart = new Date(date);
+      dayStart.setHours(0, 0, 0, 0);
+      const dayEnd = new Date(date);
+      dayEnd.setHours(23, 59, 59, 999);
+
+      const dayEvents = scheduleEvents
+        .filter((e) => {
+          const eventDate = new Date(e.date);
+          return eventDate >= dayStart && eventDate <= dayEnd;
+        })
+        .map((e) => ({
+          title: e.title,
+          time: e.startTime,
+          type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
+        }));
+
+      days.push({
+        date: date,
+        dayName: dayNames[date.getDay()],
+        dayNum: date.getDate(),
+        isToday: i === 0,
+        events: dayEvents,
+      });
+    }
+    return days;
+  };
+  const weekDays = getWeekDays();
 
   // Upcoming assignments + exams overview (from DB tasks)
   const upcomingAssignments = [
@@ -320,34 +728,33 @@ export default function Dashboard() {
 
   // Quick actions
   const quickActions = [
-    { label: "Kurse", icon: BookOpen, link: "/courses", color: "blue" },
+    { label: t.courses, icon: BookOpen, link: "/courses", color: "blue" },
     {
-      label: "Stundenplan",
+      label: t.schedule,
       icon: CalendarDays,
       link: "/courses/schedule",
       color: "purple",
     },
     {
-      label: "Aufgaben",
+      label: t.tasks,
       icon: CheckSquare,
       link: "/tasks",
       color: "orange",
     },
     {
-      label: "Online Bibliothek",
+      label: t.library,
       icon: Library,
-      link: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+      link: "/library",
       color: "green",
-      external: true,
     },
     {
-      label: "Raumbuchung",
+      label: t.roomBooking,
       icon: DoorOpen,
       link: "/raumbuchung",
       color: "indigo",
     },
     {
-      label: "Studentenausweis",
+      label: t.studentId,
       icon: GraduationCap,
       link: "/student-id",
       color: "pink",
@@ -364,7 +771,7 @@ export default function Dashboard() {
             👋
           </h1>
           <p className="text-slate-600 dark:text-slate-400 text-sm">
-            Hier ist eine Übersicht über deinen Studienalltag.
+            {t.overview}
           </p>
           <div className="mt-3 flex flex-wrap gap-2">
             <Link
@@ -395,6 +802,410 @@ export default function Dashboard() {
               }}
             ></iframe>
           </div>
+        </div>
+      </div>
+
+      {/* News Slider Section - Single Card Fade */}
+      {!newsLoading && newsItems.length > 0 && (
+        <div className="mb-6">
+          {/* Compact News Banner */}
+          <Link
+            to={`/news/${newsItems[currentNewsIndex]?.slug}`}
+            className="group block relative overflow-hidden rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 hover:border-primary/30 hover:shadow-lg transition-all duration-300"
+          >
+            {/* Gradient Top Line */}
+            <div className={`h-1 w-full bg-gradient-to-r ${getCategoryColor(newsItems[currentNewsIndex]?.category)}`} />
+            
+            <div className="p-4 flex items-center gap-4">
+              {/* News Icon */}
+              <div className={`flex-shrink-0 p-2.5 rounded-xl bg-gradient-to-br ${getCategoryColor(newsItems[currentNewsIndex]?.category)} shadow-lg`}>
+                <Newspaper className="w-5 h-5 text-white" />
+              </div>
+              
+              {/* Content */}
+              <div className="flex-1 min-w-0">
+                <div className="flex items-center gap-2 mb-1">
+                  <span className={`px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r ${getCategoryColor(newsItems[currentNewsIndex]?.category)} text-white`}>
+                    {newsItems[currentNewsIndex]?.category || "News"}
+                  </span>
+                  <span className="text-[11px] text-slate-500 dark:text-slate-400">
+                    {new Date(newsItems[currentNewsIndex]?.publishedAt).toLocaleDateString("de-DE", { day: "2-digit", month: "short" })}
+                  </span>
+                  {newsItems[currentNewsIndex]?.featured && (
+                    <Sparkles className="w-3.5 h-3.5 text-amber-500" />
+                  )}
+                </div>
+                <h3 className="text-sm font-bold text-slate-900 dark:text-white truncate group-hover:text-primary transition-colors">
+                  {newsItems[currentNewsIndex]?.title}
+                </h3>
+              </div>
+              
+              {/* Navigation & Link */}
+              <div className="flex items-center gap-2 flex-shrink-0">
+                {/* Dots */}
+                <div className="hidden sm:flex items-center gap-1">
+                  {newsItems.slice(0, 5).map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        setCurrentNewsIndex(idx);
+                      }}
+                      className={`rounded-full transition-all ${
+                        idx === currentNewsIndex 
+                          ? "w-4 h-1.5 bg-primary" 
+                          : "w-1.5 h-1.5 bg-slate-300 dark:bg-slate-600 hover:bg-slate-400"
+                      }`}
+                    />
+                  ))}
+                </div>
+                
+                {/* Arrows */}
+                <div className="flex gap-1">
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      prevNews();
+                    }}
+                    className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={(e) => {
+                      e.preventDefault();
+                      nextNews();
+                    }}
+                    className="p-1.5 rounded-lg bg-slate-100 dark:bg-slate-800 hover:bg-primary/10 hover:text-primary transition-colors"
+                  >
+                    <ChevronRightIcon className="w-4 h-4" />
+                  </button>
+                </div>
+                
+                {/* All News Link */}
+                <span className="hidden sm:flex items-center gap-1 text-xs text-primary font-semibold group-hover:underline">
+                  Lesen <ArrowRight className="w-3 h-3" />
+                </span>
+              </div>
+            </div>
+          </Link>
+        </div>
+      )}
+
+      {/* Dual Student Status Widget - Enhanced */}
+      <div className="mb-8 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm relative overflow-hidden group">
+        <div className="absolute top-0 right-0 w-64 h-64 bg-gradient-to-br from-primary/5 to-transparent rounded-bl-full -mr-16 -mt-16 transition-transform group-hover:scale-110 duration-700" />
+
+        <div className="relative z-10">
+          {/* Top Section: Current Phase + Progress */}
+          <div className="flex flex-col lg:flex-row gap-6 items-start lg:items-center mb-6">
+            {/* Left: Status & Progress */}
+            <div className="flex-1 w-full">
+              <div className="flex items-center gap-3 mb-4">
+                <div
+                  className={`p-2.5 rounded-xl ${statusConfig.bg} ${statusConfig.text} ring-1 ${statusConfig.ring}`}
+                >
+                  {currentStatus === "praxis" ? (
+                    <Briefcase className="w-5 h-5" />
+                  ) : currentStatus === "klausurphase" ? (
+                    <ClipboardCheck className="w-5 h-5" />
+                  ) : (
+                    <BookMarked className="w-5 h-5" />
+                  )}
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+                      {statusConfig.label}
+                    </h2>
+                    <span
+                      className={`px-2 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${statusConfig.bg} ${statusConfig.text}`}
+                    >
+                      Aktuell
+                    </span>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {new Date(currentBlock?.start || "").toLocaleDateString(
+                      "de-DE",
+                      { day: "2-digit", month: "short" }
+                    )}
+                    {" – "}
+                    {new Date(currentBlock?.end || "").toLocaleDateString(
+                      "de-DE",
+                      { day: "2-digit", month: "short", year: "numeric" }
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm font-medium">
+                  <span className="text-slate-700 dark:text-slate-300">
+                    Phasen-Fortschritt
+                  </span>
+                  <span className="text-blue-600 dark:text-blue-400">
+                    {Math.round(phaseProgress)}%
+                  </span>
+                </div>
+                <div className="h-3 w-full bg-slate-100 dark:bg-slate-800 rounded-full overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-blue-500 to-blue-400 dark:from-blue-500 dark:to-blue-400 rounded-full transition-all duration-1000 ease-out"
+                    style={{ width: `${phaseProgress}%` }}
+                  />
+                </div>
+                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 mt-1">
+                  <span>
+                    Tag {Math.ceil(phaseTotalDays - phaseDaysLeft)} von{" "}
+                    {phaseTotalDays}
+                  </span>
+                  <span className="font-medium">Noch {phaseDaysLeft} Tage</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Next Phase & Quick Action */}
+            <div className="w-full lg:w-auto lg:min-w-[280px] flex flex-col gap-3 border-t lg:border-t-0 lg:border-l border-slate-100 dark:border-slate-800 pt-4 lg:pt-0 lg:pl-6">
+              <div>
+                <p className="text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">
+                  Nächste Phase
+                </p>
+                <div className="flex items-center gap-3">
+                  <div className="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400">
+                    <CalendarCheck className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-slate-900 dark:text-white text-sm">
+                      {nextBlock
+                        ? STUDY_PLANS[0].paletteOverrides?.[nextBlock.status]
+                            ?.label || DEFAULT_PALETTE[nextBlock.status].label
+                        : "Semesterende"}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">
+                      Ab{" "}
+                      {nextBlock
+                        ? new Date(nextBlock.start).toLocaleDateString("de-DE")
+                        : "-"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              {currentStatus === "praxis" && (
+                <Link
+                  to="/praxisbericht2"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-blue-600 dark:bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-700 dark:hover:bg-blue-400 transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-95"
+                >
+                  <FileText className="w-4 h-4" />
+                  Praxisbericht schreiben
+                </Link>
+              )}
+              {(currentStatus === "theoriephase" ||
+                currentStatus === "vorlesung") && (
+                <Link
+                  to="/courses/schedule"
+                  className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-95"
+                >
+                  <CalendarDays className="w-4 h-4" />
+                  Stundenplan ansehen
+                </Link>
+              )}
+            </div>
+          </div>
+
+          {/* Bottom Section: Company Info + Praxis Hours (only in praxis phase) */}
+          {currentStatus === "praxis" && (
+            <div className="grid md:grid-cols-2 gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
+              {/* Company Info Card */}
+              {companyInfo ? (
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Building className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                      Praxispartner
+                    </h3>
+                  </div>
+                  <div className="space-y-2">
+                    <div>
+                      <p className="font-semibold text-slate-900 dark:text-white text-sm">
+                        {companyInfo.name}
+                      </p>
+                      <p className="text-xs text-slate-500 dark:text-slate-400">
+                        {companyInfo.department}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-2 text-xs text-slate-600 dark:text-slate-400">
+                      <Users className="w-3.5 h-3.5" />
+                      <span>Betreuer: {companyInfo.supervisor}</span>
+                    </div>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {companyInfo.email && (
+                        <a
+                          href={`mailto:${companyInfo.email}`}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white dark:bg-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                        >
+                          <Mail className="w-3 h-3" />
+                          E-Mail
+                        </a>
+                      )}
+                      {companyInfo.phone && (
+                        <a
+                          href={`tel:${companyInfo.phone}`}
+                          className="inline-flex items-center gap-1 px-2 py-1 rounded-md bg-white dark:bg-slate-700 text-xs text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-600 transition-colors"
+                        >
+                          <Phone className="w-3 h-3" />
+                          Anrufen
+                        </a>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 rounded-xl bg-slate-50 dark:bg-slate-800/50 border border-slate-100 dark:border-slate-700">
+                  <div className="flex items-center gap-2 mb-3">
+                    <Building className="w-4 h-4 text-slate-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                      Praxispartner
+                    </h3>
+                  </div>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    Kein Praxispartner hinterlegt. Bitte ergänze deine Daten in
+                    den Einstellungen.
+                  </p>
+                </div>
+              )}
+
+              {/* Praxis Hours Tracker */}
+              <div className="p-4 rounded-xl bg-emerald-50 dark:bg-emerald-900/20 border border-emerald-100 dark:border-emerald-800">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <Timer className="w-4 h-4 text-emerald-600 dark:text-emerald-400" />
+                    <h3 className="text-sm font-bold text-slate-900 dark:text-white">
+                      Praxisstunden
+                    </h3>
+                  </div>
+                  <span className="text-xs font-bold text-emerald-600 dark:text-emerald-400">
+                    {praxisProgress}%
+                  </span>
+                </div>
+                <div className="space-y-3">
+                  <div>
+                    <div className="flex justify-between text-xs mb-1">
+                      <span className="text-slate-600 dark:text-slate-400">
+                        Erfasst
+                      </span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {praxisHours.logged} / {praxisHours.required} Std.
+                      </span>
+                    </div>
+                    <div className="h-2 bg-emerald-100 dark:bg-emerald-800/50 rounded-full overflow-hidden">
+                      <div
+                        className="h-full bg-gradient-to-r from-emerald-500 to-emerald-400 rounded-full transition-all"
+                        style={{ width: `${praxisProgress}%` }}
+                      />
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-1.5">
+                      <Coffee className="w-3.5 h-3.5 text-slate-400" />
+                      <span className="text-slate-600 dark:text-slate-400">
+                        Diese Woche:
+                      </span>
+                      <span className="font-bold text-slate-900 dark:text-white">
+                        {praxisHours.thisWeek}h
+                      </span>
+                    </div>
+                    <span
+                      className={`font-medium ${praxisHours.thisWeek >= praxisHours.targetPerWeek ? "text-emerald-600" : "text-orange-500"}`}
+                    >
+                      Ziel: {praxisHours.targetPerWeek}h
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Weekly Schedule Overview - New Section */}
+      <div className="mb-8 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            <div className="p-2 rounded-lg bg-purple-100 dark:bg-purple-900/50 text-purple-600 dark:text-purple-400">
+              <CalendarDays className="h-5 w-5" />
+            </div>
+            <h2 className="text-lg font-bold text-slate-900 dark:text-white">
+              Wochenübersicht
+            </h2>
+          </div>
+          <Link
+            to="/courses/schedule"
+            className="text-sm font-bold text-purple-600 dark:text-purple-400 hover:text-purple-700 dark:hover:text-purple-300 inline-flex items-center gap-1"
+          >
+            Vollständiger Plan
+            <ArrowRight className="h-4 w-4" />
+          </Link>
+        </div>
+
+        <div className="grid grid-cols-5 gap-3">
+          {weekDays.map((day, idx) => (
+            <div
+              key={idx}
+              className={`relative p-3 rounded-xl border transition-all ${
+                day.isToday
+                  ? "bg-purple-50 dark:bg-purple-900/20 border-purple-300 dark:border-purple-700 ring-2 ring-purple-200 dark:ring-purple-800"
+                  : "bg-slate-50 dark:bg-slate-800/50 border-slate-200 dark:border-slate-700 hover:border-slate-300 dark:hover:border-slate-600"
+              }`}
+            >
+              <div className="text-center mb-2">
+                <p
+                  className={`text-xs font-medium ${day.isToday ? "text-purple-600 dark:text-purple-400" : "text-slate-500 dark:text-slate-400"}`}
+                >
+                  {day.dayName}
+                </p>
+                <p
+                  className={`text-lg font-bold ${day.isToday ? "text-purple-700 dark:text-purple-300" : "text-slate-900 dark:text-white"}`}
+                >
+                  {day.dayNum}
+                </p>
+                {day.isToday && (
+                  <span className="inline-block px-1.5 py-0.5 rounded text-[9px] font-bold bg-purple-600 text-white mt-1">
+                    HEUTE
+                  </span>
+                )}
+              </div>
+              <div className="space-y-1.5 min-h-[60px]">
+                {day.events.length === 0 ? (
+                  <p className="text-[10px] text-slate-400 dark:text-slate-500 text-center italic">
+                    Keine Termine
+                  </p>
+                ) : (
+                  day.events.slice(0, 2).map((event, eIdx) => (
+                    <div
+                      key={eIdx}
+                      className={`p-1.5 rounded text-[10px] ${
+                        event.type === "Vorlesung"
+                          ? "bg-blue-100 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300"
+                          : event.type === "Workshop"
+                            ? "bg-green-100 dark:bg-green-900/30 text-green-700 dark:text-green-300"
+                            : "bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-300"
+                      }`}
+                    >
+                      <p className="font-medium truncate">{event.time}</p>
+                      <p className="truncate opacity-80">
+                        {event.title.split(" - ")[0]}
+                      </p>
+                    </div>
+                  ))
+                )}
+                {day.events.length > 2 && (
+                  <p className="text-[10px] text-slate-500 dark:text-slate-400 text-center">
+                    +{day.events.length - 2} mehr
+                  </p>
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
 
@@ -496,50 +1307,6 @@ export default function Dashboard() {
           {/* Decorative gradient blob */}
           <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-blue-500 to-cyan-500 opacity-10 blur-2xl rounded-full group-hover:opacity-20 transition-opacity" />
         </Link>
-
-        {/* Up to 3 news cards, same size as stats */}
-        {news.slice(0, 3).map((item, i) => (
-          <Link
-            key={item.slug ?? i}
-            to={item.slug ? `/news/${encodeURIComponent(item.slug)}` : "/news"}
-            className="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-indigo-200 dark:border-indigo-800 bg-indigo-50/50 dark:bg-transparent p-6 min-h-[150px] hover:shadow-xl hover:scale-[1.02] transition-all duration-300"
-          >
-            <div className="flex items-start justify-between mb-3">
-              <div className="flex items-start gap-2 pr-4">
-                <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/50 text-indigo-600 dark:text-indigo-400">
-                  <Bell className="h-4 w-4" />
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-slate-900 dark:text-slate-100 line-clamp-2 group-hover:text-indigo-700 dark:group-hover:text-indigo-300 transition-colors">
-                    {item.title}
-                  </p>
-                  {item.category && (
-                    <span className="mt-1 inline-flex items-center px-2 py-0.5 rounded bg-white/50 dark:bg-black/20 text-slate-700 dark:text-slate-300 text-[10px] font-semibold border border-indigo-100 dark:border-indigo-800">
-                      {item.category}
-                    </span>
-                  )}
-                </div>
-              </div>
-            </div>
-            <div className="mt-4 flex items-center justify-between text-xs">
-              <span className="inline-flex items-center gap-1 text-slate-500 dark:text-slate-400 font-medium">
-                <Calendar className="h-3.5 w-3.5" />
-                <span>{item.date}</span>
-              </span>
-              <span className="inline-flex items-center gap-1 text-xs font-bold text-indigo-600 dark:text-indigo-400 group-hover:underline decoration-2 underline-offset-2">
-                Weiterlesen
-                <ArrowRight className="h-3 w-3" />
-              </span>
-            </div>
-
-            {/* Bottom Edge Glow Effect */}
-            <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/30 to-transparent dark:via-white/50" />
-            <div className="absolute bottom-0 left-1/4 right-1/4 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent blur-[2px] dark:via-white/80" />
-
-            {/* Decorative gradient blob */}
-            <div className="absolute -bottom-4 -right-4 w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-500 opacity-5 blur-2xl rounded-full group-hover:opacity-15 transition-opacity" />
-          </Link>
-        ))}
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
@@ -960,78 +1727,6 @@ export default function Dashboard() {
                   );
                 }
               })}
-            </div>
-          </div>
-
-          {/* News Section (next to progress/campus cards) */}
-          <div className="bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border border-white/40 dark:border-slate-800 rounded-2xl p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div className="flex items-center gap-3">
-                <div className="p-2 rounded-lg bg-indigo-100 dark:bg-indigo-900/30">
-                  <Bell className="h-5 w-5 text-indigo-600 dark:text-indigo-400" />
-                </div>
-                <h2 className="text-lg font-bold text-slate-900 dark:text-white">
-                  Aktuelles
-                </h2>
-              </div>
-              <Link
-                to="/news"
-                className="text-sm font-semibold text-indigo-600 dark:text-indigo-400 hover:text-indigo-700 dark:hover:text-indigo-300 inline-flex items-center gap-1"
-              >
-                Alle anzeigen
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </div>
-            <div className="space-y-3">
-              {news.map((item, i) => (
-                <div
-                  key={item.slug ?? i}
-                  className="relative rounded-2xl p-4 border bg-white/40 backdrop-blur-xl dark:bg-slate-950/80 border-white/40 dark:border-slate-800 hover:shadow-lg transition-all duration-300 group"
-                >
-                  <div
-                    className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${
-                      i === 0 ? "bg-blue-400" : "bg-purple-400"
-                    }`}
-                  />
-                  <div className="mt-3 pr-2">
-                    <div className="flex items-center justify-between gap-2 mb-1">
-                      <p className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
-                        {item.title}
-                      </p>
-                      {item.featured && (
-                        <span className="px-2 py-0.5 rounded bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-400 text-[10px] font-semibold">
-                          FEATURED
-                        </span>
-                      )}
-                    </div>
-                    {item.category && (
-                      <span className="inline-flex items-center px-2 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-300 text-[10px] font-semibold mb-1">
-                        {item.category}
-                      </span>
-                    )}
-                    {item.description && (
-                      <p className="mt-1 text-[11px] text-slate-600 dark:text-slate-400 line-clamp-2">
-                        {item.description}
-                      </p>
-                    )}
-                    <div className="flex items-center justify-between mt-3 text-[11px] text-slate-500 dark:text-slate-400">
-                      <span className="inline-flex items-center gap-1">
-                        <Calendar className="h-3 w-3" />
-                        <span>{item.date}</span>
-                      </span>
-                      {item.slug && (
-                        <Link
-                          to={`/news/${encodeURIComponent(item.slug)}`}
-                          className="inline-flex items-center gap-1 px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-200 text-[11px] font-semibold hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                        >
-                          Weiterlesen
-                          <ArrowRight className="h-3 w-3" />
-                        </Link>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              ))}
             </div>
           </div>
 

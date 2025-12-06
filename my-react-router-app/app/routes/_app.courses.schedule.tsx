@@ -1,1208 +1,1392 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useState, useMemo } from "react";
 import {
-  CalendarDays as CalendarIcon,
-  Info,
-  MapPin,
-  Video,
-  Clock,
-  ChevronDown,
+  CalendarDays,
   ChevronLeft,
   ChevronRight,
-  Grid3x3,
+  Clock,
+  MapPin,
+  User,
+  Video,
+  Briefcase,
+  GraduationCap,
+  Info,
+  Calendar,
+  Grid3X3,
+  Filter,
+  Check,
+  Eye,
+  EyeOff,
+  Download,
+  AlertTriangle,
+  BookOpen,
+  MessageCircleQuestion,
+  Presentation,
+  Users,
+  Wrench,
+  FileCheck,
+  MessageSquare,
+  PenTool,
+  ExternalLink,
+  type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { useLoaderData } from "react-router-dom";
+import {
+  STUDY_PLANS,
+  DEFAULT_PALETTE,
+  toISODate,
+  getMonthDays,
+  startOfMonth,
+  addMonths,
+  type DayStatus,
+} from "~/lib/studyPlans";
+import { prisma } from "~/lib/prisma";
 
-export const loader = async () => null;
+// Loader to fetch schedule events from database
+export const loader = async () => {
+  try {
+    // Get first user (in production, get from session)
+    const firstUser = await prisma.user.findFirst();
+    const userId = firstUser?.id;
 
-type EventType = "Lecture" | "Seminar" | "Lab" | "Office Hours";
-type DayStatus =
-  | "praxis"
-  | "vorlesung"
-  | "theoriephase"
-  | "klausurphase"
-  | "nachpruefung"
-  | "wochenende"
-  | "feiertag"
-  | "urlaubstag";
+    let events: any[] = [];
 
-interface CourseEvent {
+    if (userId) {
+      // Get all schedule events for this user
+      const dbEvents = await prisma.scheduleEvent.findMany({
+        where: { userId },
+        orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      });
+
+      events = dbEvents.map(
+        (e: {
+          id: number;
+          title: string;
+          courseCode: string | null;
+          eventType: string;
+          date: Date;
+          startTime: string;
+          endTime: string;
+          location: string | null;
+          professor: string | null;
+        }) => {
+          const isOnline = e.location?.toLowerCase() === "online";
+          return {
+            id: e.id,
+            title: e.title,
+            courseCode: e.courseCode || "",
+            type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
+            date: toISODate(e.date),
+            startTime: e.startTime,
+            endTime: e.endTime,
+            location: e.location || "",
+            professor: e.professor || "",
+            room: null,
+            isOnline,
+            zoomLink: isOnline
+              ? `https://iu-online.zoom.us/j/${e.courseCode?.replace(/[^0-9]/g, "") || "123456789"}`
+              : undefined,
+            isOptional:
+              e.eventType === "TUTORIUM" || e.eventType === "WORKSHOP",
+          };
+        }
+      );
+    }
+
+    return { events };
+  } catch (error) {
+    console.error("Error loading schedule events:", error);
+    return { events: [] };
+  }
+};
+
+// Simple event type
+interface ScheduleEvent {
   id: number;
   title: string;
-  type: EventType;
+  courseCode: string;
+  type:
+    | "Integriert"
+    | "Q&A"
+    | "Vorlesung"
+    | "Tutorium"
+    | "Workshop"
+    | "Prüfung";
   date: string; // YYYY-MM-DD
-  time: string; // HH:mm
-  duration: string;
+  startTime: string; // HH:mm
+  endTime: string; // HH:mm
   location: string;
   professor: string;
-  professorColor: string;
-  mandatory: boolean;
-  zoom: string | null;
-  description: string;
+  room?: string;
+  isOnline?: boolean;
+  zoomLink?: string;
+  isOptional?: boolean;
 }
 
-// Sample events for the detail card
-const EVENTS: CourseEvent[] = [
+// Sample schedule data - in production, this would come from the database
+const SCHEDULE_EVENTS: ScheduleEvent[] = [
+  // Monday
   {
     id: 1,
-    title: "DSBEC01 - E-Commerce",
-    type: "Lecture",
-    date: "2026-01-06",
-    time: "11:30",
-    duration: "8 LE",
-    location: "HH - Christoph-Probst-Weg 28 - 2.54 Jenischhaus",
-    professor: "Klein, Holger",
-    professorColor: "#3B82F6",
-    mandatory: true,
-    zoom: null,
-    description: "Vorlesung in Präsenz",
+    title: "Webentwicklung",
+    courseCode: "DLBINGWP01",
+    type: "Integriert",
+    date: "2025-12-08",
+    startTime: "09:00",
+    endTime: "12:00",
+    location: "Hammerbrook",
+    professor: "Prof. Dr. Schmidt",
+    room: "Raum 2.14",
+    isOptional: false,
   },
   {
     id: 2,
-    title: "Praxis-Workshop (optional)",
-    type: "Lab",
-    date: "2026-01-06",
-    time: "16:00",
-    duration: "2h",
+    title: "Datenbanken Q&A",
+    courseCode: "DLBINGDB01",
+    type: "Q&A",
+    date: "2025-12-08",
+    startTime: "14:00",
+    endTime: "15:30",
+    location: "Online",
+    professor: "Prof. Dr. Müller",
+    isOnline: true,
+    isOptional: true,
+  },
+  // Tuesday
+  {
+    id: 3,
+    title: "Mathematik",
+    courseCode: "DLBINGMT01",
+    type: "Vorlesung",
+    date: "2025-12-09",
+    startTime: "10:00",
+    endTime: "11:30",
+    location: "Waterloohain",
+    professor: "Dr. Weber",
+    room: "Raum 3.22",
+    isOptional: false,
+  },
+  {
+    id: 4,
+    title: "E-Commerce",
+    courseCode: "DSBEC01",
+    type: "Integriert",
+    date: "2025-12-09",
+    startTime: "14:00",
+    endTime: "17:00",
+    location: "HH - Christoph-Probst-Weg",
+    professor: "Klein, Holger",
+    room: "2.54 Jenischhaus",
+    isOptional: false,
+  },
+  // Wednesday
+  {
+    id: 5,
+    title: "Game Design",
+    courseCode: "DLBINGDT01",
+    type: "Integriert",
+    date: "2025-12-10",
+    startTime: "09:00",
+    endTime: "12:00",
+    location: "Hammerbrook",
+    professor: "Prof. Dr. Nowak",
+    room: "Raum 2.14",
+    isOptional: false,
+  },
+  // Thursday
+  {
+    id: 6,
+    title: "Mathe Tutorium",
+    courseCode: "DLBINGMT01",
+    type: "Tutorium",
+    date: "2025-12-11",
+    startTime: "14:00",
+    endTime: "15:30",
+    location: "Online",
+    professor: "Tutor Meier",
+    isOnline: true,
+    zoomLink: "https://zoom.us/j/123456789",
+    isOptional: true,
+  },
+  // Friday
+  {
+    id: 7,
+    title: "Praxis-Workshop",
+    courseCode: "PRAXIS",
+    type: "Workshop",
+    date: "2025-12-12",
+    startTime: "10:00",
+    endTime: "14:00",
     location: "Online",
     professor: "Team Praxis",
-    professorColor: "#10B981",
-    mandatory: false,
-    zoom: "https://zoom.us/j/333333333",
-    description: "Optionaler Praxisblock mit Übungen.",
+    isOnline: true,
+    zoomLink: "https://zoom.us/j/987654321",
+    isOptional: false,
   },
 ];
 
-type StudyBlock = { start: string; end: string; status: DayStatus };
+// Get week dates
+function getWeekDates(date: Date): Date[] {
+  const day = date.getDay();
+  const diff = date.getDate() - day + (day === 0 ? -6 : 1); // Adjust for Sunday
+  const monday = new Date(date);
+  monday.setDate(diff);
 
-type PaletteEntry = { label: string; bg: string; text: string; ring: string };
-
-type StudyPlan = {
-  id: string;
-  label: string;
-  description?: string;
-  blocks: StudyBlock[];
-  paletteOverrides?: Partial<Record<DayStatus, PaletteEntry>>;
-  autoWeekends?: boolean;
-};
-
-const DEFAULT_PALETTE: Record<DayStatus, PaletteEntry> = {
-  praxis: {
-    label: "Praxiszeit",
-    bg: "bg-emerald-100/80 dark:bg-emerald-900/20",
-    text: "text-emerald-900 dark:text-emerald-100",
-    ring: "ring-emerald-300/60 dark:ring-emerald-400/50",
-  },
-  vorlesung: {
-    label: "Vorlesungstermine",
-    bg: "bg-blue-100/80 dark:bg-blue-900/20",
-    text: "text-blue-900 dark:text-blue-100",
-    ring: "ring-blue-300/60 dark:ring-blue-400/50",
-  },
-  theoriephase: {
-    label: "Theoriewoche",
-    bg: "bg-fuchsia-100/80 dark:bg-fuchsia-900/20",
-    text: "text-fuchsia-900 dark:text-fuchsia-100",
-    ring: "ring-fuchsia-300/60 dark:ring-fuchsia-400/50",
-  },
-  klausurphase: {
-    label: "Prüfungsphase",
-    bg: "bg-rose-100/80 dark:bg-rose-900/20",
-    text: "text-rose-900 dark:text-rose-100",
-    ring: "ring-rose-300/60 dark:ring-rose-400/50",
-  },
-  nachpruefung: {
-    label: "Nachprüfungsphase",
-    bg: "bg-slate-200 dark:bg-slate-800/40",
-    text: "text-slate-900 dark:text-slate-100",
-    ring: "ring-slate-300/60 dark:ring-slate-500/50",
-  },
-  wochenende: {
-    label: "Wochenenden (frei von Praxis)",
-    bg: "bg-amber-100/80 dark:bg-amber-900/20",
-    text: "text-amber-900 dark:text-amber-100",
-    ring: "ring-amber-300/60 dark:ring-amber-400/50",
-  },
-  feiertag: {
-    label: "Feiertag",
-    bg: "bg-slate-700 text-white dark:bg-slate-800/70",
-    text: "text-white",
-    ring: "ring-slate-600/70",
-  },
-  urlaubstag: {
-    label: "Urlaubstage / keine Praxis",
-    bg: "bg-cyan-100/80 dark:bg-cyan-900/20",
-    text: "text-cyan-900 dark:text-cyan-100",
-    ring: "ring-cyan-300/60 dark:ring-cyan-400/50",
-  },
-};
-
-const STUDY_PLANS: StudyPlan[] = [
-  {
-    id: "ws25-26",
-    label: "7. Semester (Blockmodell) Okt 2025 – Mär 2026",
-    description:
-      "Angelehnt an den Plan im Screenshot, inkl. Theorie-/Prüfungsphasen.",
-    autoWeekends: true,
-    paletteOverrides: {
-      theoriephase: {
-        label: "Theoriewoche (Jan bis Mär)",
-        bg: "bg-fuchsia-300 dark:bg-fuchsia-900/50",
-        text: "text-fuchsia-900 dark:text-fuchsia-100",
-        ring: "ring-fuchsia-500/70 dark:ring-fuchsia-500/60",
-      },
-      praxis: {
-        label: "Praxiswochen (Okt bis Dez)",
-        bg: "bg-lime-300 dark:bg-lime-900/50",
-        text: "text-lime-900 dark:text-lime-100",
-        ring: "ring-lime-500/70 dark:ring-lime-500/60",
-      },
-      klausurphase: {
-        label: "Prüfungswoche",
-        bg: "bg-red-400 dark:bg-red-900/60",
-        text: "text-red-50 dark:text-red-50",
-        ring: "ring-red-500/70",
-      },
-      nachpruefung: {
-        label: "Nachprüfungsphase",
-        bg: "bg-slate-400 dark:bg-slate-800",
-        text: "text-slate-900 dark:text-slate-100",
-        ring: "ring-slate-500/70",
-      },
-      wochenende: {
-        label: "Wochenenden (max. 2/Monat arbeiten)",
-        bg: "bg-amber-300 dark:bg-amber-900/60",
-        text: "text-amber-900 dark:text-amber-100",
-        ring: "ring-amber-500/70",
-      },
-      urlaubstag: {
-        label: "Urlaubstage",
-        bg: "bg-cyan-300 dark:bg-cyan-900/50",
-        text: "text-cyan-900 dark:text-cyan-100",
-        ring: "ring-cyan-500/70",
-      },
-      feiertag: {
-        label: "Nationaler Feiertag",
-        bg: "bg-slate-800 text-white",
-        text: "text-white",
-        ring: "ring-slate-600/70",
-      },
-    },
-    blocks: [
-      { start: "2025-10-01", end: "2025-12-31", status: "praxis" },
-      { start: "2026-01-01", end: "2026-03-31", status: "theoriephase" },
-      { start: "2026-02-15", end: "2026-02-21", status: "klausurphase" },
-      { start: "2026-03-10", end: "2026-03-20", status: "nachpruefung" },
-      { start: "2025-12-24", end: "2025-12-26", status: "feiertag" },
-      { start: "2025-12-27", end: "2025-12-31", status: "urlaubstag" },
-    ],
-  },
-  {
-    id: "ss26",
-    label: "Sommersemester Beispiel 2026",
-    description: "Abweichende Farben und Blöcke, falls sich der Plan ändert.",
-    autoWeekends: true,
-    paletteOverrides: {
-      praxis: {
-        label: "Praxisphase",
-        bg: "bg-emerald-300 dark:bg-emerald-900/50",
-        text: "text-emerald-900 dark:text-emerald-100",
-        ring: "ring-emerald-500/70",
-      },
-      theoriephase: {
-        label: "Theorieblock",
-        bg: "bg-indigo-300 dark:bg-indigo-900/50",
-        text: "text-indigo-900 dark:text-indigo-100",
-        ring: "ring-indigo-500/70",
-      },
-      klausurphase: {
-        label: "Prüfungen",
-        bg: "bg-rose-400 dark:bg-rose-900/60",
-        text: "text-rose-50 dark:text-rose-50",
-        ring: "ring-rose-500/70",
-      },
-    },
-    blocks: [
-      { start: "2026-04-01", end: "2026-05-31", status: "theoriephase" },
-      { start: "2026-06-01", end: "2026-07-31", status: "praxis" },
-      { start: "2026-08-01", end: "2026-08-10", status: "klausurphase" },
-      { start: "2026-08-20", end: "2026-08-31", status: "urlaubstag" },
-    ],
-  },
-];
-
-function startOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth(), 1);
-}
-
-function endOfMonth(date: Date) {
-  return new Date(date.getFullYear(), date.getMonth() + 1, 0);
-}
-
-function addMonths(date: Date, delta: number) {
-  return new Date(date.getFullYear(), date.getMonth() + delta, 1);
-}
-
-function addDays(date: Date, delta: number) {
-  const d = new Date(date);
-  d.setDate(d.getDate() + delta);
-  return d;
-}
-
-function toISODate(d: Date) {
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth() + 1).padStart(2, "0");
-  const dd = String(d.getDate()).padStart(2, "0");
-  return `${yyyy}-${mm}-${dd}`;
-}
-
-function getMonthDays(month: Date): Date[] {
-  const days: Date[] = [];
-  const end = endOfMonth(month).getDate();
-  for (let i = 1; i <= end; i++) {
-    days.push(new Date(month.getFullYear(), month.getMonth(), i));
+  const week: Date[] = [];
+  for (let i = 0; i < 5; i++) {
+    // Only weekdays
+    const d = new Date(monday);
+    d.setDate(monday.getDate() + i);
+    week.push(d);
   }
-  return days;
+  return week;
 }
 
-function expandBlocksToMap(blocks: StudyBlock[], autoWeekends: boolean) {
-  const map = new Map<string, DayStatus>();
-  blocks.forEach((b) => {
-    const start = new Date(b.start);
-    const end = new Date(b.end);
-    for (
-      let d = new Date(start);
-      d.getTime() <= end.getTime();
-      d = addDays(d, 1)
-    ) {
-      map.set(toISODate(d), b.status);
-    }
+// Time slots for the grid
+const TIME_SLOTS = [
+  "08:00",
+  "09:00",
+  "10:00",
+  "11:00",
+  "12:00",
+  "13:00",
+  "14:00",
+  "15:00",
+  "16:00",
+  "17:00",
+  "18:00",
+];
+
+// German holidays for 2025/2026
+const GERMAN_HOLIDAYS: { date: string; name: string; nameEn: string }[] = [
+  // 2025
+  { date: "2025-01-01", name: "Neujahr", nameEn: "New Year" },
+  { date: "2025-04-18", name: "Karfreitag", nameEn: "Good Friday" },
+  { date: "2025-04-21", name: "Ostermontag", nameEn: "Easter Monday" },
+  { date: "2025-05-01", name: "Tag der Arbeit", nameEn: "Labour Day" },
+  { date: "2025-05-29", name: "Christi Himmelfahrt", nameEn: "Ascension Day" },
+  { date: "2025-06-09", name: "Pfingstmontag", nameEn: "Whit Monday" },
+  {
+    date: "2025-10-03",
+    name: "Tag der Deutschen Einheit",
+    nameEn: "German Unity Day",
+  },
+  { date: "2025-12-24", name: "Heiligabend", nameEn: "Christmas Eve" },
+  { date: "2025-12-25", name: "1. Weihnachtstag", nameEn: "Christmas Day" },
+  { date: "2025-12-26", name: "2. Weihnachtstag", nameEn: "Boxing Day" },
+  { date: "2025-12-31", name: "Silvester", nameEn: "New Year's Eve" },
+  // 2026
+  { date: "2026-01-01", name: "Neujahr", nameEn: "New Year" },
+  { date: "2026-04-03", name: "Karfreitag", nameEn: "Good Friday" },
+  { date: "2026-04-06", name: "Ostermontag", nameEn: "Easter Monday" },
+  { date: "2026-05-01", name: "Tag der Arbeit", nameEn: "Labour Day" },
+  { date: "2026-05-14", name: "Christi Himmelfahrt", nameEn: "Ascension Day" },
+  { date: "2026-05-25", name: "Pfingstmontag", nameEn: "Whit Monday" },
+  {
+    date: "2026-10-03",
+    name: "Tag der Deutschen Einheit",
+    nameEn: "German Unity Day",
+  },
+  { date: "2026-12-24", name: "Heiligabend", nameEn: "Christmas Eve" },
+  { date: "2026-12-25", name: "1. Weihnachtstag", nameEn: "Christmas Day" },
+  { date: "2026-12-26", name: "2. Weihnachtstag", nameEn: "Boxing Day" },
+  { date: "2026-12-31", name: "Silvester", nameEn: "New Year's Eve" },
+];
+
+// Helper to check if a date is a holiday
+function getHoliday(dateStr: string, language: string) {
+  const holiday = GERMAN_HOLIDAYS.find((h) => h.date === dateStr);
+  if (holiday) {
+    return language === "de" ? holiday.name : holiday.nameEn;
+  }
+  return null;
+}
+
+// Shape types for event visualization
+// Icon component for event type indicators using Lucide icons
+const EVENT_ICONS: Record<string, LucideIcon> = {
+  Integriert: BookOpen,
+  "Q&A": MessageCircleQuestion,
+  Vorlesung: Presentation,
+  Tutorium: Users,
+  Workshop: Wrench,
+  Prüfung: FileCheck,
+  Seminar: MessageSquare,
+  Uebung: PenTool,
+};
+
+const EventIcon: React.FC<{ type: string; className?: string }> = ({
+  type,
+  className = "h-4 w-4",
+}) => {
+  const Icon = EVENT_ICONS[type] || BookOpen;
+  return <Icon className={className} />;
+};
+
+// Event type colors with colored dots - vibrant & distinct
+const EVENT_COLORS: Record<
+  string,
+  {
+    bg: string;
+    border: string;
+    text: string;
+    dotColor: string;
+    desc?: string;
+    descEn?: string;
+  }
+> = {
+  Integriert: {
+    bg: "bg-blue-200 dark:bg-blue-800/60",
+    border: "border-blue-600 dark:border-blue-400",
+    text: "text-blue-900 dark:text-blue-50",
+    dotColor: "#2563eb",
+    desc: "Integrierte Vorlesung mit Live-Unterricht & Übungen",
+    descEn: "Integrated lecture with live teaching & exercises",
+  },
+  "Q&A": {
+    bg: "bg-orange-200 dark:bg-orange-800/60",
+    border: "border-orange-600 dark:border-orange-400",
+    text: "text-orange-900 dark:text-orange-50",
+    dotColor: "#ea580c",
+    desc: "Q&A Sprint – Fragen an den Dozenten (optional)",
+    descEn: "Q&A Sprint – Questions to professor (optional)",
+  },
+  Vorlesung: {
+    bg: "bg-sky-200 dark:bg-sky-800/60",
+    border: "border-sky-600 dark:border-sky-400",
+    text: "text-sky-900 dark:text-sky-50",
+    dotColor: "#0284c7",
+    desc: "Normale Vorlesung mit Dozent",
+    descEn: "Standard lecture with professor",
+  },
+  Tutorium: {
+    bg: "bg-teal-200 dark:bg-teal-800/60",
+    border: "border-teal-600 dark:border-teal-400",
+    text: "text-teal-900 dark:text-teal-50",
+    dotColor: "#0d9488",
+    desc: "Tutorium – Lernunterstützung durch Tutoren (optional)",
+    descEn: "Tutorial – Learning support by tutors (optional)",
+  },
+  Workshop: {
+    bg: "bg-yellow-200 dark:bg-yellow-700/60",
+    border: "border-yellow-600 dark:border-yellow-400",
+    text: "text-yellow-900 dark:text-yellow-50",
+    dotColor: "#ca8a04",
+    desc: "Workshop – Praktische Projektarbeit",
+    descEn: "Workshop – Hands-on project work",
+  },
+  Prüfung: {
+    bg: "bg-red-300 dark:bg-red-800/70",
+    border: "border-red-600 dark:border-red-400",
+    text: "text-red-900 dark:text-red-50",
+    dotColor: "#dc2626",
+    desc: "Klausur oder mündliche Prüfung",
+    descEn: "Written or oral exam",
+  },
+  Seminar: {
+    bg: "bg-fuchsia-200 dark:bg-fuchsia-800/60",
+    border: "border-fuchsia-600 dark:border-fuchsia-400",
+    text: "text-fuchsia-900 dark:text-fuchsia-50",
+    dotColor: "#c026d3",
+    desc: "Seminar – Interaktive Diskussion",
+    descEn: "Seminar – Interactive discussion",
+  },
+  Uebung: {
+    bg: "bg-lime-200 dark:bg-lime-800/60",
+    border: "border-lime-600 dark:border-lime-400",
+    text: "text-lime-900 dark:text-lime-50",
+    dotColor: "#65a30d",
+    desc: "Übung – Praktische Aufgaben",
+    descEn: "Exercise – Practical tasks",
+  },
+};
+
+// Generate ICS file content for calendar export
+function generateICSContent(
+  events: ScheduleEvent[],
+  studyBlocks: (typeof STUDY_PLANS)[0]["blocks"]
+): string {
+  const lines = [
+    "BEGIN:VCALENDAR",
+    "VERSION:2.0",
+    "PRODID:-//MyCampus//Schedule//DE",
+    "CALSCALE:GREGORIAN",
+    "METHOD:PUBLISH",
+  ];
+
+  // Add schedule events
+  events.forEach((event) => {
+    const startDate = event.date.replace(/-/g, "");
+    const startTime = event.startTime.replace(":", "") + "00";
+    const endTime = event.endTime.replace(":", "") + "00";
+
+    lines.push(
+      "BEGIN:VEVENT",
+      `DTSTART:${startDate}T${startTime}`,
+      `DTEND:${startDate}T${endTime}`,
+      `SUMMARY:${event.title}`,
+      `LOCATION:${event.location || ""}`,
+      `DESCRIPTION:${event.courseCode}${event.professor ? " - " + event.professor : ""}${event.isOptional ? " (Optional)" : ""}`,
+      `UID:${event.id}-${startDate}@mycampus`,
+      "END:VEVENT"
+    );
   });
-  if (autoWeekends) {
-    // Fill weekends if not already set
-    const minStart = new Date(
-      Math.min(...blocks.map((b) => new Date(b.start).getTime()))
+
+  // Add study phase blocks
+  studyBlocks.forEach((block, idx) => {
+    const startDate = block.start.replace(/-/g, "");
+    const endDate = block.end.replace(/-/g, "");
+    const config = DEFAULT_PALETTE[block.status];
+
+    lines.push(
+      "BEGIN:VEVENT",
+      `DTSTART;VALUE=DATE:${startDate}`,
+      `DTEND;VALUE=DATE:${endDate}`,
+      `SUMMARY:${config.label}`,
+      `DESCRIPTION:Semesterphase: ${config.label}`,
+      `UID:phase-${idx}-${startDate}@mycampus`,
+      "END:VEVENT"
     );
-    const maxEnd = new Date(
-      Math.max(...blocks.map((b) => new Date(b.end).getTime()))
-    );
-    for (
-      let d = new Date(minStart);
-      d.getTime() <= maxEnd.getTime();
-      d = addDays(d, 1)
-    ) {
-      const iso = toISODate(d);
-      if (!map.has(iso)) {
-        const day = d.getDay();
-        if (day === 0 || day === 6) {
-          map.set(iso, "wochenende");
-        }
-      }
-    }
-  }
-  return map;
+  });
+
+  lines.push("END:VCALENDAR");
+  return lines.join("\r\n");
 }
 
-function listMonthsForBlocks(blocks: StudyBlock[]) {
-  const starts = blocks.map((b) => new Date(b.start));
-  const ends = blocks.map((b) => new Date(b.end));
-  const minStart = startOfMonth(
-    new Date(Math.min(...starts.map((d) => d.getTime())))
-  );
-  const maxEnd = endOfMonth(
-    new Date(Math.max(...ends.map((d) => d.getTime())))
-  );
-
-  const months: Date[] = [];
-  let cursor = new Date(minStart);
-  while (
-    cursor.getFullYear() < maxEnd.getFullYear() ||
-    (cursor.getFullYear() === maxEnd.getFullYear() &&
-      cursor.getMonth() <= maxEnd.getMonth())
-  ) {
-    months.push(new Date(cursor));
-    cursor = addMonths(cursor, 1);
-  }
-  return months;
-}
-
-export default function CourseScheduleEnhanced() {
+export default function CourseSchedule() {
   const { language } = useLanguage();
-  const t = {
-    de: {
-      heroKicker: "Studienplan & Termine",
-      heroTitle: "Dein Semester-Planer",
-      showOptional: "Freiwillige Veranstaltungsangebote einblenden",
-      planChoose: "Plan wählen",
-      planHint: "Wähle deinen Studienplan, dann Monatsansicht einstellen.",
-      viewMulti: "Alle Monate",
-      viewSingle: "Einzelner Monat",
-      optional: "Optional",
-      duration: "Dauer",
-      location: "Ort",
-      professor: "Dozent",
-      mandatory: "Pflicht",
-      optionalLabel: "Optional",
-      nextLecture: "Nächste Vorlesung / Termin",
-      paletteTitle: "Farben für Praxis, Vorlesungen und Prüfungsphasen.",
-    },
-    en: {
-      heroKicker: "Study plan & dates",
-      heroTitle: "Your semester planner",
-      showOptional: "Show optional sessions",
-      planChoose: "Choose plan",
-      planHint: "Pick your plan, then set the month view.",
-      viewMulti: "All months",
-      viewSingle: "Single month",
-      optional: "Optional",
-      duration: "Duration",
-      location: "Location",
-      professor: "Instructor",
-      mandatory: "Mandatory",
-      optionalLabel: "Optional",
-      nextLecture: "Next lecture / event",
-      paletteTitle: "Colors for practice, lectures, and exam phases.",
-    },
-  }[language];
-  const statusLabels: Record<DayStatus, { de: string; en: string }> = {
-    praxis: { de: "Praxiszeit", en: "Practical phase" },
-    vorlesung: { de: "Vorlesungstermine", en: "Lecture dates" },
-    theoriephase: { de: "Theoriewoche", en: "Theory week" },
-    klausurphase: { de: "Prüfungsphase", en: "Exam phase" },
-    nachpruefung: { de: "Nachprüfungsphase", en: "Resit phase" },
-    wochenende: { de: "Wochenenden (frei von Praxis)", en: "Weekends (off practice)" },
-    feiertag: { de: "Feiertag", en: "Public holiday" },
-    urlaubstag: { de: "Urlaubstage / keine Praxis", en: "Vacation days / no practice" },
-  };
-  const translateText = (de: string, en: string) =>
-    language === "de" ? de : en;
-  const translateEvent = (e: CourseEvent) => ({
-    ...e,
-    title:
-      language === "de"
-        ? e.title
-        : e.title.replace("Praxis-Workshop (optional)", "Practice workshop (optional)"),
-    type:
-      language === "de"
-        ? e.type
-        : e.type === "Lecture"
-          ? "Lecture"
-          : e.type === "Seminar"
-            ? "Seminar"
-            : e.type === "Lab"
-              ? "Lab"
-              : e.type,
-    duration:
-      language === "de"
-        ? e.duration
-        : e.duration === "8 LE"
-          ? "8 periods"
-          : e.duration === "2h"
-            ? "2h"
-            : e.duration,
-    description:
-      language === "de"
-        ? e.description
-        : e.description === "Vorlesung in Präsenz"
-          ? "Lecture on campus"
-          : e.description === "Optionaler Praxisblock mit Übungen."
-            ? "Optional practice block with exercises."
-            : e.description,
-    location:
-      language === "de"
-        ? e.location
-        : e.location === "Online"
-          ? "Online"
-          : e.location,
-    professor:
-      language === "de"
-        ? e.professor
-        : e.professor === "Team Praxis"
-          ? "Practice team"
-          : e.professor,
-  });
-  const today = new Date();
-  const [selectedPlanId, setSelectedPlanId] = useState<string>(
-    STUDY_PLANS[0]?.id || ""
+  const { events: dbEvents } = useLoaderData<{ events: ScheduleEvent[] }>();
+  const [currentDate, setCurrentDate] = useState(new Date());
+  const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(
+    null
   );
-  const selectedPlan =
-    STUDY_PLANS.find((p) => p.id === selectedPlanId) || STUDY_PLANS[0];
-  const paletteColors = useMemo(
-    () => ({ ...DEFAULT_PALETTE, ...(selectedPlan?.paletteOverrides || {}) }),
-    [selectedPlan]
-  );
-  const statusMap = useMemo(
-    () =>
-      expandBlocksToMap(
-        selectedPlan?.blocks || [],
-        selectedPlan?.autoWeekends ?? true
-      ),
-    [selectedPlan]
-  );
-  const studyMonths = useMemo(
-    () => listMonthsForBlocks(selectedPlan?.blocks || []),
-    [selectedPlan]
-  );
-  const studyYears = useMemo(() => {
-    const years = new Set<number>();
-    studyMonths.forEach((m) => years.add(m.getFullYear()));
-    return Array.from(years).sort();
-  }, [studyMonths]);
-  const todayISO = toISODate(today);
-  const eventsByDate = useMemo(() => {
-    const map = new Map<string, CourseEvent[]>();
-    EVENTS.map(translateEvent).forEach((e) => {
-      const list = map.get(e.date) || [];
-      list.push(e);
-      map.set(e.date, list);
-    });
-    return map;
-  }, [language]);
-  const [selectedDate, setSelectedDate] = useState<string>(toISODate(today));
-  const dayEvents = eventsByDate.get(selectedDate) || [];
-  const mandatoryDayEvents = dayEvents.filter((e) => e.mandatory);
-  const optionalDayEvents = dayEvents.filter((e) => !e.mandatory);
-  const nextMandatoryEvent = useMemo(() => {
-    const sorted = [...EVENTS]
-      .filter((e) => e.mandatory)
-      .sort(
-        (a, b) =>
-          new Date(`${a.date}T${a.time}`).getTime() -
-          new Date(`${b.date}T${b.time}`).getTime()
-      );
-    return (
-      sorted.find((e) => new Date(`${e.date}T${e.time}`) >= today) ||
-      sorted[0] ||
-      null
-    );
-  }, [today]);
-  const [showLegend, setShowLegend] = useState<boolean>(true);
-  const [viewMode, setViewMode] = useState<"multi" | "single">("multi");
-  const monthList = studyMonths;
-  const [currentMonthIdx, setCurrentMonthIdx] = useState<number>(0);
-  const [showOptional, setShowOptional] = useState<boolean>(true);
-  const locale = language === "de" ? "de-DE" : "en-US";
-  useEffect(() => {
-    setCurrentMonthIdx(0);
-  }, [selectedPlanId]);
+  const [viewMode, setViewMode] = useState<"week" | "month">("week");
+  const [showOptional, setShowOptional] = useState(true);
 
-  const selectedStatus = statusMap.get(selectedDate);
-  const todayStatus = statusMap.get(todayISO);
-  const getPalette = (status: DayStatus, plan?: StudyPlan) => {
-    const palette = { ...DEFAULT_PALETTE, ...(plan?.paletteOverrides || {}) };
-    return palette[status] || DEFAULT_PALETTE.praxis;
+  // Use database events if available, otherwise fallback to hardcoded
+  const scheduleEvents = dbEvents.length > 0 ? dbEvents : SCHEDULE_EVENTS;
+
+  const weekDates = useMemo(() => getWeekDates(currentDate), [currentDate]);
+  const monthDays = useMemo(
+    () => getMonthDays(startOfMonth(currentDate)),
+    [currentDate]
+  );
+  const todayISO = toISODate(new Date());
+
+  // Get current study phase
+  const currentPlan = STUDY_PLANS[0];
+  const currentBlock = currentPlan?.blocks.find(
+    (b) => todayISO >= b.start && todayISO <= b.end
+  );
+  const currentStatus = currentBlock?.status || "vorlesung";
+  const statusConfig =
+    currentPlan?.paletteOverrides?.[currentStatus] ||
+    DEFAULT_PALETTE[currentStatus];
+
+  // Navigation
+  const goToPrevWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() - 7);
+    setCurrentDate(newDate);
   };
-  const labelForStatus = (status: DayStatus) =>
-    language === "de" ? statusLabels[status]?.de || status : statusLabels[status]?.en || status;
+
+  const goToNextWeek = () => {
+    const newDate = new Date(currentDate);
+    newDate.setDate(newDate.getDate() + 7);
+    setCurrentDate(newDate);
+  };
+
+  const goToPrevMonth = () => {
+    setCurrentDate(addMonths(currentDate, -1));
+  };
+
+  const goToNextMonth = () => {
+    setCurrentDate(addMonths(currentDate, 1));
+  };
+
+  const goToToday = () => {
+    setCurrentDate(new Date());
+  };
+
+  // Get events for a specific date (filtered by optional setting)
+  // Also adds holidays as special events
+  const getEventsForDate = (date: Date) => {
+    const dateStr = toISODate(date);
+    const events: ScheduleEvent[] = [];
+
+    // Check if it's a holiday - add as special event
+    const holidayName = getHoliday(dateStr, language);
+    if (holidayName) {
+      events.push({
+        id: -1,
+        title: holidayName,
+        courseCode: "FEIERTAG",
+        type: "Prüfung" as any, // Will use Feiertag colors via special handling
+        date: dateStr,
+        startTime: "00:00",
+        endTime: "23:59",
+        location: "",
+        professor: "",
+        isOptional: false,
+        isHoliday: true,
+      } as ScheduleEvent & { isHoliday: boolean });
+    }
+
+    // Add regular events (skip on holidays)
+    if (!holidayName) {
+      scheduleEvents.forEach((e) => {
+        if (e.date !== dateStr) return;
+        if (!showOptional && e.isOptional) return;
+        events.push(e);
+      });
+    }
+
+    return events;
+  };
+
+  // Calculate event position and height
+  const getEventStyle = (event: ScheduleEvent) => {
+    const startHour = parseInt(event.startTime.split(":")[0]);
+    const startMinute = parseInt(event.startTime.split(":")[1]);
+    const endHour = parseInt(event.endTime.split(":")[0]);
+    const endMinute = parseInt(event.endTime.split(":")[1]);
+
+    const top = (startHour - 8) * 60 + startMinute; // 8:00 is the start
+    const height = (endHour - startHour) * 60 + (endMinute - startMinute);
+
+    return {
+      top: `${top}px`,
+      height: `${Math.max(height, 30)}px`,
+    };
+  };
+
+  const locale = language === "de" ? "de-DE" : "en-US";
+  const dayNames =
+    language === "de"
+      ? ["Mo", "Di", "Mi", "Do", "Fr"]
+      : ["Mon", "Tue", "Wed", "Thu", "Fri"];
+
+  const t = {
+    title: language === "de" ? "Stundenplan" : "Schedule",
+    today: language === "de" ? "Heute" : "Today",
+    week: language === "de" ? "Woche" : "Week",
+    month: language === "de" ? "Monat" : "Month",
+    noEvents: language === "de" ? "Keine Termine" : "No events",
+    currentPhase: language === "de" ? "Aktuelle Phase" : "Current Phase",
+    legend: language === "de" ? "Legende" : "Legend",
+    semesterPlan: language === "de" ? "Semesterübersicht" : "Semester Overview",
+    praxis: language === "de" ? "Praxisphase" : "Practical Phase",
+    theorie: language === "de" ? "Theoriephase" : "Theory Phase",
+    pruefung: language === "de" ? "Prüfungsphase" : "Exam Phase",
+    ferien: language === "de" ? "Ferien" : "Holidays",
+    weekShort: language === "de" ? "KW" : "W",
+    showOptional: language === "de" ? "Optionale Kurse" : "Optional Courses",
+    mandatory: language === "de" ? "Pflicht" : "Mandatory",
+    optional: language === "de" ? "Optional" : "Optional",
+    downloadCalendar:
+      language === "de" ? "Kalender exportieren" : "Export Calendar",
+    praxisNote:
+      language === "de"
+        ? "Praxisphase – nur optionale Kurse"
+        : "Practical phase – optional courses only",
+    courseTypes: language === "de" ? "Veranstaltungstypen" : "Course Types",
+    courseTypesDesc:
+      language === "de"
+        ? "Was bedeuten die verschiedenen Farben?"
+        : "What do the different colors mean?",
+    holidays: language === "de" ? "Feiertage" : "Holidays",
+    holidayNote:
+      language === "de"
+        ? "An Feiertagen finden keine Vorlesungen statt"
+        : "No lectures on public holidays",
+  };
+
+  // Handle ICS download
+  const handleDownloadICS = () => {
+    const icsContent = generateICSContent(
+      scheduleEvents,
+      currentPlan?.blocks || []
+    );
+    const blob = new Blob([icsContent], {
+      type: "text/calendar;charset=utf-8",
+    });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = "studienplan.ics";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  // Generate semester blocks overview
+  const semesterBlocks = useMemo(() => {
+    const plan = STUDY_PLANS[0];
+    if (!plan) return [];
+
+    return plan.blocks.map((block) => {
+      const start = new Date(block.start);
+      const end = new Date(block.end);
+      const startWeek =
+        Math.ceil(
+          (start.getTime() - new Date(start.getFullYear(), 0, 1).getTime()) /
+            (7 * 24 * 60 * 60 * 1000)
+        ) + 1;
+      const endWeek =
+        Math.ceil(
+          (end.getTime() - new Date(end.getFullYear(), 0, 1).getTime()) /
+            (7 * 24 * 60 * 60 * 1000)
+        ) + 1;
+      const config =
+        plan.paletteOverrides?.[block.status] || DEFAULT_PALETTE[block.status];
+
+      // Check if current date is in this block
+      const isActive = todayISO >= block.start && todayISO <= block.end;
+
+      return {
+        ...block,
+        startWeek,
+        endWeek,
+        config,
+        isActive,
+        startDate: start.toLocaleDateString(locale, {
+          day: "numeric",
+          month: "short",
+        }),
+        endDate: end.toLocaleDateString(locale, {
+          day: "numeric",
+          month: "short",
+        }),
+      };
+    });
+  }, [todayISO, locale]);
 
   return (
-    <div className="min-h-screen bg-white dark:bg-slate-950 transition-colors duration-300">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8 space-y-4">
-          <div className="flex items-center gap-4">
-            <CalendarIcon className="h-10 w-10 text-slate-900 dark:text-white" />
-            <div>
-              <div className="text-[11px] font-black uppercase tracking-[0.25em] text-slate-500 dark:text-slate-400">
-                {t.heroKicker}
+    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-6 lg:p-8">
+      <div className="max-w-7xl mx-auto">
+        {/* Header */}
+        <div className="mb-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
+                <CalendarDays className="h-6 w-6" />
               </div>
-              <h1 className="text-3xl md:text-4xl font-black leading-tight text-slate-900 dark:text-white">
-                {t.heroTitle}
-              </h1>
-              <label className="mt-2 inline-flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                <input
-                  type="checkbox"
-                  checked={showOptional}
-                  onChange={() => setShowOptional((v) => !v)}
-                  className="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
-                />
+              <div>
+                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
+                  {t.title}
+                </h1>
+                {/* Month and Year display */}
+                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
+                  {currentDate.toLocaleDateString(locale, {
+                    month: "long",
+                    year: "numeric",
+                  })}
+                </p>
+                <p className="text-sm text-slate-500 dark:text-slate-400">
+                  {viewMode === "week" ? (
+                    <>
+                      {weekDates[0].toLocaleDateString(locale, {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                      {" – "}
+                      {weekDates[4].toLocaleDateString(locale, {
+                        day: "numeric",
+                        month: "short",
+                      })}
+                      {" • "}
+                      {t.weekShort}{" "}
+                      {Math.ceil(
+                        (weekDates[0].getTime() -
+                          new Date(
+                            weekDates[0].getFullYear(),
+                            0,
+                            1
+                          ).getTime()) /
+                          (7 * 24 * 60 * 60 * 1000)
+                      ) + 1}
+                    </>
+                  ) : (
+                    <>
+                      {monthDays.length} {language === "de" ? "Tage" : "days"}
+                    </>
+                  )}
+                </p>
+              </div>
+            </div>
+
+            {/* Controls */}
+            <div className="flex flex-wrap items-center gap-2">
+              {/* View Mode Toggle */}
+              <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1">
+                <button
+                  onClick={() => setViewMode("week")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    viewMode === "week"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  <Grid3X3 className="h-4 w-4" />
+                  {t.week}
+                </button>
+                <button
+                  onClick={() => setViewMode("month")}
+                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
+                    viewMode === "month"
+                      ? "bg-blue-600 text-white shadow-sm"
+                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
+                  }`}
+                >
+                  <Calendar className="h-4 w-4" />
+                  {t.month}
+                </button>
+              </div>
+
+              {/* Optional Courses Toggle */}
+              <button
+                onClick={() => setShowOptional(!showOptional)}
+                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all ${
+                  showOptional
+                    ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
+                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                }`}
+              >
+                {showOptional ? (
+                  <Eye className="h-4 w-4" />
+                ) : (
+                  <EyeOff className="h-4 w-4" />
+                )}
                 {t.showOptional}
-              </label>
+              </button>
+
+              {/* ICS Export Button */}
+              <button
+                onClick={handleDownloadICS}
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
+                title={t.downloadCalendar}
+              >
+                <Download className="h-4 w-4" />
+                <span className="hidden sm:inline">{t.downloadCalendar}</span>
+              </button>
+
+              <button
+                onClick={goToToday}
+                className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+              >
+                {t.today}
+              </button>
+              <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
+                <button
+                  onClick={viewMode === "week" ? goToPrevWeek : goToPrevMonth}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-l-lg transition-colors"
+                >
+                  <ChevronLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                </button>
+                <span className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[100px] text-center">
+                  {viewMode === "week"
+                    ? `${t.weekShort} ${Math.ceil((weekDates[0].getTime() - new Date(weekDates[0].getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1}`
+                    : currentDate.toLocaleDateString(locale, {
+                        month: "short",
+                        year: "numeric",
+                      })}
+                </span>
+                <button
+                  onClick={viewMode === "week" ? goToNextWeek : goToNextMonth}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-r-lg transition-colors"
+                >
+                  <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-400" />
+                </button>
+              </div>
             </div>
           </div>
 
-          <div className="rounded-2xl border border-white/40 dark:border-slate-700/50 bg-white/60 dark:bg-slate-900/60 backdrop-blur-md px-4 py-4 sm:px-5 sm:py-5 shadow-xl ring-1 ring-black/5">
-            <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
-              <div className="flex flex-col gap-2">
-                <span className="text-[11px] font-bold text-slate-500 dark:text-slate-400 uppercase tracking-[0.15em]">
-                  {t.planChoose}
-                </span>
-                <div className="flex flex-wrap items-center gap-3">
-                  <div className="relative group">
-                    <select
-                      value={selectedPlanId}
-                      onChange={(e) => setSelectedPlanId(e.target.value)}
-                      className="appearance-none pl-4 pr-10 py-2.5 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-sm font-bold text-slate-900 dark:text-white shadow-sm hover:border-blue-400 dark:hover:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-500/20 transition-all cursor-pointer"
-                    >
-                      {STUDY_PLANS.map((p) => (
-                        <option key={p.id} value={p.id}>
-                          {p.label}
-                        </option>
-                      ))}
-                    </select>
-                    <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400 pointer-events-none group-hover:text-blue-500 transition-colors" />
+          {/* Current Phase Banner */}
+          <div
+            className={`mt-4 p-3 rounded-xl ${statusConfig.bg} ${statusConfig.ring} ring-1 flex items-center gap-3`}
+          >
+            <Briefcase className={`h-5 w-5 ${statusConfig.text}`} />
+            <span className={`text-sm font-semibold ${statusConfig.text}`}>
+              {t.currentPhase}: {statusConfig.label}
+            </span>
+          </div>
+        </div>
+
+        {/* Unified Legend - One clear box for everything */}
+        <div className="mb-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
+          {/* Course Types - Main focus with shapes */}
+          <div className="mb-5">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <GraduationCap className="h-5 w-5 text-blue-600" />
+              {t.courseTypes}
+            </h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
+              {Object.entries(EVENT_COLORS).map(([type, colors]) => (
+                <div
+                  key={type}
+                  className={`flex items-center gap-3 p-3 rounded-xl ${colors.bg} border-l-4 ${colors.border} hover:shadow-md transition-shadow`}
+                  title={language === "de" ? colors.desc : colors.descEn}
+                >
+                  <EventIcon type={type} className={`h-5 w-5 ${colors.text}`} />
+                  <div>
+                    <div className={`text-sm font-bold ${colors.text}`}>
+                      {type}
+                    </div>
+                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                      {type === "Q&A" || type === "Tutorium"
+                        ? language === "de"
+                          ? "optional"
+                          : "optional"
+                        : language === "de"
+                          ? "Pflicht"
+                          : "required"}
+                    </div>
                   </div>
-                  <span className="text-xs font-medium text-slate-500 dark:text-slate-400 hidden sm:inline-block">
-                    {t.planHint}
-                  </span>
                 </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Semester Phases - Compact */}
+          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
+            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
+              <Calendar className="h-5 w-5 text-indigo-600" />
+              {t.semesterPlan}
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {semesterBlocks.map((block, idx) => (
+                <div
+                  key={idx}
+                  className={`relative px-3 py-2 rounded-lg ${block.config.bg} ${
+                    block.isActive ? `ring-2 ${block.config.ring}` : ""
+                  }`}
+                >
+                  {block.isActive && (
+                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
+                      {language === "de" ? "JETZT" : "NOW"}
+                    </span>
+                  )}
+                  <div className={`text-xs font-bold ${block.config.text}`}>
+                    {block.config.label}
+                  </div>
+                  <div className="text-[10px] text-slate-500 dark:text-slate-400">
+                    {block.startDate} – {block.endDate}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Upcoming Holidays - Compact */}
+          {GERMAN_HOLIDAYS.filter((h) => {
+            const hDate = new Date(h.date);
+            const now = new Date();
+            const threeMonthsLater = new Date();
+            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+            return hDate >= now && hDate <= threeMonthsLater;
+          }).length > 0 && (
+            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
+              <div className="flex items-center gap-2 mb-2">
+                <AlertTriangle className="h-5 w-5 text-amber-500" />
+                <span className="text-sm font-bold text-slate-900 dark:text-white">
+                  {t.holidays}
+                </span>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                {GERMAN_HOLIDAYS.filter((h) => {
+                  const hDate = new Date(h.date);
+                  const now = new Date();
+                  const threeMonthsLater = new Date();
+                  threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
+                  return hDate >= now && hDate <= threeMonthsLater;
+                })
+                  .slice(0, 5)
+                  .map((holiday) => (
+                    <span
+                      key={holiday.date}
+                      className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
+                    >
+                      {new Date(holiday.date).toLocaleDateString(locale, {
+                        day: "numeric",
+                        month: "short",
+                      })}{" "}
+                      {language === "de" ? holiday.name : holiday.nameEn}
+                    </span>
+                  ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Calendar Grid - Week View */}
+        {viewMode === "week" && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            {/* Header Row - Days */}
+            <div className="grid grid-cols-[60px_repeat(5,1fr)] border-b border-slate-200 dark:border-slate-700">
+              <div className="p-3 bg-slate-50 dark:bg-slate-800" />
+              {weekDates.map((date, idx) => {
+                const dateStr = toISODate(date);
+                const isToday = dateStr === todayISO;
+                
+                // Get phase status for header
+                const dayBlock = currentPlan?.blocks.find(
+                  (b) => dateStr >= b.start && dateStr <= b.end
+                );
+                const dayStatus = dayBlock?.status;
+                const phaseConfig = dayStatus
+                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
+                    DEFAULT_PALETTE[dayStatus]
+                  : null;
+                
+                return (
+                  <div
+                    key={idx}
+                    className={`p-3 text-center border-l border-slate-200 dark:border-slate-700 ${
+                      phaseConfig ? phaseConfig.bg : isToday
+                        ? "bg-blue-50 dark:bg-blue-900/20"
+                        : "bg-slate-50 dark:bg-slate-800"
+                    }`}
+                  >
+                    <div
+                      className={`text-xs font-semibold uppercase tracking-wider ${
+                        phaseConfig ? phaseConfig.text : isToday
+                          ? "text-blue-600 dark:text-blue-400"
+                          : "text-slate-500 dark:text-slate-400"
+                      }`}
+                    >
+                      {dayNames[idx]}
+                    </div>
+                    <div
+                      className={`text-xl font-bold mt-1 ${
+                        isToday
+                          ? "bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mx-auto"
+                          : phaseConfig ? phaseConfig.text : "text-slate-900 dark:text-white"
+                      }`}
+                    >
+                      {date.getDate()}
+                    </div>
+                    {phaseConfig && (
+                      <div className={`text-[9px] font-medium mt-1 ${phaseConfig.text} opacity-80`}>
+                        {phaseConfig.label.split(" ")[0]}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Time Grid */}
+            <div className="grid grid-cols-[60px_repeat(5,1fr)]">
+              {/* Time Labels */}
+              <div className="border-r border-slate-200 dark:border-slate-700">
+                {TIME_SLOTS.map((time) => (
+                  <div
+                    key={time}
+                    className="h-[60px] flex items-start justify-end pr-2 pt-1 text-xs text-slate-500 dark:text-slate-400 font-medium"
+                  >
+                    {time}
+                  </div>
+                ))}
               </div>
 
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-end sm:gap-3">
-                <div className="inline-flex items-center rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-100/50 dark:bg-slate-800/50 p-1 shadow-inner">
-                  <button
-                    onClick={() => setViewMode("multi")}
-                    className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
-                      viewMode === "multi"
-                        ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-sm ring-1 ring-black/5"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
+              {/* Day Columns */}
+              {weekDates.map((date, dayIdx) => {
+                const dateStr = toISODate(date);
+                const events = getEventsForDate(date);
+                const isToday = dateStr === todayISO;
+
+                // Get phase status for this day (same as month view)
+                const dayBlock = currentPlan?.blocks.find(
+                  (b) => dateStr >= b.start && dateStr <= b.end
+                );
+                const dayStatus = dayBlock?.status;
+                const phaseConfig = dayStatus
+                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
+                    DEFAULT_PALETTE[dayStatus]
+                  : null;
+
+                return (
+                  <div
+                    key={dayIdx}
+                    className={`relative border-l border-slate-200 dark:border-slate-700 ${
+                      phaseConfig ? phaseConfig.bg : isToday ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
                     }`}
+                    style={{ height: `${TIME_SLOTS.length * 60}px` }}
                   >
-                    <Grid3x3 className="h-3.5 w-3.5" />
-                    {t.viewMulti}
-                  </button>
-                  <button
-                    onClick={() => setViewMode("single")}
-                    className={`flex items-center gap-2 px-4 py-2 text-xs font-bold rounded-lg transition-all duration-200 ${
-                      viewMode === "single"
-                        ? "bg-white dark:bg-slate-700 text-blue-600 dark:text-blue-300 shadow-sm ring-1 ring-black/5"
-                        : "text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-slate-200"
-                    }`}
-                  >
-                    <CalendarIcon className="h-3.5 w-3.5" />
-                    {t.viewSingle}
-                  </button>
+                    {/* Hour lines */}
+                    {TIME_SLOTS.map((_, idx) => (
+                      <div
+                        key={idx}
+                        className="absolute w-full border-t border-slate-100 dark:border-slate-800/50"
+                        style={{ top: `${idx * 60}px` }}
+                      />
+                    ))}
+
+                    {/* Events */}
+                    {events.map((event) => {
+                      // Check if it's a holiday
+                      const isHoliday = (event as any).isHoliday;
+
+                      if (isHoliday) {
+                        // Render holiday as full-day banner
+                        return (
+                          <div
+                            key={event.id}
+                            className="absolute left-1 right-1 top-2 bg-slate-700 dark:bg-slate-800 border-l-4 border-amber-500 rounded-r-lg p-2"
+                          >
+                            <div className="flex items-center gap-2">
+                              <AlertTriangle className="h-4 w-4 text-amber-400" />
+                              <span className="text-xs font-bold text-white">
+                                {event.title}
+                              </span>
+                            </div>
+                            <div className="text-[10px] text-slate-300 mt-0.5">
+                              {language === "de"
+                                ? "Vorlesungsfrei"
+                                : "No classes"}
+                            </div>
+                          </div>
+                        );
+                      }
+
+                      const colors =
+                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      const style = getEventStyle(event);
+
+                      return (
+                        <div
+                          key={event.id}
+                          className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-r-lg p-2 cursor-pointer hover:shadow-lg transition-shadow overflow-hidden ${event.isOptional ? "opacity-90" : ""}`}
+                          style={style}
+                          title={`${event.title}\n${event.courseCode}\n${event.startTime} - ${event.endTime}\n${event.location}${event.professor ? "\n" + event.professor : ""}${event.zoomLink ? "\n" + event.zoomLink : ""}`}
+                        >
+                          <div className="flex items-start gap-2">
+                            <div className="mt-0.5">
+                              <EventIcon
+                                type={event.type}
+                                className={`h-4 w-4 ${colors.text}`}
+                              />
+                            </div>
+                            <div className="min-w-0 flex-1">
+                              <div
+                                className={`text-xs font-bold ${colors.text} truncate`}
+                              >
+                                {event.title}
+                              </div>
+                              <div className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
+                                {event.startTime} - {event.endTime}
+                              </div>
+                              <div className="text-[10px] text-slate-600 dark:text-slate-400 truncate flex items-center gap-1">
+                                {event.isOnline ? (
+                                  <Video className="h-3 w-3 flex-shrink-0 text-blue-500" />
+                                ) : (
+                                  <MapPin className="h-3 w-3 flex-shrink-0" />
+                                )}
+                                {event.isOnline && event.zoomLink ? (
+                                  <a
+                                    href={event.zoomLink}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    Zoom-Raum{" "}
+                                    <ExternalLink className="h-2.5 w-2.5" />
+                                  </a>
+                                ) : (
+                                  event.location
+                                )}
+                              </div>
+                              {event.professor && (
+                                <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 mt-0.5">
+                                  <User className="h-3 w-3 flex-shrink-0" />
+                                  {event.professor}
+                                </div>
+                              )}
+                            </div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
+        {/* Calendar Grid - Month View */}
+        {viewMode === "month" && (
+          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+            {/* Month Header */}
+            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700">
+              {(language === "de"
+                ? ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+                : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+              ).map((day, idx) => (
+                <div
+                  key={day}
+                  className={`p-3 text-center text-xs font-semibold uppercase tracking-wider ${
+                    idx >= 5
+                      ? "text-slate-400 dark:text-slate-500"
+                      : "text-slate-600 dark:text-slate-400"
+                  } bg-slate-50 dark:bg-slate-800`}
+                >
+                  {day}
                 </div>
-                
-                <div className="flex items-center gap-2 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-2 py-1.5 shadow-sm">
-                  <button
-                    onClick={() =>
-                      setCurrentMonthIdx((i) => Math.max(0, i - 1))
-                    }
-                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-30 transition-colors"
-                    disabled={currentMonthIdx === 0}
+              ))}
+            </div>
+
+            {/* Month Days Grid */}
+            <div className="grid grid-cols-7">
+              {/* Empty cells for days before first day of month */}
+              {Array.from({ length: (monthDays[0].getDay() + 6) % 7 }).map(
+                (_, idx) => (
+                  <div
+                    key={`empty-${idx}`}
+                    className="min-h-[130px] p-2 border-b border-r border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"
+                  />
+                )
+              )}
+
+              {/* Actual days */}
+              {monthDays.map((date) => {
+                const dateStr = toISODate(date);
+                const isToday = dateStr === todayISO;
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                const dayEvents = getEventsForDate(date);
+
+                // Get phase status for this day
+                const dayBlock = currentPlan?.blocks.find(
+                  (b) => dateStr >= b.start && dateStr <= b.end
+                );
+                const dayStatus = dayBlock?.status;
+                const phaseConfig = dayStatus
+                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
+                    DEFAULT_PALETTE[dayStatus]
+                  : null;
+
+                return (
+                  <div
+                    key={dateStr}
+                    className={`min-h-[130px] p-2 border-b border-r border-slate-100 dark:border-slate-800 transition-all hover:opacity-90 ${
+                      isToday ? "ring-2 ring-blue-500 ring-inset" : ""
+                    } ${phaseConfig ? phaseConfig.bg : isWeekend ? "bg-slate-50/50 dark:bg-slate-900/50" : ""}`}
                   >
-                    <ChevronLeft className="h-4 w-4" />
-                  </button>
-                  <div className="text-xs text-center min-w-[120px]">
-                    <div className="font-bold text-slate-900 dark:text-white">
-                    {monthList[currentMonthIdx]
-                      ? monthList[currentMonthIdx].toLocaleDateString(locale, {
-                          month: "long",
-                          year: "numeric",
-                        })
-                      : "-"}
+                    {/* Day number */}
+                    <div className="flex items-center justify-between mb-1">
+                      <span
+                        className={`inline-flex items-center justify-center w-7 h-7 text-sm font-bold rounded-full ${
+                          isToday
+                            ? "bg-blue-600 text-white"
+                            : phaseConfig
+                              ? phaseConfig.text
+                              : isWeekend
+                                ? "text-slate-400 dark:text-slate-500"
+                                : "text-slate-900 dark:text-white"
+                        }`}
+                      >
+                        {date.getDate()}
+                      </span>
                     </div>
-                    <div className="text-[10px] text-slate-500 font-medium">
-                      {translateText(
-                        `Monat ${currentMonthIdx + 1} von ${monthList.length}`,
-                        `Month ${currentMonthIdx + 1} of ${monthList.length}`
+
+                    {/* Events for this day */}
+                    <div className="space-y-1">
+                      {dayEvents.slice(0, 3).map((event) => {
+                        // Check if it's a holiday
+                        const isHoliday = (event as any).isHoliday;
+
+                        if (isHoliday) {
+                          return (
+                            <div
+                              key={event.id}
+                              className="text-[10px] px-1.5 py-1 rounded truncate bg-slate-700 dark:bg-slate-800 text-white font-medium flex items-center gap-1"
+                            >
+                              <AlertTriangle className="h-3 w-3 text-amber-400 flex-shrink-0" />
+                              {event.title}
+                            </div>
+                          );
+                        }
+
+                        const colors =
+                          EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                        return (
+                          <div
+                            key={event.id}
+                            className={`text-[10px] px-1.5 py-1.5 rounded cursor-pointer ${colors.bg} ${colors.text} font-medium hover:shadow-md transition-shadow border-l-2 ${colors.border}`}
+                            title={`${event.title}\n${event.startTime} - ${event.endTime}\n${event.location}${event.professor ? "\n" + event.professor : ""}${event.zoomLink ? "\nZoom: " + event.zoomLink : ""}`}
+                          >
+                            <div className="flex items-center gap-1">
+                              <EventIcon
+                                type={event.type}
+                                className={`h-3 w-3 ${colors.text}`}
+                              />
+                              <span className="font-bold truncate">
+                                {event.startTime}
+                              </span>
+                              <span className="truncate flex-1">
+                                {event.title}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-1 mt-0.5 text-[9px] opacity-80">
+                              {event.isOnline ? (
+                                <Video className="h-2.5 w-2.5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
+                              ) : (
+                                <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
+                              )}
+                              <span className="truncate">
+                                {event.isOnline ? "Online" : event.location}
+                              </span>
+                            </div>
+                          </div>
+                        );
+                      })}
+                      {dayEvents.length > 3 && (
+                        <div
+                          className="text-[10px] text-slate-600 dark:text-slate-400 font-semibold text-center py-0.5 bg-slate-100 dark:bg-slate-800 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700"
+                          onClick={() => setViewMode("week")}
+                        >
+                          +{dayEvents.length - 3}{" "}
+                          {language === "de" ? "mehr" : "more"}
+                        </div>
                       )}
                     </div>
                   </div>
-                  <button
-                    onClick={() =>
-                      setCurrentMonthIdx((i) =>
-                        Math.min(monthList.length - 1, i + 1)
-                      )
-                    }
-                    className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-700 text-slate-600 dark:text-slate-300 disabled:opacity-30 transition-colors"
-                    disabled={currentMonthIdx >= monthList.length - 1}
-                  >
-                    <ChevronRight className="h-4 w-4" />
-                  </button>
-                </div>
-              </div>
+                );
+              })}
             </div>
           </div>
-        </div>
-
-        <div className="grid grid-cols-1 xl:grid-cols-[1.6fr_1fr] gap-6 items-start">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <div className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                  {translateText("Studienplan", "Study plan")}
-                </div>
-                <h2 className="text-xl font-black text-slate-900 dark:text-white">
-                  {selectedPlan?.label || translateText("Studienplan", "Study plan")}
-                </h2>
-                {selectedPlan?.description && (
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {selectedPlan.description}
-                  </p>
-                )}
-                {studyYears.length > 0 && (
-                  <div className="mt-3 flex flex-wrap gap-2">
-                    {studyYears.map((year) => (
-                      <span
-                        key={year}
-                        className="px-3 py-1 rounded-full text-[12px] font-semibold bg-slate-900 text-white dark:bg-slate-700"
-                      >
-                        {translateText("Jahr", "Year")} {year}
-                      </span>
-                    ))}
-                  </div>
-                )}
-              </div>
-              <CalendarIcon className="h-8 w-8 text-blue-600" />
-            </div>
-            {viewMode === "multi" && (
-              <div className="grid sm:grid-cols-2 xl:grid-cols-3 gap-3">
-                {studyMonths.map((month) => {
-                  const hideBadges =
-                    month.getFullYear() === 2026 && month.getMonth() === 4;
-                  const days = getMonthDays(month);
-                  const label = month.toLocaleDateString(locale, {
-                    month: "short",
-                    year: "numeric",
-                  });
-                  const monthNumber = month.getMonth() + 1;
-                  const year = month.getFullYear();
-                  return (
-                    <div
-                      key={month.toISOString()}
-                      className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900/40"
-                    >
-                      <div className="px-4 py-3 bg-slate-900 text-white text-sm font-semibold flex items-center justify-between">
-                        <div className="flex items-baseline gap-2">
-                          <span className="text-sm font-bold">{label}</span>
-                        </div>
-                      </div>
-                      <div className="px-3 py-3 bg-white dark:bg-slate-900">
-                        <div className="grid grid-cols-7 text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          {Array.from({ length: 7 }).map((_, idx) => {
-                            const date = new Date(2024, 0, idx + 1); // any week
-                            const label = date.toLocaleDateString(locale, {
-                              weekday: "short",
-                            });
-                            return (
-                              <div key={idx} className="text-center">
-                                {label}
-                              </div>
-                            );
-                          })}
-                        </div>
-                        <div className="grid grid-cols-7 gap-1">
-                          {Array.from({
-                            length:
-                              (new Date(
-                                month.getFullYear(),
-                                month.getMonth(),
-                                1
-                              ).getDay() +
-                                6) %
-                              7,
-                          }).map((_, i) => (
-                            <div key={`pad-${i}`} />
-                          ))}
-                          {days.map((d) => {
-                            const iso = toISODate(d);
-                            const status = statusMap.get(iso);
-                            const dayPalette = status
-                              ? paletteColors[status]
-                              : null;
-                            const dayEvents = eventsByDate.get(iso) || [];
-                            const optionalCountRaw = dayEvents.filter(
-                              (e) => !e.mandatory
-                            ).length;
-                            const optionalCount = showOptional
-                              ? optionalCountRaw
-                              : 0;
-                            const mandatoryCount = dayEvents.filter(
-                              (e) => e.mandatory
-                            ).length;
-                            const hasEvent = mandatoryCount > 0 || optionalCountRaw > 0;
-                            const dotColor =
-                              mandatoryCount > 0
-                                ? "#2563EB"
-                                : optionalCount > 0
-                                  ? "#10B981"
-                                  : null;
-                            const isSelected = iso === selectedDate;
-                            return (
-                              <div
-                                key={iso}
-                                onClick={() => setSelectedDate(iso)}
-                                className={`h-16 flex flex-col justify-center text-center text-[11px] font-semibold rounded-md px-1.5 py-1 border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-sm transition ${
-                                  dayPalette
-                                    ? `${dayPalette.bg} ${dayPalette.text} ring-1 ${dayPalette.ring}`
-                                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-700"
-                                } ${
-                                  isSelected
-                                    ? "ring-2 ring-blue-500 shadow-md"
-                                    : hasEvent
-                                      ? "ring-1 ring-blue-300/60"
-                                      : ""
-                                }`}
-                                title={`${labelForStatus(selectedStatus || "praxis")}${hasEvent ? " · " + dayEvents.length + (language === "de" ? " Termin(e)" : " event(s)") : ""}`}
-                              >
-                                <div className="flex items-center justify-center gap-1">
-                                  <span>{d.getDate()}</span>
-                                  {dotColor && (
-                                    <span
-                                      className="h-2.5 w-2.5 rounded-full ring-2 ring-white/80 dark:ring-slate-900/80 shadow inline-block"
-                                      style={{ backgroundColor: dotColor }}
-                                    />
-                                  )}
-                                </div>
-                                {mandatoryCount > 0 ? (
-                                  <span className="mt-1 text-[9px] font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                    {t.mandatory}
-                                  </span>
-                                ) : optionalCount > 0 ? (
-                                  <span className="mt-1 text-[9px] font-bold text-emerald-900 dark:text-emerald-100 bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                    {t.optionalLabel}
-                                  </span>
-                                ) : null}
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    </div>
-                  );
-                })}
-              </div>
-            )}
-            {viewMode === "single" &&
-              monthList[currentMonthIdx] &&
-              (() => {
-                const activeMonth = monthList[currentMonthIdx];
-                const monthLabel = activeMonth.toLocaleDateString("de-DE", {
-                  month: "long",
-                  year: "numeric",
-                });
-                const hideBadges =
-                  activeMonth.getFullYear() === 2026 &&
-                  activeMonth.getMonth() === 4;
-
-                return (
-                  <div className="space-y-3">
-                    <div className="flex flex-wrap items-center justify-between gap-3 mb-2">
-                      <div>
-                        <div className="text-[11px] uppercase tracking-[0.2em] font-bold text-slate-500 dark:text-slate-400">
-                          Monatsansicht
-                        </div>
-                        <div className="text-lg font-black text-slate-900 dark:text-white">
-                          {monthLabel}
-                        </div>
-                        <p className="text-xs text-slate-500 dark:text-slate-400">
-                          Mit den Pfeilen blätterst du Monat für Monat.
-                        </p>
-                      </div>
-                      <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-600 dark:text-slate-300">
-                        {monthLabel}
-                      </div>
-                    </div>
-                    <div className="flex flex-wrap items-center justify-between mb-2 gap-3">
-                      <div className="inline-flex items-center gap-2">
-                        <button
-                          onClick={() =>
-                            setCurrentMonthIdx((i) => Math.max(0, i - 1))
-                          }
-                          className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 text-sm font-semibold"
-                          disabled={currentMonthIdx === 0}
-                        >
-                          <ChevronLeft className="h-4 w-4" />
-                          Zurück
-                        </button>
-                        <button
-                          onClick={() =>
-                            setCurrentMonthIdx((i) =>
-                              Math.min(monthList.length - 1, i + 1)
-                            )
-                          }
-                          className="inline-flex items-center gap-1 px-3 py-2 rounded-lg border border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800 disabled:opacity-40 text-sm font-semibold"
-                          disabled={currentMonthIdx >= monthList.length - 1}
-                        >
-                          Weiter
-                          <ChevronRight className="h-4 w-4" />
-                        </button>
-                      </div>
-                      <div className="text-xs font-semibold text-slate-500 dark:text-slate-400">
-                        Monat {currentMonthIdx + 1} / {monthList.length} –
-                        Monat/Jahr klar markiert
-                      </div>
-                    </div>
-                    <div className="border border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden bg-slate-50 dark:bg-slate-900/40">
-                      <div className="px-4 py-3 bg-slate-900 text-white text-sm font-semibold flex items-center justify-between">
-                        <span>
-                          {monthList[currentMonthIdx].toLocaleDateString(
-                            "de-DE",
-                            {
-                              month: "long",
-                              year: "numeric",
-                            }
-                          )}
-                        </span>
-                      </div>
-                      <div className="px-3 py-3">
-                        <div className="grid grid-cols-7 text-[10px] font-bold text-slate-500 uppercase mb-2">
-                          {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map(
-                            (d) => (
-                              <div key={d} className="text-center">
-                                {d}
-                              </div>
-                            )
-                          )}
-                        </div>
-                        <div className="grid grid-cols-7 gap-1">
-                          {Array.from({
-                            length:
-                              (new Date(
-                                monthList[currentMonthIdx].getFullYear(),
-                                monthList[currentMonthIdx].getMonth(),
-                                1
-                              ).getDay() +
-                                6) %
-                              7,
-                          }).map((_, i) => (
-                            <div key={`pad-single-${i}`} />
-                          ))}
-                          {getMonthDays(monthList[currentMonthIdx]).map((d) => {
-                            const iso = toISODate(d);
-                            const status = statusMap.get(iso);
-                            const dayPalette = status
-                              ? paletteColors[status]
-                              : null;
-                            const dayEvents = eventsByDate.get(iso) || [];
-                            const optionalCountRaw = dayEvents.filter(
-                              (e) => !e.mandatory
-                            ).length;
-                            const optionalCount = showOptional
-                              ? optionalCountRaw
-                              : 0;
-                            const mandatoryCount = dayEvents.filter(
-                              (e) => e.mandatory
-                            ).length;
-                            const hasEvent = mandatoryCount > 0 || optionalCountRaw > 0;
-                            const dotColor =
-                              mandatoryCount > 0
-                                ? "#2563EB"
-                                : optionalCount > 0
-                                  ? "#10B981"
-                                  : null;
-                            const isSelected = iso === selectedDate;
-                            return (
-                              <div
-                                key={iso}
-                                onClick={() => setSelectedDate(iso)}
-                                className={`h-16 flex flex-col justify-center text-center text-[11px] font-semibold rounded-md px-2 py-2 border border-slate-200 dark:border-slate-700 cursor-pointer hover:shadow-sm transition ${
-                                  dayPalette
-                                    ? `${dayPalette.bg} ${dayPalette.text} ring-1 ${dayPalette.ring}`
-                                    : "bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-700"
-                                } ${
-                              isSelected
-                                ? "ring-2 ring-blue-500 shadow-md"
-                                : hasEvent
-                                  ? "ring-1 ring-blue-300/60"
-                                  : ""
-                                }`}
-                                title={`${dayPalette?.label || "Kein Eintrag"}${hasEvent ? " · " + dayEvents.length + " Termin(e)" : ""}`}
-                            >
-                              <div className="flex items-center justify-between gap-1">
-                                <span>{d.getDate()}</span>
-                                {dotColor && (
-                                  <span
-                                    className="h-2.5 w-2.5 rounded-full ring-2 ring-white/80 dark:ring-slate-900/80 shadow inline-block"
-                                    style={{ backgroundColor: dotColor }}
-                                  />
-                                )}
-                              </div>
-                              {mandatoryCount > 0 ? (
-                                <span className="mt-1 text-[9px] font-bold text-blue-900 dark:text-blue-100 bg-blue-100 dark:bg-blue-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                  {t.mandatory}
-                                </span>
-                              ) : optionalCount > 0 ? (
-                                <span className="mt-1 text-[9px] font-bold text-emerald-900 dark:text-emerald-100 bg-emerald-100 dark:bg-emerald-900/40 px-1.5 py-0.5 rounded-full inline-block">
-                                  {t.optionalLabel}
-                                </span>
-                              ) : null}
-                            </div>
-                          );
-                        })}
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                );
-              })()}
-            <div className="mt-6 border-t border-slate-200 dark:border-slate-700 pt-4">
-              <div className="flex items-center justify-between">
+        )}
+        {selectedEvent && (
+          <div
+            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
+            onClick={() => setSelectedEvent(null)}
+          >
+            <div
+              className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md w-full shadow-2xl"
+              onClick={(e) => e.stopPropagation()}
+            >
+              <div className="flex items-start justify-between mb-4">
                 <div>
-                  <div className="text-[11px] font-bold uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400">
-                    {translateText("Legende", "Legend")}
-                  </div>
-                  <p className="text-sm text-slate-600 dark:text-slate-400">
-                    {t.paletteTitle}
+                  <span
+                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${
+                      EVENT_COLORS[selectedEvent.type]?.bg || "bg-slate-100"
+                    } ${EVENT_COLORS[selectedEvent.type]?.text || "text-slate-900"} mb-2`}
+                  >
+                    <EventIcon type={selectedEvent.type} className="h-4 w-4" />
+                    {selectedEvent.type}
+                  </span>
+                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                    {selectedEvent.title}
+                  </h3>
+                  <p className="text-sm text-slate-500 dark:text-slate-400">
+                    {selectedEvent.courseCode}
                   </p>
                 </div>
                 <button
-                  onClick={() => setShowLegend((v) => !v)}
-                  className="inline-flex items-center gap-2 px-3 py-2 rounded-md text-xs font-semibold border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800"
+                  onClick={() => setSelectedEvent(null)}
+                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
                 >
-                  <ChevronDown
-                    className={`h-4 w-4 transition-transform ${showLegend ? "rotate-180" : ""}`}
-                  />
-                  {showLegend ? translateText("Verbergen", "Hide") : translateText("Anzeigen", "Show")}
+                  <span className="text-slate-400 dark:text-slate-500 text-xl">
+                    ×
+                  </span>
                 </button>
               </div>
-              {showLegend && (
-                <div className="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {Object.entries(paletteColors).map(([key, val]) => (
-                    <div
-                      key={key}
-                      className="flex items-start gap-3 rounded-xl border border-slate-200 dark:border-slate-700 p-3 bg-slate-50 dark:bg-slate-900/40 shadow-sm"
-                    >
-                      <span
-                        className={`h-5 w-5 mt-0.5 rounded-full ring-2 ${val.bg} ${val.ring}`}
-                        aria-hidden
-                      />
-                      <div className="space-y-1">
-                        <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                          {labelForStatus(key as DayStatus)}
-                        </div>
-                        <div className="text-xs text-slate-500 dark:text-slate-400">
-                          {translateText("Termine und Phasen schnell erkennbar.", "Phases and events at a glance.")}
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-          </div>
-          <div className="grid grid-cols-1 gap-4 sticky top-6">
-            {nextMandatoryEvent && (
-              <div className="rounded-2xl border border-blue-100 dark:border-blue-800 bg-blue-50/80 dark:bg-blue-900/30 px-4 py-3 shadow-sm">
-                <div className="text-[11px] font-bold uppercase tracking-wide text-blue-700 dark:text-blue-200">
-                  {t.nextLecture}
-                </div>
-                <div className="text-sm font-semibold text-slate-900 dark:text-white">
-                  {new Date(nextMandatoryEvent.date).toLocaleDateString(locale, {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                    year: "numeric",
-                  })}{" "}
-                  · {nextMandatoryEvent.time}
-                </div>
-              </div>
-            )}
 
-            {/* Selected day details */}
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-200 dark:border-slate-700 p-6">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <div className="text-xs font-bold uppercase tracking-wide text-slate-500 dark:text-slate-400">
-                    {translateText("Termine am gewählten Tag", "Events on selected day")}
-                  </div>
-                  <div className="text-lg font-black text-slate-900 dark:text-white">
-                    {new Date(selectedDate).toLocaleDateString(
-                      language === "de" ? "de-DE" : "en-US",
-                      {
+              <div className="space-y-3">
+                <div className="flex items-center gap-3 text-sm">
+                  <Clock className="h-5 w-5 text-blue-500" />
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white">
+                      {selectedEvent.startTime} - {selectedEvent.endTime}
+                    </div>
+                    <div className="text-slate-500 dark:text-slate-400">
+                      {new Date(selectedEvent.date).toLocaleDateString(locale, {
                         weekday: "long",
-                        day: "2-digit",
-                        month: "2-digit",
+                        day: "numeric",
+                        month: "long",
                         year: "numeric",
-                      }
+                      })}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-3 text-sm">
+                  <MapPin className="h-5 w-5 text-emerald-500" />
+                  <div>
+                    <div className="font-semibold text-slate-900 dark:text-white">
+                      {selectedEvent.location}
+                    </div>
+                    {selectedEvent.room && (
+                      <div className="text-slate-500 dark:text-slate-400">
+                        {selectedEvent.room}
+                      </div>
                     )}
                   </div>
                 </div>
-              </div>
-              <div className="space-y-4 mt-3">
-                {mandatoryDayEvents.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="text-xs font-bold uppercase tracking-wide text-emerald-700 dark:text-emerald-300">
-                      {translateText("Pflichttermine", "Mandatory events")}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {mandatoryDayEvents.map((e) => (
-                        <div
-                          key={`mini-m-${e.id}`}
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold bg-emerald-50 dark:bg-emerald-900/30 border border-emerald-100 dark:border-emerald-800"
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            {e.time}
-                          </span>
-                          <span className="text-slate-400">•</span>
-                          <span className="font-bold">{e.title}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
 
-                {optionalDayEvents.length > 0 && (
-                  <div className="space-y-2">
-                    <div className="text-xs font-bold uppercase tracking-wide text-sky-700 dark:text-sky-300">
-                      {translateText("Optionale Termine", "Optional events")}
-                    </div>
-                    <div className="flex flex-wrap gap-2">
-                      {optionalDayEvents.map((e) => (
-                        <div
-                          key={`mini-o-${e.id}`}
-                          className="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-[12px] font-semibold bg-sky-50 dark:bg-sky-900/30 border border-sky-100 dark:border-sky-800"
-                        >
-                          <span className="inline-flex items-center gap-1">
-                            <Clock className="h-3.5 w-3.5" />
-                            {e.time}
-                          </span>
-                          <span className="text-slate-400">•</span>
-                          <span className="font-bold">{e.title}</span>
-                        </div>
-                      ))}
-                    </div>
+                <div className="flex items-center gap-3 text-sm">
+                  <User className="h-5 w-5 text-purple-500" />
+                  <div className="font-semibold text-slate-900 dark:text-white">
+                    {selectedEvent.professor}
                   </div>
-                )}
+                </div>
 
-                {mandatoryDayEvents.map((e) => (
-                  <div
-                    key={`card-m-${e.id}`}
-                    className="border border-emerald-100 dark:border-emerald-800 rounded-xl p-4 flex flex-col gap-2 bg-emerald-50 dark:bg-emerald-900/20"
+                {selectedEvent.isOnline && selectedEvent.zoomLink && (
+                  <a
+                    href={selectedEvent.zoomLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-2 w-full p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
                   >
-                    <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      <span
-                        className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold"
-                        style={{
-                          backgroundColor: e.professorColor + "20",
-                          color: e.professorColor,
-                        }}
-                      >
-                        {e.type}
-                      </span>
-                      <span className="text-slate-500">•</span>
-                      <span>{e.time}</span>
-                      <span className="text-slate-500">•</span>
-                      <span>{e.duration}</span>
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold bg-emerald-100 text-emerald-800 dark:bg-emerald-900/40 dark:text-emerald-100">
-                        In Präsenz
-                      </span>
-                    </div>
-                    <div className="text-base font-black text-slate-900 dark:text-white">
-                      {e.title}
-                    </div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-blue-600 dark:text-blue-300" />
-                        <span className="font-semibold">{e.time}</span>
-                        <span className="text-slate-500">·</span>
-                        <span>{e.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
-                        <span className="font-semibold">{e.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: e.professorColor }}
-                        />
-                        <span>{e.professor}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-slate-200 dark:bg-slate-700">
-                          {e.zoom ? "Hybrid/Online" : "In Präsenz"}
-                        </span>
-                        {e.zoom && (
-                          <a
-                            href={e.zoom}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-300 text-sm font-semibold hover:underline"
-                          >
-                            <Video className="h-4 w-4" />
-                            Zoom-Link
-                          </a>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        Vorlesungsreihe: {e.title.split(" ").join("_")}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {optionalDayEvents.map((e) => (
-                  <div
-                    key={`card-o-${e.id}`}
-                    className="border border-sky-100 dark:border-sky-800 rounded-xl p-4 flex flex-col gap-2 bg-sky-50 dark:bg-sky-900/20"
-                  >
-                    <div className="flex flex-wrap items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-                      <span
-                        className="inline-flex items-center px-2 py-1 rounded-full text-[11px] font-bold"
-                        style={{
-                          backgroundColor: e.professorColor + "20",
-                          color: e.professorColor,
-                        }}
-                      >
-                        {e.type}
-                      </span>
-                      <span className="text-slate-500">•</span>
-                      <span>{e.time}</span>
-                      <span className="text-slate-500">•</span>
-                      <span>{e.duration}</span>
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[11px] font-bold bg-sky-100 text-sky-800 dark:bg-sky-900/40 dark:text-sky-100">
-                        <Info className="h-3 w-3" />
-                        Optional
-                      </span>
-                    </div>
-                    <div className="text-base font-black text-slate-900 dark:text-white">
-                      {e.title}
-                    </div>
-                    <div className="text-sm text-slate-700 dark:text-slate-300 space-y-2">
-                      <div className="flex items-center gap-2">
-                        <Clock className="h-4 w-4 text-blue-600 dark:text-blue-300" />
-                        <span className="font-semibold">{e.time}</span>
-                        <span className="text-slate-500">·</span>
-                        <span>{e.duration}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4 text-emerald-600 dark:text-emerald-300" />
-                        <span className="font-semibold">{e.location}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span
-                          className="h-3 w-3 rounded-full"
-                          style={{ backgroundColor: e.professorColor }}
-                        />
-                        <span>{e.professor}</span>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <span className="text-xs font-semibold px-2 py-1 rounded-full bg-slate-200 dark:bg-slate-700">
-                          {e.zoom ? "Hybrid/Online" : "In Präsenz"}
-                        </span>
-                        {e.zoom && (
-                          <a
-                            href={e.zoom}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-blue-600 dark:text-blue-300 text-sm font-semibold hover:underline"
-                          >
-                            <Video className="h-4 w-4" />
-                            Zoom-Link
-                          </a>
-                        )}
-                      </div>
-                      <div className="text-xs text-slate-500">
-                        Vorlesungsreihe: {e.title.split(" ").join("_")}
-                      </div>
-                    </div>
-                  </div>
-                ))}
-
-                {dayEvents.length === 0 && (
-                  <div className="text-sm text-slate-600 dark:text-slate-400">
-                    {translateText("Keine Termine für diesen Tag hinterlegt.", "No events scheduled for this day.")}
-                  </div>
+                    <Video className="h-5 w-5" />
+                    Zoom-Meeting beitreten
+                  </a>
                 )}
-                
               </div>
             </div>
           </div>
+        )}
+
+        {/* Today's Schedule Summary (Mobile) */}
+        <div className="mt-6 lg:hidden">
+          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
+            {language === "de" ? "Heute" : "Today"}
+          </h2>
+          <div className="space-y-2">
+            {getEventsForDate(new Date()).length === 0 ? (
+              <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-center text-slate-500 dark:text-slate-400">
+                {t.noEvents}
+              </div>
+            ) : (
+              getEventsForDate(new Date()).map((event) => {
+                const colors =
+                  EVENT_COLORS[event.type] || EVENT_COLORS.Vorlesung;
+                return (
+                  <div
+                    key={event.id}
+                    className={`p-4 ${colors.bg} border-l-4 ${colors.border} rounded-xl`}
+                    onClick={() => setSelectedEvent(event)}
+                  >
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <div className={`font-bold ${colors.text}`}>
+                          {event.title}
+                        </div>
+                        <div className="text-sm text-slate-600 dark:text-slate-400">
+                          {event.startTime} - {event.endTime} · {event.location}
+                        </div>
+                      </div>
+                      <ChevronRight className="h-5 w-5 text-slate-400" />
+                    </div>
+                  </div>
+                );
+              })
+            )}
+          </div>
         </div>
       </div>
-    
     </div>
   );
 }

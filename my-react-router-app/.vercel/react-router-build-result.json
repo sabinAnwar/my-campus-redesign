@@ -24,6 +24,9 @@
       "routes/_app.student-id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.study-organization": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.info-center": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.benefits": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.security": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.exams": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.courses": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.courses.$courseId": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.courses.schedule": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -40,6 +43,7 @@
       "routes/_app.contact": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.tasks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.files.recent": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.social-media": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.basic-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.form-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.console-diagnostic": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -48,6 +52,8 @@
       "routes/_app.toast-direct": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.toast-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.redux-demo": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.library": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/health": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -63,7 +69,9 @@
       "routes/api/verify-reset-token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/cron/daily-reminders": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/forum": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api/forum.posts": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+      "routes/api/forum.posts": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/contact.submit": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/applications.submit": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
     },
     "routes": {
       "root": {
@@ -180,6 +188,27 @@
         "parentId": "routes/_app",
         "file": "app/routes/_app.info-center.tsx",
         "path": "info-center",
+        "config": {}
+      },
+      "routes/_app.benefits": {
+        "id": "routes/_app.benefits",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.benefits.tsx",
+        "path": "benefits",
+        "config": {}
+      },
+      "routes/_app.security": {
+        "id": "routes/_app.security",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.security.tsx",
+        "path": "security",
+        "config": {}
+      },
+      "routes/_app.exams": {
+        "id": "routes/_app.exams",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.exams.tsx",
+        "path": "exams",
         "config": {}
       },
       "routes/_app.courses": {
@@ -301,6 +330,13 @@
         "path": "files/recent",
         "config": {}
       },
+      "routes/_app.social-media": {
+        "id": "routes/_app.social-media",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.social-media.tsx",
+        "path": "social-media",
+        "config": {}
+      },
       "routes/_app.basic-test": {
         "id": "routes/_app.basic-test",
         "parentId": "routes/_app",
@@ -355,6 +391,20 @@
         "parentId": "routes/_app",
         "file": "app/routes/_app.settings.tsx",
         "path": "settings",
+        "config": {}
+      },
+      "routes/_app.redux-demo": {
+        "id": "routes/_app.redux-demo",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.redux-demo.tsx",
+        "path": "redux-demo",
+        "config": {}
+      },
+      "routes/_app.library": {
+        "id": "routes/_app.library",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.library.tsx",
+        "path": "library",
         "config": {}
       },
       "routes/api/health": {
@@ -500,6 +550,24 @@
         "config": {
           "runtime": "nodejs"
         }
+      },
+      "routes/api/contact.submit": {
+        "id": "routes/api/contact.submit",
+        "parentId": "root",
+        "file": "app/routes/api/contact.submit.tsx",
+        "path": "api/contact/submit",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/applications.submit": {
+        "id": "routes/api/applications.submit",
+        "parentId": "root",
+        "file": "app/routes/api/applications.submit.tsx",
+        "path": "api/applications/submit",
+        "config": {
+          "runtime": "nodejs"
+        }
       }
     }
   },
@@ -604,6 +672,24 @@
         "file": "routes/_app.info-center.tsx",
         "path": "info-center"
       },
+      "routes/_app.benefits": {
+        "id": "routes/_app.benefits",
+        "parentId": "routes/_app",
+        "file": "routes/_app.benefits.tsx",
+        "path": "benefits"
+      },
+      "routes/_app.security": {
+        "id": "routes/_app.security",
+        "parentId": "routes/_app",
+        "file": "routes/_app.security.tsx",
+        "path": "security"
+      },
+      "routes/_app.exams": {
+        "id": "routes/_app.exams",
+        "parentId": "routes/_app",
+        "file": "routes/_app.exams.tsx",
+        "path": "exams"
+      },
       "routes/_app.courses": {
         "id": "routes/_app.courses",
         "parentId": "routes/_app",
@@ -706,6 +792,12 @@
         "file": "routes/_app.files.recent.tsx",
         "path": "files/recent"
       },
+      "routes/_app.social-media": {
+        "id": "routes/_app.social-media",
+        "parentId": "routes/_app",
+        "file": "routes/_app.social-media.tsx",
+        "path": "social-media"
+      },
       "routes/_app.basic-test": {
         "id": "routes/_app.basic-test",
         "parentId": "routes/_app",
@@ -753,6 +845,18 @@
         "parentId": "routes/_app",
         "file": "routes/_app.settings.tsx",
         "path": "settings"
+      },
+      "routes/_app.redux-demo": {
+        "id": "routes/_app.redux-demo",
+        "parentId": "routes/_app",
+        "file": "routes/_app.redux-demo.tsx",
+        "path": "redux-demo"
+      },
+      "routes/_app.library": {
+        "id": "routes/_app.library",
+        "parentId": "routes/_app",
+        "file": "routes/_app.library.tsx",
+        "path": "library"
       },
       "routes/api/health": {
         "id": "routes/api/health",
@@ -849,6 +953,18 @@
         "parentId": "root",
         "file": "routes/api/forum.posts.tsx",
         "path": "api/forum/posts"
+      },
+      "routes/api/contact.submit": {
+        "id": "routes/api/contact.submit",
+        "parentId": "root",
+        "file": "routes/api/contact.submit.tsx",
+        "path": "api/contact/submit"
+      },
+      "routes/api/applications.submit": {
+        "id": "routes/api/applications.submit",
+        "parentId": "root",
+        "file": "routes/api/applications.submit.tsx",
+        "path": "api/applications/submit"
       }
     },
     "routeDiscovery": {
@@ -918,6 +1034,18 @@
               {
                 "file": "routes/_app.info-center.tsx",
                 "path": "info-center"
+              },
+              {
+                "file": "routes/_app.benefits.tsx",
+                "path": "benefits"
+              },
+              {
+                "file": "routes/_app.security.tsx",
+                "path": "security"
+              },
+              {
+                "file": "routes/_app.exams.tsx",
+                "path": "exams"
               },
               {
                 "file": "routes/_app.courses.tsx",
@@ -990,6 +1118,10 @@
                 "path": "files/recent"
               },
               {
+                "file": "routes/_app.social-media.tsx",
+                "path": "social-media"
+              },
+              {
                 "file": "routes/_app.basic-test.tsx",
                 "path": "basic-test"
               },
@@ -1020,6 +1152,14 @@
               {
                 "file": "routes/_app.settings.tsx",
                 "path": "settings"
+              },
+              {
+                "file": "routes/_app.redux-demo.tsx",
+                "path": "redux-demo"
+              },
+              {
+                "file": "routes/_app.library.tsx",
+                "path": "library"
               }
             ],
             "path": ""
@@ -1087,6 +1227,14 @@
           {
             "file": "routes/api/forum.posts.tsx",
             "path": "api/forum/posts"
+          },
+          {
+            "file": "routes/api/contact.submit.tsx",
+            "path": "api/contact/submit"
+          },
+          {
+            "file": "routes/api/applications.submit.tsx",
+            "path": "api/applications/submit"
           }
         ]
       }
