@@ -1410,7 +1410,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       }
     }
 
-    const summary = {
+    const summary: Record<string, unknown> = {
       sent,
       usersChecked: users.length,
       previews: previewUrls.length,
