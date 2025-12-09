@@ -67,16 +67,24 @@ const motivationalQuotes = [
 
 export const loader = async () => {
   try {
-    const [totalUsers, onlineUsers] = await Promise.all([
-      prisma.user.count(),
-      prisma.session.count({
-        where: {
-          expiresAt: {
-            gt: new Date(),
-          },
+    // Count total users
+    const totalUsers = await prisma.user.count();
+    
+    // Count unique users with active (non-expired) sessions
+    const activeSessions = await prisma.session.findMany({
+      where: {
+        expiresAt: {
+          gt: new Date(),
         },
-      }),
-    ]);
+      },
+      select: {
+        userId: true,
+      },
+      distinct: ['userId'],
+    });
+    
+    const onlineUsers = activeSessions.length;
+    
     return { totalUsers, onlineUsers };
   } catch (error) {
     console.error("Failed to fetch login stats:", error);
@@ -195,27 +203,19 @@ export default function Login() {
 
         {/* Professional Content */}
         <div className="relative z-10 text-center text-white max-w-md">
-          {/* Premium Badge - Student Portal */}
-          <div className="mb-8 inline-flex animate-fade-in">
-            <div className="px-5 py-3 rounded-full bg-gradient-to-r from-cyan-500/30 to-orange-500/30 border-2 border-cyan-400/60 backdrop-blur-lg hover:from-cyan-500/40 hover:to-orange-500/40 hover:border-cyan-300 transition-all shadow-lg">
-              <span className="text-xs font-extrabold text-cyan-100 tracking-wider uppercase">
-                ⭐ IU Excellence
-              </span>
+          {/* Glowing IU Logo */}
+          <div className="mb-8 flex justify-center">
+            <div className="relative group">
+              {/* Glow effect layers */}
+              <div className="absolute inset-0 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 rounded-2xl blur-xl opacity-60 group-hover:opacity-80 animate-pulse transition-opacity duration-500"></div>
+              <div className="absolute inset-0 bg-cyan-400/40 rounded-2xl blur-2xl animate-pulse" style={{ animationDelay: '0.5s' }}></div>
+              
+              {/* Logo container */}
+              <div className="relative h-24 w-24 bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 rounded-2xl flex items-center justify-center shadow-2xl border-2 border-white/20 hover:border-cyan-400/50 transition-all duration-300 hover:scale-105 group-hover:shadow-cyan-500/50">
+                <span className="text-4xl font-black bg-gradient-to-r from-cyan-400 via-white to-orange-400 bg-clip-text text-transparent drop-shadow-lg">IU</span>
+              </div>
             </div>
           </div>
-
-          {/* Main heading - More impressive */}
-          <h2 className="text-5xl font-black mb-2 leading-tight text-white drop-shadow-lg">
-            Achieve Your{" "}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-cyan-200 to-orange-300 animate-pulse">
-              Goals
-            </span>
-          </h2>
-
-          {/* Subheading */}
-          <p className="text-lg text-cyan-100 font-semibold mb-10 drop-shadow-md">
-            Join {totalUsers}+ IU Dual Degree Students
-          </p>
 
           {/* Motivational Quote - Dynamic with fade animation */}
           <div className="mb-12">
