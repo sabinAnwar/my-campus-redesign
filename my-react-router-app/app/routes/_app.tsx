@@ -24,10 +24,13 @@ import {
   DoorOpen,
   Instagram,
   Library,
+  Brain,
 } from "lucide-react";
 import ThemeToggle from "~/components/ThemeToggle";
 import LanguageToggle from "~/components/LanguageToggle";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { ScreenReaderProvider } from "~/contexts/ScreenReaderContext";
+import { ScreenReaderToggle } from "~/components/ScreenReaderToggle";
 
 type NavKey =
   | "dashboard"
@@ -44,7 +47,8 @@ type NavKey =
   | "studyOrg"
   | "contact"
   | "roomBooking"
-  | "library";
+  | "library"
+  | "lernassistent";
 
 const BASE_NAV_ITEMS: Array<{
   key: NavKey;
@@ -64,6 +68,7 @@ const BASE_NAV_ITEMS: Array<{
   { to: "/faq", key: "faq", icon: HelpCircle },
   { to: "/study-organization", key: "studyOrg", icon: BookOpenCheck },
   { to: "/library", key: "library", icon: Library },
+  { to: "/lernassistent", key: "lernassistent", icon: Brain },
   { to: "/contact", key: "contact", icon: UserIcon },
 ];
 
@@ -102,6 +107,7 @@ const SHELL_TRANSLATIONS: Record<
       faq: "Hilfe & FAQ",
       studyOrg: "Studienorganisation",
       library: "Bibliothek & Services",
+      lernassistent: "KI Lernassistent",
       contact: "Kontakt",
       roomBooking: "Raumbuchung",
     },
@@ -133,6 +139,7 @@ const SHELL_TRANSLATIONS: Record<
       faq: "Help & FAQ",
       studyOrg: "Study Organization",
       library: "Library & Services",
+      lernassistent: "AI Learning Assistant",
       contact: "Contact",
       roomBooking: "Room Booking",
     },
@@ -253,6 +260,7 @@ export default function AppShell() {
   // RENDER UI
   // -----------------------------
   return (
+    <ScreenReaderProvider>
     <div className="min-h-screen flex relative bg-background text-foreground bg-[radial-gradient(ellipse_at_top_right,_var(--tw-gradient-stops))] from-blue-100/20 via-background to-background dark:from-blue-900/20 dark:via-background dark:to-background">
       <div className="relative z-10 flex flex-1">
         {/* Overlay - mobile only */}
@@ -347,6 +355,7 @@ export default function AppShell() {
 
             {/* Right side */}
             <div className="flex items-center gap-3">
+              <ScreenReaderToggle variant="compact" />
               <LanguageToggle />
               <ThemeToggle />
 
@@ -445,6 +454,7 @@ export default function AppShell() {
         </section>
       </div>
     </div>
+    </ScreenReaderProvider>
   );
 }
 

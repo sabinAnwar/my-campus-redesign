@@ -19,7 +19,7 @@ import {
   Shield,
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { KNOWLEDGE_BASE, findBestAnswer, getQuickSuggestions } from "~/data/chatbotKnowledge";
 
 export const loader = async () => {
   try {
@@ -55,16 +55,11 @@ const TEXT = {
     heroSubtitle:
       "Der intelligente Begleiter für deinen Studienerfolg. Stelle Fragen zu Organisation, Prüfungen und Campusleben.",
     chatCta: "Chat starten",
-    greeting: "Hallo! Ich bin dein IU Assistant. Wie kann ich dir heute helfen?",
+    greeting: "Hallo! 👋 Ich bin dein IU Assistant. Ich kann dir bei Fragen zu Prüfungen, Studienorganisation, Campus-Services und vielem mehr helfen. Was möchtest du wissen?",
     noAnswer:
-      "Entschuldigung, dazu habe ich keine Informationen gefunden. Bitte versuche es anders zu formulieren oder wende dich an den Support.",
-    placeholder: "Frag deinen IU Assistant...",
-    suggestions: [
-      { text: "IU Mail einrichten", question: "Wie nutze ich meine IU E-Mail-Adresse?" },
-      { text: "Prüfung wiederholen", question: "Wie oft kann ich eine Prüfung wiederholen?" },
-      { text: "Erasmus Programm", question: "Ist die IU Teil des Erasmus-Programms?" },
-      { text: "Praxisbericht", question: "Wie reiche ich meinen Praxisbericht ein?" },
-    ],
+      "Hmm, dazu habe ich leider keine spezifischen Informationen gefunden. 🤔\n\n**Versuche es mit:**\n- Prüfungstermine\n- E-Mail einrichten\n- Bibliothek nutzen\n- Support kontaktieren\n\nOder wende dich an: studienberatung@iu.org",
+    placeholder: "Frag mich etwas z.B. 'Wann sind die Prüfungen?'",
+    suggestions: getQuickSuggestions(4),
     features: [
       { title: "Sofortige Antworten", body: "Verifizierte Antworten in Echtzeit.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
       { title: "Intelligent", body: "KI-gestütztes IU-Wissen.", color: "violet", delay: "0.1s", icon: <Cpu className="h-5 w-5" /> },
@@ -78,15 +73,15 @@ const TEXT = {
     heroSubtitle:
       "The intelligent companion for your academic success. Ask about organization, exams, and campus life.",
     chatCta: "Start chat",
-    greeting: "Hi! I'm your IU Assistant. How can I help today?",
+    greeting: "Hi! 👋 I'm your IU Assistant. I can help you with questions about exams, study organization, campus services, and much more. What would you like to know?",
     noAnswer:
-      "Sorry, I couldn’t find information on that. Try rephrasing or contact support.",
-    placeholder: "Ask your IU Assistant...",
+      "Hmm, I couldn't find specific information on that. 🤔\n\n**Try asking about:**\n- Exam dates\n- Email setup\n- Library access\n- Contact support\n\nOr reach out to: studienberatung@iu.org",
+    placeholder: "Ask me something e.g. 'When are the exams?'",
     suggestions: [
-      { text: "Set up IU mail", question: "How do I use my IU email address?" },
-      { text: "Retake exams", question: "How many times can I retake an exam?" },
-      { text: "Erasmus program", question: "Is IU part of the Erasmus program?" },
-      { text: "Practical report", question: "How do I submit my practical report?" },
+      { text: "Exam dates", question: "Wann sind die Prüfungen?" },
+      { text: "Setup email", question: "Wie nutze ich meine IU E-Mail-Adresse?" },
+      { text: "Retake exams", question: "Wie oft kann ich eine Prüfung wiederholen?" },
+      { text: "Use library", question: "Wie nutze ich die Online-Bibliothek?" },
     ],
     features: [
       { title: "Instant answers", body: "Verified responses in real time.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
@@ -173,6 +168,86 @@ const IULogo = ({ className = "w-8 h-8" }: { className?: string }) => (
   </svg>
 );
 
+// Simple Markdown renderer for chat messages
+const SimpleMarkdown = ({ text }: { text: string }) => {
+  // Convert markdown to HTML-safe JSX
+  const renderMarkdown = (input: string) => {
+    const lines = input.split('\n');
+    
+    return lines.map((line, lineIndex) => {
+      // Process the line for inline formatting
+      let processed: (string | JSX.Element)[] = [line];
+      
+      // Bold: **text**
+      processed = processed.flatMap((part, i) => {
+        if (typeof part !== 'string') return part;
+        const segments: (string | JSX.Element)[] = [];
+        const regex = /\*\*(.+?)\*\*/g;
+        let lastIndex = 0;
+        let match;
+        
+        while ((match = regex.exec(part)) !== null) {
+          if (match.index > lastIndex) {
+            segments.push(part.slice(lastIndex, match.index));
+          }
+          segments.push(
+            <strong key={`bold-${lineIndex}-${i}-${match.index}`} className="font-bold">
+              {match[1]}
+            </strong>
+          );
+          lastIndex = regex.lastIndex;
+        }
+        
+        if (lastIndex < part.length) {
+          segments.push(part.slice(lastIndex));
+        }
+        
+        return segments.length > 0 ? segments : [part];
+      });
+      
+      // Check if line is a list item
+      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ');
+      const isNumbered = /^\d+\.\s/.test(line.trim());
+      const isEmoji = /^[📅📝🔄📊🏥📆🎯📄📚📧📖🏫🪪💰🌍📞🧠👋✅❌⚠️💡🎥🗂️💪💰💵]/.test(line.trim());
+      
+      if (isBullet) {
+        return (
+          <div key={lineIndex} className="flex items-start gap-2 ml-2 my-0.5">
+            <span className="text-primary">•</span>
+            <span>{processed.slice(0).map((p, i) => 
+              typeof p === 'string' ? p.replace(/^[-•]\s*/, '') : p
+            )}</span>
+          </div>
+        );
+      }
+      
+      if (isNumbered) {
+        const num = line.trim().match(/^(\d+)\./)?.[1];
+        return (
+          <div key={lineIndex} className="flex items-start gap-2 ml-2 my-0.5">
+            <span className="text-primary font-semibold">{num}.</span>
+            <span>{processed.map((p, i) => 
+              typeof p === 'string' ? p.replace(/^\d+\.\s*/, '') : p
+            )}</span>
+          </div>
+        );
+      }
+      
+      if (line.trim() === '') {
+        return <div key={lineIndex} className="h-2" />;
+      }
+      
+      return (
+        <div key={lineIndex} className={isEmoji ? 'mt-3 first:mt-0' : ''}>
+          {processed}
+        </div>
+      );
+    });
+  };
+  
+  return <div className="space-y-0.5">{renderMarkdown(text)}</div>;
+};
+
 const ChatPage = ({ onNavigate, faqs, t }) => {
   const [messages, setMessages] = useState([
     {
@@ -184,15 +259,26 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef(null);
 
+  // Improved findAnswer function using the knowledge base
   const findAnswer = useCallback(
-    (question) => {
+    (question: string) => {
+      // First, try the knowledge base (pre-trained data)
+      const knowledgeMatch = findBestAnswer(question, KNOWLEDGE_BASE);
+      if (knowledgeMatch) {
+        return knowledgeMatch.answer;
+      }
+      
+      // Fallback: Check database FAQs
       const normalizedQuestion = question.toLowerCase().trim();
+      
+      // Exact match
       for (const faq of faqs) {
         if (faq.question.toLowerCase() === normalizedQuestion) {
           return faq.answer;
         }
       }
 
+      // Partial match
       for (const faq of faqs) {
         const faqQuestion = faq.question.toLowerCase();
         if (
@@ -203,12 +289,13 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
         }
       }
 
+      // Keyword match from DB
       for (const faq of faqs) {
         if (faq.keywords) {
           try {
             const keywords = JSON.parse(faq.keywords);
             if (
-              keywords.some((keyword) =>
+              keywords.some((keyword: string) =>
                 normalizedQuestion.includes(keyword.toLowerCase())
               )
             ) {
@@ -222,7 +309,7 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
 
       return t.noAnswer;
     },
-    [faqs]
+    [faqs, t.noAnswer]
   );
 
   const sendMessage = useCallback(
@@ -341,7 +428,7 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
                     : "bg-slate-50 text-slate-700 dark:bg-white/5 dark:text-slate-200"
                 }`}
               >
-                {msg.text}
+                {msg.isUser ? msg.text : <SimpleMarkdown text={msg.text} />}
               </div>
               <span className="mt-1 px-1 text-[10px] text-slate-400">
                 {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}

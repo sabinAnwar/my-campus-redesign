@@ -64,6 +64,7 @@ export default [
     route("library", "routes/_app.library.tsx"),
     route("vertiefungswahl", "routes/_app.vertiefungswahl.tsx"),
     route("klausuranmeldung", "routes/_app.klausuranmeldung.tsx"),
+    route("lernassistent", "routes/_app.lernassistent.tsx"),
   ]),
 
   // API routes (handled by React Router in dev/SSR)
