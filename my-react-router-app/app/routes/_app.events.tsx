@@ -10,6 +10,59 @@ import {
   Video,
   X as CloseIcon,
 } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    courses: "Courses",
+    eventsCalendar: "Events & Kalender",
+    subtitle: "Alle Termine auf einen Blick, inkl. Kalender-Export",
+    all: "Alle",
+    lecture: "Vorlesung",
+    seminar: "Seminar",
+    lab: "Praktikum",
+    officeHours: "Sprechstunde",
+    previousMonth: "Vorheriger Monat",
+    today: "Heute",
+    nextMonth: "Nächster Monat",
+    calendarView: "Kalenderansicht",
+    weekdays: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
+    more: "mehr",
+    selectedDay: "Ausgewählter Tag",
+    noEvents: "Keine Termine für diesen Tag.",
+    details: "Details",
+    openZoom: "Zoom öffnen",
+    saveIcs: ".ics speichern",
+    googleCalendar: "Google Kalender",
+    close: "Schließen",
+  },
+  en: {
+    courses: "Courses",
+    eventsCalendar: "Events & Calendar",
+    subtitle: "All appointments at a glance, including calendar export",
+    all: "All",
+    lecture: "Lecture",
+    seminar: "Seminar",
+    lab: "Lab",
+    officeHours: "Office Hours",
+    previousMonth: "Previous Month",
+    today: "Today",
+    nextMonth: "Next Month",
+    calendarView: "Calendar View",
+    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    more: "more",
+    selectedDay: "Selected Day",
+    noEvents: "No events for this day.",
+    details: "Details",
+    openZoom: "Open Zoom",
+    saveIcs: "Save .ics",
+    googleCalendar: "Google Calendar",
+    close: "Close",
+  },
+};
 
 type EventType = "Lecture" | "Seminar" | "Lab" | "Office Hours";
 
@@ -205,6 +258,9 @@ function downloadICS(evt: CalendarEvent) {
 }
 
 export default function Events() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 9, 1)); // Oct 2025 sample
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
   const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);

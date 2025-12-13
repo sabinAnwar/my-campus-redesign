@@ -22,23 +22,33 @@ export function ThemeProvider({
   storageKey = "iu-theme",
 }: {
   children: ReactNode;
-  defaultTheme?: "light" | "dark";
+  defaultTheme?: Theme;
   storageKey?: string;
 }) {
-  // SSR-safe initial state (light by default)
-  const [theme, setTheme] = useState<"light" | "dark">(defaultTheme);
+  // SSR-safe initial state (light by default, system resolved on client)
+  const [theme, setTheme] = useState<"light" | "dark">(() => {
+    if (defaultTheme === "system") return "light"; // SSR fallback
+    return defaultTheme === "dark" ? "dark" : "light";
+  });
 
-  // Load persisted theme on client
+  // Load persisted theme on client and handle "system" preference
   useEffect(() => {
     if (typeof window === "undefined") return;
+    
     const stored = window.localStorage.getItem(storageKey) as
       | "light"
       | "dark"
+      | "system"
       | null;
+    
     if (stored === "light" || stored === "dark") {
       setTheme(stored);
+    } else if (stored === "system" || defaultTheme === "system") {
+      // Resolve system preference
+      const prefersDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+      setTheme(prefersDark ? "dark" : "light");
     }
-  }, [storageKey]);
+  }, [storageKey, defaultTheme]);
 
   const isDark = theme === "dark";
 

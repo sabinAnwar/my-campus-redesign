@@ -44,16 +44,13 @@
       "routes/_app.tasks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.files.recent": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.social-media": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.basic-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.form-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.console-diagnostic": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.notenverwaltung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.praxisbericht2": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.toast-direct": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.toast-test": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.redux-demo": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.library": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.vertiefungswahl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.klausuranmeldung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.lernassistent": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/health": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -337,27 +334,6 @@
         "path": "social-media",
         "config": {}
       },
-      "routes/_app.basic-test": {
-        "id": "routes/_app.basic-test",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.basic-test.tsx",
-        "path": "basic-test",
-        "config": {}
-      },
-      "routes/_app.form-test": {
-        "id": "routes/_app.form-test",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.form-test.tsx",
-        "path": "form-test",
-        "config": {}
-      },
-      "routes/_app.console-diagnostic": {
-        "id": "routes/_app.console-diagnostic",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.console-diagnostic.tsx",
-        "path": "console-diagnostic",
-        "config": {}
-      },
       "routes/_app.notenverwaltung": {
         "id": "routes/_app.notenverwaltung",
         "parentId": "routes/_app",
@@ -372,20 +348,6 @@
         "path": "praxisbericht2",
         "config": {}
       },
-      "routes/_app.toast-direct": {
-        "id": "routes/_app.toast-direct",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.toast-direct.tsx",
-        "path": "toast-direct",
-        "config": {}
-      },
-      "routes/_app.toast-test": {
-        "id": "routes/_app.toast-test",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.toast-test.tsx",
-        "path": "toast-test",
-        "config": {}
-      },
       "routes/_app.settings": {
         "id": "routes/_app.settings",
         "parentId": "routes/_app",
@@ -393,18 +355,32 @@
         "path": "settings",
         "config": {}
       },
-      "routes/_app.redux-demo": {
-        "id": "routes/_app.redux-demo",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.redux-demo.tsx",
-        "path": "redux-demo",
-        "config": {}
-      },
       "routes/_app.library": {
         "id": "routes/_app.library",
         "parentId": "routes/_app",
         "file": "app/routes/_app.library.tsx",
         "path": "library",
+        "config": {}
+      },
+      "routes/_app.vertiefungswahl": {
+        "id": "routes/_app.vertiefungswahl",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.vertiefungswahl.tsx",
+        "path": "vertiefungswahl",
+        "config": {}
+      },
+      "routes/_app.klausuranmeldung": {
+        "id": "routes/_app.klausuranmeldung",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.klausuranmeldung.tsx",
+        "path": "klausuranmeldung",
+        "config": {}
+      },
+      "routes/_app.lernassistent": {
+        "id": "routes/_app.lernassistent",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.lernassistent.tsx",
+        "path": "lernassistent",
         "config": {}
       },
       "routes/api/health": {
@@ -798,24 +774,6 @@
         "file": "routes/_app.social-media.tsx",
         "path": "social-media"
       },
-      "routes/_app.basic-test": {
-        "id": "routes/_app.basic-test",
-        "parentId": "routes/_app",
-        "file": "routes/_app.basic-test.tsx",
-        "path": "basic-test"
-      },
-      "routes/_app.form-test": {
-        "id": "routes/_app.form-test",
-        "parentId": "routes/_app",
-        "file": "routes/_app.form-test.tsx",
-        "path": "form-test"
-      },
-      "routes/_app.console-diagnostic": {
-        "id": "routes/_app.console-diagnostic",
-        "parentId": "routes/_app",
-        "file": "routes/_app.console-diagnostic.tsx",
-        "path": "console-diagnostic"
-      },
       "routes/_app.notenverwaltung": {
         "id": "routes/_app.notenverwaltung",
         "parentId": "routes/_app",
@@ -828,35 +786,35 @@
         "file": "routes/_app.praxisbericht2.tsx",
         "path": "praxisbericht2"
       },
-      "routes/_app.toast-direct": {
-        "id": "routes/_app.toast-direct",
-        "parentId": "routes/_app",
-        "file": "routes/_app.toast-direct.tsx",
-        "path": "toast-direct"
-      },
-      "routes/_app.toast-test": {
-        "id": "routes/_app.toast-test",
-        "parentId": "routes/_app",
-        "file": "routes/_app.toast-test.tsx",
-        "path": "toast-test"
-      },
       "routes/_app.settings": {
         "id": "routes/_app.settings",
         "parentId": "routes/_app",
         "file": "routes/_app.settings.tsx",
         "path": "settings"
       },
-      "routes/_app.redux-demo": {
-        "id": "routes/_app.redux-demo",
-        "parentId": "routes/_app",
-        "file": "routes/_app.redux-demo.tsx",
-        "path": "redux-demo"
-      },
       "routes/_app.library": {
         "id": "routes/_app.library",
         "parentId": "routes/_app",
         "file": "routes/_app.library.tsx",
         "path": "library"
+      },
+      "routes/_app.vertiefungswahl": {
+        "id": "routes/_app.vertiefungswahl",
+        "parentId": "routes/_app",
+        "file": "routes/_app.vertiefungswahl.tsx",
+        "path": "vertiefungswahl"
+      },
+      "routes/_app.klausuranmeldung": {
+        "id": "routes/_app.klausuranmeldung",
+        "parentId": "routes/_app",
+        "file": "routes/_app.klausuranmeldung.tsx",
+        "path": "klausuranmeldung"
+      },
+      "routes/_app.lernassistent": {
+        "id": "routes/_app.lernassistent",
+        "parentId": "routes/_app",
+        "file": "routes/_app.lernassistent.tsx",
+        "path": "lernassistent"
       },
       "routes/api/health": {
         "id": "routes/api/health",
@@ -1122,18 +1080,6 @@
                 "path": "social-media"
               },
               {
-                "file": "routes/_app.basic-test.tsx",
-                "path": "basic-test"
-              },
-              {
-                "file": "routes/_app.form-test.tsx",
-                "path": "form-test"
-              },
-              {
-                "file": "routes/_app.console-diagnostic.tsx",
-                "path": "console-diagnostic"
-              },
-              {
                 "file": "routes/_app.notenverwaltung.tsx",
                 "path": "notenverwaltung"
               },
@@ -1142,24 +1088,24 @@
                 "path": "praxisbericht2"
               },
               {
-                "file": "routes/_app.toast-direct.tsx",
-                "path": "toast-direct"
-              },
-              {
-                "file": "routes/_app.toast-test.tsx",
-                "path": "toast-test"
-              },
-              {
                 "file": "routes/_app.settings.tsx",
                 "path": "settings"
               },
               {
-                "file": "routes/_app.redux-demo.tsx",
-                "path": "redux-demo"
-              },
-              {
                 "file": "routes/_app.library.tsx",
                 "path": "library"
+              },
+              {
+                "file": "routes/_app.vertiefungswahl.tsx",
+                "path": "vertiefungswahl"
+              },
+              {
+                "file": "routes/_app.klausuranmeldung.tsx",
+                "path": "klausuranmeldung"
+              },
+              {
+                "file": "routes/_app.lernassistent.tsx",
+                "path": "lernassistent"
               }
             ],
             "path": ""

@@ -7,23 +7,103 @@ import {
   ArrowUpRight,
   Laptop,
   BarChart3,
-  Music,
-  ClipboardList,
   GraduationCap,
   Star,
   LifeBuoy,
 } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
 
-const toolCategories = [
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    backToDashboard: "Zurück zum Dashboard",
+    exclusiveFor: "Exklusiv für IU Studierende",
+    title: "Student Benefits Hub",
+    subtitle: (n: number) => `Zugriff auf ${n}+ Premium-Tools und Services.`,
+    featuredTools: "Featured Tools",
+    searchPlaceholder: "Tools durchsuchen...",
+    allCategories: "Alle Kategorien",
+    tools: "Tools",
+    open: "Öffnen",
+    support: "Support",
+    alternative: "Alternative",
+    regularlyUpdated: "Regelmäßig aktualisiert",
+    lastUpdated: "Zuletzt aktualisiert:",
+    categories: {
+      productivity: "Produktivität & Software",
+      research: "Forschung & Datenbanken",
+      learning: "Lernen & Upskilling",
+    },
+    toolDescriptions: {
+      office365: "Word, Excel, PowerPoint, Teams – gratis mit IU-Mail.",
+      azure: "Cloud-Services testen ohne Kreditkarte.",
+      matlab: "Campuslizenz für MATLAB & Simulink.",
+      linkedin: "Kurse via IU SSO freischalten.",
+      statista: "Zugriff über LIS/OpenAthens.",
+      knovel: "Video-Anleitungen für Knovel.",
+      beck: "Kurzvideo zur Rechtsdatenbank.",
+      nautos: "Normendatenbank – häufige Fragen.",
+      research: "Unipark, WISO, IEEE, Knovel, Elicit.",
+      google: "Kostenlose Digital- und KI-Trainings.",
+      udemy: "Rabattierte Kurse für Tech & Business.",
+      bootcamp: "Programmieren lernen für IU-Studierende.",
+      learnApp: "Skripte, Videos, Tests & Karteikarten.",
+      speexx: "DE/EN/FR/IT/ES – sofort starten, keine ECTS.",
+    },
+  },
+  en: {
+    backToDashboard: "Back to Dashboard",
+    exclusiveFor: "Exclusive for IU Students",
+    title: "Student Benefits Hub",
+    subtitle: (n: number) => `Access to ${n}+ premium tools and services.`,
+    featuredTools: "Featured Tools",
+    searchPlaceholder: "Search tools...",
+    allCategories: "All Categories",
+    tools: "Tools",
+    open: "Open",
+    support: "Support",
+    alternative: "Alternative",
+    regularlyUpdated: "Regularly Updated",
+    lastUpdated: "Last updated:",
+    categories: {
+      productivity: "Productivity & Software",
+      research: "Research & Databases",
+      learning: "Learning & Upskilling",
+    },
+    toolDescriptions: {
+      office365: "Word, Excel, PowerPoint, Teams – free with IU email.",
+      azure: "Test cloud services without a credit card.",
+      matlab: "Campus license for MATLAB & Simulink.",
+      linkedin: "Unlock courses via IU SSO.",
+      statista: "Access via LIS/OpenAthens.",
+      knovel: "Video tutorials for Knovel.",
+      beck: "Short video about the legal database.",
+      nautos: "Standards database – FAQs.",
+      research: "Unipark, WISO, IEEE, Knovel, Elicit.",
+      google: "Free digital and AI training.",
+      udemy: "Discounted courses for Tech & Business.",
+      bootcamp: "Learn programming for IU students.",
+      learnApp: "Scripts, videos, tests & flashcards.",
+      speexx: "DE/EN/FR/IT/ES – start immediately, no ECTS.",
+    },
+  },
+};
+
+// ────────────────────────────────────────────────────────────────────────────
+// TOOL DATA (with translation keys)
+// ────────────────────────────────────────────────────────────────────────────
+const getToolCategories = (t: typeof TRANSLATIONS.de) => [
   {
-    title: "Productivity & Software",
+    title: t.categories.productivity,
     icon: Laptop,
     color: "blue",
     gradient: "from-blue-600 to-cyan-600",
     tools: [
       {
         name: "Microsoft Office 365",
-        description: "Word, Excel, PowerPoint, Teams – gratis mit IU-Mail.",
+        description: t.toolDescriptions.office365,
         url: "https://www.office.com/",
         support: "https://support.microsoft.com/de-DE",
         logo: { text: "O365", bg: "bg-blue-600" },
@@ -31,19 +111,19 @@ const toolCategories = [
       },
       {
         name: "Azure for Students (100€)",
-        description: "Cloud-Services testen ohne Kreditkarte.",
+        description: t.toolDescriptions.azure,
         url: "https://azure.microsoft.com/de-de/free/students/",
         logo: { text: "AZ", bg: "bg-indigo-600" },
       },
       {
         name: "MathWorks MATLAB",
-        description: "Campuslizenz für MATLAB & Simulink.",
+        description: t.toolDescriptions.matlab,
         url: "https://de.mathworks.com/academia/tah-portal/iubh-internationale-hochschule-31521908.html",
         logo: { text: "ML", bg: "bg-orange-500" },
       },
       {
         name: "LinkedIn Learning",
-        description: "Kurse via IU SSO freischalten.",
+        description: t.toolDescriptions.linkedin,
         url: "https://auth.iu.org/samlp/mLktF8EpyrPwZPqPsr8oJAuvxmYfj1LB",
         logo: { text: "Li", bg: "bg-sky-600" },
         featured: true,
@@ -51,65 +131,65 @@ const toolCategories = [
     ],
   },
   {
-    title: "Research & Datenbanken",
+    title: t.categories.research,
     icon: BarChart3,
     color: "emerald",
     gradient: "from-emerald-600 to-teal-600",
     tools: [
       {
         name: "Statista Premium",
-        description: "Zugriff über LIS/OpenAthens.",
+        description: t.toolDescriptions.statista,
         url: "https://connect.openathens.net/statista.com/6ca2c067-1dee-4791-b1700d4d57d005ba/auth/rcv/saml2/post",
         logo: { text: "S", bg: "bg-emerald-600" },
         featured: true,
       },
       {
         name: "Knovel Tutorials",
-        description: "Video-Anleitungen für Knovel.",
+        description: t.toolDescriptions.knovel,
         url: "https://www.elsevier.support/knovel/answer/where-can-i-find-video-tutorials-for-knovel",
         logo: { text: "K", bg: "bg-teal-600" },
       },
       {
         name: "Beck-Online Intro",
-        description: "Kurzvideo zur Rechtsdatenbank.",
+        description: t.toolDescriptions.beck,
         url: "https://www.youtube.com/watch?v=zP-uzpxHSjw",
         logo: { text: "B", bg: "bg-amber-600" },
       },
       {
         name: "Nautos FAQ",
-        description: "Normendatenbank – häufige Fragen.",
+        description: t.toolDescriptions.nautos,
         url: "https://nautos-de.eu1.proxy.openathens.net/2RO/faq#persoenliche_einstellung",
         logo: { text: "N", bg: "bg-slate-600" },
       },
       {
         name: "Research Tutorials",
-        description: "Unipark, WISO, IEEE, Knovel, Elicit.",
+        description: t.toolDescriptions.research,
         url: "https://www.youtube.com/watch?v=oShRg-BPA-0&list=PLCWHRfa4mbG1Nsqd4D7iT-HVP28EGVq_5",
         logo: { text: "RT", bg: "bg-purple-600" },
       },
     ],
   },
   {
-    title: "Lernen & Upskilling",
+    title: t.categories.learning,
     icon: GraduationCap,
     color: "violet",
     gradient: "from-violet-600 to-purple-600",
     tools: [
       {
         name: "Google Zukunftswerkstatt",
-        description: "Kostenlose Digital- und KI-Trainings.",
+        description: t.toolDescriptions.google,
         url: "https://grow.google/intl/de/",
         logo: { text: "G", bg: "bg-green-600" },
       },
       {
         name: "Udemy Deals",
-        description: "Rabattierte Kurse für Tech & Business.",
+        description: t.toolDescriptions.udemy,
         url: "https://www.udemy.com/",
         logo: { text: "U", bg: "bg-pink-600" },
       },
       {
         name: "IU Bootcamp",
-        description: "Programmieren lernen für IU-Studierende.",
+        description: t.toolDescriptions.bootcamp,
         url: "https://mycampus-classic.iu.org/course/view.php?id=4510",
         alt: "https://programmieren-starten.de/",
         logo: { text: "BC", bg: "bg-indigo-500" },
@@ -117,13 +197,13 @@ const toolCategories = [
       },
       {
         name: "IU Learn App",
-        description: "Skripte, Videos, Tests & Karteikarten.",
+        description: t.toolDescriptions.learnApp,
         url: "#",
         logo: { text: "Learn", bg: "bg-cyan-600" },
       },
       {
         name: "Speexx Sprachkurse",
-        description: "DE/EN/FR/IT/ES – sofort starten, keine ECTS.",
+        description: t.toolDescriptions.speexx,
         url: "https://portal.speexx.com/",
         logo: { text: "SPX", bg: "bg-red-500" },
       },
@@ -140,6 +220,10 @@ const categoryBadge: any = {
 };
 
 export default function StudentBenefits() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  const toolCategories = getToolCategories(t);
+
   const [search, setSearch] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
@@ -170,9 +254,7 @@ export default function StudentBenefits() {
 
   return (
     <div className="min-h-screen dark:via-slate-900 dark:to-slate-950 text-foreground transition-all">
-      {/* 🔥 Mixed Clean + Glow Header */}
-
-      {/* Clean Header – exactly like “Module” screenshot */}
+      {/* Clean Header */}
       <div
         className="
     rounded-3xl
@@ -187,7 +269,7 @@ export default function StudentBenefits() {
           className="inline-flex items-center gap-2 text-primary font-semibold text-sm"
         >
           <ArrowLeft className="w-4 h-4" />
-          Zurück zum Dashboard
+          {t.backToDashboard}
         </Link>
 
         {/* Badge */}
@@ -200,22 +282,22 @@ export default function StudentBenefits() {
       text-slate-600 dark:text-slate-300
     "
         >
-          Exklusiv für IU Studierende
+          {t.exclusiveFor}
         </div>
 
-        {/* Title EXACTLY like in your screenshot */}
+        {/* Title */}
         <h1
           className="
       text-4xl md:text-5xl font-black mt-6
       text-slate-900 dark:text-slate-100
     "
         >
-          Student Benefits Hub
+          {t.title}
         </h1>
 
-        {/* Subtitle EXACTLY like screenshot */}
+        {/* Subtitle */}
         <p className="text-lg text-slate-600 dark:text-slate-400 mt-2">
-          Zugriff auf {totalTools}+ Premium-Tools und Services.
+          {t.subtitle(totalTools)}
         </p>
       </div>
 
@@ -235,7 +317,7 @@ export default function StudentBenefits() {
               <Star className="w-5 h-5" />
             </div>
             <h3 className="text-xl font-bold text-amber-900 dark:text-amber-200">
-              Featured Tools
+              {t.featuredTools}
             </h3>
           </div>
 
@@ -273,7 +355,6 @@ export default function StudentBenefits() {
       )}
 
       {/* Search + Filters */}
-      {/* Search + Filters */}
       <div
         className="
   sticky top-4 z-20 relative overflow-hidden
@@ -285,7 +366,7 @@ export default function StudentBenefits() {
   backdrop-blur-2xl
 "
       >
-        {/* Glow Bubbles (klein & elegant) */}
+        {/* Glow Bubbles */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div
             className="
@@ -310,7 +391,7 @@ export default function StudentBenefits() {
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-muted-foreground" />
             <input
               type="text"
-              placeholder="Tools durchsuchen..."
+              placeholder={t.searchPlaceholder}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="
@@ -331,7 +412,7 @@ export default function StudentBenefits() {
         cursor-pointer transition
       "
           >
-            <option value="all">Alle Kategorien</option>
+            <option value="all">{t.allCategories}</option>
             {toolCategories.map((cat) => (
               <option key={cat.title} value={cat.title}>
                 {cat.title}
@@ -354,7 +435,7 @@ export default function StudentBenefits() {
               <div>
                 <h3 className="text-2xl font-black">{category.title}</h3>
                 <p className="text-sm text-muted-foreground">
-                  {category.tools.length} Tools
+                  {category.tools.length} {t.tools}
                 </p>
               </div>
             </div>
@@ -391,7 +472,7 @@ export default function StudentBenefits() {
                           rel="noreferrer"
                           className="inline-flex items-center gap-1 text-primary font-semibold hover:underline"
                         >
-                          Öffnen <ArrowUpRight className="w-4 h-4" />
+                          {t.open} <ArrowUpRight className="w-4 h-4" />
                         </a>
 
                         {tool.support && (
@@ -402,7 +483,7 @@ export default function StudentBenefits() {
                             className="text-muted-foreground hover:text-primary text-sm"
                           >
                             <LifeBuoy className="inline w-4 h-4 mr-1" />
-                            Support
+                            {t.support}
                           </a>
                         )}
 
@@ -413,7 +494,7 @@ export default function StudentBenefits() {
                             rel="noreferrer"
                             className="text-muted-foreground hover:text-primary text-sm"
                           >
-                            Alternative
+                            {t.alternative}
                           </a>
                         )}
                       </div>
@@ -434,10 +515,10 @@ export default function StudentBenefits() {
         border border-border shadow-xl p-10 text-slate-300
       "
       >
-        <p className="text-lg mb-2">Regelmäßig aktualisiert</p>
+        <p className="text-lg mb-2">{t.regularlyUpdated}</p>
         <p className="text-sm text-muted-foreground">
-          Zuletzt aktualisiert:{" "}
-          {new Date().toLocaleDateString("de-DE", {
+          {t.lastUpdated}{" "}
+          {new Date().toLocaleDateString(language === "de" ? "de-DE" : "en-US", {
             day: "numeric",
             month: "long",
             year: "numeric",

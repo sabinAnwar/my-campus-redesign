@@ -21,6 +21,93 @@ import {
   showErrorToast,
   showInfoToast,
 } from "../lib/toast";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    backToDashboard: "← Zurück zum Dashboard",
+    roomBooking: "Room Booking",
+    title: "Raumbuchung – IU Hamburg Campus",
+    today: "Heute",
+    from: "Von",
+    to: "Bis",
+    checkAvailability: "Verfügbarkeit prüfen",
+    slotsChecked: "Slots geprüft",
+    selectTimeHint: "Wähle Zeitfenster aus und prüfe die freien Räume.",
+    legend: "Legende",
+    free: "Frei",
+    occupiedLecture: "Belegt (Vorlesung)",
+    bookedByYou: "Gebucht von dir",
+    soonOccupied: "Bald belegt",
+    liveOverview: "Live Übersicht",
+    whoUsesRoom: "Wer nutzt gerade welchen Raum?",
+    room: "Raum",
+    where: "Wo?",
+    purpose: "Zweck",
+    until: "bis",
+    noOccupancies: "Keine Belegungen für heute.",
+    availableRooms: "Verfügbare Räume",
+    capacity: "Kapazität",
+    persons: "Personen",
+    freeNow: "Jetzt frei",
+    occupied: "Belegt",
+    yourBooking: "Deine Buchung",
+    cancel: "Stornieren",
+    book: "Buchen",
+    lecture: "Vorlesung",
+    userNotLoggedIn: "Benutzer nicht angemeldet",
+    selectStartEndTime: "Bitte wählen Sie Start- und Endzeit",
+    startBeforeEnd: "Startzeit muss vor der Endzeit liegen",
+    roomsAvailable: (n: number, t: number) => `${n} von ${t} Räumen verfügbar`,
+    bookingRoom: "wird gebucht...",
+    time: "Zeit",
+    cancellingBooking: "Buchung wird storniert...",
+    bookingNotFound: "Buchung nicht gefunden",
+  },
+  en: {
+    backToDashboard: "← Back to Dashboard",
+    roomBooking: "Room Booking",
+    title: "Room Booking – IU Hamburg Campus",
+    today: "Today",
+    from: "From",
+    to: "To",
+    checkAvailability: "Check Availability",
+    slotsChecked: "Slots checked",
+    selectTimeHint: "Select time slots and check available rooms.",
+    legend: "Legend",
+    free: "Free",
+    occupiedLecture: "Occupied (Lecture)",
+    bookedByYou: "Booked by you",
+    soonOccupied: "Soon occupied",
+    liveOverview: "Live Overview",
+    whoUsesRoom: "Who is currently using which room?",
+    room: "Room",
+    where: "Where?",
+    purpose: "Purpose",
+    until: "until",
+    noOccupancies: "No occupancies for today.",
+    availableRooms: "Available Rooms",
+    capacity: "Capacity",
+    persons: "Persons",
+    freeNow: "Free now",
+    occupied: "Occupied",
+    yourBooking: "Your booking",
+    cancel: "Cancel",
+    book: "Book",
+    lecture: "Lecture",
+    userNotLoggedIn: "User not logged in",
+    selectStartEndTime: "Please select start and end time",
+    startBeforeEnd: "Start time must be before end time",
+    roomsAvailable: (n: number, t: number) => `${n} of ${t} rooms available`,
+    bookingRoom: "is being booked...",
+    time: "Time",
+    cancellingBooking: "Cancelling booking...",
+    bookingNotFound: "Booking not found",
+  },
+};
 
 const TIME_SLOTS = [
   "08:00",
@@ -346,6 +433,9 @@ export default function RoomBooking() {
   const loaderData = useLoaderData();
   const actionData = useActionData();
   const revalidator = useRevalidator();
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   type CampusKey = keyof typeof CAMPUS_ROOMS;
   const [selectedLocation, setSelectedLocation] = useState<CampusKey>("Hammerbrook");
   const [startTime, setStartTime] = useState("09:00");

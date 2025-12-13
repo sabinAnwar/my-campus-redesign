@@ -15,6 +15,59 @@ import {
   saveRecentFile as saveRecentFileLib,
 } from "../lib/recentFiles";
 import { prisma } from "~/lib/prisma";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    title: "Zuletzt gesuchte Dateien",
+    subtitle: "Durchsuche deine Dateien und greife schnell auf kürzlich geöffnete Dokumente zu",
+    noFilesFound: "Keine Dateien gefunden",
+    noFilesDesc: "Es sind noch keine Dateien in der Datenbank. Dateien werden automatisch hinzugefügt, wenn du:",
+    noFilesItem1: "Kurse besuchst und Materialien öffnest",
+    noFilesItem2: "Dokumente im Dokumentencenter ansiehst",
+    noFilesItem3: "Dateien hochlädst",
+    searchPlaceholder: "Dateiname suchen…",
+    search: "Suchen",
+    recentSearchTerms: "Letzte Suchbegriffe",
+    clear: "Leeren",
+    noSearchTerms: "Keine Suchbegriffe gespeichert.",
+    recentlyOpened: "Zuletzt geöffnete Dateien",
+    noFilesOpened: "Noch keine Dateien geöffnet.",
+    unknownCourse: "Unbekannter Kurs",
+    open: "Öffnen",
+    searchResults: "Suchergebnisse",
+    noResults: "Keine Treffer gefunden.",
+    enterSearchTerm: "Gib einen Suchbegriff ein.",
+    remember: "Merken",
+    unknown: "Unbekannt",
+  },
+  en: {
+    title: "Recently Searched Files",
+    subtitle: "Search your files and quickly access recently opened documents",
+    noFilesFound: "No Files Found",
+    noFilesDesc: "There are no files in the database yet. Files will be automatically added when you:",
+    noFilesItem1: "Visit courses and open materials",
+    noFilesItem2: "View documents in the document center",
+    noFilesItem3: "Upload files",
+    searchPlaceholder: "Search filename…",
+    search: "Search",
+    recentSearchTerms: "Recent Search Terms",
+    clear: "Clear",
+    noSearchTerms: "No search terms saved.",
+    recentlyOpened: "Recently Opened Files",
+    noFilesOpened: "No files opened yet.",
+    unknownCourse: "Unknown Course",
+    open: "Open",
+    searchResults: "Search Results",
+    noResults: "No results found.",
+    enterSearchTerm: "Enter a search term.",
+    remember: "Remember",
+    unknown: "Unknown",
+  },
+};
 
 /* -------------------------------------------- */
 /* TYPES                                         */
@@ -78,13 +131,16 @@ const LS_KEYS = {
 
 export default function RecentFiles() {
   const { files: dbFiles } = useLoaderData<typeof loader>();
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ModuleFile[]>([]);
   const [recentTerms, setRecentTerms] = useState<string[]>([]);
   const [recentFiles, setRecentFiles] = useState<RecentFileEntry[]>([]);
 
   // Convert database files to ModuleFile format
-  const FILES: ModuleFile[] = dbFiles.map((f) => ({
+  const FILES: ModuleFile[] = dbFiles.map((f: any) => ({
     id: f.id,
     name: f.name,
     size: f.size || "Unknown",

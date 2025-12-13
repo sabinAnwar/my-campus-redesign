@@ -205,44 +205,23 @@ type DashboardLoaderData = {
   praxisHours: PraxisHoursData;
   scheduleEvents: ScheduleEventData[];
   averageGrade: number | null;
+  isFirstSemester: boolean;
+  userName: string;
+  userCampusArea: string | null;
+  newsItems: Array<{
+    slug: string;
+    title: string;
+    excerpt: string | null;
+    category: string | null;
+    publishedAt: string;
+    featured: boolean;
+  }>;
 };
 
 export const loader = async ({ request }: { request: Request }) => {
+  // Initialize default values
   let tasks: DashboardTask[] = [];
   let tasksTotal = 0;
-
-  try {
-    const [rows, total] = await Promise.all([
-      prisma.studentTask.findMany({
-        orderBy: { dueDate: "asc" },
-        take: 6,
-      }),
-      prisma.studentTask.count(),
-    ]);
-    tasks = rows.map(
-      (t: {
-        id: any;
-        title: any;
-        course: any;
-        kind: any;
-        type: any;
-        dueDate: { toISOString: () => any };
-      }) => ({
-        id: t.id,
-        title: t.title,
-        course: t.course,
-        kind: t.kind,
-        type: t.type,
-        dueDate: t.dueDate.toISOString(),
-      })
-    );
-    tasksTotal = total;
-  } catch {
-    tasks = [];
-    tasksTotal = 0;
-  }
-
-  // Load Dual Student Data (Praxis Partner, Hours, Schedule)
   let praxisPartner: PraxisPartnerData | null = null;
   let praxisHours: PraxisHoursData = {
     required: 900,
@@ -251,120 +230,180 @@ export const loader = async ({ request }: { request: Request }) => {
     targetPerWeek: 40,
   };
   let scheduleEvents: ScheduleEventData[] = [];
+  let averageGrade: number | null = 1.58;
+  let isFirstSemester = false;
+  let userName = "Student";
+  let userCampusArea: string | null = null;
+  let newsItems: DashboardLoaderData["newsItems"] = [];
 
   try {
-    // For now, get data for first user (in production, get from session)
-    const firstUser = await prisma.user.findFirst();
-    const userId = firstUser?.id;
-
-    if (userId) {
-      // Get Praxis Partner
-      const partner = await prisma.praxisPartner.findUnique({
-        where: { userId },
+    // Get logged-in user from session
+    const cookieHeader = request.headers.get("Cookie") || "";
+    const sessionToken = cookieHeader
+      .split("; ")
+      .find((c) => c.startsWith("session="))
+      ?.split("=")[1];
+    
+    let userId: number | undefined;
+    let loggedInUser: { id: number; semester: number; totalSemesters: number; name: string | null } | null = null;
+    
+    if (sessionToken) {
+      const session = await prisma.session.findUnique({
+        where: { token: sessionToken },
+        include: { 
+          user: { 
+            select: { id: true, semester: true, totalSemesters: true, name: true }
+          } 
+        },
       });
-      if (partner) {
-        praxisPartner = {
-          companyName: partner.companyName,
-          department: partner.department,
-          supervisor: partner.supervisor,
-          email: partner.email,
-          phone: partner.phone,
-          address: partner.address,
-        };
+      if (session?.user) {
+        loggedInUser = session.user;
+        userId = session.user.id;
       }
-
-      // Get Praxis Hours Target and Logs
-      const target = await prisma.praxisHoursTarget.findUnique({
-        where: { userId },
+    }
+    
+    // Fallback to first user if no session (shouldn't happen in production)
+    if (!loggedInUser) {
+      loggedInUser = await prisma.user.findFirst({ 
+        select: { id: true, semester: true, totalSemesters: true, name: true } 
       });
+      userId = loggedInUser?.id;
+    }
+    
+    // Check if user is first semester (semester === 1)
+    // Middle semesters: 1 < semester < totalSemesters
+    // Last semester: semester === totalSemesters
+    const userSemester = loggedInUser?.semester ?? 1;
+    isFirstSemester = userSemester === 1;
+    userName = loggedInUser?.name || "Student";
 
-      // Get total logged hours
-      const totalHours = await prisma.praxisHoursLog.aggregate({
+    // Date calculations for schedule query
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const endDate = new Date(today);
+    endDate.setDate(endDate.getDate() + 5);
+    
+    // Week calculation for hours
+    const now = new Date();
+    const startOfWeek = new Date(now);
+    startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+    startOfWeek.setHours(0, 0, 0, 0);
+
+    // Execute ALL database queries in PARALLEL for faster loading
+    const [
+      tasksResult,
+      totalCount,
+      partner,
+      target,
+      totalHoursResult,
+      weekHoursResult,
+      eventsResult,
+      marksResult,
+    ] = await Promise.all([
+      // Tasks
+      prisma.studentTask.findMany({
+        orderBy: { dueDate: "asc" },
+        take: 6,
+      }),
+      prisma.studentTask.count(),
+      // Praxis Partner
+      userId ? prisma.praxisPartner.findUnique({ where: { userId } }) : null,
+      // Hours Target
+      userId ? prisma.praxisHoursTarget.findUnique({ where: { userId } }) : null,
+      // Total Hours
+      userId ? prisma.praxisHoursLog.aggregate({
         where: { userId },
         _sum: { hours: true },
-      });
-
-      // Get this week's hours
-      const now = new Date();
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay() + 1); // Monday
-      startOfWeek.setHours(0, 0, 0, 0);
-
-      const weekHours = await prisma.praxisHoursLog.aggregate({
-        where: {
-          userId,
-          date: { gte: startOfWeek },
-        },
+      }) : { _sum: { hours: 0 } },
+      // Week Hours
+      userId ? prisma.praxisHoursLog.aggregate({
+        where: { userId, date: { gte: startOfWeek } },
         _sum: { hours: true },
-      });
-
-      praxisHours = {
-        required: target?.requiredHours ?? 900,
-        logged: Math.round(totalHours._sum.hours ?? 0),
-        thisWeek: Math.round(weekHours._sum.hours ?? 0),
-        targetPerWeek: target?.targetPerWeek ?? 40,
-      };
-
-      // Get Schedule Events for next 5 days
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const endDate = new Date(today);
-      endDate.setDate(endDate.getDate() + 5);
-
-      const events = await prisma.scheduleEvent.findMany({
-        where: {
-          userId,
-          date: {
-            gte: today,
-            lt: endDate,
-          },
-        },
+      }) : { _sum: { hours: 0 } },
+      // Schedule Events
+      userId ? prisma.scheduleEvent.findMany({
+        where: { userId, date: { gte: today, lt: endDate } },
         orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      }) : [],
+      // Marks for average grade
+      prisma.mark.findMany({ select: { value: true } }),
+    ]);
+
+    // Process tasks
+    tasks = tasksResult.map((t: any) => ({
+      id: t.id,
+      title: t.title,
+      course: t.course,
+      kind: t.kind,
+      type: t.type,
+      dueDate: t.dueDate.toISOString(),
+    }));
+    tasksTotal = totalCount;
+
+    // Process praxis partner
+    if (partner) {
+      praxisPartner = {
+        companyName: partner.companyName,
+        department: partner.department,
+        supervisor: partner.supervisor,
+        email: partner.email,
+        phone: partner.phone,
+        address: partner.address,
+      };
+    }
+
+    // Process praxis hours
+    praxisHours = {
+      required: target?.requiredHours ?? 900,
+      logged: Math.round(totalHoursResult._sum.hours ?? 0),
+      thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
+      targetPerWeek: target?.targetPerWeek ?? 40,
+    };
+
+    // Process schedule events
+    scheduleEvents = (eventsResult as any[]).map((e: any) => ({
+      id: e.id,
+      title: e.title,
+      courseCode: e.courseCode,
+      date: e.date.toISOString(),
+      startTime: e.startTime,
+      endTime: e.endTime,
+      location: e.location,
+      eventType: e.eventType,
+      professor: e.professor,
+    }));
+
+    // Calculate average grade
+    if (marksResult.length > 0) {
+      const sum = marksResult.reduce((acc: number, m: any) => acc + m.value, 0);
+      averageGrade = sum / marksResult.length;
+    }
+    
+    // Fetch news items server-side for faster LCP
+    try {
+      const newsResult = await prisma.news.findMany({
+        where: { status: 'PUBLISHED' },
+        orderBy: { publishedAt: 'desc' },
+        take: 5,
+        select: {
+          slug: true,
+          title: true,
+          excerpt: true,
+          category: true,
+          publishedAt: true,
+          featured: true,
+        },
       });
-
-      scheduleEvents = events.map(
-        (e: {
-          id: number;
-          title: string;
-          courseCode: string | null;
-          date: Date;
-          startTime: string;
-          endTime: string;
-          location: string | null;
-          eventType: string;
-          professor: string | null;
-        }) => ({
-          id: e.id,
-          title: e.title,
-          courseCode: e.courseCode,
-          date: e.date.toISOString(),
-          startTime: e.startTime,
-          endTime: e.endTime,
-          location: e.location,
-          eventType: e.eventType,
-          professor: e.professor,
-        })
-      );
+      newsItems = newsResult.map((n: any) => ({
+        ...n,
+        publishedAt: n.publishedAt.toISOString(),
+      }));
+    } catch {
+      // News table might not exist, keep empty array
     }
   } catch (error) {
-    console.error("Error loading dual student data:", error);
-  }
-
-  // Calculate average grade from marks (fallback to hardcoded value from notenverwaltung)
-  let averageGrade: number | null = 1.58; // Default from notenverwaltung studentData
-  try {
-    const marks = await prisma.mark.findMany({
-      select: { value: true },
-    });
-    if (marks.length > 0) {
-      const sum = marks.reduce(
-        (acc: number, m: { value: number }) => acc + m.value,
-        0
-      );
-      averageGrade = sum / marks.length;
-    }
-  } catch (error) {
-    // Keep default value of 1.58
+    console.error("Dashboard loader error:", error);
+    // Keep default values on error
   }
 
   return {
@@ -374,6 +413,10 @@ export const loader = async ({ request }: { request: Request }) => {
     praxisHours,
     scheduleEvents,
     averageGrade,
+    isFirstSemester,
+    userName,
+    userCampusArea,
+    newsItems,
   };
 };
 import { getRecentCourses } from "~/lib/recentCourses";
@@ -386,14 +429,18 @@ export default function Dashboard() {
     praxisHours,
     scheduleEvents,
     averageGrade,
+    isFirstSemester,
+    userName,
+    userCampusArea,
+    newsItems,
   } = useLoaderData() as DashboardLoaderData;
 
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
 
-  type User = { name: string; campusArea?: string } | null;
-  const [user, setUser] = useState<User>(null);
-  const [loading, setLoading] = useState(true);
+  // Use server-loaded user data directly - no client fetch needed!
+  const user = { name: userName, campusArea: userCampusArea };
+  
   type RecentCourse = {
     id: string | number;
     name: string;
@@ -403,85 +450,12 @@ export default function Dashboard() {
     color?: string;
   };
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
+  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
   const navigate = useNavigate();
   
-  // News Slider State
-  type NewsItemType = {
-    slug: string;
-    title: string;
-    excerpt?: string;
-    category?: string;
-    publishedAt: string;
-    featured?: boolean;
-  };
-  const [newsItems, setNewsItems] = useState<NewsItemType[]>([]);
-  const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
-  const [newsLoading, setNewsLoading] = useState(true);
-
+  // Only load recent courses on client (localStorage access)
   useEffect(() => {
-    const fetchUser = async () => {
-      try {
-        console.log("🔍 Dashboard: Fetching user...");
-        const response = await fetch("/api/user", {
-          method: "GET",
-          credentials: "include",
-          headers: {
-            Accept: "application/json",
-          },
-        });
-
-        console.log("📡 Dashboard: Response status:", response.status);
-
-        if (response.ok) {
-          const data = await response.json();
-          console.log("✅ Dashboard: User data received:", data);
-          setUser(data.user || { name: "Student" });
-          setLoading(false);
-        } else if (response.status === 401) {
-          console.log(
-            "❌ Dashboard: User not authenticated (401), redirecting to login"
-          );
-          // Clear any stale cookies
-          document.cookie =
-            "session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-          document.cookie =
-            "auth_session=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;";
-          navigate("/login", { replace: true });
-        } else {
-          console.log("⚠️ Dashboard: Unexpected response, using default user");
-          setUser({ name: "Student" });
-          setLoading(false);
-        }
-      } catch (err) {
-        console.error("❌ Dashboard: Error fetching user:", err);
-        // On network error, redirect to login
-        console.log("🔄 Dashboard: Network error, redirecting to login");
-        navigate("/login", { replace: true });
-      }
-    };
-
-    fetchUser();
-
-    // Load recently visited courses
     setRecentCourses(getRecentCourses(6));
-  }, [navigate]);
-
-  // Fetch News Items
-  useEffect(() => {
-    const fetchNews = async () => {
-      try {
-        const response = await fetch("/api/news?page=1");
-        if (response.ok) {
-          const data = await response.json();
-          setNewsItems(data.items || []);
-        }
-      } catch (err) {
-        console.error("Error fetching news:", err);
-      } finally {
-        setNewsLoading(false);
-      }
-    };
-    fetchNews();
   }, []);
 
   // Auto-slide news every 5 seconds
@@ -501,7 +475,7 @@ export default function Dashboard() {
     setCurrentNewsIndex((prev) => (prev - 1 + newsItems.length) % newsItems.length);
   };
 
-  const getCategoryColor = (category?: string) => {
+  const getCategoryColor = (category?: string | null) => {
     const key = (category || "").toLowerCase();
     if (key.includes("exam")) return "from-amber-500 to-orange-500";
     if (key.includes("it") || key.includes("tech")) return "from-indigo-500 to-purple-500";
@@ -512,18 +486,7 @@ export default function Dashboard() {
     return "from-primary to-purple-600";
   };
 
-  if (loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-16 w-16 border-b-4 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-lg font-semibold text-slate-700 dark:text-slate-300 dark:text-slate-300">
-            {t.loading}
-          </p>
-        </div>
-      </div>
-    );
-  }
+  // NO LOADING STATE - Data comes from server!
 
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -784,29 +747,26 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Robot Section */}
+        {/* Greeting Animation - Stylish Icon for better LCP */}
         <div className="flex justify-center md:justify-end w-full md:w-auto">
-          <div className="relative w-[160px] h-[160px] md:w-[200px] md:h-[200px]">
-            <iframe
-              src="https://my.spline.design/genkubgreetingrobot-CBmqahXcuk8nIjmKWGDo53mA/"
-              frameBorder="0"
-              width="100%"
-              height="100%"
-              allow="autoplay; fullscreen"
-              title="Spline robot"
-              className="rounded-full pointer-events-none"
-              style={{
-                background: "black",
-                transform: "scale(1.05)",
-                overflow: "hidden",
-              }}
-            ></iframe>
+          <div className="relative w-[120px] h-[120px] md:w-[140px] md:h-[140px] flex items-center justify-center">
+            {/* Animated gradient ring */}
+            <div className="absolute inset-0 bg-gradient-to-br from-primary/30 via-purple-500/30 to-cyan-500/30 rounded-full animate-pulse" />
+            <div className="absolute inset-1 bg-gradient-to-br from-primary/20 via-purple-500/20 to-cyan-500/20 rounded-full animate-spin" style={{animationDuration: '8s'}} />
+            <div className="absolute inset-3 bg-gradient-to-br from-slate-100 to-white dark:from-slate-800 dark:to-slate-900 rounded-full shadow-xl border border-slate-200 dark:border-slate-700" />
+            {/* Sparkles Icon with glow effect */}
+            <div className="relative">
+              <div className="absolute inset-0 blur-md">
+                <Sparkles className="w-12 h-12 md:w-14 md:h-14 text-primary" />
+              </div>
+              <Sparkles className="relative w-12 h-12 md:w-14 md:h-14 text-primary drop-shadow-lg animate-pulse" style={{animationDuration: '2s'}} />
+            </div>
           </div>
         </div>
       </div>
 
       {/* News Slider Section - Single Card Fade */}
-      {!newsLoading && newsItems.length > 0 && (
+      {newsItems.length > 0 && (
         <div className="mb-6">
           {/* Compact News Banner */}
           <Link
@@ -1803,12 +1763,11 @@ export default function Dashboard() {
           </div>
         </div>
       </div>
-      {/* Onboarding für Erstis - DEMO MODE */}
+      {/* Onboarding für Erstis - nur anzeigen wenn semester === 1 aus der Datenbank */}
       <FirstSemesterOnboarding
-        isFirstSemester={true}
+        isFirstSemester={isFirstSemester}
         onComplete={() => {
           console.log("✅ Onboarding abgeschlossen!");
-          localStorage.removeItem("iu_onboarding_completed"); // Für Demo: Immer wieder anzeigen
         }}
       />
     </div>

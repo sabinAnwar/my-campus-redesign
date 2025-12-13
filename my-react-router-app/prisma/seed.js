@@ -26,14 +26,17 @@ const emailToUsername = (email) => email.split('@')[0].replace('.', '_');
 
 /**
  * Create a dual student object with common defaults
+ * @param {number} semester - Current semester (1 = first, higher = later)
  */
-const createDualStudent = async (firstName, lastName, password, matrikelNr, program) => ({
+const createDualStudent = async (firstName, lastName, password, matrikelNr, program, semester = 3) => ({
   email: `${firstName.toLowerCase()}.${lastName.toLowerCase()}@iu-study.org`,
   username: `${firstName.toLowerCase()}_${lastName.toLowerCase()}`,
   name: `${firstName} ${lastName}`,
   password: await hashPassword(password),
   matriculationNumber: matrikelNr,
   studyProgram: program,
+  semester: semester,
+  totalSemesters: 7,  // 7-semester program
 });
 
 // =============================================================================
@@ -76,39 +79,46 @@ const getUsersData = async () => {
       password: await hashPassword('password123'),
       matriculationNumber: 'IU2024001',
       studyProgram: PROGRAMS.INFORMATIK,
+      semester: 7,  // Last semester - NO onboarding
+      totalSemesters: 7,
     },
     {
       email: 'sabinanwar6@gmail.com',
       username: 'sabin_anwar',
       name: 'Sabin Anwar',
       password: await hashPassword('Test@1234'),
+      semester: 3,  // Middle semester - NO onboarding
+      totalSemesters: 7,
     },
 
-    // === IU Dual Degree Students ===
-    await createDualStudent('Tim', 'Müller', 'tim_studiert_bei_der_uni_dual', 'IU2024002', PROGRAMS.INFORMATIK),
-    await createDualStudent('Anna', 'Bauer', 'anna_liebt_iu_dual', 'IU2024003', PROGRAMS.WIRTSCHAFTSINFORMATIK),
-    await createDualStudent('Max', 'Schmidt', 'max_dual_student_2024', 'IU2024004', PROGRAMS.INFORMATIK),
-    await createDualStudent('Julia', 'Weber', 'julia_iu_hamburg_dual', 'IU2024005', PROGRAMS.BWL),
-    await createDualStudent('Leon', 'Fischer', 'leon_studiert_informatik', 'IU2024006', PROGRAMS.INFORMATIK),
-    await createDualStudent('Laura', 'Meyer', 'laura_dual_degree_girl', 'IU2024007', PROGRAMS.MARKETING),
-    await createDualStudent('Paul', 'Wagner', 'paul_loves_coding_iu', 'IU2024008', PROGRAMS.INFORMATIK),
-    await createDualStudent('Sophie', 'Braun', 'sophie_iu_student_2024', 'IU2024009', PROGRAMS.WIRTSCHAFTSINFORMATIK),
-    await createDualStudent('David', 'Hoffmann', 'david_hamburg_campus', 'IU2024010', PROGRAMS.DATA_SCIENCE),
-    await createDualStudent('Emma', 'Schulz', 'emma_studies_at_iu', 'IU2024011', PROGRAMS.INFORMATIK),
-    await createDualStudent('Felix', 'Koch', 'felix_dual_developer', 'IU2024012', PROGRAMS.SOFTWARE_ENGINEERING),
-    await createDualStudent('Mia', 'Richter', 'mia_iu_hamburg_2024', 'IU2024013', PROGRAMS.UX_DESIGN),
-    await createDualStudent('Noah', 'Krüger', 'noah_coding_master', 'IU2024014', PROGRAMS.INFORMATIK),
-    await createDualStudent('Lena', 'Klein', 'lena_iu_student_girl', 'IU2024015', PROGRAMS.WIRTSCHAFTSINFORMATIK),
-    await createDualStudent('Lukas', 'Wolf', 'lukas_wolf_developer', 'IU2024016', PROGRAMS.INFORMATIK),
-    await createDualStudent('Hannah', 'Schröder', 'hannah_iu_dual_study', 'IU2024017', PROGRAMS.MARKETING),
-    await createDualStudent('Niklas', 'Neumann', 'niklas_hammerbrook_iu', 'IU2024018', PROGRAMS.DATA_SCIENCE),
-    await createDualStudent('Marie', 'Schwarz', 'marie_dual_degree_24', 'IU2024019', PROGRAMS.BWL),
-    await createDualStudent('Jan', 'Zimmermann', 'jan_programming_iu', 'IU2024020', PROGRAMS.SOFTWARE_ENGINEERING),
-    await createDualStudent('Lisa', 'Hartmann', 'lisa_iu_praxis_dual', 'IU2024021', PROGRAMS.WIRTSCHAFTSINFORMATIK),
-    await createDualStudent('Tom', 'Lange', 'tom_lange_coder_dual', 'IU2024022', PROGRAMS.INFORMATIK),
-    await createDualStudent('Sarah', 'Maier', 'sarah_iu_waterloohain', 'IU2024023', PROGRAMS.UX_DESIGN),
-    await createDualStudent('Jonas', 'Huber', 'jonas_dual_hamburg_iu', 'IU2024024', PROGRAMS.DATA_SCIENCE),
-    await createDualStudent('Amelie', 'Schäfer', 'amelie_student_iu_24', 'IU2024025', PROGRAMS.INFORMATIK),
+    // === IU Dual Degree Students (verschiedene Semester für Testing) ===
+    // Semester 1 = Erstsemester (zeigt Onboarding)
+    // Semester 2-5 = Mitte (kein Onboarding)
+    // Semester 6 = Letztes Semester (kein Onboarding)
+    await createDualStudent('Tim', 'Müller', 'tim_studiert_bei_der_uni_dual', 'IU2024002', PROGRAMS.INFORMATIK, 1),      // Ersti!
+    await createDualStudent('Anna', 'Bauer', 'anna_liebt_iu_dual', 'IU2024003', PROGRAMS.WIRTSCHAFTSINFORMATIK, 1),     // Ersti!
+    await createDualStudent('Max', 'Schmidt', 'max_dual_student_2024', 'IU2024004', PROGRAMS.INFORMATIK, 2),
+    await createDualStudent('Julia', 'Weber', 'julia_iu_hamburg_dual', 'IU2024005', PROGRAMS.BWL, 2),
+    await createDualStudent('Leon', 'Fischer', 'leon_studiert_informatik', 'IU2024006', PROGRAMS.INFORMATIK, 3),
+    await createDualStudent('Laura', 'Meyer', 'laura_dual_degree_girl', 'IU2024007', PROGRAMS.MARKETING, 3),
+    await createDualStudent('Paul', 'Wagner', 'paul_loves_coding_iu', 'IU2024008', PROGRAMS.INFORMATIK, 3),
+    await createDualStudent('Sophie', 'Braun', 'sophie_iu_student_2024', 'IU2024009', PROGRAMS.WIRTSCHAFTSINFORMATIK, 4),
+    await createDualStudent('David', 'Hoffmann', 'david_hamburg_campus', 'IU2024010', PROGRAMS.DATA_SCIENCE, 4),
+    await createDualStudent('Emma', 'Schulz', 'emma_studies_at_iu', 'IU2024011', PROGRAMS.INFORMATIK, 4),
+    await createDualStudent('Felix', 'Koch', 'felix_dual_developer', 'IU2024012', PROGRAMS.SOFTWARE_ENGINEERING, 5),
+    await createDualStudent('Mia', 'Richter', 'mia_iu_hamburg_2024', 'IU2024013', PROGRAMS.UX_DESIGN, 6),
+    await createDualStudent('Noah', 'Krüger', 'noah_coding_master', 'IU2024014', PROGRAMS.INFORMATIK, 6),
+    await createDualStudent('Lena', 'Klein', 'lena_iu_student_girl', 'IU2024015', PROGRAMS.WIRTSCHAFTSINFORMATIK, 7),   // Letztes! (Sem 7)
+    await createDualStudent('Lukas', 'Wolf', 'lukas_wolf_developer', 'IU2024016', PROGRAMS.INFORMATIK, 7),              // Letztes! (Sem 7)
+    await createDualStudent('Hannah', 'Schröder', 'hannah_iu_dual_study', 'IU2024017', PROGRAMS.MARKETING, 1),          // Ersti!
+    await createDualStudent('Niklas', 'Neumann', 'niklas_hammerbrook_iu', 'IU2024018', PROGRAMS.DATA_SCIENCE, 2),
+    await createDualStudent('Marie', 'Schwarz', 'marie_dual_degree_24', 'IU2024019', PROGRAMS.BWL, 4),
+    await createDualStudent('Jan', 'Zimmermann', 'jan_programming_iu', 'IU2024020', PROGRAMS.SOFTWARE_ENGINEERING, 5),
+    await createDualStudent('Lisa', 'Hartmann', 'lisa_iu_praxis_dual', 'IU2024021', PROGRAMS.WIRTSCHAFTSINFORMATIK, 6),
+    await createDualStudent('Tom', 'Lange', 'tom_lange_coder_dual', 'IU2024022', PROGRAMS.INFORMATIK, 7),               // Letztes! (Sem 7)
+    await createDualStudent('Sarah', 'Maier', 'sarah_iu_waterloohain', 'IU2024023', PROGRAMS.UX_DESIGN, 1),             // Ersti!
+    await createDualStudent('Jonas', 'Huber', 'jonas_dual_hamburg_iu', 'IU2024024', PROGRAMS.DATA_SCIENCE, 3),
+    await createDualStudent('Amelie', 'Schäfer', 'amelie_student_iu_24', 'IU2024025', PROGRAMS.INFORMATIK, 4),
   ];
 };
 

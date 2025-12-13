@@ -21,15 +21,22 @@ import { StoreProvider } from "./store/StoreProvider";
 // DOCUMENT LAYOUT (keine App-Logik hier)
 // ---------------------------------------------
 export const links: Route.LinksFunction = () => [
+  // Preconnect to font servers early
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
     rel: "preconnect",
     href: "https://fonts.gstatic.com",
     crossOrigin: "anonymous",
   },
+  // Preload critical font with swap display
+  {
+    rel: "preload",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+    as: "style",
+  },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
   },
 ];
 
@@ -40,6 +47,11 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <meta name="description" content="IU Student Portal - Manage your courses, grades, and academic journey" />
+        <meta name="theme-color" content="#0f172a" />
+        {/* DNS prefetch for external resources */}
+        <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
+        <link rel="dns-prefetch" href="https://fonts.gstatic.com" />
         <Meta />
         <Links />
       </head>

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate, useLoaderData } from "react-router";
+import { Link, useNavigate, useLoaderData, useFetcher } from "react-router";
 import { showErrorToast, showSuccessToast } from "~/lib/toast";
 import { prisma } from "~/lib/prisma";
 import { MOTIVATIONAL_QUOTES, type Quote } from "~/data/quotes";
@@ -53,16 +53,39 @@ export const loader = async () => {
 export default function Login() {
   const { totalUsers, onlineUsers } = useLoaderData() as LoaderData;
   const navigate = useNavigate();
+  const fetcher = useFetcher();
   
   // Form state
   const [error, setError] = useState<string | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  
+  // Derived state
+  const isSubmitting = fetcher.state === "submitting";
   
   // Quote rotation state
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(() => 
     Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)
   );
   const [isQuoteFading, setIsQuoteFading] = useState(false);
+  
+  // Handle fetcher response
+  useEffect(() => {
+    if (fetcher.state === "idle" && fetcher.data) {
+      const data = fetcher.data as any;
+      console.log("� Login: Fetcher data received:", data);
+      
+      if (data.success) {
+        console.log("✅ Login: Success!");
+        console.log("🍪 Login: Cookies:", document.cookie);
+        showSuccessToast("Login successful! Redirecting...");
+        navigate("/dashboard", { replace: true });
+      } else if (data.error) {
+        console.error("❌ Login: Error:", data.error);
+        setError(data.error);
+        showErrorToast(data.error);
+      }
+    }
+  }, [fetcher.state, fetcher.data, navigate]);
   
   // Auto-rotate quotes
   useEffect(() => {
@@ -79,80 +102,29 @@ export default function Login() {
   
   const currentQuote = MOTIVATIONAL_QUOTES[currentQuoteIndex];
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setError(null);
-    setIsSubmitting(true);
-
-    try {
-      const formData = new FormData(e.currentTarget);
-      const email = formData.get("email");
-      const password = formData.get("password");
-
-      console.log("🔐 Login: Submitting credentials for:", email);
-
-      // Use .data suffix for React Router actions
-      const response = await fetch("/api/login.data", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/x-www-form-urlencoded",
-        },
-        body: new URLSearchParams({
-          email: typeof email === "string" ? email : "",
-          password: typeof password === "string" ? password : "",
-        }),
-        credentials: "include",
-      });
-
-      console.log("📡 Login: Response status:", response.status);
-      console.log("🍪 Login: Response headers:", Object.fromEntries(response.headers.entries()));
-
-      // Check for redirect (303 status) or success (200)
-      if (response.redirected || response.ok) {
-        const data = await response.json();
-        console.log("✅ Login: Success response:", data);
-
-        // Log cookies after login
-        console.log("🍪 Login: Cookies after login:", document.cookie);
-
-        showSuccessToast("Login successful! Redirecting...");
-
-        // Wait for cookies to be set, then navigate
-        console.log("🔄 Login: Navigating to dashboard");
-        navigate("/dashboard", { replace: true });
-        return;
-      }
-
-      if (!response.ok) {
-        const data = await response.json();
-        console.error("❌ Login: Failed with error:", data);
-        const errorMsg = data.error || "Login failed. Please try again.";
-        setError(errorMsg);
-        showErrorToast(errorMsg);
-      }
-    } catch (err) {
-      console.error("❌ Login: Exception occurred:", err);
-      const errorMsg =
-        typeof err === "object" && err !== null && "message" in err && typeof (err as any).message === "string"
-          ? (err as { message: string }).message
-          : "An error occurred during login";
-      setError(errorMsg);
-      showErrorToast(errorMsg);
-    } finally {
-      setIsSubmitting(false);
-    }
+    
+    const formData = new FormData(e.currentTarget);
+    const email = formData.get("email");
+    
+    console.log("🔐 Login: Submitting credentials for:", email);
+    
+    // Use fetcher to submit to the login action
+    fetcher.submit(formData, {
+      method: "POST",
+      action: "/api/login",
+    });
   };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 flex items-stretch">
       {/* Left side - Premium professional section with IU students background */}
       <div
-        className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8"
+        className="hidden lg:flex lg:w-1/2 relative overflow-hidden items-center justify-center p-8 bg-cover bg-center bg-no-repeat"
         style={{
-          backgroundImage: "url(/iu-students-football.png)",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
-          backgroundAttachment: "fixed",
+          backgroundImage: "url(/iu-students-football.webp)",
         }}
       >
         {/* Dark overlay for strong readability */}
@@ -370,12 +342,33 @@ export default function Login() {
                   <input
                     id="password"
                     name="password"
-                    type="password"
+                    type={showPassword ? "text" : "password"}
                     autoComplete="current-password"
                     required
                     placeholder="Enter your password"
-                    className="w-full px-5 py-4 pl-16 rounded-lg bg-slate-50 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-base placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-slate-900 dark:focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-cyan-500/20 transition duration-300"
+                    className="w-full px-5 py-4 pl-16 pr-14 rounded-lg bg-slate-50 dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-white text-base placeholder-slate-400 dark:placeholder-slate-500 focus:bg-white dark:focus:bg-slate-700 focus:border-slate-900 dark:focus:border-cyan-500 focus:outline-none focus:ring-2 focus:ring-slate-900/10 dark:focus:ring-cyan-500/20 transition duration-300"
                   />
+                  {/* Eye Icon Toggle */}
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-0 top-0 h-full w-14 flex items-center justify-center text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
+                    tabIndex={-1}
+                    aria-label={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      /* Eye Icon - password is visible (open eye = can see) */
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                      </svg>
+                    ) : (
+                      /* Eye-Off Icon - password is hidden (crossed eye = can't see) */
+                      <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l3.59 3.59m0 0A9.953 9.953 0 0112 5c4.478 0 8.268 2.943 9.543 7a10.025 10.025 0 01-4.132 5.411m0 0L21 21" />
+                      </svg>
+                    )}
+                  </button>
                 </div>
               </div>
 

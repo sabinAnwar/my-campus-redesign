@@ -108,11 +108,11 @@ export async function createPasswordResetToken(email: any) {
 }
 
 export async function sendPasswordResetEmail(email: any, resetToken: string) {
-  const resetLink = `${process.env.APP_URL || 'http://localhost:5174'}/reset-password/${resetToken}`;
+  const resetLink = `${process.env.APP_URL || 'https://iu-mycampus.me'}/reset-password/${resetToken}`;
   
   try {
     // Using a simple fetch to call an email service or API endpoint
-    const response = await fetch(`${process.env.API_URL || 'http://localhost:5174'}/api/send-reset-email`, {
+    const response = await fetch(`${process.env.API_URL || 'https://iu-mycampus.me'}/api/send-reset-email`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ email, resetLink, resetToken })

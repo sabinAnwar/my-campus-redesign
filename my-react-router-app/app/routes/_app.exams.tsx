@@ -3,8 +3,60 @@ import { AlertCircle, Download, ExternalLink, RefreshCw, ChevronDown, ChevronUp,
 import { Link } from "react-router";
 import { handleDownload } from "../lib/download";
 import { guidelines, templates, repeatExamsDocument } from "../data/documents";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    title: "Prüfungsguide & Dokumente",
+    subtitle: "Alles Wichtige zu Prüfungsabläufen, Krankmeldungen und wissenschaftlichem Arbeiten.",
+    preview: "Vorschau",
+    download: "Download",
+    sickDuringExams: "Krankheit bei Prüfungen?",
+    sickDuringExamsDesc: "Melde dich unverzüglich über die Antragsverwaltung.",
+    extensionRequest: "Verlängerungsantrag (Schriftl. Arbeit)",
+    certificate: "Attest (Klausur)",
+    toApplicationManagement: "Zur Antragsverwaltung",
+    repeatExams: "Wiederholungsprüfungen",
+    repeatExamsSubtitle: "Leitfaden für Zweit- und Drittversuche",
+    scientificWork: "Wissenschaftliches Arbeiten",
+    scientificWorkSubtitle: "Leitfäden, Richtlinien und Vorlagen",
+    versionNote: "Wichtiger Hinweis zu Versionen:",
+    versionNoteDesc: "Bitte beachte, dass es von einigen Leitfäden zwei verschiedene Versionen gibt. Welche Version für Deine schriftliche Arbeit maßgeblich ist, hängt davon ab, in welchem Semester Du den Erstversuch abgelegt hast.",
+    basicsGuidelines: "Grundlagen & Richtlinien",
+    specialTopics: "Spezielle Themen",
+    templates: "Vorlagen",
+    openDocument: "Dokument öffnen",
+  },
+  en: {
+    title: "Exam Guide & Documents",
+    subtitle: "Everything important about exam procedures, sick notes, and academic writing.",
+    preview: "Preview",
+    download: "Download",
+    sickDuringExams: "Sick during exams?",
+    sickDuringExamsDesc: "Report immediately via the application management.",
+    extensionRequest: "Extension Request (Written Work)",
+    certificate: "Medical Certificate (Exam)",
+    toApplicationManagement: "Go to Application Management",
+    repeatExams: "Repeat Exams",
+    repeatExamsSubtitle: "Guide for second and third attempts",
+    scientificWork: "Academic Writing",
+    scientificWorkSubtitle: "Guidelines, policies, and templates",
+    versionNote: "Important note about versions:",
+    versionNoteDesc: "Please note that some guidelines have two different versions. Which version applies to your written work depends on which semester you made the first attempt.",
+    basicsGuidelines: "Basics & Guidelines",
+    specialTopics: "Special Topics",
+    templates: "Templates",
+    openDocument: "Open Document",
+  },
+};
 
 export default function ExamsPage() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   const [isRepeatExamsOpen, setIsRepeatExamsOpen] = useState(true);
   const [isScientificWorkOpen, setIsScientificWorkOpen] = useState(true);
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
@@ -100,10 +152,10 @@ export default function ExamsPage() {
 
       <div className="space-y-2 mb-8">
         <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          Prüfungsguide & Dokumente
+          {t.title}
         </h1>
         <p className="text-slate-600 dark:text-slate-400 text-lg max-w-3xl">
-          Alles Wichtige zu Prüfungsabläufen, Krankmeldungen und wissenschaftlichem Arbeiten.
+          {t.subtitle}
         </p>
       </div>
 

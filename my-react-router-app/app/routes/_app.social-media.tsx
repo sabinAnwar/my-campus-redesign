@@ -1,6 +1,114 @@
 import { Instagram, Facebook, Linkedin, Youtube, Globe, Users, Trophy, Presentation, GraduationCap, BookOpen, Lightbulb } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// ────────────────────────────────────────────────────────────────────────────
+// TRANSLATIONS
+// ────────────────────────────────────────────────────────────────────────────
+const TRANSLATIONS = {
+  de: {
+    title: "Social Media & Kanäle",
+    subtitle: "Hier findest du alle wichtigen Verbindungen – von offiziellen Hochschul-News bis hin zu exklusiven Inhalten deiner Dozenten.",
+    officialChannels: "Offizielle Kanäle der IU",
+    officialSubtitle: "Zentrale Übersicht für Studierende, Mitarbeitende und Partner",
+    facultyChannels: "Kanäle von Lehrenden",
+    facultySubtitle: "Fachbezogene Inhalte, Tipps und Zusatzmaterial von deinen Professoren",
+    alumniCommunity: "IU Alumni Community",
+    alumniSubtitle: "Bleib vernetzt und profitiere von exklusiven Vorteilen",
+    toChannel: "Zum Kanal",
+    iuConnect: "IU Connect Platform",
+    iuConnectDesc: "Werde Teil der Community auf connect.iu.de. Finde ehemalige Kommilitonen über das Mitgliederverzeichnis, filtere nach Stadt oder Studiengang und teile deine Erfahrungen.",
+    registerNow: "Jetzt registrieren",
+    linkedinGroup: "LinkedIn Gruppe",
+    alumniDiscounts: "Exklusive Alumni-Rabatte",
+    masterDiscount: "15% auf Master & MBA",
+    masterDiscountNote: "Gültig für Fernstudium Masterprogramme ab 60 ECTS.",
+    trainingDiscount: "10% auf Weiterbildungen",
+    trainingDiscountNote: "Auf Kurse der zertifizierten IU Akademie.",
+    brandAmbassador: "Werde IU Brand Ambassador",
+    ambassadorDesc: "Du bist auf Social Media aktiv und möchtest deinen Weg an der IU teilen? Werde Micro Affiliate Partner!",
+    whatAwaits: "Das erwartet dich",
+    whatAwaitsDesc: "Feste Vergütung für Leads, Performance-Plattform und Zugang zur exklusiven Creator-Community.",
+    yourProfile: "Dein Profil",
+    yourProfileDesc: "Du zeigst deinen Studienalltag auf Instagram/TikTok und trittst als Botschafter:in auf.",
+    interested: "Interesse geweckt? Schreib uns:",
+    channels: {
+      instagram: "Offizielle News, Campus-Updates und Stories für alle Studierenden.",
+      instagramCareer: "Karrieretipps, Jobmessen und Erfolgsgeschichten.",
+      linkedin: "Professionelles Netzwerk für Studierende, Alumni und Partner.",
+      facebook: "Community-Austausch und Diskussionen rund ums Studium.",
+      youtube: "Studieninfos, Webinare und Einblicke in den Campus-Alltag.",
+      twitter: "Kurznachrichten und Updates zum dualen Studium.",
+      tiktok: "Kurze Videos, Lifehacks und Unterhaltung rund ums Studium.",
+      website: "Zentrale Anlaufstelle für alle offiziellen Informationen.",
+    },
+    faculty: {
+      unplugged: "Dr. Florian Perst (Academic Lecturer Business & Wissenschaftliches Arbeiten): Einblicke, Tipps und Motivation.",
+      wissenschaftlich: "Tipps & Tricks von Prof. Dr. Müller zum Schreiben von Hausarbeiten.",
+      mathe: "Zusätzliche Erklärvideos und Übungen von Prof. Schmidt.",
+      tech: "Aktuelle Trends aus der IT-Welt, kuratiert von Prof. Weber.",
+    },
+    tags: {
+      instagram: "Instagram",
+      learning: "Lernmethoden",
+      course: "Kursbegleitung",
+      expertise: "Fachwissen",
+    },
+  },
+  en: {
+    title: "Social Media & Channels",
+    subtitle: "Find all important connections here – from official university news to exclusive content from your lecturers.",
+    officialChannels: "Official IU Channels",
+    officialSubtitle: "Central overview for students, staff, and partners",
+    facultyChannels: "Faculty Channels",
+    facultySubtitle: "Subject-related content, tips, and additional material from your professors",
+    alumniCommunity: "IU Alumni Community",
+    alumniSubtitle: "Stay connected and benefit from exclusive advantages",
+    toChannel: "Go to Channel",
+    iuConnect: "IU Connect Platform",
+    iuConnectDesc: "Become part of the community on connect.iu.de. Find former classmates via the member directory, filter by city or program, and share your experiences.",
+    registerNow: "Register Now",
+    linkedinGroup: "LinkedIn Group",
+    alumniDiscounts: "Exclusive Alumni Discounts",
+    masterDiscount: "15% off Master & MBA",
+    masterDiscountNote: "Valid for distance learning Master programs from 60 ECTS.",
+    trainingDiscount: "10% off Further Education",
+    trainingDiscountNote: "On courses from the certified IU Academy.",
+    brandAmbassador: "Become an IU Brand Ambassador",
+    ambassadorDesc: "Are you active on social media and want to share your journey at IU? Become a Micro Affiliate Partner!",
+    whatAwaits: "What awaits you",
+    whatAwaitsDesc: "Fixed compensation for leads, performance platform, and access to the exclusive creator community.",
+    yourProfile: "Your Profile",
+    yourProfileDesc: "You showcase your student life on Instagram/TikTok and act as an ambassador.",
+    interested: "Interested? Contact us:",
+    channels: {
+      instagram: "Official news, campus updates, and stories for all students.",
+      instagramCareer: "Career tips, job fairs, and success stories.",
+      linkedin: "Professional network for students, alumni, and partners.",
+      facebook: "Community exchange and discussions about studying.",
+      youtube: "Study info, webinars, and insights into campus life.",
+      twitter: "Short updates about dual studies.",
+      tiktok: "Short videos, life hacks, and entertainment about studying.",
+      website: "Central hub for all official information.",
+    },
+    faculty: {
+      unplugged: "Dr. Florian Perst (Academic Lecturer Business & Academic Writing): Insights, tips, and motivation.",
+      wissenschaftlich: "Tips & tricks from Prof. Dr. Müller on writing term papers.",
+      mathe: "Additional explanation videos and exercises from Prof. Schmidt.",
+      tech: "Current trends in IT, curated by Prof. Weber.",
+    },
+    tags: {
+      instagram: "Instagram",
+      learning: "Learning Methods",
+      course: "Course Support",
+      expertise: "Expertise",
+    },
+  },
+};
 
 export default function SocialMedia() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+
   const officialChannels = [
     {
       name: "Instagram (IU Internationale Hochschule)",
@@ -8,7 +116,7 @@ export default function SocialMedia() {
       icon: Instagram,
       color: "text-pink-600",
       bgColor: "bg-pink-100 dark:bg-pink-900/20",
-      description: "Offizielle News, Campus-Updates und Stories für alle Studierenden."
+      description: t.channels.instagram
     },
     {
       name: "Instagram (IU Career)",
@@ -16,7 +124,7 @@ export default function SocialMedia() {
       icon: Instagram,
       color: "text-purple-600",
       bgColor: "bg-purple-100 dark:bg-purple-900/20",
-      description: "Karrieretipps, Jobmessen und Erfolgsgeschichten."
+      description: t.channels.instagramCareer
     },
     {
       name: "LinkedIn",
@@ -24,7 +132,7 @@ export default function SocialMedia() {
       icon: Linkedin,
       color: "text-blue-700",
       bgColor: "bg-blue-100 dark:bg-blue-900/20",
-      description: "Professionelles Netzwerk für Studierende, Alumni und Partner."
+      description: t.channels.linkedin
     },
     {
       name: "Facebook",
@@ -32,7 +140,7 @@ export default function SocialMedia() {
       icon: Facebook,
       color: "text-blue-600",
       bgColor: "bg-blue-100 dark:bg-blue-900/20",
-      description: "Community-Austausch und Diskussionen rund ums Studium."
+      description: t.channels.facebook
     },
     {
       name: "YouTube",
@@ -40,7 +148,7 @@ export default function SocialMedia() {
       icon: Youtube,
       color: "text-red-600",
       bgColor: "bg-red-100 dark:bg-red-900/20",
-      description: "Studieninfos, Webinare und Einblicke in den Campus-Alltag."
+      description: t.channels.youtube
     },
     {
       name: "X (Twitter)",
@@ -64,7 +172,7 @@ export default function SocialMedia() {
       ),
       color: "text-slate-900 dark:text-slate-100",
       bgColor: "bg-slate-100 dark:bg-slate-800",
-      description: "Kurznachrichten und Updates zum dualen Studium."
+      description: t.channels.twitter
     },
     {
       name: "TikTok",
@@ -87,7 +195,7 @@ export default function SocialMedia() {
       ),
       color: "text-slate-900 dark:text-slate-100",
       bgColor: "bg-slate-100 dark:bg-slate-800",
-      description: "Kurze Videos, Lifehacks und Unterhaltung rund ums Studium."
+      description: t.channels.tiktok
     },
     {
       name: "IU Website",
@@ -95,7 +203,7 @@ export default function SocialMedia() {
       icon: Globe,
       color: "text-blue-600",
       bgColor: "bg-blue-50 dark:bg-blue-900/10",
-      description: "Zentrale Anlaufstelle für alle offiziellen Informationen."
+      description: t.channels.website
     }
   ];
 
@@ -104,37 +212,37 @@ export default function SocialMedia() {
       title: "Studium Unplugged",
       url: "https://www.instagram.com/studium_unplugged?igsh=MWlsOWVvZndlbGs3aA==",
       icon: Instagram,
-      description: "Dr. Florian Perst (Academic Lecturer Business & Wissenschaftliches Arbeiten): Einblicke, Tipps und Motivation.",
+      description: t.faculty.unplugged,
       color: "text-pink-600",
       bgColor: "bg-pink-100 dark:bg-pink-900/20",
-      tag: "Instagram"
+      tag: t.tags.instagram
     },
     {
-      title: "Wissenschaftliches Arbeiten",
+      title: language === "de" ? "Wissenschaftliches Arbeiten" : "Academic Writing",
       url: "#",
       icon: BookOpen,
-      description: "Tipps & Tricks von Prof. Dr. Müller zum Schreiben von Hausarbeiten.",
+      description: t.faculty.wissenschaftlich,
       color: "text-emerald-600",
       bgColor: "bg-emerald-100 dark:bg-emerald-900/20",
-      tag: "Lernmethoden"
+      tag: t.tags.learning
     },
     {
-      title: "Mathe-Support Kanal",
+      title: language === "de" ? "Mathe-Support Kanal" : "Math Support Channel",
       url: "#",
       icon: Lightbulb,
-      description: "Zusätzliche Erklärvideos und Übungen von Prof. Schmidt.",
+      description: t.faculty.mathe,
       color: "text-amber-600",
       bgColor: "bg-amber-100 dark:bg-amber-900/20",
-      tag: "Kursbegleitung"
+      tag: t.tags.course
     },
     {
       title: "Tech & Innovation Blog",
       url: "#",
       icon: GraduationCap,
-      description: "Aktuelle Trends aus der IT-Welt, kuratiert von Prof. Weber.",
+      description: t.faculty.tech,
       color: "text-indigo-600",
       bgColor: "bg-indigo-100 dark:bg-indigo-900/20",
-      tag: "Fachwissen"
+      tag: t.tags.expertise
     }
   ];
 
@@ -142,9 +250,9 @@ export default function SocialMedia() {
     <div className="max-w-6xl mx-auto space-y-12 py-8">
       {/* Header */}
       <div className="space-y-2">
-        <h1 className="text-4xl font-black text-foreground">Social Media & Kanäle</h1>
+        <h1 className="text-4xl font-black text-foreground">{t.title}</h1>
         <p className="text-muted-foreground text-lg max-w-2xl">
-          Hier findest du alle wichtigen Verbindungen – von offiziellen Hochschul-News bis hin zu exklusiven Inhalten deiner Dozenten.
+          {t.subtitle}
         </p>
       </div>
 
@@ -155,8 +263,8 @@ export default function SocialMedia() {
             <Globe className="w-6 h-6 text-primary" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">Offizielle Kanäle der IU</h2>
-            <p className="text-muted-foreground text-sm">Zentrale Übersicht für Studierende, Mitarbeitende und Partner</p>
+            <h2 className="text-2xl font-bold text-foreground">{t.officialChannels}</h2>
+            <p className="text-muted-foreground text-sm">{t.officialSubtitle}</p>
           </div>
         </div>
         
@@ -197,8 +305,8 @@ export default function SocialMedia() {
               <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">Kanäle von Lehrenden</h2>
-              <p className="text-muted-foreground text-sm">Fachbezogene Inhalte, Tipps und Zusatzmaterial von deinen Professoren</p>
+              <h2 className="text-2xl font-bold text-foreground">{t.facultyChannels}</h2>
+              <p className="text-muted-foreground text-sm">{t.facultySubtitle}</p>
             </div>
           </div>
 
@@ -226,13 +334,14 @@ export default function SocialMedia() {
                   {channel.description}
                 </p>
                 <div className="flex items-center text-sm font-semibold text-primary group-hover:translate-x-1 transition-transform">
-                  Zum Kanal <span className="ml-1">→</span>
+                  {t.toChannel} <span className="ml-1">→</span>
                 </div>
               </a>
             ))}
           </div>
         </div>
       </section>
+
       {/* Alumni Community Section */}
       <section>
         <div className="py-6">
@@ -241,8 +350,8 @@ export default function SocialMedia() {
               <Users className="w-6 h-6 text-slate-900 dark:text-white" />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">IU Alumni Community</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-sm">Bleib vernetzt und profitiere von exklusiven Vorteilen</p>
+              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t.alumniCommunity}</h2>
+              <p className="text-slate-600 dark:text-slate-300 text-sm">{t.alumniSubtitle}</p>
             </div>
           </div>
 
@@ -253,10 +362,10 @@ export default function SocialMedia() {
               <div className="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl p-6 hover:shadow-md dark:hover:bg-white/15 transition-all">
                 <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
                   <Globe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  IU Connect Platform
+                  {t.iuConnect}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 leading-relaxed">
-                  Werde Teil der Community auf <strong>connect.iu.de</strong>. Finde ehemalige Kommilitonen über das Mitgliederverzeichnis, filtere nach Stadt oder Studiengang und teile deine Erfahrungen.
+                  {t.iuConnectDesc}
                 </p>
                 <div className="flex gap-3">
                   <a 
@@ -265,7 +374,7 @@ export default function SocialMedia() {
                     rel="noopener noreferrer"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors"
                   >
-                    Jetzt registrieren
+                    {t.registerNow}
                   </a>
                   <a 
                     href="https://www.linkedin.com/groups/152020/" 
@@ -274,7 +383,7 @@ export default function SocialMedia() {
                     className="inline-flex items-center gap-2 px-4 py-2 bg-[#0077b5] hover:bg-[#006396] text-white rounded-lg text-sm font-semibold transition-colors"
                   >
                     <Linkedin className="w-4 h-4" />
-                    LinkedIn Gruppe
+                    {t.linkedinGroup}
                   </a>
                 </div>
               </div>
@@ -283,24 +392,24 @@ export default function SocialMedia() {
               <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/50 dark:to-emerald-800/30 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-6">
                 <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
                   <Trophy className="w-5 h-5" />
-                  Exklusive Alumni-Rabatte
+                  {t.alumniDiscounts}
                 </h3>
                 
                 <div className="space-y-4">
                   <div className="bg-white dark:bg-black/20 rounded-xl p-4 border border-emerald-100 dark:border-white/5 shadow-sm dark:shadow-none">
                     <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold text-lg text-slate-900 dark:text-white">15% auf Master & MBA</span>
+                      <span className="font-bold text-lg text-slate-900 dark:text-white">{t.masterDiscount}</span>
                       <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs px-2 py-1 rounded font-mono border border-emerald-200 dark:border-transparent">Koopalumni</span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Gültig für Fernstudium Masterprogramme ab 60 ECTS.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.masterDiscountNote}</p>
                   </div>
 
                   <div className="bg-white dark:bg-black/20 rounded-xl p-4 border border-emerald-100 dark:border-white/5 shadow-sm dark:shadow-none">
                     <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold text-lg text-slate-900 dark:text-white">10% auf Weiterbildungen</span>
+                      <span className="font-bold text-lg text-slate-900 dark:text-white">{t.trainingDiscount}</span>
                       <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs px-2 py-1 rounded font-mono border border-emerald-200 dark:border-transparent">ALUMNIUPS10</span>
                     </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">Auf Kurse der zertifizierten IU Akademie.</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.trainingDiscountNote}</p>
                   </div>
                 </div>
               </div>
@@ -311,10 +420,10 @@ export default function SocialMedia() {
               <div className="mb-6">
                 <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
                   <Presentation className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  Werde IU Brand Ambassador
+                  {t.brandAmbassador}
                 </h3>
                 <p className="text-slate-600 dark:text-slate-300 text-sm">
-                  Du bist auf Social Media aktiv und möchtest deinen Weg an der IU teilen? Werde Micro Affiliate Partner!
+                  {t.ambassadorDesc}
                 </p>
               </div>
 
@@ -324,8 +433,8 @@ export default function SocialMedia() {
                     <Users className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">Das erwartet dich</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Feste Vergütung für Leads, Performance-Plattform und Zugang zur exklusiven Creator-Community.</p>
+                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{t.whatAwaits}</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t.whatAwaitsDesc}</p>
                   </div>
                 </div>
                 
@@ -334,14 +443,14 @@ export default function SocialMedia() {
                     <Globe className="w-4 h-4 text-purple-600 dark:text-purple-300" />
                   </div>
                   <div>
-                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">Dein Profil</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">Du zeigst deinen Studienalltag auf Instagram/TikTok und trittst als Botschafter:in auf.</p>
+                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{t.yourProfile}</h4>
+                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t.yourProfileDesc}</p>
                   </div>
                 </div>
               </div>
 
               <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/10">
-                <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">Interesse geweckt? Schreib uns:</p>
+                <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">{t.interested}</p>
                 <a 
                   href="mailto:micro-affiliate@iu.org"
                   className="block w-full text-center py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold rounded-lg transition-colors"

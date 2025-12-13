@@ -28,6 +28,10 @@ model User {
   studyProgram    String?
   validUntil      DateTime?
   
+  // Semester tracking for onboarding
+  semester        Int       @default(1)  // Current semester (1 = first semester)
+  totalSemesters  Int       @default(6)  // Total semesters in program
+  
   marks           Mark[]
   files           File[]
   studienplan     Studienplan?
