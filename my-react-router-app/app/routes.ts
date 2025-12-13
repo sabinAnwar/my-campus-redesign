@@ -51,16 +51,11 @@ export default [
     route("tasks", "routes/_app.tasks.tsx"),
     route("files/recent", "routes/_app.files.recent.tsx"),
     route("social-media", "routes/_app.social-media.tsx"),
-    route("basic-test", "routes/_app.basic-test.tsx"),
-    route("form-test", "routes/_app.form-test.tsx"),
-    route("console-diagnostic", "routes/_app.console-diagnostic.tsx"),
+
     route("notenverwaltung", "routes/_app.notenverwaltung.tsx"),
     route("praxisbericht2", "routes/_app.praxisbericht2.tsx"),
 
-    route("toast-direct", "routes/_app.toast-direct.tsx"),
-    route("toast-test", "routes/_app.toast-test.tsx"),
     route("settings", "routes/_app.settings.tsx"),
-    route("redux-demo", "routes/_app.redux-demo.tsx"),
     route("library", "routes/_app.library.tsx"),
     route("vertiefungswahl", "routes/_app.vertiefungswahl.tsx"),
     route("klausuranmeldung", "routes/_app.klausuranmeldung.tsx"),
