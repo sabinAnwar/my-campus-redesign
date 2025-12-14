@@ -5,6 +5,80 @@ import { apiGet, apiJson } from "../lib/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { CalendarRange, ListChecks, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, CalendarClock, GraduationCap, ClipboardList, FileEdit, BadgeCheck, Smile } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
+
+// Translations
+const TRANSLATIONS = {
+  de: {
+    title: "Praxisberichte",
+    subtitle: "Dokumentiere und reiche deine wöchentlichen Praxisberichte ein.",
+    reminder: "Praxisbericht Erinnerung",
+    reminderActive: "Aktiv: tägliche E-Mail um",
+    reminderDisabled: "Deaktiviert: aktiviere tägliche Erinnerung in den Einstellungen",
+    openSettings: "Einstellungen öffnen",
+    submitted: "Eingereicht",
+    mustSubmit: "Muss eingereicht werden",
+    drafts: "Entwürfe",
+    reviewed: "Geprüft",
+    klausurWeeks: "Klausurwochen",
+    completion: "Fertigstellung",
+    satisfied: "Zufrieden",
+    calendar: "Kalender",
+    list: "Liste",
+    goToCurrentWeek: "Zur aktuellen Woche",
+    newDraft: "Neuer Entwurf",
+    all: "Alle",
+    due: "Fällig",
+    draft: "Entwurf",
+    klausurphase: "Klausurphase",
+    month: "Monat",
+    semester: "Semester",
+    legend: "Legende",
+    mustSubmitLegend: "Muss eingereicht werden (kein Bericht)",
+    draftLegend: "Entwurf",
+    submittedLegend: "Eingereicht (grün)",
+    reviewedLegend: "Geprüft (Prüfungsamt)",
+    klausurphaseLegend: "Klausurphase",
+    editedLegend: "Bearbeitet in letzten 48h",
+    noReports: "Noch keine Berichte vorhanden.",
+    colorsReflect: "Farben zeigen den wöchentlichen Status",
+  },
+  en: {
+    title: "Practical Reports",
+    subtitle: "Document and submit your weekly practical work reports.",
+    reminder: "Practical Report Reminder",
+    reminderActive: "Active: daily email at",
+    reminderDisabled: "Disabled: enable daily reminder in settings",
+    openSettings: "Open Settings",
+    submitted: "Submitted",
+    mustSubmit: "Must be submitted",
+    drafts: "Drafts",
+    reviewed: "Reviewed",
+    klausurWeeks: "Exam Weeks",
+    completion: "Completion",
+    satisfied: "Satisfied",
+    calendar: "Calendar",
+    list: "List",
+    goToCurrentWeek: "Go to current week",
+    newDraft: "New draft",
+    all: "All",
+    due: "Due",
+    draft: "Draft",
+    klausurphase: "Exam Phase",
+    month: "Month",
+    semester: "Semester",
+    legend: "Legend",
+    mustSubmitLegend: "Must be submitted (no report)",
+    draftLegend: "Draft",
+    submittedLegend: "Submitted (green)",
+    reviewedLegend: "Reviewed (Exam Office)",
+    klausurphaseLegend: "Exam Phase",
+    editedLegend: "Edited in last 48h",
+    noReports: "No reports to show yet.",
+    colorsReflect: "Colors reflect weekly status",
+  },
+};
+
 
 // Helpers
 function getISOWeekKey(date: Date) {
@@ -77,6 +151,9 @@ function getSemesterWeekKeys(semStartYear: number, semStartMonth: number) {
 }
 
 export default function Praxisbericht2() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
+  
   const [view, setView] = useState("calendar");
   const [reports, setReports] = useState<any[]>([]);
   const [activeWeekKey, setActiveWeekKey] = useState<string | null>(null);
@@ -193,10 +270,10 @@ export default function Praxisbericht2() {
       <div className="bg-white dark:bg-slate-900/70 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
         <div className="max-w-7xl mx-auto px-6 py-10">
           <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-            Praxisberichte
+            {t.title}
           </h1>
           <p className="text-slate-600 dark:text-slate-300">
-            Document and submit your weekly practical work reports.
+            {t.subtitle}
           </p>
         </div>
       </div>
@@ -206,18 +283,17 @@ export default function Praxisbericht2() {
           <div className="mb-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 flex items-center justify-between transition-colors">
             <div>
               <div className="font-semibold text-slate-900 dark:text-white">
-                Praxisbericht Erinnerung
+                {t.reminder}
               </div>
               <div className="text-sm text-slate-600 dark:text-slate-300">
                 {reminderEnabled ? (
                   <>
-                    Aktiv: tägliche E-Mail um{" "}
+                    {t.reminderActive}{" "}
                     {String(reminderHour).padStart(2, "0")}:00
                   </>
                 ) : (
                   <>
-                    Deaktiviert: aktiviere tägliche Erinnerung in den
-                    Einstellungen
+                    {t.reminderDisabled}
                   </>
                 )}
               </div>
@@ -226,7 +302,7 @@ export default function Praxisbericht2() {
               onClick={() => navigate("/settings")}
               className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
             >
-              Einstellungen öffnen
+              {t.openSettings}
             </button>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
@@ -235,7 +311,7 @@ export default function Praxisbericht2() {
                 <CheckCircle size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Submitted
+                {t.submitted}
               </div>
               <div className="text-3xl font-bold text-emerald-700">
                 {stats.submitted}
@@ -246,7 +322,7 @@ export default function Praxisbericht2() {
                 <AlertCircle size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Must be submitted
+                {t.mustSubmit}
               </div>
               <div className="text-3xl font-bold text-amber-700">
                 {stats.due}
@@ -257,7 +333,7 @@ export default function Praxisbericht2() {
                 <FileEdit size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Drafts
+                {t.drafts}
               </div>
               <div className="text-3xl font-bold text-blue-700">
                 {stats.drafts}
@@ -268,7 +344,7 @@ export default function Praxisbericht2() {
                 <BadgeCheck size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Reviewed
+                {t.reviewed}
               </div>
               <div className="text-3xl font-bold text-teal-700">
                 {stats.approved}
@@ -279,7 +355,7 @@ export default function Praxisbericht2() {
                 <CalendarClock size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Klausur Weeks
+                {t.klausurWeeks}
               </div>
               <div className="text-3xl font-bold text-zinc-700">
                 {stats.klausur}
@@ -290,7 +366,7 @@ export default function Praxisbericht2() {
                 <GraduationCap size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Completion
+                {t.completion}
               </div>
               <div className="text-3xl font-bold text-emerald-600">
                 {stats.completion}%
@@ -301,7 +377,7 @@ export default function Praxisbericht2() {
                 <Smile size={18} />
               </div>
               <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                Satisfied
+                {t.satisfied}
               </div>
               <div className="text-3xl font-bold text-emerald-700">
                 {stats.satisfied}
@@ -319,7 +395,7 @@ export default function Praxisbericht2() {
                     : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
-                <CalendarRange size={18} className="inline mr-2" /> Calendar
+                <CalendarRange size={18} className="inline mr-2" />{t.calendar}
               </button>
               <button
                 onClick={() => setView("list")}
@@ -329,7 +405,7 @@ export default function Praxisbericht2() {
                     : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
                 }`}
               >
-                <ListChecks size={18} className="inline mr-2" /> List
+                <ListChecks size={18} className="inline mr-2" />{t.list}
               </button>
             </div>
             <div className="flex items-center gap-2">
@@ -345,7 +421,7 @@ export default function Praxisbericht2() {
                   setActiveWeekKey(wk);
                 }}
               >
-                Go to current week
+                {t.goToCurrentWeek}
               </button>
               <button
                 className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
@@ -356,7 +432,7 @@ export default function Praxisbericht2() {
                   setActiveWeekKey(wk);
                 }}
               >
-                New draft
+                {t.newDraft}
               </button>
             </div>
           </div>
@@ -364,12 +440,12 @@ export default function Praxisbericht2() {
           {/* Status filter chips */}
           <div className="flex items-center gap-2 mb-2">
             {[
-              { k: "ALL", label: "All" },
-              { k: "DUE", label: "Due" },
-              { k: "DRAFT", label: "Draft" },
-              { k: "SUBMITTED", label: "Submitted" },
-              { k: "APPROVED", label: "Reviewed" },
-              { k: "KLAUSURPHASE", label: "Klausurphase" },
+              { k: "ALL", label: t.all },
+              { k: "DUE", label: t.due },
+              { k: "DRAFT", label: t.draft },
+              { k: "SUBMITTED", label: t.submitted },
+              { k: "APPROVED", label: t.reviewed },
+              { k: "KLAUSURPHASE", label: t.klausurphase },
             ].map((f) => (
               <button
                 key={f.k}
@@ -404,7 +480,7 @@ export default function Praxisbericht2() {
                         }`}
                         onClick={() => setMode("month")}
                       >
-                        Month
+                        {t.month}
                       </button>
                       <button
                         className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors ${
@@ -414,7 +490,7 @@ export default function Praxisbericht2() {
                         }`}
                         onClick={() => setMode("semester")}
                       >
-                        Semester
+                        {t.semester}
                       </button>
                     </div>
                     {mode === "month" ? (

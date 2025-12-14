@@ -106,6 +106,10 @@ const TRANSLATIONS = {
     campusInfo: "Campus Informationen",
     noCampusSelected: "Kein Campus ausgewählt",
     selectCampus: "Campus auswählen",
+    writePraxisReport: "Praxisbericht schreiben",
+    viewSchedule: "Stundenplan ansehen",
+    semesterEnd: "Semesterende",
+    from: "Ab",
   },
   en: {
     goodMorning: "Good morning",
@@ -158,6 +162,10 @@ const TRANSLATIONS = {
     campusInfo: "Campus Information",
     noCampusSelected: "No campus selected",
     selectCampus: "Select Campus",
+    writePraxisReport: "Write Practice Report",
+    viewSchedule: "View Schedule",
+    semesterEnd: "Semester End",
+    from: "From",
   },
 };
 
@@ -938,12 +946,12 @@ export default function Dashboard() {
                       {nextBlock
                         ? STUDY_PLANS[0].paletteOverrides?.[nextBlock.status]
                             ?.label || DEFAULT_PALETTE[nextBlock.status].label
-                        : "Semesterende"}
+                        : t.semesterEnd}
                     </p>
                     <p className="text-xs text-slate-500 dark:text-slate-400">
-                      Ab{" "}
+                      {t.from}{" "}
                       {nextBlock
-                        ? new Date(nextBlock.start).toLocaleDateString("de-DE")
+                        ? new Date(nextBlock.start).toLocaleDateString(language === "de" ? "de-DE" : "en-US")
                         : "-"}
                     </p>
                   </div>
@@ -956,7 +964,7 @@ export default function Dashboard() {
                   className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-blue-600 dark:bg-blue-500 text-white rounded-xl font-medium hover:bg-blue-700 dark:hover:bg-blue-400 transition-all shadow-lg shadow-blue-500/20 hover:shadow-blue-500/30 active:scale-95"
                 >
                   <FileText className="w-4 h-4" />
-                  Praxisbericht schreiben
+                  {t.writePraxisReport}
                 </Link>
               )}
               {(currentStatus === "theoriephase" ||
@@ -966,7 +974,7 @@ export default function Dashboard() {
                   className="flex items-center justify-center gap-2 w-full py-2.5 px-4 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 rounded-xl font-medium hover:bg-slate-50 dark:hover:bg-slate-750 transition-all active:scale-95"
                 >
                   <CalendarDays className="w-4 h-4" />
-                  Stundenplan ansehen
+                  {t.viewSchedule}
                 </Link>
               )}
             </div>
