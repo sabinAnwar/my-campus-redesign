@@ -139,7 +139,7 @@ export default function TeacherUpload() {
                     value={formData.course}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-cyan-600 focus:outline-none font-semibold"
+                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-iu-blue focus:outline-none font-semibold"
                   >
                     <option value="">-- Wähle ein Modul --</option>
                     {MODULES.map(module => (
@@ -157,7 +157,7 @@ export default function TeacherUpload() {
                     value={formData.title}
                     onChange={handleInputChange}
                     required
-                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-cyan-600 focus:outline-none font-semibold"
+                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-iu-blue focus:outline-none font-semibold"
                     placeholder="z.B. Vorlesung 1 - Einführung"
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function TeacherUpload() {
                     value={formData.description}
                     onChange={handleInputChange}
                     rows={3}
-                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-cyan-600 focus:outline-none font-semibold resize-none"
+                    className="w-full px-4 py-3 border-2 border-slate-300 rounded-lg focus:border-iu-blue focus:outline-none font-semibold resize-none"
                     placeholder="Kurze Beschreibung des Materials..."
                   />
                 </div>
@@ -185,8 +185,8 @@ export default function TeacherUpload() {
                     onDrop={handleDrop}
                     className={`rounded-xl border-4 border-dashed p-8 text-center transition ${
                       dragActive
-                        ? 'border-cyan-600 bg-cyan-50'
-                        : 'border-slate-300 bg-slate-50 hover:border-cyan-400'
+                        ? 'border-iu-blue bg-cyan-50'
+                        : 'border-slate-300 bg-slate-50 hover:border-iu-blue'
                     }`}
                   >
                     {formData.file ? (
@@ -215,7 +215,7 @@ export default function TeacherUpload() {
                             accept=".pdf,.doc,.docx,.ppt,.pptx,.zip"
                             className="hidden"
                           />
-                          <span className="inline-block px-6 py-2 bg-gradient-to-r from-cyan-600 to-blue-600 hover:from-cyan-700 hover:to-blue-700 text-white font-bold rounded-lg transition cursor-pointer">
+                          <span className="inline-block px-6 py-2 bg-gradient-to-r from-iu-blue to-blue-600 hover:from-iu-blue hover:to-blue-700 text-white font-bold rounded-lg transition cursor-pointer">
                             Datei wählen
                           </span>
                         </label>
@@ -230,7 +230,7 @@ export default function TeacherUpload() {
                 {/* Submit Button */}
                 <button
                   type="submit"
-                  className="w-full bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-lg transition shadow-lg text-lg"
+                  className="w-full bg-gradient-to-r from-green-600 to-iu-blue hover:from-green-700 hover:to-emerald-700 text-white font-bold py-4 px-6 rounded-lg transition shadow-lg text-lg"
                 >
                   ✅ Material hochladen
                 </button>
@@ -283,7 +283,7 @@ export default function TeacherUpload() {
           {/* Sidebar */}
           <div className="space-y-6">
             {/* Upload Guidelines */}
-            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6 border-2 border-cyan-300">
+            <div className="bg-gradient-to-br from-cyan-50 to-blue-50 rounded-xl p-6 border-2 border-iu-blue">
               <h3 className="text-xl font-black text-slate-900 mb-4">📋 Richtlinien</h3>
               <ul className="space-y-3 text-sm">
                 <li className="flex items-start gap-2">

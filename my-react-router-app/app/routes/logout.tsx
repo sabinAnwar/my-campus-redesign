@@ -46,7 +46,7 @@ export default function Logout() {
 
       {/* Floating Gradient Orbs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 dark:opacity-10 animate-blob"></div>
+        <div className="absolute -top-40 -left-40 w-80 h-80 bg-gradient-to-br from-iu-blue to-blue-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 dark:opacity-10 animate-blob"></div>
         <div className="absolute -top-40 -right-40 w-80 h-80 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 dark:opacity-10 animate-blob animation-delay-2000"></div>
         <div className="absolute -bottom-40 left-1/2 -translate-x-1/2 w-80 h-80 bg-gradient-to-br from-purple-400 to-indigo-500 rounded-full mix-blend-multiply dark:mix-blend-screen filter blur-3xl opacity-20 dark:opacity-10 animate-blob animation-delay-4000"></div>
       </div>
@@ -54,13 +54,13 @@ export default function Logout() {
       {/* Main Content */}
       <div className="relative z-10 w-full max-w-lg mx-4 animate-fadeInScale">
         {/* Glass Card */}
-        <div className="relative backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-2xl dark:shadow-cyan-500/5 border border-white/20 dark:border-slate-700/50 p-12 overflow-hidden">
+        <div className="relative backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl shadow-2xl dark:shadow-iu-blue/5 border border-white/20 dark:border-slate-700/50 p-12 overflow-hidden">
           {/* Shine Effect */}
-          <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-cyan-500/5 dark:via-transparent dark:to-purple-500/5 opacity-50"></div>
+          <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-iu-blue/5 dark:via-transparent dark:to-purple-500/5 opacity-50"></div>
 
           {/* Floating Sparkles */}
           <div className="absolute top-8 right-8 animate-float">
-            <Sparkles className="w-5 h-5 text-cyan-500 dark:text-cyan-400" />
+            <Sparkles className="w-5 h-5 text-iu-blue dark:text-iu-blue" />
           </div>
           <div className="absolute bottom-8 left-8 animate-float animation-delay-1000">
             <Sparkles className="w-4 h-4 text-orange-500 dark:text-orange-400" />
@@ -71,18 +71,18 @@ export default function Logout() {
             <div className="flex justify-center mb-8">
               <div className="relative">
                 {/* Outer Glow Ring */}
-                <div className="absolute -inset-4 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 rounded-full opacity-30 dark:opacity-20 blur-lg animate-pulse-slow"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-iu-blue via-purple-500 to-orange-500 rounded-full opacity-30 dark:opacity-20 blur-lg animate-pulse-slow"></div>
 
                 {/* Rotating Ring */}
-                <div className="absolute -inset-2 bg-gradient-to-r from-cyan-500 via-purple-500 to-orange-500 rounded-full opacity-50 dark:opacity-30 animate-spin-slow"></div>
+                <div className="absolute -inset-2 bg-gradient-to-r from-iu-blue via-purple-500 to-orange-500 rounded-full opacity-50 dark:opacity-30 animate-spin-slow"></div>
 
                 {/* Main Icon Container */}
-                <div className="relative bg-gradient-to-br from-cyan-500 via-blue-600 to-purple-600 dark:from-cyan-600 dark:via-blue-700 dark:to-purple-700 p-8 rounded-full shadow-xl">
+                <div className="relative bg-gradient-to-br from-iu-blue via-blue-600 to-purple-600 dark:from-iu-blue dark:via-blue-700 dark:to-purple-700 p-8 rounded-full shadow-xl">
                   <LogOut className="w-12 h-12 text-white animate-pulse" />
                 </div>
 
                 {/* Success Badge */}
-                <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-green-400 to-emerald-500 dark:from-green-500 dark:to-emerald-600 p-2.5 rounded-full shadow-lg border-4 border-white dark:border-slate-900 animate-bounceIn animation-delay-600">
+                <div className="absolute -bottom-1 -right-1 bg-gradient-to-br from-green-400 to-iu-blue dark:from-green-500 dark:to-iu-blue p-2.5 rounded-full shadow-lg border-4 border-white dark:border-slate-900 animate-bounceIn animation-delay-600">
                   <CheckCircle2 className="w-5 h-5 text-white" />
                 </div>
               </div>
@@ -91,7 +91,7 @@ export default function Logout() {
             {/* Title Section */}
             <div className="text-center mb-8 space-y-3">
               <h1 className="text-4xl font-black tracking-tight">
-                <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-cyan-100 dark:to-white bg-clip-text text-transparent">
+                <span className="bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 dark:from-white dark:via-iu-blue dark:to-white bg-clip-text text-transparent">
                   Signing Out
                 </span>
               </h1>
@@ -108,17 +108,17 @@ export default function Logout() {
               {/* Animated Progress Bar */}
               <div className="relative">
                 <div className="h-2.5 bg-slate-200 dark:bg-slate-800 rounded-full overflow-hidden shadow-inner">
-                  <div className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-500 rounded-full animate-progressBar shadow-lg shadow-cyan-500/50 dark:shadow-cyan-400/30"></div>
+                  <div className="h-full bg-gradient-to-r from-iu-blue via-blue-500 to-purple-600 dark:from-iu-blue dark:via-blue-400 dark:to-purple-500 rounded-full animate-progressBar shadow-lg shadow-iu-blue/50 dark:shadow-iu-blue/30"></div>
                 </div>
                 {/* Glow Effect on Bar */}
-                <div className="absolute inset-0 h-2.5 bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-600 dark:from-cyan-400 dark:via-blue-400 dark:to-purple-500 rounded-full opacity-50 blur-sm animate-progressBar"></div>
+                <div className="absolute inset-0 h-2.5 bg-gradient-to-r from-iu-blue via-blue-500 to-purple-600 dark:from-iu-blue dark:via-blue-400 dark:to-purple-500 rounded-full opacity-50 blur-sm animate-progressBar"></div>
               </div>
 
               {/* Status Messages */}
               <div className="flex items-center justify-between px-1">
                 <div className="flex items-center space-x-2">
                   <div className="flex space-x-1.5">
-                    <span className="w-2 h-2 bg-cyan-500 dark:bg-cyan-400 rounded-full animate-bounce shadow-sm shadow-cyan-500/50"></span>
+                    <span className="w-2 h-2 bg-iu-blue dark:bg-iu-blue rounded-full animate-bounce shadow-sm shadow-iu-blue/50"></span>
                     <span className="w-2 h-2 bg-blue-500 dark:bg-blue-400 rounded-full animate-bounce animation-delay-200 shadow-sm shadow-blue-500/50"></span>
                     <span className="w-2 h-2 bg-purple-500 dark:bg-purple-400 rounded-full animate-bounce animation-delay-400 shadow-sm shadow-purple-500/50"></span>
                   </div>

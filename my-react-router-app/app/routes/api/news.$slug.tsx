@@ -12,6 +12,9 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
   const slug = params.slug ?? "";
 
   try {
+    const url = new URL(request.url);
+    const lang = url.searchParams.get("lang") || "de";
+
     let item = await prisma.news.findUnique({ where: { slug } });
     if (!item && /^\d+$/.test(slug)) {
       item = await prisma.news.findUnique({ where: { id: Number(slug) } });
@@ -22,7 +25,16 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         headers: { "Content-Type": "application/json" },
       });
     }
-    return new Response(JSON.stringify({ item }), {
+
+    const translatedItem = {
+      ...item,
+      title: lang === "en" ? (item.titleEn || item.title) : (item.titleDe || item.title),
+      excerpt: lang === "en" ? (item.excerptEn || item.excerpt) : (item.excerptDe || item.excerpt),
+      content: lang === "en" ? (item.contentEn || item.content) : (item.contentDe || item.content),
+      category: lang === "en" ? (item.categoryEn || item.category) : (item.categoryDe || item.category),
+    };
+
+    return new Response(JSON.stringify({ item: translatedItem }), {
       headers: { "Content-Type": "application/json" },
     });
   } catch (err) {
