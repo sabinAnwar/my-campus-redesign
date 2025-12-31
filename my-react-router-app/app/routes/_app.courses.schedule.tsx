@@ -17,7 +17,7 @@ import {
   Eye,
   EyeOff,
   Download,
-  AlertTriangle,
+  List,
   BookOpen,
   MessageCircleQuestion,
   Presentation,
@@ -27,6 +27,7 @@ import {
   MessageSquare,
   PenTool,
   ExternalLink,
+  X,
   type LucideIcon,
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
@@ -38,26 +39,52 @@ import {
   getMonthDays,
   startOfMonth,
   addMonths,
+  getStudyPlanByStudiengang,
   type DayStatus,
+  type StudyPlan,
 } from "~/lib/studyPlans";
 import { prisma } from "~/lib/prisma";
+import { getUserFromRequest } from "~/lib/auth.server";
+import type { LoaderFunctionArgs } from "react-router-dom";
 
-// Loader to fetch schedule events from database
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
-    // Get first user (in production, get from session)
-    const firstUser = await prisma.user.findFirst();
-    const userId = firstUser?.id;
+    let user = await getUserFromRequest(request);
+
+    // FALLBACK for development if no session
+    if (!user) {
+      user = await prisma.user.findUnique({
+        where: { email: "sabin.elanwar@iu-study.org" },
+      });
+    }
+
+    if (!user) return { events: [], userCourses: [], studiengangName: null };
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: {
+        studiengang: {
+          include: {
+            courses: true,
+          },
+        },
+      },
+    });
+
+    if (!dbUser) return { events: [], userCourses: [], studiengangName: null };
 
     let events: any[] = [];
+    let userCourses: { id: number; code: string; name: string }[] = [];
+    let studiengangName: string | null = dbUser.studiengang?.name || null;
 
-    if (userId) {
-      // Get all schedule events for this user
-      const dbEvents = await prisma.scheduleEvent.findMany({
-        where: { userId },
-        orderBy: [{ date: "asc" }, { startTime: "asc" }],
-      });
+    // First, check for existing schedule events in DB
+    const dbEvents = await prisma.scheduleEvent.findMany({
+      where: { userId: dbUser.id },
+      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+    });
 
+    if (dbEvents.length > 0) {
+      // Use existing schedule events
       events = dbEvents.map(
         (e: {
           id: number;
@@ -86,144 +113,32 @@ export const loader = async () => {
             zoomLink: isOnline
               ? `https://iu-online.zoom.us/j/${e.courseCode?.replace(/[^0-9]/g, "") || "123456789"}`
               : undefined,
-            isOptional:
-              e.eventType === "TUTORIUM" || e.eventType === "WORKSHOP",
+            isOptional: e.eventType === "TUTORIUM" || e.eventType === "Q&A",
           };
         }
       );
     }
 
-    return { events };
+    // Get user's courses from their Studiengang (Current Semester)
+    if (dbUser.studiengang?.courses) {
+      userCourses = dbUser.studiengang.courses
+        .filter((c: any) => c.semester === dbUser.semester)
+        .map((c: { id: number; code: string; name: string }) => ({
+          id: c.id,
+          code: c.code,
+          name: c.name,
+        }));
+    }
+
+    return { events, userCourses, studiengangName };
   } catch (error) {
     console.error("Error loading schedule events:", error);
-    return { events: [] };
+    return { events: [], userCourses: [], studiengangName: null };
   }
 };
 
-// Simple event type
-interface ScheduleEvent {
-  id: number;
-  title: string;
-  courseCode: string;
-  type:
-    | "Integriert"
-    | "Q&A"
-    | "Vorlesung"
-    | "Tutorium"
-    | "Workshop"
-    | "Prüfung";
-  date: string; // YYYY-MM-DD
-  startTime: string; // HH:mm
-  endTime: string; // HH:mm
-  location: string;
-  professor: string;
-  room?: string;
-  isOnline?: boolean;
-  zoomLink?: string;
-  isOptional?: boolean;
-}
-
-// Sample schedule data - in production, this would come from the database
-const SCHEDULE_EVENTS: ScheduleEvent[] = [
-  // Monday
-  {
-    id: 1,
-    title: "Webentwicklung",
-    courseCode: "DLBINGWP01",
-    type: "Integriert",
-    date: "2025-12-08",
-    startTime: "09:00",
-    endTime: "12:00",
-    location: "Hammerbrook",
-    professor: "Prof. Dr. Schmidt",
-    room: "Raum 2.14",
-    isOptional: false,
-  },
-  {
-    id: 2,
-    title: "Datenbanken Q&A",
-    courseCode: "DLBINGDB01",
-    type: "Q&A",
-    date: "2025-12-08",
-    startTime: "14:00",
-    endTime: "15:30",
-    location: "Online",
-    professor: "Prof. Dr. Müller",
-    isOnline: true,
-    isOptional: true,
-  },
-  // Tuesday
-  {
-    id: 3,
-    title: "Mathematik",
-    courseCode: "DLBINGMT01",
-    type: "Vorlesung",
-    date: "2025-12-09",
-    startTime: "10:00",
-    endTime: "11:30",
-    location: "Waterloohain",
-    professor: "Dr. Weber",
-    room: "Raum 3.22",
-    isOptional: false,
-  },
-  {
-    id: 4,
-    title: "E-Commerce",
-    courseCode: "DSBEC01",
-    type: "Integriert",
-    date: "2025-12-09",
-    startTime: "14:00",
-    endTime: "17:00",
-    location: "HH - Christoph-Probst-Weg",
-    professor: "Klein, Holger",
-    room: "2.54 Jenischhaus",
-    isOptional: false,
-  },
-  // Wednesday
-  {
-    id: 5,
-    title: "Game Design",
-    courseCode: "DLBINGDT01",
-    type: "Integriert",
-    date: "2025-12-10",
-    startTime: "09:00",
-    endTime: "12:00",
-    location: "Hammerbrook",
-    professor: "Prof. Dr. Nowak",
-    room: "Raum 2.14",
-    isOptional: false,
-  },
-  // Thursday
-  {
-    id: 6,
-    title: "Mathe Tutorium",
-    courseCode: "DLBINGMT01",
-    type: "Tutorium",
-    date: "2025-12-11",
-    startTime: "14:00",
-    endTime: "15:30",
-    location: "Online",
-    professor: "Tutor Meier",
-    isOnline: true,
-    zoomLink: "https://zoom.us/j/123456789",
-    isOptional: true,
-  },
-  // Friday
-  {
-    id: 7,
-    title: "Praxis-Workshop",
-    courseCode: "PRAXIS",
-    type: "Workshop",
-    date: "2025-12-12",
-    startTime: "10:00",
-    endTime: "14:00",
-    location: "Online",
-    professor: "Team Praxis",
-    isOnline: true,
-    zoomLink: "https://zoom.us/j/987654321",
-    isOptional: false,
-  },
-];
+import type { ScheduleEvent } from "~/types/schedule";
+export type { ScheduleEvent };
 
 // Get week dates
 function getWeekDates(date: Date): Date[] {
@@ -256,51 +171,6 @@ const TIME_SLOTS = [
   "17:00",
   "18:00",
 ];
-
-// German holidays for 2025/2026
-const GERMAN_HOLIDAYS: { date: string; name: string; nameEn: string }[] = [
-  // 2025
-  { date: "2025-01-01", name: "Neujahr", nameEn: "New Year" },
-  { date: "2025-04-18", name: "Karfreitag", nameEn: "Good Friday" },
-  { date: "2025-04-21", name: "Ostermontag", nameEn: "Easter Monday" },
-  { date: "2025-05-01", name: "Tag der Arbeit", nameEn: "Labour Day" },
-  { date: "2025-05-29", name: "Christi Himmelfahrt", nameEn: "Ascension Day" },
-  { date: "2025-06-09", name: "Pfingstmontag", nameEn: "Whit Monday" },
-  {
-    date: "2025-10-03",
-    name: "Tag der Deutschen Einheit",
-    nameEn: "German Unity Day",
-  },
-  { date: "2025-12-24", name: "Heiligabend", nameEn: "Christmas Eve" },
-  { date: "2025-12-25", name: "1. Weihnachtstag", nameEn: "Christmas Day" },
-  { date: "2025-12-26", name: "2. Weihnachtstag", nameEn: "Boxing Day" },
-  { date: "2025-12-31", name: "Silvester", nameEn: "New Year's Eve" },
-  // 2026
-  { date: "2026-01-01", name: "Neujahr", nameEn: "New Year" },
-  { date: "2026-04-03", name: "Karfreitag", nameEn: "Good Friday" },
-  { date: "2026-04-06", name: "Ostermontag", nameEn: "Easter Monday" },
-  { date: "2026-05-01", name: "Tag der Arbeit", nameEn: "Labour Day" },
-  { date: "2026-05-14", name: "Christi Himmelfahrt", nameEn: "Ascension Day" },
-  { date: "2026-05-25", name: "Pfingstmontag", nameEn: "Whit Monday" },
-  {
-    date: "2026-10-03",
-    name: "Tag der Deutschen Einheit",
-    nameEn: "German Unity Day",
-  },
-  { date: "2026-12-24", name: "Heiligabend", nameEn: "Christmas Eve" },
-  { date: "2026-12-25", name: "1. Weihnachtstag", nameEn: "Christmas Day" },
-  { date: "2026-12-26", name: "2. Weihnachtstag", nameEn: "Boxing Day" },
-  { date: "2026-12-31", name: "Silvester", nameEn: "New Year's Eve" },
-];
-
-// Helper to check if a date is a holiday
-function getHoliday(dateStr: string, language: string) {
-  const holiday = GERMAN_HOLIDAYS.find((h) => h.date === dateStr);
-  if (holiday) {
-    return language === "de" ? holiday.name : holiday.nameEn;
-  }
-  return null;
-}
 
 // Shape types for event visualization
 // Icon component for event type indicators using Lucide icons
@@ -336,66 +206,66 @@ const EVENT_COLORS: Record<
   }
 > = {
   Integriert: {
-    bg: "bg-blue-200 dark:bg-blue-800/60",
-    border: "border-blue-600 dark:border-blue-400",
-    text: "text-blue-900 dark:text-blue-50",
-    dotColor: "#2563eb",
+    bg: "bg-iu-blue/10",
+    border: "border-iu-blue/30",
+    text: "text-iu-blue dark:text-iu-blue",
+    dotColor: "#10b981",
     desc: "Integrierte Vorlesung mit Live-Unterricht & Übungen",
     descEn: "Integrated lecture with live teaching & exercises",
   },
   "Q&A": {
-    bg: "bg-orange-200 dark:bg-orange-800/60",
-    border: "border-orange-600 dark:border-orange-400",
-    text: "text-orange-900 dark:text-orange-50",
-    dotColor: "#ea580c",
+    bg: "bg-amber-500/10",
+    border: "border-amber-500/30",
+    text: "text-amber-600 dark:text-amber-400",
+    dotColor: "#f59e0b",
     desc: "Q&A Sprint – Fragen an den Dozenten (optional)",
     descEn: "Q&A Sprint – Questions to professor (optional)",
   },
   Vorlesung: {
-    bg: "bg-sky-200 dark:bg-sky-800/60",
-    border: "border-sky-600 dark:border-sky-400",
-    text: "text-sky-900 dark:text-sky-50",
-    dotColor: "#0284c7",
+    bg: "bg-blue-500/10",
+    border: "border-blue-500/30",
+    text: "text-blue-600 dark:text-blue-400",
+    dotColor: "#3b82f6",
     desc: "Normale Vorlesung mit Dozent",
     descEn: "Standard lecture with professor",
   },
   Tutorium: {
-    bg: "bg-teal-200 dark:bg-teal-800/60",
-    border: "border-teal-600 dark:border-teal-400",
-    text: "text-teal-900 dark:text-teal-50",
-    dotColor: "#0d9488",
+    bg: "bg-teal-500/10",
+    border: "border-teal-500/30",
+    text: "text-teal-600 dark:text-teal-400",
+    dotColor: "#14b8a6",
     desc: "Tutorium – Lernunterstützung durch Tutoren (optional)",
     descEn: "Tutorial – Learning support by tutors (optional)",
   },
   Workshop: {
-    bg: "bg-yellow-200 dark:bg-yellow-700/60",
-    border: "border-yellow-600 dark:border-yellow-400",
-    text: "text-yellow-900 dark:text-yellow-50",
-    dotColor: "#ca8a04",
+    bg: "bg-indigo-500/10",
+    border: "border-indigo-500/30",
+    text: "text-indigo-600 dark:text-indigo-400",
+    dotColor: "#6366f1",
     desc: "Workshop – Praktische Projektarbeit",
     descEn: "Workshop – Hands-on project work",
   },
   Prüfung: {
-    bg: "bg-red-300 dark:bg-red-800/70",
-    border: "border-red-600 dark:border-red-400",
-    text: "text-red-900 dark:text-red-50",
-    dotColor: "#dc2626",
+    bg: "bg-rose-500/10",
+    border: "border-rose-500/30",
+    text: "text-rose-600 dark:text-rose-400",
+    dotColor: "#f43f5e",
     desc: "Klausur oder mündliche Prüfung",
     descEn: "Written or oral exam",
   },
   Seminar: {
-    bg: "bg-fuchsia-200 dark:bg-fuchsia-800/60",
-    border: "border-fuchsia-600 dark:border-fuchsia-400",
-    text: "text-fuchsia-900 dark:text-fuchsia-50",
-    dotColor: "#c026d3",
+    bg: "bg-purple-500/10",
+    border: "border-purple-500/30",
+    text: "text-purple-600 dark:text-purple-400",
+    dotColor: "#a855f7",
     desc: "Seminar – Interaktive Diskussion",
     descEn: "Seminar – Interactive discussion",
   },
   Uebung: {
-    bg: "bg-lime-200 dark:bg-lime-800/60",
-    border: "border-lime-600 dark:border-lime-400",
-    text: "text-lime-900 dark:text-lime-50",
-    dotColor: "#65a30d",
+    bg: "bg-lime-500/10",
+    border: "border-lime-500/30",
+    text: "text-lime-600 dark:text-lime-400",
+    dotColor: "#84cc16",
     desc: "Übung – Praktische Aufgaben",
     descEn: "Exercise – Practical tasks",
   },
@@ -455,16 +325,45 @@ function generateICSContent(
 
 export default function CourseSchedule() {
   const { language } = useLanguage();
-  const { events: dbEvents } = useLoaderData<{ events: ScheduleEvent[] }>();
+  const {
+    events: dbEvents,
+    userCourses,
+    studiengangName,
+  } = useLoaderData<{
+    events: ScheduleEvent[];
+    userCourses: { id: number; code: string; name: string }[];
+    studiengangName: string | null;
+  }>();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(
     null
   );
-  const [viewMode, setViewMode] = useState<"week" | "month">("week");
+  const [viewMode, setViewMode] = useState<"week" | "month" | "list">("list");
   const [showOptional, setShowOptional] = useState(true);
+  const [now, setNow] = useState(new Date());
 
-  // Use database events if available, otherwise fallback to hardcoded
-  const scheduleEvents = dbEvents.length > 0 ? dbEvents : SCHEDULE_EVENTS;
+  // Update current time every minute
+  React.useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Helper to check if an event is currently happening
+  const isEventLive = (event: ScheduleEvent) => {
+    const todayStr = toISODate(now);
+    if (event.date !== todayStr) return false;
+
+    const [startH, startM] = event.startTime.split(":").map(Number);
+    const [endH, endM] = event.endTime.split(":").map(Number);
+
+    const startTime = new Date(now);
+    startTime.setHours(startH, startM, 0);
+
+    const endTime = new Date(now);
+    endTime.setHours(endH, endM, 0);
+
+    return now >= startTime && now <= endTime;
+  };
 
   const weekDates = useMemo(() => getWeekDates(currentDate), [currentDate]);
   const monthDays = useMemo(
@@ -473,8 +372,22 @@ export default function CourseSchedule() {
   );
   const todayISO = toISODate(new Date());
 
-  // Get current study phase
-  const currentPlan = STUDY_PLANS[0];
+  // Get the study plan based on user's Studiengang
+  // Different Studiengänge have different exam schedules and phases
+  const currentPlan = useMemo(() => {
+    return getStudyPlanByStudiengang(studiengangName);
+  }, [studiengangName]);
+
+  // Generate schedule events based on priority:
+  // 1. Database events (if any)
+  // 2. Events generated from user's enrolled courses
+  // 3. Fallback to sample events
+  // For month view, generate events for all weeks in the visible month
+  const scheduleEvents = useMemo(() => {
+    return dbEvents;
+  }, [dbEvents]);
+
+  // Get current study phase (using the Studiengang-specific plan)
   const currentBlock = currentPlan?.blocks.find(
     (b) => todayISO >= b.start && todayISO <= b.end
   );
@@ -509,37 +422,41 @@ export default function CourseSchedule() {
   };
 
   // Get events for a specific date (filtered by optional setting)
-  // Also adds holidays as special events
+  // Phase-based filtering:
+  // - Praxisphase: only optional/workshop events (no regular lectures)
+  // - Klausurphase: only Prüfung events (exams only)
+  // - Nachprüfungsphase: only Prüfung events (exams only)
+  // - Theoriephase: all events
   const getEventsForDate = (date: Date) => {
     const dateStr = toISODate(date);
     const events: ScheduleEvent[] = [];
 
-    // Check if it's a holiday - add as special event
-    const holidayName = getHoliday(dateStr, language);
-    if (holidayName) {
-      events.push({
-        id: -1,
-        title: holidayName,
-        courseCode: "FEIERTAG",
-        type: "Prüfung" as any, // Will use Feiertag colors via special handling
-        date: dateStr,
-        startTime: "00:00",
-        endTime: "23:59",
-        location: "",
-        professor: "",
-        isOptional: false,
-        isHoliday: true,
-      } as ScheduleEvent & { isHoliday: boolean });
-    }
+    // Check which phase this date is in
+    const dateBlock = currentPlan?.blocks.find(
+      (b) => dateStr >= b.start && dateStr <= b.end
+    );
+    const currentPhase = dateBlock?.status;
+    const isInPraxisPhase = currentPhase === "praxis";
+    const isInExamPhase =
+      currentPhase === "klausurphase" || currentPhase === "nachpruefung";
 
-    // Add regular events (skip on holidays)
-    if (!holidayName) {
-      scheduleEvents.forEach((e) => {
-        if (e.date !== dateStr) return;
-        if (!showOptional && e.isOptional) return;
-        events.push(e);
-      });
-    }
+    // Add regular events
+    scheduleEvents.forEach((e: ScheduleEvent) => {
+      if (e.date !== dateStr) return;
+      if (!showOptional && e.isOptional) return;
+
+      // During Klausurphase or Nachprüfungsphase: only show Prüfung events
+      if (isInExamPhase) {
+        if (e.type !== "Prüfung") return;
+      }
+      // During Praxis phase: only show optional courses (no mandatory lectures)
+      else if (isInPraxisPhase) {
+        if (!e.isOptional) return;
+      }
+      // Theoriephase: show all events
+
+      events.push(e);
+    });
 
     return events;
   };
@@ -571,13 +488,14 @@ export default function CourseSchedule() {
     today: language === "de" ? "Heute" : "Today",
     week: language === "de" ? "Woche" : "Week",
     month: language === "de" ? "Monat" : "Month",
+    list: language === "de" ? "Liste" : "List",
     noEvents: language === "de" ? "Keine Termine" : "No events",
     currentPhase: language === "de" ? "Aktuelle Phase" : "Current Phase",
     legend: language === "de" ? "Legende" : "Legend",
     semesterPlan: language === "de" ? "Semesterübersicht" : "Semester Overview",
     praxis: language === "de" ? "Praxisphase" : "Practical Phase",
     theorie: language === "de" ? "Theoriephase" : "Theory Phase",
-    pruefung: language === "de" ? "Prüfungsphase" : "Exam Phase",
+    pruefung: language === "de" ? "Klausurwoche" : "Exam Week",
     ferien: language === "de" ? "Ferien" : "Holidays",
     weekShort: language === "de" ? "KW" : "W",
     showOptional: language === "de" ? "Optionale Kurse" : "Optional Courses",
@@ -594,11 +512,17 @@ export default function CourseSchedule() {
       language === "de"
         ? "Was bedeuten die verschiedenen Farben?"
         : "What do the different colors mean?",
-    holidays: language === "de" ? "Feiertage" : "Holidays",
-    holidayNote:
-      language === "de"
-        ? "An Feiertagen finden keine Vorlesungen statt"
-        : "No lectures on public holidays",
+    // Event type translations
+    eventTypes: {
+      Integriert: language === "de" ? "Integriert" : "Integrated",
+      "Q&A": "Q&A",
+      Vorlesung: language === "de" ? "Vorlesung" : "Lecture",
+      Tutorium: language === "de" ? "Tutorium" : "Tutorial",
+      Workshop: "Workshop",
+      Prüfung: language === "de" ? "Prüfung" : "Exam",
+      Seminar: language === "de" ? "Seminar" : "Seminar",
+      Uebung: language === "de" ? "Uebung" : "Exercise",
+    } as Record<string, string>,
   };
 
   // Handle ICS download
@@ -622,10 +546,15 @@ export default function CourseSchedule() {
 
   // Generate semester blocks overview
   const semesterBlocks = useMemo(() => {
-    const plan = STUDY_PLANS[0];
+    const plan = currentPlan || STUDY_PLANS[0];
     if (!plan) return [];
 
-    return plan.blocks.map((block) => {
+    // Sort blocks by start date and remove duplicates (some blocks overlap)
+    const sortedBlocks = [...plan.blocks].sort(
+      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+    );
+
+    return sortedBlocks.map((block) => {
       const start = new Date(block.start);
       const end = new Date(block.end);
       const startWeek =
@@ -663,311 +592,357 @@ export default function CourseSchedule() {
   }, [todayISO, locale]);
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 p-4 md:p-6 lg:p-8">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-6">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+    <div className="max-w-7xl mx-auto">
+      {/* Header Section */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
             <div className="flex items-center gap-3">
-              <div className="p-3 rounded-xl bg-blue-100 dark:bg-blue-900/50 text-blue-600 dark:text-blue-400">
-                <CalendarDays className="h-6 w-6" />
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <CalendarDays size={28} />
               </div>
-              <div>
-                <h1 className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {t.title}
-                </h1>
-                {/* Month and Year display */}
-                <p className="text-lg font-semibold text-blue-600 dark:text-blue-400">
-                  {currentDate.toLocaleDateString(locale, {
-                    month: "long",
-                    year: "numeric",
-                  })}
-                </p>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
-                  {viewMode === "week" ? (
-                    <>
-                      {weekDates[0].toLocaleDateString(locale, {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                      {" – "}
-                      {weekDates[4].toLocaleDateString(locale, {
-                        day: "numeric",
-                        month: "short",
-                      })}
-                      {" • "}
-                      {t.weekShort}{" "}
-                      {Math.ceil(
-                        (weekDates[0].getTime() -
-                          new Date(
-                            weekDates[0].getFullYear(),
-                            0,
-                            1
-                          ).getTime()) /
-                          (7 * 24 * 60 * 60 * 1000)
-                      ) + 1}
-                    </>
-                  ) : (
-                    <>
-                      {monthDays.length} {language === "de" ? "Tage" : "days"}
-                    </>
-                  )}
-                </p>
-              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.title}
+              </h1>
             </div>
+            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              {language === "de"
+                ? "Dein persönlicher Stundenplan und akademischer Kalender. Behalte alle Vorlesungen und Prüfungen im Blick."
+                : "Your personal schedule and academic calendar. Keep track of all lectures and exams."}
+            </p>
 
-            {/* Controls */}
-            <div className="flex flex-wrap items-center gap-2">
-              {/* View Mode Toggle */}
-              <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-1">
-                <button
-                  onClick={() => setViewMode("week")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                    viewMode === "week"
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  <Grid3X3 className="h-4 w-4" />
-                  {t.week}
-                </button>
-                <button
-                  onClick={() => setViewMode("month")}
-                  className={`flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium rounded-md transition-all ${
-                    viewMode === "month"
-                      ? "bg-blue-600 text-white shadow-sm"
-                      : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-700"
-                  }`}
-                >
-                  <Calendar className="h-4 w-4" />
-                  {t.month}
-                </button>
-              </div>
+            {/* Current Phase Badge */}
+            <div
+              className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${statusConfig.bg} ${statusConfig.text} border-current/10 text-sm font-bold w-fit mt-2`}
+            >
+              {currentStatus === "praxis" ? (
+                <Briefcase size={16} />
+              ) : (
+                <GraduationCap size={16} />
+              )}
+              <span>{statusConfig.label}</span>
+            </div>
+          </div>
 
-              {/* Optional Courses Toggle */}
+          <div className="flex flex-wrap items-center gap-4 lg:flex-col lg:items-end">
+            {/* View Toggle */}
+            <div className="flex p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm">
               <button
-                onClick={() => setShowOptional(!showOptional)}
-                className={`flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border transition-all ${
-                  showOptional
-                    ? "bg-emerald-50 dark:bg-emerald-900/20 border-emerald-300 dark:border-emerald-700 text-emerald-700 dark:text-emerald-300"
-                    : "bg-slate-100 dark:bg-slate-800 border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-400"
+                onClick={() => setViewMode("list")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                  viewMode === "list"
+                    ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
+                    : "text-muted-foreground hover:text-foreground"
                 }`}
               >
-                {showOptional ? (
-                  <Eye className="h-4 w-4" />
-                ) : (
-                  <EyeOff className="h-4 w-4" />
-                )}
-                {t.showOptional}
+                <List size={16} />
+                {t.list}
               </button>
-
-              {/* ICS Export Button */}
               <button
-                onClick={handleDownloadICS}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                title={t.downloadCalendar}
+                onClick={() => setViewMode("week")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                  viewMode === "week"
+                    ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                <Download className="h-4 w-4" />
-                <span className="hidden sm:inline">{t.downloadCalendar}</span>
+                <Grid3X3 size={16} />
+                {t.week}
               </button>
-
               <button
-                onClick={goToToday}
-                className="px-4 py-2 text-sm font-semibold rounded-lg bg-blue-600 text-white hover:bg-blue-700 transition-colors"
+                onClick={() => setViewMode("month")}
+                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                  viewMode === "month"
+                    ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
+                    : "text-muted-foreground hover:text-foreground"
+                }`}
               >
-                {t.today}
+                <Calendar size={16} />
+                {t.month}
               </button>
-              <div className="flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800">
-                <button
-                  onClick={viewMode === "week" ? goToPrevWeek : goToPrevMonth}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-l-lg transition-colors"
-                >
-                  <ChevronLeft className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                </button>
-                <span className="px-4 py-2 text-sm font-medium text-slate-700 dark:text-slate-300 min-w-[100px] text-center">
-                  {viewMode === "week"
-                    ? `${t.weekShort} ${Math.ceil((weekDates[0].getTime() - new Date(weekDates[0].getFullYear(), 0, 1).getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1}`
-                    : currentDate.toLocaleDateString(locale, {
-                        month: "short",
-                        year: "numeric",
-                      })}
-                </span>
-                <button
-                  onClick={viewMode === "week" ? goToNextWeek : goToNextMonth}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-700 rounded-r-lg transition-colors"
-                >
-                  <ChevronRight className="h-5 w-5 text-slate-600 dark:text-slate-400" />
-                </button>
-              </div>
             </div>
-          </div>
 
-          {/* Current Phase Banner */}
-          <div
-            className={`mt-4 p-3 rounded-xl ${statusConfig.bg} ${statusConfig.ring} ring-1 flex items-center gap-3`}
-          >
-            <Briefcase className={`h-5 w-5 ${statusConfig.text}`} />
-            <span className={`text-sm font-semibold ${statusConfig.text}`}>
-              {t.currentPhase}: {statusConfig.label}
-            </span>
+            <button
+              onClick={handleDownloadICS}
+              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border text-foreground font-bold text-sm hover:border-iu-blue/50 transition-all shadow-sm"
+            >
+              <Download size={18} className="text-iu-blue" />
+              {t.downloadCalendar}
+            </button>
           </div>
         </div>
+      </header>
 
-        {/* Unified Legend - One clear box for everything */}
-        <div className="mb-6 bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 p-5 shadow-sm">
-          {/* Course Types - Main focus with shapes */}
-          <div className="mb-5">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-              <GraduationCap className="h-5 w-5 text-blue-600" />
-              {t.courseTypes}
-            </h3>
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
-              {Object.entries(EVENT_COLORS).map(([type, colors]) => (
-                <div
-                  key={type}
-                  className={`flex items-center gap-3 p-3 rounded-xl ${colors.bg} border-l-4 ${colors.border} hover:shadow-md transition-shadow`}
-                  title={language === "de" ? colors.desc : colors.descEn}
-                >
-                  <EventIcon type={type} className={`h-5 w-5 ${colors.text}`} />
-                  <div>
-                    <div className={`text-sm font-bold ${colors.text}`}>
-                      {type}
-                    </div>
-                    <div className="text-[10px] text-slate-500 dark:text-slate-400">
-                      {type === "Q&A" || type === "Tutorium"
-                        ? language === "de"
-                          ? "optional"
-                          : "optional"
-                        : language === "de"
-                          ? "Pflicht"
-                          : "required"}
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
+      {/* Controls & Filters */}
+      <div className="flex flex-wrap items-center justify-between gap-6 mb-8 p-6 rounded-[2rem] bg-card/30 backdrop-blur-xl border border-border">
+        <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
+            <button
+              onClick={viewMode === "month" ? goToPrevMonth : goToPrevWeek}
+              className="p-2.5 rounded-lg hover:bg-iu-blue/10 text-muted-foreground hover:text-iu-blue transition-all"
+            >
+              <ChevronLeft size={20} />
+            </button>
+            <button
+              onClick={goToToday}
+              className="px-4 py-1.5 text-sm font-bold text-foreground hover:text-iu-blue transition-colors"
+            >
+              {t.today}
+            </button>
+            <button
+              onClick={viewMode === "month" ? goToNextMonth : goToNextWeek}
+              className="p-2.5 rounded-lg hover:bg-iu-blue/10 text-muted-foreground hover:text-iu-blue transition-all"
+            >
+              <ChevronRight size={20} />
+            </button>
           </div>
 
-          {/* Semester Phases - Compact */}
-          <div className="pt-4 border-t border-slate-200 dark:border-slate-700">
-            <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-              <Calendar className="h-5 w-5 text-indigo-600" />
-              {t.semesterPlan}
-            </h3>
-            <div className="flex flex-wrap gap-2">
-              {semesterBlocks.map((block, idx) => (
+          <h2 className="text-xl font-black text-foreground ml-2">
+            {currentDate.toLocaleDateString(locale, {
+              month: "long",
+              year: "numeric",
+            })}
+          </h2>
+        </div>
+
+        <button
+          onClick={() => setShowOptional(!showOptional)}
+          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border transition-all ${
+            showOptional
+              ? "bg-iu-blue/10 border-iu-blue/30 text-iu-blue"
+              : "bg-background/50 border-border text-muted-foreground hover:border-iu-blue/30"
+          }`}
+        >
+          {showOptional ? <Eye size={16} /> : <EyeOff size={16} />}
+          {t.showOptional}
+        </button>
+      </div>
+
+      {/* Main Calendar Area */}
+      <div className="space-y-12">
+        {viewMode === "list" ? (
+          <div className="space-y-8">
+            {weekDates.map((date, idx) => {
+              const dateStr = toISODate(date);
+              const isToday = dateStr === todayISO;
+              const events = getEventsForDate(date);
+              const dayBlock = currentPlan?.blocks.find(
+                (b) => dateStr >= b.start && dateStr <= b.end
+              );
+              const phaseConfig = dayBlock
+                ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
+                  DEFAULT_PALETTE[dayBlock.status]
+                : null;
+
+              if (events.length === 0 && !isToday) return null;
+
+              return (
                 <div
                   key={idx}
-                  className={`relative px-3 py-2 rounded-lg ${block.config.bg} ${
-                    block.isActive ? `ring-2 ${block.config.ring}` : ""
+                  className={`relative overflow-hidden rounded-[2rem] border transition-all ${
+                    isToday
+                      ? "border-iu-blue/30 bg-iu-blue/[0.02] shadow-xl shadow-iu-blue/5"
+                      : "border-border bg-card/50"
                   }`}
                 >
-                  {block.isActive && (
-                    <span className="absolute -top-1 -right-1 bg-orange-500 text-white text-[8px] font-bold px-1.5 py-0.5 rounded-full">
-                      {language === "de" ? "JETZT" : "NOW"}
-                    </span>
-                  )}
-                  <div className={`text-xs font-bold ${block.config.text}`}>
-                    {block.config.label}
-                  </div>
-                  <div className="text-[10px] text-slate-500 dark:text-slate-400">
-                    {block.startDate} – {block.endDate}
+                  <div className="flex flex-col md:flex-row">
+                    {/* Date Sidebar */}
+                    <div
+                      className={`md:w-48 p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border/50 ${
+                        isToday ? "bg-iu-blue/5" : "bg-muted/10"
+                      }`}
+                    >
+                      <span
+                        className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
+                          isToday ? "text-iu-blue" : "text-muted-foreground"
+                        }`}
+                      >
+                        {dayNames[idx]}
+                      </span>
+                      <span
+                        className={`text-4xl font-black mb-1 ${
+                          isToday ? "text-iu-blue" : "text-foreground"
+                        }`}
+                      >
+                        {date.getDate()}
+                      </span>
+                      <span className="text-xs font-medium text-muted-foreground">
+                        {date.toLocaleDateString(locale, { month: "short" })}
+                      </span>
+                      {phaseConfig && (
+                        <div
+                          className={`mt-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
+                        >
+                          {phaseConfig.label}
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Events List */}
+                    <div className="flex-1 p-6 md:p-8">
+                      {events.length > 0 ? (
+                        <div className="grid gap-4">
+                          {events.map((event, eIdx) => {
+                            const isLive = isEventLive(event);
+                            const colors =
+                              EVENT_COLORS[event.type] ||
+                              EVENT_COLORS.Integriert;
+
+                            return (
+                              <div
+                                key={eIdx}
+                                onClick={() => setSelectedEvent(event)}
+                                className={`group relative flex flex-col sm:flex-row sm:items-center gap-6 p-6 rounded-2xl bg-background/50 border transition-all cursor-pointer ${
+                                  isLive
+                                    ? "border-iu-blue shadow-lg shadow-iu-blue/10 ring-1 ring-iu-blue/20"
+                                    : "border-border/50 hover:border-iu-blue/30 hover:shadow-lg hover:shadow-iu-blue/5"
+                                }`}
+                              >
+                                {/* Live Indicator */}
+                                {isLive && (
+                                  <div className="absolute -top-2 -right-2 flex items-center gap-1.5 px-3 py-1 rounded-full bg-iu-blue text-white text-[10px] font-black uppercase tracking-widest shadow-lg animate-bounce">
+                                    <span className="relative flex h-2 w-2">
+                                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                      <span className="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                                    </span>
+                                    Live
+                                  </div>
+                                )}
+
+                                {/* Time */}
+                                <div className="flex items-center gap-3 sm:w-32 shrink-0">
+                                  <div
+                                    className={`p-2.5 rounded-xl ${isLive ? "bg-iu-blue text-white" : "bg-iu-blue/10 text-iu-blue"}`}
+                                  >
+                                    <Clock size={18} />
+                                  </div>
+                                  <div className="flex flex-col">
+                                    <span className="font-bold text-foreground leading-none">
+                                      {event.startTime}
+                                    </span>
+                                    <span className="text-[10px] font-bold text-muted-foreground mt-1">
+                                      {event.endTime}
+                                    </span>
+                                  </div>
+                                </div>
+
+                                {/* Content */}
+                                <div className="flex-1 min-w-0">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <h3 className="font-bold text-lg text-foreground truncate group-hover:text-iu-blue transition-colors">
+                                      {event.title}
+                                    </h3>
+                                    {event.isOptional && (
+                                      <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20">
+                                        Optional
+                                      </span>
+                                    )}
+                                  </div>
+                                  <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
+                                      <MapPin
+                                        size={14}
+                                        className="text-iu-blue/70"
+                                      />
+                                      <span className="font-medium">
+                                        {event.location}
+                                      </span>
+                                    </div>
+                                    <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
+                                      <User
+                                        size={14}
+                                        className="text-iu-blue/70"
+                                      />
+                                      <span className="font-medium">
+                                        {event.professor}
+                                      </span>
+                                    </div>
+                                    {event.type && (
+                                      <div
+                                        className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${colors.bg} ${colors.text} border-current/10`}
+                                      >
+                                        <EventIcon
+                                          type={event.type}
+                                          className="h-3.5 w-3.5"
+                                        />
+                                        <span className="text-[10px] font-bold uppercase tracking-wider">
+                                          {event.type}
+                                        </span>
+                                      </div>
+                                    )}
+                                  </div>
+                                </div>
+
+                                {/* Action */}
+                                <div className="sm:ml-auto">
+                                  <div
+                                    className={`p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white"}`}
+                                  >
+                                    <ChevronRight size={18} />
+                                  </div>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      ) : (
+                        <div className="h-full flex flex-col items-center justify-center text-center py-12">
+                          <div className="w-16 h-16 rounded-2xl bg-muted/20 flex items-center justify-center mb-4">
+                            <CalendarDays
+                              className="text-muted-foreground/30"
+                              size={32}
+                            />
+                          </div>
+                          <p className="text-muted-foreground font-medium">
+                            {t.noEvents}
+                          </p>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 </div>
-              ))}
-            </div>
+              );
+            })}
           </div>
-
-          {/* Upcoming Holidays - Compact */}
-          {GERMAN_HOLIDAYS.filter((h) => {
-            const hDate = new Date(h.date);
-            const now = new Date();
-            const threeMonthsLater = new Date();
-            threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-            return hDate >= now && hDate <= threeMonthsLater;
-          }).length > 0 && (
-            <div className="mt-4 pt-4 border-t border-slate-200 dark:border-slate-700">
-              <div className="flex items-center gap-2 mb-2">
-                <AlertTriangle className="h-5 w-5 text-amber-500" />
-                <span className="text-sm font-bold text-slate-900 dark:text-white">
-                  {t.holidays}
-                </span>
-              </div>
-              <div className="flex flex-wrap gap-2">
-                {GERMAN_HOLIDAYS.filter((h) => {
-                  const hDate = new Date(h.date);
-                  const now = new Date();
-                  const threeMonthsLater = new Date();
-                  threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3);
-                  return hDate >= now && hDate <= threeMonthsLater;
-                })
-                  .slice(0, 5)
-                  .map((holiday) => (
-                    <span
-                      key={holiday.date}
-                      className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400"
-                    >
-                      {new Date(holiday.date).toLocaleDateString(locale, {
-                        day: "numeric",
-                        month: "short",
-                      })}{" "}
-                      {language === "de" ? holiday.name : holiday.nameEn}
-                    </span>
-                  ))}
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Calendar Grid - Week View */}
-        {viewMode === "week" && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
-            {/* Header Row - Days */}
-            <div className="grid grid-cols-[60px_repeat(5,1fr)] border-b border-slate-200 dark:border-slate-700">
-              <div className="p-3 bg-slate-50 dark:bg-slate-800" />
+        ) : viewMode === "week" ? (
+          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-x-auto">
+            {/* Week Header */}
+            <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20 min-w-[800px]">
+              <div className="p-6" />
               {weekDates.map((date, idx) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
-                
-                // Get phase status for header
                 const dayBlock = currentPlan?.blocks.find(
                   (b) => dateStr >= b.start && dateStr <= b.end
                 );
-                const dayStatus = dayBlock?.status;
-                const phaseConfig = dayStatus
-                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
-                    DEFAULT_PALETTE[dayStatus]
+                const phaseConfig = dayBlock
+                  ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
+                    DEFAULT_PALETTE[dayBlock.status]
                   : null;
-                
+
                 return (
                   <div
                     key={idx}
-                    className={`p-3 text-center border-l border-slate-200 dark:border-slate-700 ${
-                      phaseConfig ? phaseConfig.bg : isToday
-                        ? "bg-blue-50 dark:bg-blue-900/20"
-                        : "bg-slate-50 dark:bg-slate-800"
-                    }`}
+                    className={`p-6 text-center border-l border-border ${isToday ? "bg-iu-blue/5" : ""}`}
                   >
                     <div
-                      className={`text-xs font-semibold uppercase tracking-wider ${
-                        phaseConfig ? phaseConfig.text : isToday
-                          ? "text-blue-600 dark:text-blue-400"
-                          : "text-slate-500 dark:text-slate-400"
-                      }`}
+                      className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${isToday ? "text-iu-blue" : "text-muted-foreground"}`}
                     >
                       {dayNames[idx]}
                     </div>
                     <div
-                      className={`text-xl font-bold mt-1 ${
+                      className={`text-2xl font-bold w-12 h-12 flex items-center justify-center mx-auto rounded-2xl transition-all ${
                         isToday
-                          ? "bg-blue-600 text-white w-8 h-8 rounded-full flex items-center justify-center mx-auto"
-                          : phaseConfig ? phaseConfig.text : "text-slate-900 dark:text-white"
+                          ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110"
+                          : "text-foreground"
                       }`}
                     >
                       {date.getDate()}
                     </div>
                     {phaseConfig && (
-                      <div className={`text-[9px] font-medium mt-1 ${phaseConfig.text} opacity-80`}>
+                      <div
+                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest ${phaseConfig.text} opacity-70`}
+                      >
                         {phaseConfig.label.split(" ")[0]}
                       </div>
                     )}
@@ -976,14 +951,14 @@ export default function CourseSchedule() {
               })}
             </div>
 
-            {/* Time Grid */}
-            <div className="grid grid-cols-[60px_repeat(5,1fr)]">
+            {/* Week Grid */}
+            <div className="grid grid-cols-[100px_repeat(5,1fr)] relative min-w-[800px]">
               {/* Time Labels */}
-              <div className="border-r border-slate-200 dark:border-slate-700">
+              <div className="border-r border-border bg-muted/10">
                 {TIME_SLOTS.map((time) => (
                   <div
                     key={time}
-                    className="h-[60px] flex items-start justify-end pr-2 pt-1 text-xs text-slate-500 dark:text-slate-400 font-medium"
+                    className="h-[100px] flex items-start justify-end pr-6 pt-3 text-[10px] text-muted-foreground font-bold uppercase tracking-widest"
                   >
                     {time}
                   </div>
@@ -996,114 +971,101 @@ export default function CourseSchedule() {
                 const events = getEventsForDate(date);
                 const isToday = dateStr === todayISO;
 
-                // Get phase status for this day (same as month view)
-                const dayBlock = currentPlan?.blocks.find(
-                  (b) => dateStr >= b.start && dateStr <= b.end
-                );
-                const dayStatus = dayBlock?.status;
-                const phaseConfig = dayStatus
-                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
-                    DEFAULT_PALETTE[dayStatus]
-                  : null;
+                // Calculate current time line position
+                const nowH = now.getHours();
+                const nowM = now.getMinutes();
+                const startH = 8; // Calendar starts at 08:00
+                const minutesSinceStart = (nowH - startH) * 60 + nowM;
+                const timeLineTop = (minutesSinceStart / 60) * 100;
 
                 return (
                   <div
                     key={dayIdx}
-                    className={`relative border-l border-slate-200 dark:border-slate-700 ${
-                      phaseConfig ? phaseConfig.bg : isToday ? "bg-blue-50/50 dark:bg-blue-900/10" : ""
-                    }`}
-                    style={{ height: `${TIME_SLOTS.length * 60}px` }}
+                    className={`relative border-l border-border ${isToday ? "bg-iu-blue/[0.02]" : ""}`}
+                    style={{ height: `${TIME_SLOTS.length * 100}px` }}
                   >
-                    {/* Hour lines */}
                     {TIME_SLOTS.map((_, idx) => (
                       <div
                         key={idx}
-                        className="absolute w-full border-t border-slate-100 dark:border-slate-800/50"
-                        style={{ top: `${idx * 60}px` }}
+                        className="absolute w-full border-t border-border/30"
+                        style={{ top: `${idx * 100}px` }}
                       />
                     ))}
 
-                    {/* Events */}
+                    {/* Current Time Line */}
+                    {isToday &&
+                      timeLineTop >= 0 &&
+                      timeLineTop <= TIME_SLOTS.length * 100 && (
+                        <div
+                          className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
+                          style={{ top: `${timeLineTop}px` }}
+                        >
+                          <div className="w-2 h-2 rounded-full bg-rose-500 -ml-1 shadow-lg shadow-rose-500/50" />
+                          <div className="flex-1 h-0.5 bg-rose-500/50" />
+                        </div>
+                      )}
+
                     {events.map((event) => {
-                      // Check if it's a holiday
-                      const isHoliday = (event as any).isHoliday;
-
-                      if (isHoliday) {
-                        // Render holiday as full-day banner
-                        return (
-                          <div
-                            key={event.id}
-                            className="absolute left-1 right-1 top-2 bg-slate-700 dark:bg-slate-800 border-l-4 border-amber-500 rounded-r-lg p-2"
-                          >
-                            <div className="flex items-center gap-2">
-                              <AlertTriangle className="h-4 w-4 text-amber-400" />
-                              <span className="text-xs font-bold text-white">
-                                {event.title}
-                              </span>
-                            </div>
-                            <div className="text-[10px] text-slate-300 mt-0.5">
-                              {language === "de"
-                                ? "Vorlesungsfrei"
-                                : "No classes"}
-                            </div>
-                          </div>
-                        );
-                      }
-
+                      const isLive = isEventLive(event);
                       const colors =
                         EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
                       const style = getEventStyle(event);
+                      const adjustedStyle = {
+                        ...style,
+                        top: `${(parseFloat(style.top) / 60) * 100}px`,
+                        height: `${(parseFloat(style.height) / 60) * 100}px`,
+                      };
 
                       return (
                         <div
                           key={event.id}
-                          className={`absolute left-1 right-1 ${colors.bg} ${colors.border} border-l-4 rounded-r-lg p-2 cursor-pointer hover:shadow-lg transition-shadow overflow-hidden ${event.isOptional ? "opacity-90" : ""}`}
-                          style={style}
-                          title={`${event.title}\n${event.courseCode}\n${event.startTime} - ${event.endTime}\n${event.location}${event.professor ? "\n" + event.professor : ""}${event.zoomLink ? "\n" + event.zoomLink : ""}`}
+                          onClick={() => setSelectedEvent(event)}
+                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group ${
+                            isLive
+                              ? "ring-2 ring-iu-blue ring-offset-2 ring-offset-background z-10"
+                              : ""
+                          }`}
+                          style={adjustedStyle}
                         >
-                          <div className="flex items-start gap-2">
-                            <div className="mt-0.5">
-                              <EventIcon
-                                type={event.type}
-                                className={`h-4 w-4 ${colors.text}`}
-                              />
+                          {isLive && (
+                            <div className="absolute top-2 right-2 flex h-2 w-2">
+                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-iu-blue opacity-75"></span>
+                              <span className="relative inline-flex rounded-full h-2 w-2 bg-iu-blue"></span>
                             </div>
-                            <div className="min-w-0 flex-1">
+                          )}
+                          <div className="flex flex-col h-full">
+                            <div className="flex items-start gap-2 mb-1">
                               <div
-                                className={`text-xs font-bold ${colors.text} truncate`}
+                                className={`p-1.5 rounded-lg bg-white/50 dark:bg-black/20 ${colors.text} group-hover:scale-110 transition-transform shrink-0`}
                               >
-                                {event.title}
+                                <EventIcon
+                                  type={event.type}
+                                  className="h-3.5 w-3.5"
+                                />
                               </div>
-                              <div className="text-[10px] text-slate-700 dark:text-slate-300 font-medium">
-                                {event.startTime} - {event.endTime}
-                              </div>
-                              <div className="text-[10px] text-slate-600 dark:text-slate-400 truncate flex items-center gap-1">
-                                {event.isOnline ? (
-                                  <Video className="h-3 w-3 flex-shrink-0 text-blue-500" />
-                                ) : (
-                                  <MapPin className="h-3 w-3 flex-shrink-0" />
-                                )}
-                                {event.isOnline && event.zoomLink ? (
-                                  <a
-                                    href={event.zoomLink}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-blue-600 dark:text-blue-400 hover:underline flex items-center gap-0.5"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    Zoom-Raum{" "}
-                                    <ExternalLink className="h-2.5 w-2.5" />
-                                  </a>
-                                ) : (
-                                  event.location
-                                )}
-                              </div>
-                              {event.professor && (
-                                <div className="text-[10px] text-slate-500 dark:text-slate-400 truncate flex items-center gap-1 mt-0.5">
-                                  <User className="h-3 w-3 flex-shrink-0" />
-                                  {event.professor}
+                              <div className="min-w-0 flex-1">
+                                <div className="text-[10px] font-black uppercase tracking-wider opacity-70 leading-none mb-1">
+                                  {event.startTime} – {event.endTime}
                                 </div>
-                              )}
+                                <div
+                                  className={`font-bold text-xs leading-tight truncate ${colors.text}`}
+                                >
+                                  {event.title}
+                                </div>
+                              </div>
+                            </div>
+
+                            <div className="mt-auto flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
+                                {event.isOnline ? (
+                                  <Video size={10} />
+                                ) : (
+                                  <MapPin size={10} />
+                                )}
+                                <span className="truncate">
+                                  {event.isOnline ? "Zoom" : event.location}
+                                </span>
+                              </div>
                             </div>
                           </div>
                         </div>
@@ -1114,141 +1076,83 @@ export default function CourseSchedule() {
               })}
             </div>
           </div>
-        )}
-
-        {/* Calendar Grid - Month View */}
-        {viewMode === "month" && (
-          <div className="bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden">
+        ) : (
+          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-x-auto">
             {/* Month Header */}
-            <div className="grid grid-cols-7 border-b border-slate-200 dark:border-slate-700">
+            <div className="grid grid-cols-7 border-b border-border bg-muted/20 min-w-[800px]">
               {(language === "de"
                 ? ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
                 : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-              ).map((day, idx) => (
+              ).map((day) => (
                 <div
                   key={day}
-                  className={`p-3 text-center text-xs font-semibold uppercase tracking-wider ${
-                    idx >= 5
-                      ? "text-slate-400 dark:text-slate-500"
-                      : "text-slate-600 dark:text-slate-400"
-                  } bg-slate-50 dark:bg-slate-800`}
+                  className="p-6 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
                 >
                   {day}
                 </div>
               ))}
             </div>
 
-            {/* Month Days Grid */}
-            <div className="grid grid-cols-7">
-              {/* Empty cells for days before first day of month */}
+            {/* Month Grid */}
+            <div className="grid grid-cols-7 min-w-[800px]">
               {Array.from({ length: (monthDays[0].getDay() + 6) % 7 }).map(
                 (_, idx) => (
                   <div
                     key={`empty-${idx}`}
-                    className="min-h-[130px] p-2 border-b border-r border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-900/50"
+                    className="min-h-[180px] p-4 border-b border-r border-border/50 bg-muted/5"
                   />
                 )
               )}
 
-              {/* Actual days */}
               {monthDays.map((date) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
-                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
                 const dayEvents = getEventsForDate(date);
-
-                // Get phase status for this day
                 const dayBlock = currentPlan?.blocks.find(
                   (b) => dateStr >= b.start && dateStr <= b.end
                 );
-                const dayStatus = dayBlock?.status;
-                const phaseConfig = dayStatus
-                  ? currentPlan?.paletteOverrides?.[dayStatus] ||
-                    DEFAULT_PALETTE[dayStatus]
+                const phaseConfig = dayBlock
+                  ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
+                    DEFAULT_PALETTE[dayBlock.status]
                   : null;
 
                 return (
                   <div
                     key={dateStr}
-                    className={`min-h-[130px] p-2 border-b border-r border-slate-100 dark:border-slate-800 transition-all hover:opacity-90 ${
-                      isToday ? "ring-2 ring-blue-500 ring-inset" : ""
-                    } ${phaseConfig ? phaseConfig.bg : isWeekend ? "bg-slate-50/50 dark:bg-slate-900/50" : ""}`}
+                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all hover:bg-iu-blue/5 group ${isToday ? "bg-iu-blue/[0.02]" : ""} ${phaseConfig ? phaseConfig.bg : ""}`}
                   >
-                    {/* Day number */}
-                    <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center justify-between mb-4">
                       <span
-                        className={`inline-flex items-center justify-center w-7 h-7 text-sm font-bold rounded-full ${
+                        className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
                           isToday
-                            ? "bg-blue-600 text-white"
-                            : phaseConfig
-                              ? phaseConfig.text
-                              : isWeekend
-                                ? "text-slate-400 dark:text-slate-500"
-                                : "text-slate-900 dark:text-white"
+                            ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110"
+                            : "text-foreground"
                         }`}
                       >
                         {date.getDate()}
                       </span>
                     </div>
 
-                    {/* Events for this day */}
-                    <div className="space-y-1">
+                    <div className="space-y-2">
                       {dayEvents.slice(0, 3).map((event) => {
-                        // Check if it's a holiday
-                        const isHoliday = (event as any).isHoliday;
-
-                        if (isHoliday) {
-                          return (
-                            <div
-                              key={event.id}
-                              className="text-[10px] px-1.5 py-1 rounded truncate bg-slate-700 dark:bg-slate-800 text-white font-medium flex items-center gap-1"
-                            >
-                              <AlertTriangle className="h-3 w-3 text-amber-400 flex-shrink-0" />
-                              {event.title}
-                            </div>
-                          );
-                        }
-
                         const colors =
                           EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
                         return (
                           <div
                             key={event.id}
-                            className={`text-[10px] px-1.5 py-1.5 rounded cursor-pointer ${colors.bg} ${colors.text} font-medium hover:shadow-md transition-shadow border-l-2 ${colors.border}`}
-                            title={`${event.title}\n${event.startTime} - ${event.endTime}\n${event.location}${event.professor ? "\n" + event.professor : ""}${event.zoomLink ? "\nZoom: " + event.zoomLink : ""}`}
+                            onClick={() => setSelectedEvent(event)}
+                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2`}
                           >
-                            <div className="flex items-center gap-1">
-                              <EventIcon
-                                type={event.type}
-                                className={`h-3 w-3 ${colors.text}`}
-                              />
-                              <span className="font-bold truncate">
-                                {event.startTime}
-                              </span>
-                              <span className="truncate flex-1">
-                                {event.title}
-                              </span>
-                            </div>
-                            <div className="flex items-center gap-1 mt-0.5 text-[9px] opacity-80">
-                              {event.isOnline ? (
-                                <Video className="h-2.5 w-2.5 flex-shrink-0 text-blue-600 dark:text-blue-400" />
-                              ) : (
-                                <MapPin className="h-2.5 w-2.5 flex-shrink-0" />
-                              )}
-                              <span className="truncate">
-                                {event.isOnline ? "Online" : event.location}
-                              </span>
-                            </div>
+                            <span className="opacity-70 shrink-0">
+                              {event.startTime}
+                            </span>
+                            <span className="truncate">{event.title}</span>
                           </div>
                         );
                       })}
                       {dayEvents.length > 3 && (
-                        <div
-                          className="text-[10px] text-slate-600 dark:text-slate-400 font-semibold text-center py-0.5 bg-slate-100 dark:bg-slate-800 rounded cursor-pointer hover:bg-slate-200 dark:hover:bg-slate-700"
-                          onClick={() => setViewMode("week")}
-                        >
-                          +{dayEvents.length - 3}{" "}
-                          {language === "de" ? "mehr" : "more"}
+                        <div className="text-[10px] text-muted-foreground font-bold text-center py-1 bg-muted/20 rounded-lg">
+                          +{dayEvents.length - 3} more
                         </div>
                       )}
                     </div>
@@ -1258,135 +1162,270 @@ export default function CourseSchedule() {
             </div>
           </div>
         )}
-        {selectedEvent && (
-          <div
-            className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50"
-            onClick={() => setSelectedEvent(null)}
-          >
-            <div
-              className="bg-white dark:bg-slate-900 rounded-2xl p-6 max-w-md w-full shadow-2xl"
-              onClick={(e) => e.stopPropagation()}
-            >
-              <div className="flex items-start justify-between mb-4">
-                <div>
-                  <span
-                    className={`inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold ${
-                      EVENT_COLORS[selectedEvent.type]?.bg || "bg-slate-100"
-                    } ${EVENT_COLORS[selectedEvent.type]?.text || "text-slate-900"} mb-2`}
-                  >
-                    <EventIcon type={selectedEvent.type} className="h-4 w-4" />
-                    {selectedEvent.type}
-                  </span>
-                  <h3 className="text-xl font-bold text-slate-900 dark:text-white">
-                    {selectedEvent.title}
-                  </h3>
-                  <p className="text-sm text-slate-500 dark:text-slate-400">
-                    {selectedEvent.courseCode}
-                  </p>
-                </div>
-                <button
-                  onClick={() => setSelectedEvent(null)}
-                  className="p-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-lg transition-colors"
+
+        {/* Info & Legend Section */}
+        <div className="space-y-8">
+          {/* Legend Section */}
+          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8">
+            <div className="flex items-center justify-between mb-8">
+              <h3 className="text-xl font-black text-foreground flex items-center gap-3">
+                <Info size={24} className="text-iu-blue" />
+                {t.courseTypes}
+              </h3>
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                {t.courseTypesDesc}
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+              {Object.entries(EVENT_COLORS).map(([type, colors]) => (
+                <div
+                  key={type}
+                  className={`flex items-center gap-4 p-5 rounded-2xl bg-card border border-border hover:border-current/20 transition-all group`}
                 >
-                  <span className="text-slate-400 dark:text-slate-500 text-xl">
-                    ×
-                  </span>
-                </button>
+                  <div
+                    className={`p-3 rounded-xl ${colors.bg} ${colors.text} shadow-sm group-hover:scale-110 transition-transform`}
+                  >
+                    <EventIcon type={type} className="h-5 w-5" />
+                  </div>
+                  <div>
+                    <div className="text-sm font-bold text-foreground">
+                      {t.eventTypes[type] || type}
+                    </div>
+                    <div className="flex items-center gap-2 mt-1">
+                      <div
+                        className={`w-1.5 h-1.5 rounded-full ${colors.bg.split(" ")[0]}`}
+                      />
+                      <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                        {type === "Q&A" || type === "Tutorium"
+                          ? t.optional
+                          : t.mandatory}
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Semester Plan Section */}
+          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8">
+            <h3 className="text-xl font-black text-foreground mb-8 flex items-center gap-3">
+              <CalendarDays size={24} className="text-iu-blue" />
+              {t.semesterPlan}
+            </h3>
+
+            <div className="space-y-12">
+              {/* Main Phases - Horizontal Grid */}
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                {semesterBlocks
+                  .filter((b) => b.status !== "feiertag")
+                  .map((block, idx) => {
+                    const Icon =
+                      block.status === "praxis"
+                        ? Briefcase
+                        : block.status === "klausurphase"
+                          ? FileCheck
+                          : block.status === "nachpruefung"
+                            ? MessageSquare
+                            : BookOpen;
+
+                    return (
+                      <div
+                        key={idx}
+                        className={`p-6 rounded-3xl border transition-all duration-500 relative overflow-hidden group ${
+                          block.isActive
+                            ? "bg-iu-blue/10 border-iu-blue/30 shadow-xl shadow-iu-blue/10 scale-[1.02]"
+                            : "bg-card border-border/50 hover:border-iu-blue/30 hover:shadow-lg hover:shadow-iu-blue/5"
+                        }`}
+                      >
+                        {block.isActive && (
+                          <div className="absolute top-0 right-0 px-4 py-1.5 bg-iu-blue text-white text-[10px] font-black uppercase tracking-widest rounded-bl-2xl shadow-lg">
+                            {language === "de" ? "AKTUELL" : "CURRENT"}
+                          </div>
+                        )}
+                        <div className="flex items-center gap-5">
+                          <div
+                            className={`p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 ${
+                              block.isActive
+                                ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
+                                : "bg-muted/50 text-muted-foreground"
+                            }`}
+                          >
+                            <Icon size={24} />
+                          </div>
+                          <div>
+                            <div className="text-sm font-black text-foreground mb-1 group-hover:text-iu-blue transition-colors">
+                              {block.config.label}
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <Calendar
+                                size={12}
+                                className="text-iu-blue/50"
+                              />
+                              <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
+                                {block.startDate} – {block.endDate}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+
+                        {/* Progress Bar for active block */}
+                        {block.isActive && (
+                          <div className="absolute bottom-0 left-0 right-0 h-1 bg-iu-blue/10">
+                            <div className="h-full bg-iu-blue w-1/2 animate-pulse" />
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })}
               </div>
 
-              <div className="space-y-3">
-                <div className="flex items-center gap-3 text-sm">
-                  <Clock className="h-5 w-5 text-blue-500" />
-                  <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">
-                      {selectedEvent.startTime} - {selectedEvent.endTime}
-                    </div>
-                    <div className="text-slate-500 dark:text-slate-400">
-                      {new Date(selectedEvent.date).toLocaleDateString(locale, {
-                        weekday: "long",
-                        day: "numeric",
-                        month: "long",
-                        year: "numeric",
-                      })}
-                    </div>
+              {/* Holidays - Horizontal Grid */}
+              <div className="pt-12 border-t border-border/50">
+                <div className="flex items-center justify-between mb-8">
+                  <div className="flex items-center gap-3">
+                    <div className="w-1.5 h-6 bg-amber-500 rounded-full" />
+                    <h4 className="text-lg font-bold text-foreground">
+                      {language === "de"
+                        ? "Nationale Feiertage"
+                        : "National Holidays"}
+                    </h4>
+                  </div>
+                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                    {language === "de" ? "VORLESUNGSFREI" : "NO LECTURES"}
                   </div>
                 </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <MapPin className="h-5 w-5 text-emerald-500" />
-                  <div>
-                    <div className="font-semibold text-slate-900 dark:text-white">
-                      {selectedEvent.location}
-                    </div>
-                    {selectedEvent.room && (
-                      <div className="text-slate-500 dark:text-slate-400">
-                        {selectedEvent.room}
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                  {semesterBlocks
+                    .filter((b) => b.status === "feiertag")
+                    .map((block, idx) => (
+                      <div
+                        key={idx}
+                        className="p-5 rounded-2xl bg-card border border-border flex items-center gap-4 group hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all"
+                      >
+                        <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
+                          <Calendar size={20} />
+                        </div>
+                        <div className="min-w-0">
+                          <div className="text-sm font-bold text-foreground truncate group-hover:text-amber-500 transition-colors">
+                            {block.config.label}
+                          </div>
+                          <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">
+                            {block.startDate}
+                          </div>
+                        </div>
                       </div>
-                    )}
-                  </div>
+                    ))}
                 </div>
-
-                <div className="flex items-center gap-3 text-sm">
-                  <User className="h-5 w-5 text-purple-500" />
-                  <div className="font-semibold text-slate-900 dark:text-white">
-                    {selectedEvent.professor}
-                  </div>
-                </div>
-
-                {selectedEvent.isOnline && selectedEvent.zoomLink && (
-                  <a
-                    href={selectedEvent.zoomLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="flex items-center gap-2 w-full p-3 bg-blue-50 dark:bg-blue-900/30 rounded-xl text-blue-600 dark:text-blue-400 font-semibold hover:bg-blue-100 dark:hover:bg-blue-900/50 transition-colors"
-                  >
-                    <Video className="h-5 w-5" />
-                    Zoom-Meeting beitreten
-                  </a>
-                )}
               </div>
             </div>
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* Today's Schedule Summary (Mobile) */}
-        <div className="mt-6 lg:hidden">
-          <h2 className="text-lg font-bold text-slate-900 dark:text-white mb-3">
-            {language === "de" ? "Heute" : "Today"}
-          </h2>
-          <div className="space-y-2">
-            {getEventsForDate(new Date()).length === 0 ? (
-              <div className="p-4 bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-700 text-center text-slate-500 dark:text-slate-400">
-                {t.noEvents}
-              </div>
-            ) : (
-              getEventsForDate(new Date()).map((event) => {
-                const colors =
-                  EVENT_COLORS[event.type] || EVENT_COLORS.Vorlesung;
-                return (
+      {/* Event Detail Modal */}
+      {selectedEvent && (
+        <div
+          className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-in fade-in duration-300"
+          onClick={() => setSelectedEvent(null)}
+        >
+          <div
+            className="bg-card/95 backdrop-blur-2xl rounded-[3rem] p-10 max-w-xl w-full shadow-2xl border border-white/20 animate-in zoom-in-95 duration-300"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-start justify-between mb-10">
+              <div className="flex items-center gap-6">
+                <div
+                  className={`p-5 rounded-[2rem] ${EVENT_COLORS[selectedEvent.type]?.bg} ${EVENT_COLORS[selectedEvent.type]?.text} shadow-xl`}
+                >
+                  <EventIcon type={selectedEvent.type} className="h-10 w-10" />
+                </div>
+                <div>
                   <div
-                    key={event.id}
-                    className={`p-4 ${colors.bg} border-l-4 ${colors.border} rounded-xl`}
-                    onClick={() => setSelectedEvent(event)}
+                    className={`text-xs font-bold uppercase tracking-[0.3em] mb-2 ${EVENT_COLORS[selectedEvent.type]?.text}`}
                   >
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <div className={`font-bold ${colors.text}`}>
-                          {event.title}
-                        </div>
-                        <div className="text-sm text-slate-600 dark:text-slate-400">
-                          {event.startTime} - {event.endTime} · {event.location}
-                        </div>
-                      </div>
-                      <ChevronRight className="h-5 w-5 text-slate-400" />
-                    </div>
+                    {selectedEvent.type}
                   </div>
-                );
-              })
+                  <h3 className="text-3xl font-bold tracking-tight text-foreground">
+                    {selectedEvent.title}
+                  </h3>
+                  <p className="text-lg text-muted-foreground font-medium mt-1">
+                    {selectedEvent.courseCode}
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSelectedEvent(null)}
+                className="p-3 hover:bg-muted rounded-2xl transition-all"
+              >
+                <X size={32} className="text-muted-foreground" />
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
+              <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
+                <div className="flex items-center gap-3 mb-4 text-iu-blue">
+                  <Clock size={20} />
+                  <span className="text-xs font-bold uppercase tracking-widest">
+                    Zeit & Datum
+                  </span>
+                </div>
+                <div className="font-bold text-xl text-foreground mb-1">
+                  {selectedEvent.startTime} - {selectedEvent.endTime}
+                </div>
+                <div className="text-sm text-muted-foreground font-medium">
+                  {new Date(selectedEvent.date).toLocaleDateString(locale, {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long",
+                  })}
+                </div>
+              </div>
+
+              <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
+                <div className="flex items-center gap-3 mb-4 text-iu-blue">
+                  <MapPin size={20} />
+                  <span className="text-xs font-bold uppercase tracking-widest">
+                    Ort
+                  </span>
+                </div>
+                <div className="font-bold text-xl text-foreground mb-1">
+                  {selectedEvent.location}
+                </div>
+                {selectedEvent.room && (
+                  <div className="text-sm text-muted-foreground font-medium">
+                    Raum: {selectedEvent.room}
+                  </div>
+                )}
+              </div>
+
+              <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50 md:col-span-2">
+                <div className="flex items-center gap-3 mb-4 text-iu-blue">
+                  <User size={20} />
+                  <span className="text-xs font-bold uppercase tracking-widest">
+                    Dozent
+                  </span>
+                </div>
+                <div className="font-bold text-xl text-foreground">
+                  {selectedEvent.professor}
+                </div>
+              </div>
+            </div>
+
+            {selectedEvent.isOnline && selectedEvent.zoomLink && (
+              <a
+                href={selectedEvent.zoomLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-4 w-full p-6 bg-iu-blue text-white rounded-[2rem] font-bold text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-iu-blue/20"
+              >
+                <Video size={24} />
+                Zoom-Meeting beitreten
+              </a>
             )}
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

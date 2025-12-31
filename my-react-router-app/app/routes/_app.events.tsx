@@ -12,153 +12,15 @@ import {
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
 
-// ────────────────────────────────────────────────────────────────────────────
-// TRANSLATIONS
-// ────────────────────────────────────────────────────────────────────────────
-const TRANSLATIONS = {
-  de: {
-    courses: "Courses",
-    eventsCalendar: "Events & Kalender",
-    subtitle: "Alle Termine auf einen Blick, inkl. Kalender-Export",
-    all: "Alle",
-    lecture: "Vorlesung",
-    seminar: "Seminar",
-    lab: "Praktikum",
-    officeHours: "Sprechstunde",
-    previousMonth: "Vorheriger Monat",
-    today: "Heute",
-    nextMonth: "Nächster Monat",
-    calendarView: "Kalenderansicht",
-    weekdays: ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"],
-    more: "mehr",
-    selectedDay: "Ausgewählter Tag",
-    noEvents: "Keine Termine für diesen Tag.",
-    details: "Details",
-    openZoom: "Zoom öffnen",
-    saveIcs: ".ics speichern",
-    googleCalendar: "Google Kalender",
-    close: "Schließen",
-  },
-  en: {
-    courses: "Courses",
-    eventsCalendar: "Events & Calendar",
-    subtitle: "All appointments at a glance, including calendar export",
-    all: "All",
-    lecture: "Lecture",
-    seminar: "Seminar",
-    lab: "Lab",
-    officeHours: "Office Hours",
-    previousMonth: "Previous Month",
-    today: "Today",
-    nextMonth: "Next Month",
-    calendarView: "Calendar View",
-    weekdays: ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
-    more: "more",
-    selectedDay: "Selected Day",
-    noEvents: "No events for this day.",
-    details: "Details",
-    openZoom: "Open Zoom",
-    saveIcs: "Save .ics",
-    googleCalendar: "Google Calendar",
-    close: "Close",
-  },
-};
+import { TRANSLATIONS, EVENTS, typeStyles } from "~/constants/events";
 
-type EventType = "Lecture" | "Seminar" | "Lab" | "Office Hours";
-
-interface CalendarEvent {
-  id: number;
-  title: string;
-  type: EventType;
-  date: string; // YYYY-MM-DD
-  time: string; // HH:mm
-  duration: string;
-  location: string;
-  professor?: string;
-  zoom: string | null;
-  description?: string;
-}
-
-// Demo events (can be replaced with API data later)
-const EVENTS: CalendarEvent[] = [
-  {
-    id: 1,
-    title: "Webentwicklung - Vorlesung",
-    type: "Lecture",
-    date: "2025-10-27",
-    time: "10:00",
-    duration: "90 minutes",
-    location: "Hörsaal A1, Hammerbrook",
-    professor: "Prof. Dr. Schmidt",
-    zoom: "https://zoom.us/j/1234567890",
-    description: "Moderne Web-Technologien und Best Practices",
-  },
-  {
-    id: 2,
-    title: "Datenbankdesign - Seminar",
-    type: "Seminar",
-    date: "2025-10-27",
-    time: "13:00",
-    duration: "60 minutes",
-    location: "Seminarraum B2, Hammerbrook",
-    professor: "Prof. Dr. Mueller",
-    zoom: "https://zoom.us/j/0987654321",
-    description: "Übungen zu Datenbank-Normalisierung",
-  },
-  {
-    id: 3,
-    title: "Cloud Computing - Praktikum",
-    type: "Lab",
-    date: "2025-10-28",
-    time: "14:00",
-    duration: "120 minutes",
-    location: "Computerlab C3, Hammerbrook",
-    professor: "Prof. Dr. Weber",
-    zoom: null,
-    description: "Hands-on mit AWS und Docker",
-  },
-  {
-    id: 4,
-    title: "Sprechstunde Betreuer",
-    type: "Office Hours",
-    date: "2025-10-29",
-    time: "15:00",
-    duration: "30 minutes",
-    location: "Virtual",
-    professor: "Prof. Dr. Bauer",
-    zoom: "https://zoom.us/j/1111111111",
-    description: "Individuelle Beratung für Abschlussarbeiten",
-  },
-];
+import type { EventType, CalendarEvent } from "~/types/events";
 
 export const loader = async () => {
   return null;
 };
 
-const typeStyles: Record<
-  EventType,
-  {
-    badge: string;
-    dot: string;
-  }
-> = {
-  Lecture: {
-    badge: "from-blue-600 to-cyan-600",
-    dot: "bg-blue-600",
-  },
-  Seminar: {
-    badge: "from-purple-600 to-pink-600",
-    dot: "bg-purple-600",
-  },
-  Lab: {
-    badge: "from-green-600 to-emerald-600",
-    dot: "bg-emerald-600",
-  },
-  "Office Hours": {
-    badge: "from-orange-600 to-red-600",
-    dot: "bg-orange-600",
-  },
-};
+
 
 function fmtMonth(date: Date) {
   return date.toLocaleDateString("de-DE", { month: "long", year: "numeric" });
@@ -260,24 +122,46 @@ function downloadICS(evt: CalendarEvent) {
 export default function Events() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
+  const translatedEvents = useMemo(
+    () =>
+      EVENTS.map((event) => ({
+        ...event,
+        title:
+          t.eventTitles[event.id.toString() as keyof typeof t.eventTitles] ||
+          event.title,
+        location:
+          t.eventLocations[
+            event.id.toString() as keyof typeof t.eventLocations
+          ] || event.location,
+        description:
+          t.eventDescriptions[
+            event.id.toString() as keyof typeof t.eventDescriptions
+          ] || event.description,
+      })),
+    [t]
+  );
+
   const [currentMonth, setCurrentMonth] = useState<Date>(new Date(2025, 9, 1)); // Oct 2025 sample
   const [selectedDate, setSelectedDate] = useState<Date | null>(null);
-  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(null);
+  const [selectedEvent, setSelectedEvent] = useState<CalendarEvent | null>(
+    null
+  );
   const [selectedType, setSelectedType] = useState<"All" | EventType>("All");
 
   const days = useMemo(() => buildMonthGrid(currentMonth), [currentMonth]);
   const eventsByDate = useMemo<Map<string, CalendarEvent[]>>(() => {
     const map = new Map<string, CalendarEvent[]>();
-    (selectedType === "All" ? EVENTS : EVENTS.filter((e) => e.type === selectedType)).forEach(
-      (e) => {
-        const list = map.get(e.date) || [];
-        list.push(e);
-        map.set(e.date, list);
-      }
-    );
+    (selectedType === "All"
+      ? translatedEvents
+      : translatedEvents.filter((e) => e.type === selectedType)
+    ).forEach((e) => {
+      const list = map.get(e.date) || [];
+      list.push(e);
+      map.set(e.date, list);
+    });
     return map;
-  }, [selectedType]);
+  }, [selectedType, translatedEvents]);
 
   const monthLabel = fmtMonth(currentMonth);
   const types: Array<"All" | EventType> = [
@@ -289,69 +173,94 @@ export default function Events() {
   ];
 
   return (
-      <div className="px-4 sm:px-6 lg:px-8 py-8">
-        {/* Page header */}
-        <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1">
-              Courses
+    <div className="min-h-screen bg-transparent p-6">
+      <div className="max-w-7xl mx-auto space-y-8">
+        {/* Header */}
+        <div className="relative overflow-hidden bg-iu-blue rounded-[2.5rem] p-12 text-white shadow-2xl">
+          <div className="absolute top-0 right-0 w-80 h-80 bg-white/5 rounded-full rotate-45 -mr-40 -mt-40 blur-3xl pointer-events-none" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-white/5 rounded-full rotate-45 -ml-40 -mb-40 blur-3xl pointer-events-none" />
+          <div className="relative z-10 flex flex-col md:flex-row md:items-center justify-between gap-8">
+            <div className="flex items-center gap-8">
+              <div className="p-6 bg-white text-iu-blue rounded-3xl shadow-2xl flex items-center justify-center transition-transform hover:scale-110">
+                <CalendarIcon className="h-14 w-14" />
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="h-1 w-10 bg-white/50" />
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/80">
+                    {t.courses}
+                  </span>
+                </div>
+                <h1 className="text-5xl md:text-6xl font-bold tracking-tight leading-none">
+                  {t.eventsCalendar}
+                </h1>
+                <p className="text-white/70 mt-4 text-lg font-medium max-w-xl">
+                  {t.subtitle}
+                </p>
+              </div>
             </div>
-            <h1 className="text-3xl font-black text-slate-900 flex items-center gap-2">
-              <CalendarIcon className="h-7 w-7 text-blue-600" /> Events & Kalender
-            </h1>
-            <p className="text-slate-600 mt-1">Alle Termine auf einen Blick, inkl. Kalender-Export</p>
-          </div>
-          <div className="flex flex-wrap items-center gap-2">
-            {types.map((t) => (
-              <button
-                key={t}
-                onClick={() => setSelectedType(t)}
-                className={`px-3 py-1.5 rounded-full text-sm font-semibold border transition ${
-                  selectedType === t
-                    ? "bg-slate-900 text-white border-slate-900"
-                    : "bg-white text-slate-700 border-slate-300 hover:border-slate-500"
-                }`}
-              >
-                {t}
-              </button>
-            ))}
+
+            <div className="flex flex-wrap items-center gap-3">
+              {types.map((type) => (
+                <button
+                  key={type}
+                  onClick={() => setSelectedType(type)}
+                  className={`px-6 py-3 rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg active:scale-95 ${
+                    selectedType === type
+                      ? "bg-white text-iu-blue"
+                      : "bg-white/10 text-white border border-white/20 hover:bg-white/20"
+                  }`}
+                >
+                  {type === "All"
+                    ? t.all
+                    : t[type.toLowerCase().replace(" ", "")] || type}
+                </button>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Calendar card */}
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border shadow-2xl overflow-hidden relative">
+          {/* Hover background effect */}
+          <div className="absolute top-0 right-0 w-96 h-96 bg-iu-blue/5 blur-[100px] rounded-full opacity-100 -mr-48 -mt-48"></div>
+
           {/* Calendar header */}
-          <div className="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-slate-200 bg-slate-50">
-            <div className="flex items-center gap-2">
+          <div className="relative z-10 flex items-center justify-between px-10 py-8 border-b border-border/50 bg-background/20">
+            <div className="flex items-center gap-4">
               <button
-                className="p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200"
+                className="p-3 rounded-2xl bg-background/50 border border-border hover:bg-card hover:border-iu-blue/30 transition-all shadow-lg group"
                 onClick={() => setCurrentMonth((d) => addMonths(d, -1))}
-                title="Vorheriger Monat"
+                title={t.previousMonth}
               >
-                <ChevronLeft className="h-5 w-5" />
+                <ChevronLeft className="h-6 w-6 text-foreground group-hover:text-iu-blue" />
               </button>
               <button
-                className="p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200"
+                className="px-6 py-3 rounded-2xl bg-background/50 border border-border hover:bg-card hover:border-iu-blue/30 transition-all shadow-lg font-bold text-foreground hover:text-iu-blue"
                 onClick={() => setCurrentMonth(new Date())}
-                title="Heute"
+                title={t.today}
               >
-                Heute
+                {t.today}
               </button>
               <button
-                className="p-2 rounded-lg hover:bg-white border border-transparent hover:border-slate-200"
+                className="p-3 rounded-2xl bg-background/50 border border-border hover:bg-card hover:border-iu-blue/30 transition-all shadow-lg group"
                 onClick={() => setCurrentMonth((d) => addMonths(d, 1))}
-                title="Nächster Monat"
+                title={t.nextMonth}
               >
-                <ChevronRight className="h-5 w-5" />
+                <ChevronRight className="h-6 w-6 text-foreground group-hover:text-iu-blue" />
               </button>
             </div>
-            <div className="text-lg font-extrabold tracking-tight">{monthLabel}</div>
-            <div className="text-xs text-slate-500 font-semibold">Kalenderansicht</div>
+            <div className="text-3xl font-bold tracking-tight text-foreground">
+              {monthLabel}
+            </div>
+            <div className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.3em]">
+              {t.calendarView}
+            </div>
           </div>
 
           {/* Weekdays */}
-          <div className="grid grid-cols-7 text-center text-xs font-bold text-slate-500 uppercase tracking-wide px-2 sm:px-6 pt-4">
-            {["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"].map((d) => (
+          <div className="relative z-10 grid grid-cols-7 text-center text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.3em] px-4 py-6 border-b border-border/30">
+            {t.weekdays.map((d) => (
               <div key={d} className="py-2">
                 {d}
               </div>
@@ -359,7 +268,7 @@ export default function Events() {
           </div>
 
           {/* Days grid */}
-          <div className="grid grid-cols-7 gap-px bg-slate-200">
+          <div className="relative z-10 grid grid-cols-7 gap-px bg-border/30">
             {days.map((d, idx) => {
               const inMonth = d.getMonth() === currentMonth.getMonth();
               const isToday = isSameDay(d, new Date());
@@ -371,27 +280,30 @@ export default function Events() {
                 <button
                   key={idx}
                   onClick={() => setSelectedDate(d)}
-                  className={`relative min-h-[96px] bg-white px-2 py-2 text-left focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                    inMonth ? "" : "bg-slate-50 text-slate-400"
-                  } ${isToday ? "ring-2 ring-blue-600" : ""}`}
+                  className={`relative min-h-[140px] bg-card/40 px-4 py-4 text-left transition-all duration-300 hover:bg-card/80 group focus:outline-none ${
+                    inMonth ? "" : "opacity-30"
+                  } ${isToday ? "bg-iu-blue/5" : ""}`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className={`text-xs font-bold ${inMonth ? "text-slate-900" : "text-slate-400"}`}>
+                  <div className="flex items-center justify-between mb-3">
+                    <div
+                      className={`text-lg font-bold ${inMonth ? "text-foreground" : "text-muted-foreground"}`}
+                    >
                       {d.getDate()}
                     </div>
                     {isToday && (
-                      <span className="text-[10px] font-black text-blue-600 bg-blue-50 px-1.5 py-0.5 rounded">
-                        Heute
+                      <span className="text-[10px] font-black text-iu-blue bg-iu-blue/10 px-2 py-1 rounded-lg shadow-sm">
+                        {t.today.toUpperCase()}
                       </span>
                     )}
                   </div>
-                  <div className="mt-1 space-y-1">
+                  <div className="space-y-2">
                     {topThree.map((e: CalendarEvent) => (
                       <div
                         key={e.id}
-                        title={`${e.title} • ${e.time}`}
-                        className={`truncate text-[11px] font-semibold text-white px-2 py-1 rounded shadow-sm bg-gradient-to-r ${
-                          typeStyles[e.type]?.badge || "from-slate-600 to-slate-700"
+                        title={`${e.title} ${e.time}`}
+                        className={`truncate text-[10px] font-black uppercase tracking-wider text-white px-3 py-2 rounded-xl shadow-lg bg-gradient-to-r transition-transform hover:scale-105 ${
+                          typeStyles[e.type]?.badge ||
+                          "from-slate-600 to-slate-700"
                         }`}
                         onClick={(ev) => {
                           ev.stopPropagation();
@@ -402,7 +314,9 @@ export default function Events() {
                       </div>
                     ))}
                     {more > 0 && (
-                      <div className="text-[11px] font-semibold text-slate-600">+{more} mehr</div>
+                      <div className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-widest pl-1">
+                        +{more} {t.more}
+                      </div>
                     )}
                   </div>
                 </button>
@@ -413,94 +327,133 @@ export default function Events() {
 
         {/* Selected day drawer */}
         {selectedDate && (
-          <div className="mt-6 bg-white rounded-2xl shadow-sm border border-slate-200">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+          <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border shadow-2xl overflow-hidden animate-in slide-in-from-top-4 duration-500">
+            <div className="flex items-center justify-between px-10 py-8 border-b border-border/50 bg-background/20">
               <div>
-                <div className="text-xs font-bold text-slate-500">Ausgewählter Tag</div>
-                <div className="text-lg font-extrabold">
-                  {selectedDate.toLocaleDateString("de-DE", {
-                    weekday: "long",
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                  })}
+                <div className="text-[10px] font-black text-muted-foreground/50 uppercase tracking-[0.3em] mb-2">
+                  {t.selectedDay}
+                </div>
+                <div className="text-3xl font-bold text-foreground tracking-tight">
+                  {selectedDate.toLocaleDateString(
+                    language === "de" ? "de-DE" : "en-US",
+                    {
+                      weekday: "long",
+                      year: "numeric",
+                      month: "long",
+                      day: "numeric",
+                    }
+                  )}
                 </div>
               </div>
               <button
-                className="p-2 rounded-lg hover:bg-slate-100"
+                className="p-4 rounded-2xl bg-background/50 border border-border hover:bg-card hover:border-iu-red/30 transition-all shadow-lg group"
                 onClick={() => setSelectedDate(null)}
-                aria-label="Schließen"
+                aria-label={t.close}
               >
-                <CloseIcon className="h-5 w-5" />
+                <CloseIcon className="h-6 w-6 text-foreground group-hover:text-iu-red" />
               </button>
             </div>
-            <div className="p-6">
+            <div className="p-10">
               {(() => {
                 const ds = selectedDate
                   ? eventsByDate.get(toISODate(selectedDate)) || []
                   : [];
                 if (ds.length === 0) {
                   return (
-                    <div className="text-slate-600 font-semibold">Keine Termine für diesen Tag.</div>
+                    <div className="text-center py-12">
+                      <div className="inline-flex p-6 rounded-3xl bg-muted/10 text-muted-foreground mb-4">
+                        <CalendarIcon className="h-12 w-12" />
+                      </div>
+                      <p className="text-xl font-medium text-muted-foreground">
+                        {t.noEvents}
+                      </p>
+                    </div>
                   );
                 }
                 return (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                     {ds.map((e: CalendarEvent) => (
                       <div
                         key={e.id}
-                        className="border border-slate-200 rounded-xl p-4 hover:shadow-sm"
+                        className="group bg-background/50 border border-border rounded-[2rem] p-8 hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-xl relative overflow-hidden"
                       >
-                        <div className="flex items-start justify-between gap-3">
-                          <div>
-                            <div className={`inline-flex items-center text-[11px] font-bold text-white px-2 py-1 rounded bg-gradient-to-r ${
-                              typeStyles[e.type]?.badge || "from-slate-600 to-slate-700"
-                            }`}>
-                              {e.type}
+                        {/* Hover background effect */}
+                        <div className="absolute top-0 right-0 w-32 h-32 bg-iu-blue/5 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-16 -mt-16"></div>
+
+                        <div className="relative z-10">
+                          <div className="flex items-start justify-between gap-4 mb-6">
+                            <div>
+                              <div
+                                className={`inline-flex items-center text-[10px] font-black text-white px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg bg-gradient-to-r ${
+                                  typeStyles[e.type]?.badge ||
+                                  "from-slate-600 to-slate-700"
+                                }`}
+                              >
+                                {e.type}
+                              </div>
+                              <h3 className="mt-4 text-2xl font-bold text-foreground leading-tight tracking-tight group-hover:text-iu-blue transition-colors">
+                                {e.title}
+                              </h3>
                             </div>
-                            <div className="mt-2 text-slate-900 font-extrabold leading-snug">
-                              {e.title}
-                            </div>
+                            <button
+                              className="px-6 py-2 rounded-xl bg-iu-blue/10 text-iu-blue text-sm font-bold hover:bg-iu-blue hover:text-white transition-all shadow-md"
+                              onClick={() => setSelectedEvent(e)}
+                            >
+                              {t.details}
+                            </button>
                           </div>
-                          <button
-                            className="text-slate-500 hover:text-slate-900"
-                            onClick={() => setSelectedEvent(e)}
-                          >
-                            Details
-                          </button>
-                        </div>
-                        <div className="mt-3 space-y-1 text-sm text-slate-700">
-                          <div className="flex items-center gap-2"><Clock className="h-4 w-4" /> {e.time} • {e.duration}</div>
-                          <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {e.location}</div>
-                          {e.professor && (
-                            <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> {e.professor}</div>
-                          )}
-                        </div>
-                        <div className="mt-3 flex flex-wrap gap-2">
-                          {e.zoom && (
+
+                          <div className="space-y-4 text-muted-foreground font-medium">
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-background border border-border">
+                                <Clock className="h-4 w-4 text-iu-blue" />
+                              </div>
+                              <span>
+                                {e.time} • {e.duration}
+                              </span>
+                            </div>
+                            <div className="flex items-center gap-3">
+                              <div className="p-2 rounded-lg bg-background border border-border">
+                                <MapPin className="h-4 w-4 text-iu-blue" />
+                              </div>
+                              <span>{e.location}</span>
+                            </div>
+                            {e.professor && (
+                              <div className="flex items-center gap-3">
+                                <div className="p-2 rounded-lg bg-background border border-border">
+                                  <GraduationCap className="h-4 w-4 text-iu-blue" />
+                                </div>
+                                <span>{e.professor}</span>
+                              </div>
+                            )}
+                          </div>
+
+                          <div className="mt-8 flex flex-wrap gap-3">
+                            {e.zoom && (
+                              <a
+                                href={e.zoom}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold text-white bg-iu-blue hover:opacity-90 transition-all shadow-xl shadow-iu-blue/20"
+                              >
+                                <Video className="h-5 w-5" /> {t.openZoom}
+                              </a>
+                            )}
+                            <button
+                              onClick={() => downloadICS(e)}
+                              className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold border border-border bg-background/50 hover:bg-card hover:border-iu-blue/30 text-foreground transition-all shadow-lg"
+                            >
+                              {t.saveIcs}
+                            </button>
                             <a
-                              href={e.zoom}
+                              href={buildGoogleCalendarUrl(e)}
                               target="_blank"
                               rel="noopener noreferrer"
-                              className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                              className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl text-sm font-bold border border-border bg-background/50 hover:bg-card hover:border-iu-blue/30 text-foreground transition-all shadow-lg"
                             >
-                              <Video className="h-4 w-4" /> Zoom öffnen
+                              {t.googleCalendar}
                             </a>
-                          )}
-                          <button
-                            onClick={() => downloadICS(e)}
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold border border-slate-300 hover:border-slate-400"
-                          >
-                            .ics speichern
-                          </button>
-                          <a
-                            href={buildGoogleCalendarUrl(e)}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold border border-slate-300 hover:border-slate-400"
-                          >
-                            Google Kalender
-                          </a>
+                          </div>
                         </div>
                       </div>
                     ))}
@@ -513,68 +466,107 @@ export default function Events() {
 
         {/* Event modal */}
         {selectedEvent && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center">
-            <div className="absolute inset-0 bg-slate-950/50" onClick={() => setSelectedEvent(null)} />
-            <div className="relative bg-white rounded-2xl shadow-2xl border border-slate-200 w-full max-w-2xl mx-4">
-              <div className="flex items-center justify-between px-6 py-4 border-b border-slate-200">
-                <div>
-                  <div className={`inline-flex items-center text-[11px] font-bold text-white px-2 py-1 rounded bg-gradient-to-r ${
-                    typeStyles[selectedEvent.type]?.badge || "from-slate-600 to-slate-700"
-                  }`}>
-                    {selectedEvent.type}
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-6">
+            <div
+              className="absolute inset-0 bg-background/80 backdrop-blur-xl animate-in fade-in duration-300"
+              onClick={() => setSelectedEvent(null)}
+            />
+            <div className="relative bg-card rounded-[2.5rem] shadow-2xl border border-border w-full max-w-2xl overflow-hidden animate-in zoom-in-95 duration-300">
+              {/* Header */}
+              <div className="relative overflow-hidden bg-iu-blue p-10 text-white">
+                <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full rotate-45 -mr-32 -mt-32 blur-3xl pointer-events-none" />
+                <div className="relative z-10 flex items-start justify-between gap-6">
+                  <div>
+                    <div
+                      className={`inline-flex items-center text-[10px] font-black text-white px-4 py-1.5 rounded-full uppercase tracking-widest shadow-lg bg-white/20 backdrop-blur-md border border-white/30`}
+                    >
+                      {selectedEvent.type}
+                    </div>
+                    <h3 className="mt-6 text-4xl font-bold tracking-tight leading-tight">
+                      {selectedEvent.title}
+                    </h3>
                   </div>
-                  <h3 className="mt-2 text-xl font-extrabold text-slate-900">
-                    {selectedEvent.title}
-                  </h3>
-                </div>
-                <button
-                  className="p-2 rounded-lg hover:bg-slate-100"
-                  onClick={() => setSelectedEvent(null)}
-                  aria-label="Schließen"
-                >
-                  <CloseIcon className="h-5 w-5" />
-                </button>
-              </div>
-              <div className="px-6 py-5 space-y-3 text-slate-700">
-                <div className="flex items-center gap-2"><Clock className="h-4 w-4" /> {selectedEvent.time} • {selectedEvent.duration}</div>
-                <div className="flex items-center gap-2"><MapPin className="h-4 w-4" /> {selectedEvent.location}</div>
-                {selectedEvent.professor && (
-                  <div className="flex items-center gap-2"><GraduationCap className="h-4 w-4" /> {selectedEvent.professor}</div>
-                )}
-                {selectedEvent.description && (
-                  <p className="pt-2 text-slate-800">{selectedEvent.description}</p>
-                )}
-              </div>
-              <div className="px-6 pb-6 flex flex-wrap gap-2">
-                {selectedEvent.zoom && (
-                  <a
-                    href={selectedEvent.zoom}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold text-white bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+                  <button
+                    className="p-4 rounded-2xl bg-white/10 border border-white/20 hover:bg-white/20 transition-all shadow-lg group"
+                    onClick={() => setSelectedEvent(null)}
+                    aria-label={t.close}
                   >
-                    <Video className="h-4 w-4" /> Zoom öffnen
-                  </a>
+                    <CloseIcon className="h-6 w-6 text-white" />
+                  </button>
+                </div>
+              </div>
+
+              <div className="p-10 space-y-8">
+                <div className="grid sm:grid-cols-2 gap-6">
+                  <div className="p-6 bg-background/50 border border-border rounded-3xl shadow-inner">
+                    <div className="flex items-center gap-4 text-muted-foreground mb-2">
+                      <Clock className="h-5 w-5 text-iu-blue" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        {t.details}
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-foreground">
+                      {selectedEvent.time} • {selectedEvent.duration}
+                    </p>
+                  </div>
+                  <div className="p-6 bg-background/50 border border-border rounded-3xl shadow-inner">
+                    <div className="flex items-center gap-4 text-muted-foreground mb-2">
+                      <MapPin className="h-5 w-5 text-iu-blue" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        Location
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-foreground">
+                      {selectedEvent.location}
+                    </p>
+                  </div>
+                </div>
+
+                {selectedEvent.professor && (
+                  <div className="p-6 bg-background/50 border border-border rounded-3xl shadow-inner">
+                    <div className="flex items-center gap-4 text-muted-foreground mb-2">
+                      <GraduationCap className="h-5 w-5 text-iu-blue" />
+                      <span className="text-[10px] font-black uppercase tracking-widest">
+                        Professor
+                      </span>
+                    </div>
+                    <p className="text-xl font-bold text-foreground">
+                      {selectedEvent.professor}
+                    </p>
+                  </div>
                 )}
-                <button
-                  onClick={() => downloadICS(selectedEvent)}
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold border border-slate-300 hover:border-slate-400"
-                >
-                  .ics speichern
-                </button>
-                <a
-                  href={buildGoogleCalendarUrl(selectedEvent)}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg text-sm font-semibold border border-slate-300 hover:border-slate-400"
-                >
-                  Google Kalender
-                </a>
+
+                {selectedEvent.description && (
+                  <div className="p-8 bg-iu-blue/5 border border-iu-blue/10 rounded-3xl">
+                    <p className="text-lg font-medium text-foreground leading-relaxed">
+                      {selectedEvent.description}
+                    </p>
+                  </div>
+                )}
+
+                <div className="flex flex-wrap gap-4 pt-4">
+                  {selectedEvent.zoom && (
+                    <a
+                      href={selectedEvent.zoom}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="flex-1 inline-flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-lg font-bold text-white bg-iu-blue hover:opacity-90 transition-all shadow-2xl shadow-iu-blue/20"
+                    >
+                      <Video className="h-6 w-6" /> {t.openZoom}
+                    </a>
+                  )}
+                  <button
+                    onClick={() => downloadICS(selectedEvent)}
+                    className="flex-1 inline-flex items-center justify-center gap-3 px-8 py-5 rounded-2xl text-lg font-bold border border-border bg-background/50 hover:bg-card hover:border-iu-blue/30 text-foreground transition-all shadow-xl"
+                  >
+                    {t.saveIcs}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
         )}
       </div>
-   
+    </div>
   );
 }

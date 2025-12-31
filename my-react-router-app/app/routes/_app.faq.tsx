@@ -20,6 +20,15 @@ import {
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { KNOWLEDGE_BASE, findBestAnswer, getQuickSuggestions } from "~/data/chatbotKnowledge";
+import { CARD_COLORS, TEXT } from "~/constants/faq";
+
+// Icon mapping for dynamic rendering
+const ICON_MAP = {
+  Zap,
+  Cpu,
+  Globe,
+  Shield,
+};
 
 export const loader = async () => {
   try {
@@ -34,111 +43,76 @@ export const loader = async () => {
 };
 
 const BackgroundGradient = () => (
-  <div className="fixed inset-0 -z-10 overflow-hidden bg-slate-50 dark:bg-black transition-colors duration-500">
-    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-blue-50/50 to-transparent dark:from-blue-950/20 dark:to-transparent blur-3xl" />
-    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-violet-100/40 dark:bg-violet-900/10 blur-[100px] rounded-full" />
-    <div className="absolute top-1/3 left-0 w-[300px] h-[300px] bg-cyan-100/40 dark:bg-cyan-900/10 blur-[80px] rounded-full" />
+  <div className="fixed inset-0 -z-10 overflow-hidden bg-transparent transition-colors duration-500">
+    <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[500px] bg-gradient-to-b from-iu-blue/20 to-transparent blur-[120px]" />
+    <div className="absolute bottom-0 right-0 w-[500px] h-[500px] bg-iu-pink/10 blur-[150px] rounded-full" />
+    <div className="absolute top-1/3 left-0 w-[300px] h-[300px] bg-iu-blue/10 blur-[100px] rounded-full" />
   </div>
 );
 
-const CARD_COLORS = {
-  blue: "bg-blue-50 text-blue-600 dark:bg-blue-500/10 dark:text-blue-400 border-t-blue-500",
-  violet: "bg-violet-50 text-violet-600 dark:bg-violet-500/10 dark:text-violet-400 border-t-violet-500",
-  emerald: "bg-emerald-50 text-emerald-600 dark:bg-emerald-500/10 dark:text-emerald-400 border-t-emerald-500",
-  amber: "bg-amber-50 text-amber-600 dark:bg-amber-500/10 dark:text-amber-400 border-t-amber-500",
-};
-
-const TEXT = {
-  de: {
-    heroLine1: "Dein Studium.",
-    heroLine2: "Einfach erklärt.",
-    heroSubtitle:
-      "Der intelligente Begleiter für deinen Studienerfolg. Stelle Fragen zu Organisation, Prüfungen und Campusleben.",
-    chatCta: "Chat starten",
-    greeting: "Hallo! 👋 Ich bin dein IU Assistant. Ich kann dir bei Fragen zu Prüfungen, Studienorganisation, Campus-Services und vielem mehr helfen. Was möchtest du wissen?",
-    noAnswer:
-      "Hmm, dazu habe ich leider keine spezifischen Informationen gefunden. 🤔\n\n**Versuche es mit:**\n- Prüfungstermine\n- E-Mail einrichten\n- Bibliothek nutzen\n- Support kontaktieren\n\nOder wende dich an: studienberatung@iu.org",
-    placeholder: "Frag mich etwas z.B. 'Wann sind die Prüfungen?'",
-    suggestions: getQuickSuggestions(4),
-    features: [
-      { title: "Sofortige Antworten", body: "Verifizierte Antworten in Echtzeit.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
-      { title: "Intelligent", body: "KI-gestütztes IU-Wissen.", color: "violet", delay: "0.1s", icon: <Cpu className="h-5 w-5" /> },
-      { title: "Umfassend", body: "Von Bewerbung bis Abschluss.", color: "emerald", delay: "0.2s", icon: <Globe className="h-5 w-5" /> },
-      { title: "24/7 Support", body: "Rund um die Uhr für dich da.", color: "amber", delay: "0.3s", icon: <Shield className="h-5 w-5" /> },
-    ],
-  },
-  en: {
-    heroLine1: "Your studies.",
-    heroLine2: "Simply explained.",
-    heroSubtitle:
-      "The intelligent companion for your academic success. Ask about organization, exams, and campus life.",
-    chatCta: "Start chat",
-    greeting: "Hi! 👋 I'm your IU Assistant. I can help you with questions about exams, study organization, campus services, and much more. What would you like to know?",
-    noAnswer:
-      "Hmm, I couldn't find specific information on that. 🤔\n\n**Try asking about:**\n- Exam dates\n- Email setup\n- Library access\n- Contact support\n\nOr reach out to: studienberatung@iu.org",
-    placeholder: "Ask me something e.g. 'When are the exams?'",
-    suggestions: [
-      { text: "Exam dates", question: "Wann sind die Prüfungen?" },
-      { text: "Setup email", question: "Wie nutze ich meine IU E-Mail-Adresse?" },
-      { text: "Retake exams", question: "Wie oft kann ich eine Prüfung wiederholen?" },
-      { text: "Use library", question: "Wie nutze ich die Online-Bibliothek?" },
-    ],
-    features: [
-      { title: "Instant answers", body: "Verified responses in real time.", color: "blue", delay: "0s", icon: <Zap className="h-5 w-5" /> },
-      { title: "Intelligent", body: "AI-powered IU knowledge.", color: "violet", delay: "0.1s", icon: <Cpu className="h-5 w-5" /> },
-      { title: "Comprehensive", body: "From application to graduation.", color: "emerald", delay: "0.2s", icon: <Globe className="h-5 w-5" /> },
-      { title: "24/7 support", body: "Always here to help.", color: "amber", delay: "0.3s", icon: <Shield className="h-5 w-5" /> },
-    ],
-  },
+// Helper function to get features with icons
+const getFeatures = (lang: "de" | "en") => {
+  return TEXT[lang].features.map((feature) => {
+    const IconComponent = ICON_MAP[feature.iconName as keyof typeof ICON_MAP];
+    return {
+      ...feature,
+      icon: IconComponent ? <IconComponent className="h-5 w-5" /> : null,
+    };
+  });
 };
 
 const HomePage = ({ onNavigate, t, features }) => (
-  <section className="relative flex min-h-[80vh] flex-col items-center justify-center p-6 text-center">
-    <div className="relative z-10 max-w-3xl space-y-10">
-      <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white/50 px-4 py-1.5 shadow-sm backdrop-blur-md dark:border-white/10 dark:bg-white/5">
-        <Sparkles className="h-3.5 w-3.5 text-blue-500 dark:text-blue-400" />
-        <span className="text-xs font-semibold tracking-wide text-slate-600 dark:text-slate-300">
+  <section className="relative flex min-h-[85vh] flex-col items-center justify-center px-6 py-20 text-center">
+    <div className="relative z-10 max-w-4xl space-y-12">
+      <div className="inline-flex items-center gap-3 rounded-full border border-iu-blue/20 bg-iu-blue/10 px-8 py-3 shadow-2xl backdrop-blur-xl">
+        <Sparkles className="h-5 w-5 text-iu-blue animate-pulse" />
+        <span className="text-[10px] font-black tracking-[0.4em] text-iu-blue uppercase">
           IU AI Assistant 2.0
         </span>
       </div>
 
-      <h1 className="text-5xl font-bold tracking-tight text-slate-900 dark:text-white md:text-7xl">
+      <h1 className="text-6xl font-bold tracking-tight text-foreground md:text-8xl leading-tight">
         {t.heroLine1} <br />
-        <span className="bg-gradient-to-r from-blue-600 to-violet-600 bg-clip-text text-transparent dark:from-blue-400 dark:to-violet-400">
+        <span className="bg-gradient-to-r from-iu-blue via-iu-purple to-iu-pink bg-clip-text text-transparent">
           {t.heroLine2}
         </span>
       </h1>
 
-      <p className="mx-auto max-w-xl text-lg leading-relaxed text-slate-600 dark:text-slate-400">
+      <p className="mx-auto max-w-2xl text-xl leading-relaxed text-muted-foreground font-medium">
         {t.heroSubtitle}
       </p>
 
-      <div className="flex flex-wrap justify-center gap-4">
+      <div className="flex flex-wrap justify-center gap-6">
         <button
           onClick={() => onNavigate("chat")}
-          className="group inline-flex items-center gap-2 rounded-full bg-slate-900 px-8 py-4 text-sm font-semibold text-white shadow-lg shadow-slate-900/20 transition-all hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/30 dark:bg-white dark:text-slate-900 dark:shadow-blue-500/10"
+          className="group relative inline-flex items-center gap-4 rounded-[2rem] bg-foreground px-12 py-6 text-lg font-bold text-background shadow-2xl transition-all hover:-translate-y-1 hover:opacity-90 active:scale-95"
         >
           {t.chatCta}
-          <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
+          <ArrowRight className="h-6 w-6 transition-transform group-hover:translate-x-2" />
         </button>
       </div>
 
-      <div className="grid gap-4 pt-8 sm:grid-cols-2 lg:grid-cols-4">
-          {features.map((card, idx) => (
+      <div className="grid gap-6 pt-12 sm:grid-cols-2 lg:grid-cols-4">
+        {features.map((card, idx) => (
           <div
             key={idx}
-            className={`group relative overflow-hidden rounded-xl border border-slate-200 bg-white p-5 text-left shadow-sm transition-all hover:-translate-y-1 hover:shadow-md dark:border-white/10 dark:bg-[#09090b] border-t-4 ${CARD_COLORS[card.color].split(' ').pop()}`}
+            className="group relative overflow-hidden rounded-[2.5rem] border border-border bg-card/60 p-8 text-left shadow-2xl transition-all duration-500 hover:-translate-y-2 hover:bg-card backdrop-blur-xl"
             style={{ animationDelay: card.delay }}
           >
-            <div className={`mb-3 inline-flex rounded-lg p-2.5 ${CARD_COLORS[card.color].replace(/border-t-\w+-\d+/, '')}`}>
-              {card.icon}
+            {/* Hover background effect */}
+            <div className="absolute top-0 right-0 w-32 h-32 bg-iu-blue/5 blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-16 -mt-16"></div>
+
+            <div className="relative z-10">
+              <div className="mb-6 inline-flex rounded-2xl p-4 bg-iu-blue/10 text-iu-blue group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow-lg">
+                {card.icon}
+              </div>
+              <h3 className="mb-3 text-xl font-bold text-foreground tracking-tight">
+                {card.title}
+              </h3>
+              <p className="text-sm leading-relaxed text-muted-foreground font-medium">
+                {card.body}
+              </p>
             </div>
-            <h3 className="mb-1 text-sm font-bold text-slate-900 dark:text-white">
-              {card.title}
-            </h3>
-            <p className="text-xs leading-relaxed text-slate-500 dark:text-slate-400">
-              {card.body}
-            </p>
           </div>
         ))}
       </div>
@@ -153,11 +127,11 @@ const IULogo = ({ className = "w-8 h-8" }: { className?: string }) => (
     xmlns="http://www.w3.org/2000/svg"
     className={className}
   >
-    <rect width="100" height="100" rx="24" fill="black" />
+    <rect width="100" height="100" rx="0" fill="#245eeb" />
     <text
       x="50"
       y="75"
-      fontFamily="Inter, sans-serif"
+      fontFamily="Source Sans Pro, sans-serif"
       fontSize="65"
       fontWeight="bold"
       fill="white"
@@ -172,79 +146,95 @@ const IULogo = ({ className = "w-8 h-8" }: { className?: string }) => (
 const SimpleMarkdown = ({ text }: { text: string }) => {
   // Convert markdown to HTML-safe JSX
   const renderMarkdown = (input: string) => {
-    const lines = input.split('\n');
-    
+    const lines = input.split("\n");
+
     return lines.map((line, lineIndex) => {
       // Process the line for inline formatting
       let processed: (string | JSX.Element)[] = [line];
-      
+
       // Bold: **text**
       processed = processed.flatMap((part, i) => {
-        if (typeof part !== 'string') return part;
+        if (typeof part !== "string") return part;
         const segments: (string | JSX.Element)[] = [];
         const regex = /\*\*(.+?)\*\*/g;
         let lastIndex = 0;
         let match;
-        
+
         while ((match = regex.exec(part)) !== null) {
           if (match.index > lastIndex) {
             segments.push(part.slice(lastIndex, match.index));
           }
           segments.push(
-            <strong key={`bold-${lineIndex}-${i}-${match.index}`} className="font-bold">
+            <strong
+              key={`bold-${lineIndex}-${i}-${match.index}`}
+              className="font-bold text-iu-blue"
+            >
               {match[1]}
             </strong>
           );
           lastIndex = regex.lastIndex;
         }
-        
+
         if (lastIndex < part.length) {
           segments.push(part.slice(lastIndex));
         }
-        
+
         return segments.length > 0 ? segments : [part];
       });
-      
+
       // Check if line is a list item
-      const isBullet = line.trim().startsWith('- ') || line.trim().startsWith('• ');
+      const isBullet =
+        line.trim().startsWith("- ") || line.trim().startsWith("• ");
       const isNumbered = /^\d+\.\s/.test(line.trim());
-      const isEmoji = /^[📅📝🔄📊🏥📆🎯📄📚📧📖🏫🪪💰🌍📞🧠👋✅❌⚠️💡🎥🗂️💪💰💵]/.test(line.trim());
-      
+      const isEmoji =
+        /^[📅📝🔄📊🏥📆🎯📄📚📧📖🏫🪪💰🌍📞🧠👋✅❌⚠️💡🎥🗂️💪💰💵]/.test(
+          line.trim()
+        );
+
       if (isBullet) {
         return (
           <div key={lineIndex} className="flex items-start gap-2 ml-2 my-0.5">
-            <span className="text-primary">•</span>
-            <span>{processed.slice(0).map((p, i) => 
-              typeof p === 'string' ? p.replace(/^[-•]\s*/, '') : p
-            )}</span>
+            <span className="text-iu-blue font-bold">•</span>
+            <span className="font-bold">
+              {processed
+                .slice(0)
+                .map((p, i) =>
+                  typeof p === "string" ? p.replace(/^[-•]\s*/, "") : p
+                )}
+            </span>
           </div>
         );
       }
-      
+
       if (isNumbered) {
         const num = line.trim().match(/^(\d+)\./)?.[1];
         return (
           <div key={lineIndex} className="flex items-start gap-2 ml-2 my-0.5">
-            <span className="text-primary font-semibold">{num}.</span>
-            <span>{processed.map((p, i) => 
-              typeof p === 'string' ? p.replace(/^\d+\.\s*/, '') : p
-            )}</span>
+            <span className="text-iu-blue font-bold">{num}.</span>
+            <span className="font-bold">
+              {processed.map((p, i) =>
+                typeof p === "string" ? p.replace(/^\d+\.\s*/, "") : p
+              )}
+            </span>
           </div>
         );
       }
-      
-      if (line.trim() === '') {
+
+      if (line.trim() === "") {
         return <div key={lineIndex} className="h-2" />;
       }
-      
+
       return (
-        <div key={lineIndex} className={isEmoji ? 'mt-3 first:mt-0' : ''}>
+        <div
+          key={lineIndex}
+          className={isEmoji ? "mt-3 first:mt-0 font-bold" : "font-bold"}
+        >
           {processed}
         </div>
       );
     });
   };
-  
+
   return <div className="space-y-0.5">{renderMarkdown(text)}</div>;
 };
 
@@ -267,10 +257,10 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
       if (knowledgeMatch) {
         return knowledgeMatch.answer;
       }
-      
+
       // Fallback: Check database FAQs
       const normalizedQuestion = question.toLowerCase().trim();
-      
+
       // Exact match
       for (const faq of faqs) {
         if (faq.question.toLowerCase() === normalizedQuestion) {
@@ -319,7 +309,7 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
 
       setMessages((prev) => [...prev, { text: trimmed, isUser: true }]);
       setIsTyping(true);
-      
+
       // Simulate network delay for more natural feel
       setTimeout(() => {
         const answer = findAnswer(trimmed);
@@ -362,111 +352,118 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
   };
 
   return (
-    <section className="relative mx-auto flex h-[85vh] max-w-5xl flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm dark:border-white/10 dark:bg-[#09090b] dark:text-white">
-      {/* News-style Top Border Line - Blue to Yellow/Orange */}
-      <div className="h-1 w-full bg-gradient-to-r from-blue-600 to-amber-500" />
-      
+    <section className="relative mx-auto flex h-[88vh] max-w-5xl flex-col overflow-hidden rounded-[2.5rem] border border-border bg-card/60 shadow-2xl text-foreground backdrop-blur-xl">
+      {/* Premium Gradient Top Border */}
+      <div className="h-1.5 w-full bg-gradient-to-r from-iu-blue via-iu-purple to-iu-pink" />
+
       {/* Header */}
-      <header className="relative z-30 flex shrink-0 flex-col gap-6 border-b border-slate-100 bg-white px-6 py-5 dark:border-white/10 dark:bg-[#09090b] md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-4">
-          <div className="relative flex h-14 w-14 min-h-[3.5rem] min-w-[3.5rem] shrink-0 items-center justify-center rounded-2xl bg-slate-100 dark:bg-white/5">
-             <IULogo className="h-10 w-10" />
+      <header className="relative z-30 flex shrink-0 flex-col gap-6 border-b border-border bg-background/40 px-10 py-8 md:flex-row md:items-center md:justify-between">
+        <div className="flex items-center gap-6">
+          <div className="relative flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-iu-blue shadow-2xl shadow-iu-blue/20 transition-transform hover:scale-110">
+            <span className="text-2xl font-bold text-white">IU</span>
           </div>
           <div>
-            <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
+            <h2 className="text-2xl font-bold tracking-tight text-foreground">
               IU Assistant
             </h2>
-            <p className="text-xs font-medium text-slate-500 dark:text-slate-400">
-              Faculty of Artificial Intelligence
+            <p className="text-[10px] font-black text-iu-blue uppercase tracking-[0.4em]">
+              AI Learning Partner
             </p>
           </div>
         </div>
-        
-        <div className="flex gap-3">
+
+        <div className="flex gap-4">
           <button
             onClick={() => onNavigate("home")}
-            className="rounded-lg border border-slate-200 px-4 py-2 text-xs font-bold text-slate-600 hover:bg-slate-50 dark:border-white/10 dark:text-slate-300 dark:hover:bg-white/5 dark:hover:text-white"
+            className="rounded-2xl border border-border px-8 py-3 text-sm font-bold text-muted-foreground hover:bg-card hover:text-foreground transition-all active:scale-95 shadow-lg"
           >
             Beenden
           </button>
           <button
             onClick={handleClear}
-            className="rounded-lg bg-slate-100 px-3 py-2 text-slate-500 hover:bg-slate-200 dark:bg-white/5 dark:text-slate-400 dark:hover:bg-white/10"
+            className="rounded-2xl bg-iu-blue/10 border border-iu-blue/20 p-3 text-iu-blue hover:bg-iu-blue hover:text-white transition-all active:scale-95 shadow-lg"
             title="Chat neu starten"
           >
-            <RefreshCcw className="h-4 w-4" />
+            <RefreshCcw className="h-6 w-6" />
           </button>
         </div>
       </header>
 
       {/* Chat Area */}
-      <div className="relative z-20 flex-1 space-y-6 overflow-y-auto p-6 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-slate-200 dark:scrollbar-thumb-white/10">
+      <div className="relative z-20 flex-1 space-y-10 overflow-y-auto p-10 scrollbar-thin scrollbar-track-transparent scrollbar-thumb-border">
         {messages.map((msg, idx) => (
           <div
             key={`${msg.text}-${idx}`}
-            className={`flex w-full gap-4 ${msg.isUser ? "flex-row-reverse" : "flex-row"} animate-in fade-in slide-in-from-bottom-4 duration-500`}
+            className={`flex w-full gap-6 ${msg.isUser ? "flex-row-reverse" : "flex-row"} animate-in fade-in slide-in-from-bottom-4 duration-500`}
           >
             <div
-              className={`flex h-12 w-12 min-h-[3rem] min-w-[3rem] shrink-0 items-center justify-center rounded-2xl ${
+              className={`flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl shadow-2xl transition-transform hover:scale-110 ${
                 msg.isUser
-                  ? "bg-slate-900 text-white dark:bg-white dark:text-black"
-                  : "bg-slate-100 text-slate-600 dark:bg-white/10 dark:text-slate-300"
+                  ? "bg-foreground text-background"
+                  : "bg-iu-blue text-white"
               }`}
             >
               {msg.isUser ? (
-                 <span className="text-sm font-black">DU</span>
+                <span className="text-[10px] font-black uppercase tracking-widest">
+                  DU
+                </span>
               ) : (
-                <IULogo className="h-9 w-9" />
+                <span className="text-lg font-bold">IU</span>
               )}
             </div>
-            
-            <div className={`flex max-w-[85%] flex-col ${msg.isUser ? "items-end" : "items-start"}`}>
+
+            <div
+              className={`flex max-w-[80%] flex-col ${msg.isUser ? "items-end" : "items-start"}`}
+            >
               <div
-                className={`relative rounded-xl px-5 py-3 text-sm font-medium leading-relaxed ${
+                className={`relative rounded-[2rem] px-8 py-5 text-lg font-medium leading-relaxed shadow-2xl ${
                   msg.isUser
-                    ? "bg-slate-900 text-white dark:bg-white dark:text-black"
-                    : "bg-slate-50 text-slate-700 dark:bg-white/5 dark:text-slate-200"
+                    ? "bg-foreground text-background"
+                    : "bg-card border border-border text-foreground"
                 }`}
               >
                 {msg.isUser ? msg.text : <SimpleMarkdown text={msg.text} />}
               </div>
-              <span className="mt-1 px-1 text-[10px] text-slate-400">
-                {new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+              <span className="mt-3 px-4 text-[10px] text-muted-foreground font-black uppercase tracking-[0.3em] opacity-50">
+                {new Date().toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
               </span>
             </div>
           </div>
         ))}
-        
+
         {isTyping && (
-          <div className="flex w-full gap-4 animate-in fade-in slide-in-from-bottom-2">
-             <div className="flex h-12 w-12 min-h-[3rem] min-w-[3rem] shrink-0 items-center justify-center rounded-2xl bg-slate-100 dark:bg-white/10">
-                <IULogo className="h-9 w-9" />
-             </div>
-             <div className="flex items-center gap-1.5 rounded-xl bg-slate-50 px-4 py-3 dark:bg-white/5">
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.3s]"></div>
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400 [animation-delay:-0.15s]"></div>
-                <div className="h-1.5 w-1.5 animate-bounce rounded-full bg-slate-400"></div>
-             </div>
+          <div className="flex w-full gap-6 animate-in fade-in slide-in-from-bottom-2">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-iu-blue text-white shadow-2xl">
+              <span className="text-lg font-bold">IU</span>
+            </div>
+            <div className="flex items-center gap-2 rounded-[2rem] bg-card px-8 py-5 border border-border shadow-xl">
+              <div className="h-2 w-2 animate-bounce rounded-full bg-iu-blue [animation-delay:-0.3s]"></div>
+              <div className="h-2 w-2 animate-bounce rounded-full bg-iu-blue [animation-delay:-0.15s]"></div>
+              <div className="h-2 w-2 animate-bounce rounded-full bg-iu-blue"></div>
+            </div>
           </div>
         )}
         <div ref={messagesEndRef} />
       </div>
 
       {/* Input Area */}
-      <div className="relative z-30 border-t border-slate-100 bg-white p-6 dark:border-white/10 dark:bg-[#09090b]">
-      <div className="mb-4 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
+      <div className="relative z-30 border-t border-border bg-background/60 p-10 backdrop-blur-xl">
+        <div className="mb-8 flex gap-4 overflow-x-auto pb-4 scrollbar-none">
           {t.suggestions.map((sug) => (
             <button
               key={sug.text}
               onClick={() => handleSuggestion(sug.question)}
-              className="group flex items-center gap-2 whitespace-nowrap rounded-md border border-slate-200 bg-slate-50 px-3 py-1.5 text-xs font-bold text-slate-600 transition-all hover:border-blue-500 hover:text-blue-600 dark:border-white/10 dark:bg-white/5 dark:text-slate-300 dark:hover:border-blue-400 dark:hover:text-blue-400"
+              className="group flex items-center gap-3 whitespace-nowrap rounded-full border border-border bg-card px-6 py-3 text-xs font-bold text-muted-foreground transition-all hover:border-iu-blue hover:text-iu-blue hover:bg-iu-blue/5 shadow-md"
             >
               {sug.text}
             </button>
           ))}
         </div>
-        
-        <div className="relative flex items-end gap-3">
+
+        <div className="relative flex items-end gap-6">
           <div className="flex-1">
             <textarea
               value={inputValue}
@@ -474,20 +471,21 @@ const ChatPage = ({ onNavigate, faqs, t }) => {
               onKeyDown={onKeyDown}
               placeholder={t.placeholder}
               rows={1}
-              className="max-h-32 min-h-[3rem] w-full resize-none rounded-lg border border-slate-200 bg-slate-50 px-4 py-3 text-sm font-medium text-slate-900 placeholder-slate-400 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-500 dark:border-white/10 dark:bg-white/5 dark:text-white dark:placeholder-slate-500 dark:focus:border-blue-400"
-              style={{ height: 'auto', minHeight: '3rem' }}
+              className="max-h-40 min-h-[4.5rem] w-full resize-none rounded-[2rem] border border-border bg-background/50 px-8 py-5 text-lg font-medium text-foreground placeholder-muted-foreground focus:border-iu-blue focus:outline-none focus:ring-4 focus:ring-iu-blue/10 transition-all shadow-inner"
+              style={{ height: "auto", minHeight: "4.5rem" }}
               onInput={(e) => {
-                e.currentTarget.style.height = 'auto';
-                e.currentTarget.style.height = e.currentTarget.scrollHeight + 'px';
+                e.currentTarget.style.height = "auto";
+                e.currentTarget.style.height =
+                  e.currentTarget.scrollHeight + "px";
               }}
             />
           </div>
           <button
             onClick={handleSend}
             disabled={!inputValue.trim()}
-            className="group mb-1 flex h-10 w-10 items-center justify-center rounded-lg bg-blue-600 text-white transition-all hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="group mb-1 flex h-16 w-16 items-center justify-center rounded-[1.5rem] bg-foreground text-background transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50 shadow-2xl active:scale-95"
           >
-            <Send className="h-4 w-4" />
+            <Send className="h-7 w-7 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
           </button>
         </div>
       </div>
@@ -500,16 +498,17 @@ export default function FAQRoute() {
   const [currentPage, setCurrentPage] = useState("home");
   const { language } = useLanguage();
   const t = TEXT[language];
+  const features = getFeatures(language);
 
   const navigate = (page) => setCurrentPage(page);
 
   return (
-    <div className="min-h-screen text-slate-900 dark:text-white">
+    <div className="min-h-screen text-foreground">
       <BackgroundGradient />
       {/* Reduced padding from p-4 md:p-8 to p-2 md:p-4 to minimize space */}
-      <div className="relative z-10 p-2 md:p-4">
+      <div className="relative z-10">
         {currentPage === "home" && (
-          <HomePage onNavigate={navigate} t={t} features={t.features} />
+          <HomePage onNavigate={navigate} t={t} features={features} />
         )}
         {currentPage === "chat" && (
           <ChatPage onNavigate={navigate} faqs={faqs} t={t} />
