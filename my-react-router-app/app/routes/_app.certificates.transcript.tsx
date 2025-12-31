@@ -1,9 +1,21 @@
-import React, { useState } from "react";
-import { Download, Award, Calendar, User, GraduationCap, TrendingUp, FileText, CheckCircle, Filter } from "lucide-react";
+import React, { useState, useMemo } from "react";
+import {
+  Download,
+  Award,
+  Calendar,
+  User,
+  GraduationCap,
+  TrendingUp,
+  FileText,
+  CheckCircle,
+  Filter,
+} from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { useLoaderData } from "react-router-dom";
 import { prisma } from "~/lib/prisma";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
+import { getUserFromRequest } from "~/lib/auth.server";
+import { getCourseConfig } from "../data/coursesConfig";
 
 const TEXT = {
   de: {
@@ -62,27 +74,32 @@ const TEXT = {
   },
 };
 
-export const loader = async () => {
+export const loader = async ({ request }: { request: Request }) => {
   try {
-    const user = await prisma.user.findFirst({
-      include: {
-        studiengang: true,
-        marks: {
-          include: {
-            teacher: true,
-          },
-          orderBy: {
-            date: 'desc',
-          },
-        },
-      },
-    });
+    const user = await getUserFromRequest(request);
 
     if (!user) {
       return { user: null, marks: [] };
     }
 
-    return { user, marks: user.marks };
+    // Fetch marks specifically for this user
+    const marks = await prisma.mark.findMany({
+      where: { userId: user.id },
+      include: {
+        teacher: true,
+      },
+      orderBy: {
+        date: "desc",
+      },
+    });
+
+    // Also fetch studiengang info
+    const userWithProgram = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { studiengang: true },
+    });
+
+    return { user: userWithProgram, marks };
   } catch (error) {
     console.error("Error loading transcript data:", error);
     return { user: null, marks: [] };
@@ -99,8 +116,12 @@ export default function TranscriptPage() {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">No user data found</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mt-2">Please log in to view your transcript.</p>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+            No user data found
+          </h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+            Please log in to view your transcript.
+          </p>
         </div>
       </div>
     );
@@ -109,26 +130,67 @@ export default function TranscriptPage() {
   const studentData = {
     name: user.name || "Student Name",
     studentId: user.matriculationNumber || "12345678",
-    program: user.studyProgram || user.studiengang?.name || (language === "de" ? "Informatik (B.Sc.)" : "Computer Science (B.Sc.)"),
+    program:
+      user.studyProgram ||
+      user.studiengang?.name ||
+      (language === "de" ? "Informatik (B.Sc.)" : "Computer Science (B.Sc.)"),
     semester: "5",
-    enrollmentDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString(language === "de" ? "de-DE" : "en-US") : "01.10.2022",
+    enrollmentDate: user.createdAt
+      ? new Date(user.createdAt).toLocaleDateString(
+          language === "de" ? "de-DE" : "en-US"
+        )
+      : "01.10.2022",
   };
 
   // Filter marks based on toggle
-  const displayedMarks = showPassedOnly ? marks.filter(m => m.value <= 4.0) : marks;
-  
-  // Calculate statistics
-  const passedMarks = marks.filter(m => m.value <= 4.0);
-  const totalCredits = passedMarks.length * 5; // Assuming 5 ECTS per module
-  const gpa = passedMarks.length > 0 
-    ? (passedMarks.reduce((sum, m) => sum + m.value, 0) / passedMarks.length).toFixed(2)
-    : "0.00";
+  const displayedMarks = showPassedOnly
+    ? marks.filter((m: any) => m.value <= 4.0)
+    : marks;
 
-  const today = new Date().toLocaleDateString(language === "de" ? "de-DE" : "en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  // Group by semester
+  const courseConfigData = getCourseConfig(language);
+  const groupedMarks = useMemo(() => {
+    const groups: Record<string, typeof marks> = {};
+    displayedMarks.forEach((m: any) => {
+      const config = courseConfigData.find((c) => c.titleDE === m.course);
+      const sem =
+        config?.semester ||
+        (language === "de" ? "Zusatzmodule" : "Other Modules");
+      if (!groups[sem]) groups[sem] = [];
+      groups[sem].push(m);
+    });
+    return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
+  }, [displayedMarks, courseConfigData, language]);
+
+  // Calculate statistics
+  const passedMarks = marks.filter((m: any) => m.value <= 4.0);
+
+  const stats = useMemo(() => {
+    let totalCredits = 0;
+    let weightedSum = 0;
+
+    passedMarks.forEach((m: any) => {
+      const config = courseConfigData.find((c) => c.titleDE === m.course);
+      const credits = config?.credits || 5;
+      totalCredits += credits;
+      weightedSum += m.value * credits;
+    });
+
+    const gpaVal =
+      totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : "0.00";
+    return { totalCredits, gpa: gpaVal };
+  }, [passedMarks, courseConfigData]);
+
+  const { totalCredits, gpa } = stats;
+
+  const today = new Date().toLocaleDateString(
+    language === "de" ? "de-DE" : "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
 
   const downloadPDF = (passedOnly: boolean) => {
     const doc = new jsPDF({
@@ -152,9 +214,10 @@ export default function TranscriptPage() {
     doc.setFillColor(16, 185, 129);
     doc.rect(15, 15, pageWidth - 30, 25, "F");
     doc.setFillColor(20, 184, 166);
-    doc.setGState(new doc.GState({ opacity: 0.3 }));
+    const GS = (doc as any).GState;
+    doc.setGState(new GS({ opacity: 0.3 }));
     doc.rect(15, 15, pageWidth - 30, 25, "F");
-    doc.setGState(new doc.GState({ opacity: 1 }));
+    doc.setGState(new GS({ opacity: 1 }));
 
     // IU Logo
     doc.setFontSize(24);
@@ -166,13 +229,17 @@ export default function TranscriptPage() {
     doc.setFontSize(20);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(30, 41, 59);
-    doc.text(passedOnly ? t.passedOnly : t.title, pageWidth / 2, 50, { align: "center" });
+    doc.text(passedOnly ? t.passedOnly : t.title, pageWidth / 2, 50, {
+      align: "center",
+    });
 
     // Subtitle
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text("IU Internationale Hochschule", pageWidth / 2, 57, { align: "center" });
+    doc.text("IU Internationale Hochschule", pageWidth / 2, 57, {
+      align: "center",
+    });
 
     // Decorative line
     doc.setDrawColor(16, 185, 129);
@@ -185,13 +252,13 @@ export default function TranscriptPage() {
     doc.setTextColor(51, 65, 85);
     doc.setFont("helvetica", "bold");
     doc.text(studentData.name, 20, yPos);
-    
+
     yPos += 6;
     doc.setFont("helvetica", "normal");
     doc.setFontSize(10);
     doc.setTextColor(100, 116, 139);
     doc.text(`${t.studentId}: ${studentData.studentId}`, 20, yPos);
-    
+
     yPos += 5;
     doc.text(studentData.program, 20, yPos);
 
@@ -210,7 +277,7 @@ export default function TranscriptPage() {
     yPos = 100;
     doc.setFillColor(240, 253, 244); // Emerald-50
     doc.rect(15, yPos, pageWidth - 30, 10, "F");
-    
+
     doc.setFontSize(9);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(6, 95, 70);
@@ -219,42 +286,62 @@ export default function TranscriptPage() {
     doc.text(t.credits, pageWidth - 60, yPos + 6);
     doc.text(t.teacher, pageWidth - 40, yPos + 6);
 
-    // Table rows
-    yPos += 12;
-    doc.setFont("helvetica", "normal");
-    doc.setFontSize(9);
-    doc.setTextColor(51, 65, 85);
+    // Group dataToExport by semester for PDF
+    const groups: Record<string, any[]> = {};
+    dataToExport.forEach((m: any) => {
+      const config = courseConfigData.find((c) => c.titleDE === m.course);
+      const sem =
+        config?.semester ||
+        (language === "de" ? "Zusatzmodule" : "Other Modules");
+      if (!groups[sem]) groups[sem] = [];
+      groups[sem].push(m);
+    });
+    const groupedData = Object.entries(groups).sort((a, b) =>
+      a[0].localeCompare(b[0])
+    );
 
-    dataToExport.forEach((mark, index) => {
-      if (yPos > pageHeight - 40) {
+    groupedData.forEach(([semester, semesterMarks]) => {
+      if (yPos > pageHeight - 30) {
         doc.addPage();
         yPos = 30;
       }
 
-      // Alternating row colors
-      if (index % 2 === 0) {
-        doc.setFillColor(249, 250, 251);
-        doc.rect(15, yPos - 4, pageWidth - 30, 8, "F");
-      }
-
-      doc.text(mark.course, 20, yPos);
-      
-      // Color-coded grade
-      const gradeColor = mark.value <= 1.5 ? [16, 185, 129] : 
-                        mark.value <= 2.5 ? [59, 130, 246] :
-                        mark.value <= 3.5 ? [245, 158, 11] : [239, 68, 68];
-      doc.setTextColor(...gradeColor);
+      // Semester Header in PDF
+      doc.setFillColor(241, 245, 249);
+      doc.rect(15, yPos - 5, pageWidth - 30, 7, "F");
       doc.setFont("helvetica", "bold");
-      doc.text(mark.value.toFixed(1), pageWidth - 80, yPos);
-      
-      doc.setFont("helvetica", "normal");
-      doc.setTextColor(51, 65, 85);
-      doc.text("5", pageWidth - 60, yPos);
-      doc.setFontSize(7);
-      doc.text(mark.teacher?.name || "N/A", pageWidth - 40, yPos);
-      doc.setFontSize(9);
-
+      doc.setTextColor(30, 41, 59);
+      doc.text(semester, 20, yPos);
       yPos += 8;
+
+      semesterMarks.forEach((mark: any) => {
+        if (yPos > pageHeight - 30) {
+          doc.addPage();
+          yPos = 30;
+        }
+
+        doc.setFont("helvetica", "normal");
+        doc.setTextColor(51, 65, 85);
+        doc.text(mark.course, 20, yPos);
+
+        // Grade
+        const gradeValue = mark.value.toFixed(1);
+        if (mark.value > 4.0) {
+          doc.setTextColor(225, 29, 72); // Rose-600
+        } else {
+          doc.setTextColor(5, 150, 105); // Emerald-600
+        }
+        doc.text(gradeValue, pageWidth - 80, yPos);
+
+        doc.setTextColor(51, 65, 85);
+        doc.text("5 ECTS", pageWidth - 60, yPos);
+        doc.text(mark.teacher?.name || "N/A", pageWidth - 40, yPos);
+
+        yPos += 7;
+        doc.setDrawColor(241, 245, 249);
+        doc.line(15, yPos - 2, pageWidth - 15, yPos - 2);
+      });
+      yPos += 5;
     });
 
     // Summary box
@@ -267,7 +354,7 @@ export default function TranscriptPage() {
     doc.setFillColor(236, 253, 245);
     doc.setDrawColor(167, 243, 208);
     doc.roundedRect(15, yPos, pageWidth - 30, 25, 3, 3, "FD");
-    
+
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(6, 95, 70);
@@ -275,202 +362,291 @@ export default function TranscriptPage() {
     doc.text(`${t.gpa}: ${gpa}`, 20, yPos + 15);
     doc.setFont("helvetica", "normal");
     doc.setFontSize(8);
-    doc.text(`${dataToExport.length} ${language === "de" ? "Module" : "modules"}`, 20, yPos + 21);
+    doc.text(
+      `${dataToExport.length} ${language === "de" ? "Module" : "modules"}`,
+      20,
+      yPos + 21
+    );
 
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text(`${t.issueDate}: ${today}`, pageWidth / 2, pageHeight - 20, { align: "center" });
-    doc.text("IU Internationale Hochschule GmbH", pageWidth / 2, pageHeight - 16, { align: "center" });
+    doc.text(`${t.issueDate}: ${today}`, pageWidth / 2, pageHeight - 20, {
+      align: "center",
+    });
+    doc.text(
+      "IU Internationale Hochschule GmbH",
+      pageWidth / 2,
+      pageHeight - 16,
+      { align: "center" }
+    );
     doc.text("www.iu.de", pageWidth / 2, pageHeight - 12, { align: "center" });
 
-    const filename = passedOnly 
+    const filename = passedOnly
       ? `Bestandene_Pruefungen_${studentData.studentId}.pdf`
       : `Transcript_${studentData.studentId}.pdf`;
     doc.save(filename);
   };
 
   const getGradeColor = (grade: number) => {
-    if (grade <= 1.5) return "text-emerald-600 dark:text-emerald-400 bg-emerald-50 dark:bg-emerald-900/20";
-    if (grade <= 2.5) return "text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20";
-    if (grade <= 3.5) return "text-amber-600 dark:text-amber-400 bg-amber-50 dark:bg-amber-900/20";
-    return "text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-900/20";
+    if (grade <= 1.5)
+      return "text-iu-blue dark:text-iu-blue bg-iu-blue/10 border border-iu-blue/20";
+    if (grade <= 2.5)
+      return "text-iu-blue bg-iu-blue/10 border border-iu-blue/20";
+    if (grade <= 3.5)
+      return "text-iu-orange bg-iu-orange/10 border border-iu-orange/20";
+    return "text-iu-red bg-iu-red/10 border border-iu-red/20";
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-emerald-600 to-teal-600 rounded-2xl p-8 text-white shadow-2xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg">
-              <Award className="h-10 w-10" />
+    <div className="max-w-7xl mx-auto space-y-12">
+      {/* Header Section */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <Award size={28} />
+              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.title}
+              </h1>
             </div>
-            <div>
-              <h1 className="text-4xl font-black tracking-tight">{t.title}</h1>
-              <p className="text-emerald-100 mt-2 text-lg">{t.subtitle}</p>
+            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              {t.subtitle}
+            </p>
+            
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-sm font-bold w-fit">
+              <FileText size={16} />
+              <span>OFFICIAL DOCUMENT</span>
             </div>
           </div>
         </div>
+      </header>
 
         {/* Student Info Card */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-xl">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-            <div className="p-2 bg-emerald-50 dark:bg-emerald-900/20 rounded-lg">
-              <User className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
+          <div className="flex items-center gap-4 mb-10 pb-6 border-b border-border/50">
+            <div className="p-3 bg-iu-blue/10 rounded-2xl">
+              <User className="h-8 w-8 text-iu-blue" />
             </div>
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">{t.studentInfo}</h2>
+            <h2 className="text-3xl font-black text-foreground tracking-tight">
+              {t.studentInfo}
+            </h2>
           </div>
-          
-          <div className="grid md:grid-cols-3 gap-6">
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.name}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.name}</p>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            <div className="p-6 bg-background/40 rounded-3xl border border-border/50 hover:border-iu-blue/30 transition-colors group">
+              <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-widest group-hover:text-iu-blue transition-colors">
+                {t.name}
+              </p>
+              <p className="text-xl font-bold text-foreground">
+                {studentData.name}
+              </p>
             </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.studentId}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.studentId}</p>
+            <div className="p-6 bg-background/40 rounded-3xl border border-border/50 hover:border-iu-blue/30 transition-colors group">
+              <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-widest group-hover:text-iu-blue transition-colors">
+                {t.studentId}
+              </p>
+              <p className="text-xl font-bold text-foreground">
+                {studentData.studentId}
+              </p>
             </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.program}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.program}</p>
+            <div className="p-6 bg-background/40 rounded-3xl border border-border/50 hover:border-iu-blue/30 transition-colors group">
+              <p className="text-xs font-bold text-muted-foreground mb-2 uppercase tracking-widest group-hover:text-iu-blue transition-colors">
+                {t.program}
+              </p>
+              <p className="text-xl font-bold text-foreground">
+                {studentData.program}
+              </p>
             </div>
           </div>
         </div>
 
         {/* GPA Summary */}
-        <div className="grid md:grid-cols-2 gap-4">
-          <div className="bg-gradient-to-br from-emerald-500 to-teal-600 rounded-2xl p-8 text-white shadow-2xl">
-            <div className="flex items-center gap-3 mb-3">
-              <TrendingUp className="h-7 w-7" />
-              <h3 className="text-xl font-bold">{t.gpa}</h3>
+        <div className="grid md:grid-cols-2 gap-8">
+          <div className="bg-iu-blue rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+              <TrendingUp className="h-32 w-32" />
             </div>
-            <p className="text-5xl font-black">{gpa}</p>
-            <p className="text-emerald-100 mt-3">{t.gradeScaleText}</p>
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
+                  <TrendingUp className="h-8 w-8" />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight">{t.gpa}</h3>
+              </div>
+              <p className="text-7xl font-black mb-4">{gpa}</p>
+              <p className="text-white/80 text-lg font-bold">
+                {t.gradeScaleText}
+              </p>
+            </div>
           </div>
-          
-          <div className="bg-gradient-to-br from-blue-500 to-violet-600 rounded-2xl p-8 text-white shadow-2xl">
-            <div className="flex items-center gap-3 mb-3">
-              <GraduationCap className="h-7 w-7" />
-              <h3 className="text-xl font-bold">{t.totalCredits}</h3>
+
+          <div className="bg-iu-purple rounded-[2.5rem] p-10 text-white shadow-2xl relative overflow-hidden group hover:scale-[1.02] transition-transform duration-500">
+            <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+              <GraduationCap className="h-32 w-32" />
             </div>
-            <p className="text-5xl font-black">{totalCredits}</p>
-            <p className="text-blue-100 mt-3">{passedMarks.length} {language === "de" ? "Module bestanden" : "modules passed"}</p>
+            <div className="relative z-10">
+              <div className="flex items-center gap-4 mb-6">
+                <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
+                  <GraduationCap className="h-8 w-8" />
+                </div>
+                <h3 className="text-2xl font-black tracking-tight">
+                  {t.totalCredits}
+                </h3>
+              </div>
+              <p className="text-7xl font-black mb-4">{totalCredits}</p>
+              <p className="text-white/80 text-lg font-bold">
+                {passedMarks.length}{" "}
+                {language === "de" ? "Module bestanden" : "modules passed"}
+              </p>
+            </div>
           </div>
         </div>
 
         {/* Filter Toggle */}
-        <div className="flex items-center justify-between bg-white dark:bg-neutral-900 rounded-xl border border-neutral-200 dark:border-neutral-800 p-4 shadow-sm">
-          <div className="flex items-center gap-3">
-            <Filter className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
-            <span className="font-semibold text-neutral-900 dark:text-white">
+        <div className="flex items-center justify-between bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 shadow-2xl">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-muted rounded-2xl">
+              <Filter className="h-6 w-6 text-muted-foreground" />
+            </div>
+            <span className="font-black text-foreground uppercase tracking-[0.2em] text-sm">
               {showPassedOnly ? t.passedOnly : t.allGrades}
             </span>
           </div>
           <button
             onClick={() => setShowPassedOnly(!showPassedOnly)}
-            className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-              showPassedOnly ? "bg-emerald-600" : "bg-neutral-300 dark:bg-neutral-700"
+            className={`relative inline-flex h-8 w-14 items-center rounded-full transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-iu-blue focus:ring-offset-2 ${
+              showPassedOnly ? "bg-iu-blue" : "bg-muted"
             }`}
           >
             <span
-              className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
-                showPassedOnly ? "translate-x-6" : "translate-x-1"
+              className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-lg transition-transform duration-300 ${
+                showPassedOnly ? "translate-x-7" : "translate-x-1"
               }`}
             />
           </button>
         </div>
 
         {/* Grades Table */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 shadow-xl overflow-hidden">
-          <div className="p-6 border-b border-neutral-200 dark:border-neutral-800 bg-gradient-to-r from-emerald-50 to-teal-50 dark:from-emerald-900/20 dark:to-teal-900/20">
-            <div className="flex items-center gap-3">
-              <FileText className="h-6 w-6 text-emerald-600 dark:text-emerald-400" />
-              <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">{t.grades}</h2>
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border shadow-2xl overflow-hidden">
+          <div className="p-10 border-b border-border/50 bg-iu-blue/5">
+            <div className="flex items-center gap-4">
+              <div className="p-3 bg-iu-blue/10 rounded-2xl">
+                <FileText className="h-8 w-8 text-iu-blue" />
+              </div>
+              <h2 className="text-3xl font-black text-foreground tracking-tight">
+                {t.grades}
+              </h2>
             </div>
           </div>
-          
+
           <div className="overflow-x-auto">
             <table className="w-full">
-              <thead className="bg-neutral-50 dark:bg-neutral-800">
-                <tr>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+              <thead>
+                <tr className="bg-muted/30">
+                  <th className="px-8 py-6 text-left text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">
                     {t.module}
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  <th className="px-8 py-6 text-left text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">
                     {t.grade}
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  <th className="px-8 py-6 text-left text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">
                     {t.credits}
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  <th className="px-8 py-6 text-left text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">
                     {t.teacher}
                   </th>
-                  <th className="px-6 py-4 text-left text-xs font-bold text-neutral-600 dark:text-neutral-400 uppercase tracking-wider">
+                  <th className="px-8 py-6 text-left text-xs font-bold text-muted-foreground uppercase tracking-[0.2em]">
                     {t.date}
                   </th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-neutral-200 dark:divide-neutral-800">
-                {displayedMarks.map((mark, idx) => (
-                  <tr key={mark.id} className="hover:bg-neutral-50 dark:hover:bg-neutral-800/50 transition-colors">
-                    <td className="px-6 py-4 text-sm font-medium text-neutral-900 dark:text-white">
-                      {mark.course}
-                    </td>
-                    <td className="px-6 py-4">
-                      <span className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-bold ${getGradeColor(mark.value)}`}>
-                        {mark.value.toFixed(1)}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 text-sm text-neutral-600 dark:text-neutral-400">
-                      5 ECTS
-                    </td>
-                    <td className="px-6 py-4 text-sm text-neutral-600 dark:text-neutral-400">
-                      {mark.teacher?.name || "N/A"}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-neutral-600 dark:text-neutral-400">
-                      {new Date(mark.date).toLocaleDateString(language === "de" ? "de-DE" : "en-US")}
-                    </td>
-                  </tr>
-                ))}
+              <tbody className="divide-y divide-border/50">
+                {groupedMarks.map(
+                  ([semester, semesterMarks]: [string, any[]]) => (
+                    <React.Fragment key={semester}>
+                      <tr className="bg-iu-blue/5">
+                        <td
+                          colSpan={5}
+                          className="px-8 py-4 text-xs font-black text-iu-blue uppercase tracking-[0.3em]"
+                        >
+                          {semester}
+                        </td>
+                      </tr>
+                      {semesterMarks.map((mark: any) => (
+                        <tr
+                          key={mark.id}
+                          className="hover:bg-iu-blue/5 transition-colors group"
+                        >
+                          <td className="px-8 py-6 text-base font-bold text-foreground group-hover:text-iu-blue transition-colors">
+                            {mark.course}
+                          </td>
+                          <td className="px-8 py-6">
+                            <span
+                              className={`inline-flex items-center px-4 py-1.5 rounded-xl text-sm font-black shadow-sm ${getGradeColor(mark.value)}`}
+                            >
+                              {mark.value.toFixed(1)}
+                            </span>
+                          </td>
+                          <td className="px-8 py-6 text-sm text-muted-foreground font-bold">
+                            5 ECTS
+                          </td>
+                          <td className="px-8 py-6 text-sm text-muted-foreground font-bold">
+                            {mark.teacher?.name || "N/A"}
+                          </td>
+                          <td className="px-8 py-6 text-sm text-muted-foreground font-bold">
+                            {new Date(mark.date).toLocaleDateString(
+                              language === "de" ? "de-DE" : "en-US"
+                            )}
+                          </td>
+                        </tr>
+                      ))}
+                    </React.Fragment>
+                  )
+                )}
               </tbody>
             </table>
           </div>
         </div>
 
         {/* Grade Scale Info */}
-        <div className="bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800 rounded-2xl p-6 shadow-lg">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-emerald-500 rounded-xl shadow-lg">
-              <FileText className="h-6 w-6 text-white" />
+        <div className="bg-card/60 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 shadow-2xl">
+          <div className="flex items-start gap-6">
+            <div className="p-4 bg-iu-blue/10 rounded-2xl shadow-inner">
+              <FileText className="h-8 w-8 text-iu-blue" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-emerald-900 dark:text-emerald-100 mb-2">{t.gradeScale}</h3>
-              <p className="text-emerald-700 dark:text-emerald-300">{t.gradeScaleText}</p>
+              <h3 className="text-2xl font-black text-foreground mb-3 uppercase tracking-tight">
+                {t.gradeScale}
+              </h3>
+              <p className="font-bold text-muted-foreground text-lg leading-relaxed">
+                {t.gradeScaleText}
+              </p>
             </div>
           </div>
         </div>
 
         {/* Download Buttons */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid md:grid-cols-2 gap-6">
           <button
             onClick={() => downloadPDF(true)}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-700 hover:to-teal-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg"
+            className="group relative flex items-center justify-center gap-4 bg-iu-blue text-white font-black py-6 px-8 rounded-[2rem] transition-all duration-300 shadow-xl hover:shadow-iu-blue/20 hover:-translate-y-1 text-xl uppercase tracking-widest overflow-hidden"
           >
-            <CheckCircle className="h-6 w-6" />
-            {t.downloadPassedPdf}
+            <div className="absolute inset-0 bg-white/10 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <CheckCircle className="h-7 w-7 relative z-10" />
+            <span className="relative z-10">{t.downloadPassedPdf}</span>
           </button>
           <button
             onClick={() => downloadPDF(false)}
-            className="flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-bold py-4 px-6 rounded-xl transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg"
+            className="group relative flex items-center justify-center gap-4 bg-card/60 backdrop-blur-xl border-2 border-iu-blue/30 text-iu-blue font-black py-6 px-8 rounded-[2rem] transition-all duration-300 shadow-xl hover:shadow-iu-blue/10 hover:-translate-y-1 text-xl uppercase tracking-widest overflow-hidden"
           >
-            <Download className="h-6 w-6" />
-            {t.downloadCompletePdf}
+            <div className="absolute inset-0 bg-iu-blue/5 translate-y-full group-hover:translate-y-0 transition-transform duration-300" />
+            <Download className="h-7 w-7 relative z-10" />
+            <span className="relative z-10">{t.downloadCompletePdf}</span>
           </button>
         </div>
       </div>
-    </div>
-  );
+    );
 }

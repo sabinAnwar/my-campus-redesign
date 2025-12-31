@@ -3,7 +3,7 @@ import { Download, FileText, Calendar, User, GraduationCap, Building2, CheckCirc
 import { useLanguage } from "~/contexts/LanguageContext";
 import { useLoaderData } from "react-router-dom";
 import { prisma } from "~/lib/prisma";
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf";
 
 const TEXT = {
   de: {
@@ -56,14 +56,29 @@ const TEXT = {
   },
 };
 
-export const loader = async () => {
+import { getUserFromRequest } from "~/lib/auth.server";
+import type { LoaderFunctionArgs } from "react-router";
+
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
-    // Get the first user (in production, you'd get the logged-in user)
-    const user = await prisma.user.findFirst({
-      include: {
-        studiengang: true,
-      },
-    });
+    // 1. Try session user
+    let user = await getUserFromRequest(request);
+
+    // 2. Fallback to Sabin
+    if (!user) {
+      user = await prisma.user.findUnique({
+        where: { email: "sabin.elanwar@iu-study.org" },
+        include: { studiengang: true },
+      });
+    } else {
+      // Ensure relations are loaded if getUserFromRequest didn't load them (it loads basic fields usually)
+      // But getUserFromRequest usually returns the user object.
+      // Let's re-fetch to be safe and consistent with include
+      user = await prisma.user.findUnique({
+        where: { id: user.id },
+        include: { studiengang: true },
+      });
+    }
 
     if (!user) {
       return { user: null };
@@ -85,8 +100,12 @@ export default function ImmatriculationCertificatePage() {
     return (
       <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6 flex items-center justify-center">
         <div className="text-center">
-          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">No user data found</h1>
-          <p className="text-neutral-600 dark:text-neutral-400 mt-2">Please log in to view your certificate.</p>
+          <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
+            No user data found
+          </h1>
+          <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+            Please log in to view your certificate.
+          </p>
         </div>
       </div>
     );
@@ -95,17 +114,27 @@ export default function ImmatriculationCertificatePage() {
   const studentData = {
     name: user.name || "Student Name",
     studentId: user.matriculationNumber || "12345678",
-    program: user.studyProgram || user.studiengang?.name || (language === "de" ? "Informatik (B.Sc.)" : "Computer Science (B.Sc.)"),
+    program:
+      user.studyProgram ||
+      user.studiengang?.name ||
+      (language === "de" ? "Informatik (B.Sc.)" : "Computer Science (B.Sc.)"),
     semester: "5",
-    enrollmentDate: user.createdAt ? new Date(user.createdAt).toLocaleDateString(language === "de" ? "de-DE" : "en-US") : "01.10.2022",
+    enrollmentDate: user.createdAt
+      ? new Date(user.createdAt).toLocaleDateString(
+          language === "de" ? "de-DE" : "en-US"
+        )
+      : "01.10.2022",
     status: t.statusActive,
   };
 
-  const today = new Date().toLocaleDateString(language === "de" ? "de-DE" : "en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
+  const today = new Date().toLocaleDateString(
+    language === "de" ? "de-DE" : "en-US",
+    {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    }
+  );
 
   const downloadPDF = () => {
     const doc = new jsPDF({
@@ -128,9 +157,10 @@ export default function ImmatriculationCertificatePage() {
     doc.setFillColor(59, 130, 246); // Blue
     doc.rect(15, 15, pageWidth - 30, 25, "F");
     doc.setFillColor(139, 92, 246); // Violet overlay
-    doc.setGState(new doc.GState({ opacity: 0.3 }));
+    const GS = (doc as any).GState;
+    doc.setGState(new GS({ opacity: 0.3 }));
     doc.rect(15, 15, pageWidth - 30, 25, "F");
-    doc.setGState(new doc.GState({ opacity: 1 }));
+    doc.setGState(new GS({ opacity: 1 }));
 
     // IU Logo placeholder (text-based)
     doc.setFontSize(24);
@@ -148,7 +178,9 @@ export default function ImmatriculationCertificatePage() {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139); // Slate-500
-    doc.text("IU Internationale Hochschule", pageWidth / 2, 62, { align: "center" });
+    doc.text("IU Internationale Hochschule", pageWidth / 2, 62, {
+      align: "center",
+    });
 
     // Decorative line
     doc.setDrawColor(59, 130, 246);
@@ -159,7 +191,7 @@ export default function ImmatriculationCertificatePage() {
     doc.setFontSize(12);
     doc.setTextColor(51, 65, 85); // Slate-700
     doc.setFont("helvetica", "normal");
-    
+
     let yPos = 85;
     doc.text(t.certificateText, pageWidth / 2, yPos, { align: "center" });
 
@@ -175,7 +207,9 @@ export default function ImmatriculationCertificatePage() {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text(`${t.studentId}: ${studentData.studentId}`, pageWidth / 2, yPos, { align: "center" });
+    doc.text(`${t.studentId}: ${studentData.studentId}`, pageWidth / 2, yPos, {
+      align: "center",
+    });
 
     // Program info
     yPos += 15;
@@ -194,17 +228,27 @@ export default function ImmatriculationCertificatePage() {
     doc.setFont("helvetica", "normal");
     doc.setFontSize(12);
     doc.setTextColor(51, 65, 85);
-    doc.text(`${t.inSemester} ${studentData.semester}. ${t.semesterText}`, pageWidth / 2, yPos, { align: "center" });
+    doc.text(
+      `${t.inSemester} ${studentData.semester}. ${t.semesterText}`,
+      pageWidth / 2,
+      yPos,
+      { align: "center" }
+    );
 
     yPos += 8;
-    doc.text(`${t.enrolledSince} ${studentData.enrollmentDate}`, pageWidth / 2, yPos, { align: "center" });
+    doc.text(
+      `${t.enrolledSince} ${studentData.enrollmentDate}`,
+      pageWidth / 2,
+      yPos,
+      { align: "center" }
+    );
 
     // Decorative box for validity
     yPos += 20;
     doc.setFillColor(239, 246, 255); // Blue-50
     doc.setDrawColor(191, 219, 254); // Blue-200
     doc.roundedRect(30, yPos, pageWidth - 60, 20, 3, 3, "FD");
-    
+
     doc.setFontSize(10);
     doc.setFont("helvetica", "bold");
     doc.setTextColor(30, 64, 175); // Blue-800
@@ -227,7 +271,9 @@ export default function ImmatriculationCertificatePage() {
     doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100, 116, 139);
-    doc.text(`${t.issueDate}: ${today}`, pageWidth - 40, yPos + 10, { align: "right" });
+    doc.text(`${t.issueDate}: ${today}`, pageWidth - 40, yPos + 10, {
+      align: "right",
+    });
     doc.text(t.registrarOffice, pageWidth - 40, yPos + 16, { align: "right" });
 
     // Signature line
@@ -242,129 +288,210 @@ export default function ImmatriculationCertificatePage() {
     // Footer
     doc.setFontSize(8);
     doc.setTextColor(148, 163, 184);
-    doc.text("IU Internationale Hochschule GmbH", pageWidth / 2, pageHeight - 20, { align: "center" });
-    doc.text("Juri-Gagarin-Ring 152, 99084 Erfurt", pageWidth / 2, pageHeight - 16, { align: "center" });
+    doc.text(
+      "IU Internationale Hochschule GmbH",
+      pageWidth / 2,
+      pageHeight - 20,
+      { align: "center" }
+    );
+    doc.text(
+      "Juri-Gagarin-Ring 152, 99084 Erfurt",
+      pageWidth / 2,
+      pageHeight - 16,
+      { align: "center" }
+    );
     doc.text("www.iu.de", pageWidth / 2, pageHeight - 12, { align: "center" });
 
     doc.save(`Immatrikulationsbescheinigung_${studentData.studentId}.pdf`);
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6">
-      <div className="max-w-4xl mx-auto space-y-6">
-        {/* Header */}
-        <div className="relative overflow-hidden bg-gradient-to-r from-blue-600 to-violet-600 rounded-2xl p-8 text-white shadow-2xl">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -mr-32 -mt-32" />
-          <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/10 rounded-full -ml-24 -mb-24" />
-          <div className="relative z-10 flex items-center gap-4">
-            <div className="p-4 bg-white/20 rounded-2xl backdrop-blur-sm shadow-lg">
-              <GraduationCap className="h-10 w-10" />
+    <div className="space-y-8">
+        {/* Header Section */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <GraduationCap size={28} />
+              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.title}
+              </h1>
             </div>
-            <div>
-              <h1 className="text-4xl font-black tracking-tight">{t.title}</h1>
-              <p className="text-blue-100 mt-2 text-lg">{t.subtitle}</p>
+            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              {t.subtitle}
+            </p>
+            
+             <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-sm font-bold w-fit">
+              <Shield size={16} />
+              <span>OFFICIAL DOCUMENT</span>
             </div>
           </div>
         </div>
+      </header>
 
         {/* Student Info Card */}
-        <div className="bg-white dark:bg-neutral-900 rounded-2xl border border-neutral-200 dark:border-neutral-800 p-8 shadow-xl">
-          <div className="flex items-center gap-3 mb-6 pb-4 border-b border-neutral-200 dark:border-neutral-800">
-            <div className="p-2 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
-              <User className="h-6 w-6 text-blue-600 dark:text-blue-400" />
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden">
+          {/* Hover background effect */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-100 -mr-32 -mt-32"></div>
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-4 mb-10 pb-6 border-b border-border/50">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 border border-iu-blue/20 text-iu-blue shadow-lg">
+                <User className="h-6 w-6" />
+              </div>
+              <h2 className="text-2xl font-bold text-foreground tracking-tight">
+                {t.studentInfo}
+              </h2>
             </div>
-            <h2 className="text-2xl font-bold text-neutral-900 dark:text-white">{t.studentInfo}</h2>
-          </div>
-          
-          <div className="grid md:grid-cols-2 gap-6">
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.name}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.name}</p>
-            </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.studentId}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.studentId}</p>
-            </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.program}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.program}</p>
-            </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.semester}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.semester}. {t.semesterText}</p>
-            </div>
-            <div className="p-4 bg-neutral-50 dark:bg-neutral-800/50 rounded-xl">
-              <p className="text-sm text-neutral-600 dark:text-neutral-400 mb-1">{t.enrollmentDate}</p>
-              <p className="text-lg font-bold text-neutral-900 dark:text-white">{studentData.enrollmentDate}</p>
-            </div>
-            <div className="p-4 bg-emerald-50 dark:bg-emerald-900/20 rounded-xl border border-emerald-200 dark:border-emerald-800">
-              <p className="text-sm text-emerald-700 dark:text-emerald-400 mb-1">{t.status}</p>
-              <div className="flex items-center gap-2">
-                <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
-                <p className="text-lg font-bold text-emerald-700 dark:text-emerald-300">{studentData.status}</p>
+
+            <div className="grid md:grid-cols-2 gap-6">
+              <div className="p-6 bg-background/50 border border-border rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
+                <p className="text-[10px] text-muted-foreground/50 mb-2 font-black uppercase tracking-widest">
+                  {t.name}
+                </p>
+                <p className="text-xl font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+                  {studentData.name}
+                </p>
+              </div>
+              <div className="p-6 bg-background/50 border border-border rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
+                <p className="text-[10px] text-muted-foreground/50 mb-2 font-black uppercase tracking-widest">
+                  {t.studentId}
+                </p>
+                <p className="text-xl font-bold text-foreground tracking-widest group-hover:text-iu-blue transition-colors">
+                  {studentData.studentId}
+                </p>
+              </div>
+              <div className="p-6 bg-background/50 border border-border rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
+                <p className="text-[10px] text-muted-foreground/50 mb-2 font-black uppercase tracking-widest">
+                  {t.program}
+                </p>
+                <p className="text-xl font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+                  {studentData.program}
+                </p>
+              </div>
+              <div className="p-6 bg-background/50 border border-border rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
+                <p className="text-[10px] text-muted-foreground/50 mb-2 font-black uppercase tracking-widest">
+                  {t.semester}
+                </p>
+                <p className="text-xl font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+                  {studentData.semester}. {t.semesterText}
+                </p>
+              </div>
+              <div className="p-6 bg-background/50 border border-border rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
+                <p className="text-[10px] text-muted-foreground/50 mb-2 font-black uppercase tracking-widest">
+                  {t.enrollmentDate}
+                </p>
+                <p className="text-xl font-bold text-foreground tracking-widest group-hover:text-iu-blue transition-colors">
+                  {studentData.enrollmentDate}
+                </p>
+              </div>
+              <div className="p-6 bg-iu-blue/10 rounded-3xl border border-iu-blue/20 shadow-xl shadow-iu-blue/5 group hover:bg-iu-blue/20 transition-all duration-500">
+                <p className="text-[10px] text-iu-blue dark:text-iu-blue mb-2 font-black uppercase tracking-widest">
+                  {t.status}
+                </p>
+                <div className="flex items-center gap-3">
+                  <CheckCircle className="h-6 w-6 text-iu-blue dark:text-iu-blue" />
+                  <p className="text-xl font-bold text-iu-blue dark:text-iu-blue tracking-tight">
+                    {studentData.status}
+                  </p>
+                </div>
               </div>
             </div>
           </div>
         </div>
 
         {/* Certificate Preview */}
-        <div className="relative bg-white dark:bg-neutral-900 rounded-2xl border-4 border-blue-200 dark:border-blue-800 p-10 shadow-2xl">
+        <div className="relative bg-card/40 backdrop-blur-xl rounded-[2.5rem] border-4 border-iu-blue/20 p-12 shadow-2xl overflow-hidden">
           {/* Decorative corners */}
-          <div className="absolute top-4 left-4 w-12 h-12 border-t-4 border-l-4 border-violet-400 rounded-tl-lg" />
-          <div className="absolute top-4 right-4 w-12 h-12 border-t-4 border-r-4 border-violet-400 rounded-tr-lg" />
-          <div className="absolute bottom-4 left-4 w-12 h-12 border-b-4 border-l-4 border-violet-400 rounded-bl-lg" />
-          <div className="absolute bottom-4 right-4 w-12 h-12 border-b-4 border-r-4 border-violet-400 rounded-br-lg" />
+          <div className="absolute top-6 left-6 w-16 h-16 border-t-4 border-l-4 border-iu-blue/20 rounded-tl-2xl" />
+          <div className="absolute top-6 right-6 w-16 h-16 border-t-4 border-r-4 border-iu-blue/20 rounded-tr-2xl" />
+          <div className="absolute bottom-6 left-6 w-16 h-16 border-b-4 border-l-4 border-iu-blue/20 rounded-bl-2xl" />
+          <div className="absolute bottom-6 right-6 w-16 h-16 border-b-4 border-r-4 border-iu-blue/20 rounded-br-2xl" />
 
-          <div className="text-center mb-8">
-            <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-blue-500 to-violet-600 rounded-full mb-6 shadow-lg">
-              <Building2 className="h-10 w-10 text-white" />
+          <div className="text-center mb-12 relative z-10">
+            <div className="inline-flex items-center justify-center w-24 h-24 bg-iu-blue rounded-3xl mb-8 shadow-2xl shadow-iu-blue/30 transition-transform hover:rotate-12">
+              <Building2 className="h-12 w-12 text-white" />
             </div>
-            <h2 className="text-3xl font-black text-neutral-900 dark:text-white mb-3">{t.certificateTitle}</h2>
-            <p className="text-neutral-600 dark:text-neutral-400 text-lg">IU Internationale Hochschule</p>
-            <div className="w-32 h-1 bg-gradient-to-r from-blue-500 to-violet-600 mx-auto mt-4 rounded-full" />
+            <h2 className="text-4xl font-bold text-foreground mb-4 tracking-tight">
+              {t.certificateTitle}
+            </h2>
+            <p className="text-muted-foreground text-xl font-medium">
+              IU Internationale Hochschule
+            </p>
+            <div className="w-40 h-1.5 bg-iu-blue mx-auto mt-6 rounded-full shadow-lg shadow-iu-blue/20" />
           </div>
 
-          <div className="space-y-6 text-neutral-700 dark:text-neutral-300 max-w-2xl mx-auto">
-            <p className="text-center text-lg">{t.certificateText}</p>
-            <p className="text-center text-2xl font-black text-neutral-900 dark:text-white">{studentData.name}</p>
-            <p className="text-center text-sm text-neutral-600 dark:text-neutral-400">{t.studentId}: {studentData.studentId}</p>
-            <p className="text-center text-lg">{t.isEnrolled}</p>
-            <p className="text-center text-xl font-bold text-blue-600 dark:text-blue-400">{studentData.program}</p>
-            <p className="text-center text-lg">
-              {t.inSemester} <span className="font-bold">{studentData.semester}. {t.semesterText}</span> {t.enrolledSince} <span className="font-bold">{studentData.enrollmentDate}</span>.
+          <div className="space-y-8 text-foreground/80 max-w-2xl mx-auto relative z-10">
+            <p className="text-center text-xl font-medium">
+              {t.certificateText}
+            </p>
+            <p className="text-center text-4xl font-bold text-foreground tracking-tight">
+              {studentData.name}
+            </p>
+            <p className="text-center text-base text-muted-foreground/60 font-bold tracking-widest uppercase">
+              {t.studentId}: {studentData.studentId}
+            </p>
+            <p className="text-center text-xl font-medium">{t.isEnrolled}</p>
+            <p className="text-center text-2xl font-bold text-iu-blue tracking-tight">
+              {studentData.program}
+            </p>
+            <p className="text-center text-xl font-medium leading-relaxed">
+              {t.inSemester}{" "}
+              <span className="font-bold text-foreground">
+                {studentData.semester}. {t.semesterText}
+              </span>{" "}
+              {t.enrolledSince}{" "}
+              <span className="font-bold text-foreground">
+                {studentData.enrollmentDate}
+              </span>
+              .
             </p>
           </div>
 
-          <div className="mt-10 pt-8 border-t-2 border-neutral-200 dark:border-neutral-700 flex justify-between items-center">
-            <div className="flex items-center gap-3">
-              <div className="w-16 h-16 border-4 border-violet-500 rounded-full flex items-center justify-center">
-                <Shield className="h-8 w-8 text-violet-500" />
+          <div className="mt-16 pt-10 border-t border-border/50 flex flex-col md:flex-row justify-between items-center gap-8 relative z-10">
+            <div className="flex items-center gap-4">
+              <div className="w-20 h-20 border-4 border-iu-blue/20 rounded-2xl flex items-center justify-center bg-iu-blue/5 shadow-inner">
+                <Shield className="h-10 w-10 text-iu-blue" />
               </div>
               <div>
-                <p className="text-xs text-neutral-600 dark:text-neutral-400">{t.officialStamp}</p>
-                <p className="text-sm font-bold text-neutral-900 dark:text-white">{t.registrarOffice}</p>
+                <p className="text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest mb-1">
+                  {t.officialStamp}
+                </p>
+                <p className="text-lg font-bold text-foreground">
+                  {t.registrarOffice}
+                </p>
               </div>
             </div>
-            <div className="text-right">
-              <div className="flex items-center gap-2 text-sm text-neutral-600 dark:text-neutral-400 mb-2">
-                <Calendar className="h-4 w-4" />
-                <span>{t.issueDate}: {today}</span>
+            <div className="text-center md:text-right">
+              <div className="flex items-center justify-center md:justify-end gap-3 text-sm text-muted-foreground font-bold mb-4">
+                <Calendar className="h-5 w-5 text-iu-blue/40" />
+                <span>
+                  {t.issueDate}: {today}
+                </span>
               </div>
-              <div className="w-32 h-px bg-neutral-300 dark:bg-neutral-700 ml-auto mb-1" />
-              <p className="text-xs text-neutral-500 dark:text-neutral-400">Unterschrift</p>
+              <div className="w-48 h-px bg-border mx-auto md:ml-auto mb-2" />
+              <p className="text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest">
+                Unterschrift
+              </p>
             </div>
           </div>
         </div>
 
         {/* Validity Info */}
-        <div className="bg-gradient-to-r from-blue-50 to-violet-50 dark:from-blue-900/20 dark:to-violet-900/20 border-2 border-blue-200 dark:border-blue-800 rounded-2xl p-6 shadow-lg">
-          <div className="flex items-start gap-4">
-            <div className="p-3 bg-blue-500 rounded-xl shadow-lg">
-              <FileText className="h-6 w-6 text-white" />
+        <div className="bg-iu-blue/5 border border-iu-blue/20 rounded-[2rem] p-8 shadow-xl backdrop-blur-md group hover:bg-iu-blue/10 transition-all duration-500">
+          <div className="flex items-start gap-6">
+            <div className="p-4 bg-iu-blue rounded-2xl shadow-xl shadow-iu-blue/20 group-hover:scale-110 transition-transform">
+              <FileText className="h-7 w-7 text-white" />
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100 mb-2">{t.validity}</h3>
-              <p className="text-blue-700 dark:text-blue-300">{t.validityText}</p>
+              <h3 className="text-xl font-bold text-foreground mb-2 tracking-tight">
+                {t.validity}
+              </h3>
+              <p className="text-muted-foreground font-medium text-lg leading-relaxed">
+                {t.validityText}
+              </p>
             </div>
           </div>
         </div>
@@ -372,12 +499,12 @@ export default function ImmatriculationCertificatePage() {
         {/* Download Button */}
         <button
           onClick={downloadPDF}
-          className="w-full flex items-center justify-center gap-3 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white font-bold py-4 px-8 rounded-xl transition-all shadow-xl hover:shadow-2xl hover:-translate-y-1 text-lg"
+          className="w-full flex items-center justify-center gap-4 bg-foreground text-background font-bold py-6 px-10 rounded-[2rem] transition-all shadow-2xl hover:opacity-90 active:scale-95 text-lg group"
         >
-          <Download className="h-6 w-6" />
+          <Download className="h-7 w-7 group-hover:translate-y-1 transition-transform" />
           {t.downloadPdf}
         </button>
       </div>
-    </div>
-  );
+    );
 }
+  
