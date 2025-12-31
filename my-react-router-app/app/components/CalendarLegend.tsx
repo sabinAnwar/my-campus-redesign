@@ -110,7 +110,7 @@ export function CalendarLegend({ items, language }: LegendProps) {
                 <CalendarIcon className="h-3 w-3" />
                 2
               </div>
-              <div className="flex items-center gap-0.5 bg-emerald-600 text-white px-2 py-1 rounded-full text-[10px] font-bold">
+              <div className="flex items-center gap-0.5 bg-iu-blue text-white px-2 py-1 rounded-full text-[10px] font-bold">
                 <Info className="h-3 w-3" />
                 1
               </div>
