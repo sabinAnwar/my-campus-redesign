@@ -8,28 +8,30 @@ import {
 } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { TRANSLATIONS, CATEGORY_COLORS } from "~/constants/news";
+import {
+  Search,
+  RotateCcw,
+  Newspaper,
+  Calendar,
+  User,
+  ArrowRight,
+  X,
+  ChevronLeft,
+  ChevronRight,
+  Copy,
+  Check,
+  Star,
+  ExternalLink,
+  Clock,
+} from "lucide-react";
 
 /* -----------------------------------
    Types
 ------------------------------------*/
 
-export interface NewsItem {
-  slug: string;
-  title: string;
-  excerpt?: string;
-  content?: string;
-  category?: string;
-  author?: string;
-  featured?: boolean;
-  publishedAt: string;
-}
-
-export interface NewsResponse {
-  items: NewsItem[];
-  total: number;
-  page: number;
-  pageSize: number;
-}
+import type { NewsItem, NewsResponse } from "~/types/news";
+export type { NewsItem, NewsResponse };
 
 /* -----------------------------------
    Loader
@@ -45,7 +47,7 @@ export async function loader({
   const page = url.searchParams.get("page") || "1";
 
   const res = await fetch(
-    `${url.origin}/api/news?search=${encodeURIComponent(search)}&page=${page}`
+    `${url.origin}/api/news?search=${encodeURIComponent(search)}&page=${page}&lang=${url.searchParams.get("lang") || "de"}`
   );
 
   if (!res.ok) {
@@ -63,32 +65,7 @@ export default function NewsList() {
   const { items, total, page, pageSize } = useLoaderData() as NewsResponse;
   const { language } = useLanguage();
   const locale = language === "de" ? "de-DE" : "en-US";
-  const t = {
-    de: {
-      title: "News",
-      searchPlaceholder: "News durchsuchen...",
-      search: "Suchen",
-      reset: "Zurücksetzen",
-      noResults: "Keine News gefunden.",
-      categoryFallback: "Allgemein",
-      featured: "FEATURED",
-      readMore: "Weiterlesen",
-      loading: "Lade...",
-      close: "Schließen",
-    },
-    en: {
-      title: "News",
-      searchPlaceholder: "Search news...",
-      search: "Search",
-      reset: "Reset",
-      noResults: "No news found.",
-      categoryFallback: "General",
-      featured: "FEATURED",
-      readMore: "Read more",
-      loading: "Loading…",
-      close: "Close",
-    },
-  }[language];
+  const t = TRANSLATIONS[language];
 
   const [params] = useSearchParams();
   const submit = useSubmit();
@@ -131,7 +108,9 @@ export default function NewsList() {
         setCurrentIndex(items.findIndex((i) => i.slug === slug));
       }
 
-      const res = await fetch(`/api/news/${encodeURIComponent(slug)}`);
+      const res = await fetch(
+        `/api/news/${encodeURIComponent(slug)}?lang=${language}`
+      );
 
       if (!res.ok) {
         setError(`Failed to load (status ${res.status})`);
@@ -187,14 +166,14 @@ export default function NewsList() {
 
   const catColor = (cat?: string) => {
     const key = (cat || "General").toLowerCase();
-    if (key.includes("exam")) return "bg-amber-500";
-    if (key.includes("it")) return "bg-indigo-500";
-    if (key.includes("scholar")) return "bg-emerald-500";
-    if (key.includes("library")) return "bg-violet-500";
-    if (key.includes("career")) return "bg-cyan-500";
+    if (key.includes("exam")) return CATEGORY_COLORS.exam;
+    if (key.includes("it")) return CATEGORY_COLORS.it;
+    if (key.includes("scholar")) return CATEGORY_COLORS.scholar;
+    if (key.includes("library")) return CATEGORY_COLORS.library;
+    if (key.includes("career")) return CATEGORY_COLORS.career;
     if (key.includes("academic") || key.includes("module"))
-      return "bg-blue-500";
-    return "bg-slate-400";
+      return CATEGORY_COLORS.academic;
+    return CATEGORY_COLORS.default;
   };
 
   const [copied, setCopied] = useState(false);
@@ -215,149 +194,186 @@ export default function NewsList() {
   ------------------------------------*/
 
   return (
-  
-      <div className="max-w-6xl mx-auto">
-        {/* Search */}
-        <div className="flex items-center justify-between mb-6">
-          <h1 className="text-3xl font-black text-foreground">News</h1>
+    <div className="max-w-7xl mx-auto">
+      {/* Header Section */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <Newspaper size={28} />
+              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.title}
+              </h1>
+            </div>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+              Stay updated with the latest campus news and announcements.
+            </p>
+          </div>
 
-          <form method="get" className="flex items-center gap-2">
-            <input
-              type="text"
-              name="search"
-              defaultValue={q}
-              placeholder={t.searchPlaceholder}
-              className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring"
-              onChange={(e) => {
-                if (e.target.value === "") {
-                  submit(e.currentTarget.form!, {
-                    method: "get",
-                    replace: true,
-                  });
-                }
-              }}
-            />
+          <form
+            method="get"
+            className="flex items-center gap-3 w-full lg:w-auto bg-white dark:bg-white/5 backdrop-blur-xl p-2 rounded-[2rem] border border-slate-200 dark:border-white/10 shadow-xl"
+          >
+            <div className="relative flex-1 md:w-64">
+              <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+              <input
+                type="text"
+                name="search"
+                defaultValue={q}
+                placeholder={t.searchPlaceholder}
+                className="w-full pl-11 pr-4 py-3 bg-transparent text-slate-900 dark:text-white placeholder:text-slate-500 focus:outline-none text-sm font-bold"
+                onChange={(e) => {
+                  if (e.target.value === "") {
+                    submit(e.currentTarget.form!, {
+                      method: "get",
+                      replace: true,
+                    });
+                  }
+                }}
+              />
+            </div>
 
-            <button className="px-3 py-2 bg-primary text-primary-foreground rounded-lg text-sm hover:bg-primary/90">
+            <button className="hidden md:block px-6 py-3 bg-iu-blue text-white rounded-2xl text-sm font-black hover:bg-iu-blue/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-iu-blue/20 uppercase tracking-widest">
               {t.search}
             </button>
 
             <Link
               to="/news"
-              className="px-3 py-2 border border-input rounded-lg text-sm bg-background text-foreground hover:bg-accent hover:text-accent-foreground"
+              className="p-3 bg-slate-100 dark:bg-white/5 text-slate-600 dark:text-slate-400 rounded-2xl hover:bg-slate-200 dark:hover:bg-white/10 transition-all"
+              title={t.reset}
             >
-              {t.reset}
+              <RotateCcw className="h-5 w-5" />
             </Link>
           </form>
         </div>
+      </header>
 
-        {/* Results grid */}
-        {items.length === 0 ? (
-          <p className="text-muted-foreground">{t.noResults}</p>
-        ) : (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {items.map((n, i) => (
-              <article
-                key={n.slug}
-                className="relative rounded-xl border border-border bg-card text-card-foreground shadow-sm group transition hover:shadow-md"
-              >
-                <div className={`h-1 w-full ${catColor(n.category)}`} />
+      {/* Results grid */}
+      {items.length === 0 ? (
+        <div className="bg-white dark:bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-slate-200 dark:border-white/10 p-20 text-center shadow-2xl">
+          <div className="inline-flex p-6 bg-slate-100 dark:bg-white/5 rounded-3xl mb-6">
+            <Newspaper className="h-12 w-12 text-slate-400" />
+          </div>
+          <p className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+            {t.noResults}
+          </p>
+        </div>
+      ) : (
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+          {items.map((n, i) => (
+            <article
+              key={n.slug}
+              className="group relative flex flex-col bg-white dark:bg-white/5 backdrop-blur-xl rounded-[2.5rem] border border-slate-200 dark:border-white/10 shadow-xl hover:shadow-2xl hover:-translate-y-2 transition-all duration-500 overflow-hidden"
+            >
+              {/* Category Bar */}
+              <div className={`h-2 w-full ${catColor(n.category)}`} />
 
-                <div className="p-4 flex flex-col h-full">
-                  {/* Category */}
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
-                      {n.category || t.categoryFallback}
+              <div className="p-8 flex flex-col h-full">
+                {/* Category & Featured */}
+                <div className="flex items-center justify-between mb-6">
+                  <span className="text-[10px] px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 font-black uppercase tracking-[0.2em]">
+                    {n.category || t.categoryFallback}
+                  </span>
+
+                  {n.featured && (
+                    <span className="flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/20 font-black uppercase tracking-[0.2em]">
+                      <Star className="h-3 w-3 fill-current" />
+                      {t.featured}
                     </span>
-
-                    {n.featured && (
-                      <span className="text-[10px] px-2 py-1 rounded bg-amber-100 text-amber-800 border border-amber-200 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
-                        {t.featured}
-                      </span>
-                    )}
-                  </div>
-
-                  {/* Title */}
-                  <button
-                    type="button"
-                    onClick={() => openModal(n.slug, i)}
-                    className="text-left w-full"
-                  >
-                    <h2 className="text-lg font-extrabold text-card-foreground line-clamp-2 hover:underline">
-                      {n.title}
-                    </h2>
-                  </button>
-
-                  {/* Date */}
-                  <div className="mt-1 text-xs text-muted-foreground flex items-center gap-1">
-                    {new Date(n.publishedAt).toLocaleDateString(locale)}
-                    {n.author && <span>• {n.author}</span>}
-                  </div>
-
-                  {/* Excerpt */}
-                  {n.excerpt && (
-                    <p className="mt-2 text-sm text-muted-foreground line-clamp-3">
-                      {n.excerpt}
-                    </p>
                   )}
-
-                  {/* Read more */}
-                  <div className="mt-auto pt-4">
-                    <button
-                      onClick={() => openModal(n.slug, i)}
-                      className="px-3 py-1.5 rounded-lg bg-secondary text-secondary-foreground border border-border text-sm font-semibold hover:bg-secondary/80"
-                    >
-                      {t.readMore} →
-                    </button>
-                  </div>
                 </div>
-              </article>
-            ))}
-          </div>
-        )}
 
-        {/* Pagination */}
-        {pages > 1 && (
-          <div className="mt-8 flex gap-2">
-            {Array.from({ length: pages }).map((_, i) => {
-              const p = i + 1;
-              const sp = new URLSearchParams(params);
-              sp.set("page", String(p));
-              return (
-                <Link
-                  key={p}
-                  to={`?${sp.toString()}`}
-                  className={`px-3 py-1.5 rounded text-sm border ${
-                    p === currentPage
-                      ? "bg-primary text-primary-foreground border-primary"
-                      : "bg-background text-foreground border-input hover:bg-accent hover:text-accent-foreground"
-                  }`}
+                {/* Title */}
+                <button
+                  type="button"
+                  onClick={() => openModal(n.slug, i)}
+                  className="text-left w-full mb-4"
                 >
-                  {p}
-                </Link>
-              );
-            })}
-          </div>
-        )}
+                  <h2 className="text-lg font-bold text-foreground line-clamp-2 group-hover:text-iu-blue transition-colors uppercase leading-tight">
+                    {n.title}
+                  </h2>
+                </button>
 
-        {/* Modal */}
-        {isOpen && (
-          <NewsModal
-            article={article}
-            loading={loading}
-            error={error}
-            onClose={closeModal}
-            atStart={atStart}
-            atEnd={atEnd}
-            onPrev={() => openByIndex(currentIndex - 1)}
-            onNext={() => openByIndex(currentIndex + 1)}
-            copied={copied}
-            copyLink={copyCurrentLink}
-            closeBtnRef={closeBtnRef}
-          />
-        )}
-      </div>
- 
+                {/* Meta */}
+                <div className="flex items-center gap-4 mb-6">
+                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                    <Calendar className="h-3.5 w-3.5" />
+                    {new Date(n.publishedAt).toLocaleDateString(locale)}
+                  </div>
+                  {n.author && (
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                      <User className="h-3.5 w-3.5" />
+                      {n.author}
+                    </div>
+                  )}
+                </div>
+
+                {/* Excerpt */}
+                {n.excerpt && (
+                  <p className="text-sm text-slate-500 dark:text-slate-400 line-clamp-3 font-medium leading-relaxed mb-8">
+                    {n.excerpt}
+                  </p>
+                )}
+
+                {/* Read more */}
+                <div className="mt-auto">
+                  <button
+                    onClick={() => openModal(n.slug, i)}
+                    className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 text-xs font-black hover:bg-iu-blue hover:text-white transition-all duration-300 uppercase tracking-widest group/btn"
+                  >
+                    {t.readMore}
+                    <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
+                  </button>
+                </div>
+              </div>
+            </article>
+          ))}
+        </div>
+      )}
+
+      {/* Pagination */}
+      {pages > 1 && (
+        <div className="mt-16 flex justify-center items-center gap-3">
+          {Array.from({ length: pages }).map((_, i) => {
+            const p = i + 1;
+            const sp = new URLSearchParams(params);
+            sp.set("page", String(p));
+            return (
+              <Link
+                key={p}
+                to={`?${sp.toString()}`}
+                className={`w-12 h-12 flex items-center justify-center rounded-2xl text-sm font-black transition-all duration-300 border ${
+                  p === currentPage
+                    ? "bg-iu-blue text-white border-iu-blue shadow-lg shadow-iu-blue/20 scale-110"
+                    : "bg-white dark:bg-white/5 text-slate-500 dark:text-slate-400 border-slate-200 dark:border-white/10 hover:border-iu-blue/50"
+                }`}
+              >
+                {p}
+              </Link>
+            );
+          })}
+        </div>
+      )}
+
+      {/* Modal */}
+      {isOpen && (
+        <NewsModal
+          article={article}
+          loading={loading}
+          error={error}
+          onClose={closeModal}
+          atStart={atStart}
+          atEnd={atEnd}
+          onPrev={() => openByIndex(currentIndex - 1)}
+          onNext={() => openByIndex(currentIndex + 1)}
+          copied={copied}
+          copyLink={copyCurrentLink}
+          closeBtnRef={closeBtnRef}
+        />
+      )}
+    </div>
   );
 }
 
@@ -365,19 +381,7 @@ export default function NewsList() {
    Modal Component (Typed)
 ------------------------------------*/
 
-interface ModalProps {
-  article: NewsItem | null;
-  loading: boolean;
-  error: string;
-  atStart: boolean;
-  atEnd: boolean;
-  copied: boolean;
-  copyLink: () => void;
-  onClose: () => void;
-  onPrev: () => void;
-  onNext: () => void;
-  closeBtnRef: React.RefObject<HTMLButtonElement | null>;
-}
+import type { NewsModalProps as ModalProps } from "~/types/news";
 
 function NewsModal({
   article,
@@ -399,101 +403,153 @@ function NewsModal({
       categoryFallback: "Allgemein",
       loading: "Lade...",
       close: "Schließen",
+      author: "Autor",
+      published: "Veröffentlicht",
     },
     en: {
       categoryFallback: "General",
       loading: "Loading…",
       close: "Close",
+      author: "Author",
+      published: "Published",
     },
   }[language];
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
       {/* Overlay */}
-      <div className="absolute inset-0 bg-black/50 backdrop-blur-sm" onClick={onClose} />
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+        onClick={onClose}
+      />
 
       {/* Modal */}
-      <div className="relative z-10 w-[90vw] max-w-3xl max-h-[85vh] overflow-y-auto bg-card text-card-foreground rounded-2xl shadow-xl border border-border">
+      <div className="relative w-full max-w-4xl bg-white dark:bg-[#0a0a0a] rounded-[2.5rem] shadow-2xl border border-slate-200 dark:border-white/10 overflow-hidden flex flex-col max-h-[90vh]">
         {/* Header */}
-        <div className="flex items-center justify-between px-5 py-4 border-b border-border">
-          <div className="flex items-center gap-3">
-            <span className="text-xs px-2 py-1 rounded bg-muted text-muted-foreground border border-border font-semibold">
-              {article?.category || t.categoryFallback}
-            </span>
+        <div className="px-8 py-8 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="p-3 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
+              <Newspaper className="h-6 w-6 text-iu-blue" />
+            </div>
+            <div>
+              <span className="text-[10px] px-3 py-1 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-white/10 font-black uppercase tracking-[0.2em]">
+                {article?.category || t.categoryFallback}
+              </span>
+            </div>
           </div>
 
-          <div className="flex items-center gap-2">
-            {/* Prev */}
-            <button
-              onClick={onPrev}
-              disabled={atStart}
-              className={`p-1.5 rounded border border-border ${
-                atStart ? "opacity-40" : "hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              ←
-            </button>
+          <div className="flex items-center gap-3">
+            <div className="flex items-center bg-white dark:bg-white/5 rounded-2xl border border-slate-200 dark:border-white/10 p-1">
+              <button
+                onClick={onPrev}
+                disabled={atStart}
+                className={`p-2.5 rounded-xl transition-all ${
+                  atStart
+                    ? "opacity-20 cursor-not-allowed"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue"
+                }`}
+              >
+                <ChevronLeft className="h-5 w-5" />
+              </button>
+              <button
+                onClick={onNext}
+                disabled={atEnd}
+                className={`p-2.5 rounded-xl transition-all ${
+                  atEnd
+                    ? "opacity-20 cursor-not-allowed"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue"
+                }`}
+              >
+                <ChevronRight className="h-5 w-5" />
+              </button>
+            </div>
 
-            {/* Next */}
-            <button
-              onClick={onNext}
-              disabled={atEnd}
-              className={`p-1.5 rounded border border-border ${
-                atEnd ? "opacity-40" : "hover:bg-accent hover:text-accent-foreground"
-              }`}
-            >
-              →
-            </button>
-
-            {/* Copy */}
             <button
               onClick={copyLink}
-              className="p-1.5 rounded border border-border hover:bg-accent hover:text-accent-foreground"
+              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
             >
-              {copied ? "✔" : "⧉"}
+              {copied ? (
+                <Check className="h-5 w-5 text-iu-blue" />
+              ) : (
+                <Copy className="h-5 w-5" />
+              )}
             </button>
 
-            {/* Close */}
             <button
               ref={closeBtnRef}
               onClick={onClose}
-              className="p-1.5 rounded hover:bg-accent hover:text-accent-foreground"
+              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
             >
-              ✕
+              <X className="h-5 w-5" />
             </button>
           </div>
         </div>
 
         {/* Content */}
-        <div className="px-5 py-6">
-          {loading && <p className="text-muted-foreground">{t.loading}</p>}
-          {error && <p className="text-destructive">{error}</p>}
+        <div className="flex-1 overflow-y-auto p-8 sm:p-12 custom-scrollbar bg-white dark:bg-transparent">
+          {loading && (
+            <div className="flex flex-col items-center justify-center py-20">
+              <div className="h-12 w-12 border-4 border-iu-blue/20 border-t-iu-blue rounded-full animate-spin mb-4" />
+              <p className="text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
+                {t.loading}
+              </p>
+            </div>
+          )}
+
+          {error && (
+            <div className="p-8 rounded-[2rem] bg-iu-red/10 border border-iu-red/20 text-iu-red text-center font-bold">
+              {error}
+            </div>
+          )}
 
           {!loading && !error && article && (
-            <>
-              <h3 className="text-2xl font-bold text-card-foreground">{article.title}</h3>
-
-              <div className="mt-2 text-xs text-muted-foreground">
-                {new Date(article.publishedAt).toLocaleDateString(locale)}
-                {article.author && ` • ${article.author}`}
+            <div className="max-w-3xl mx-auto">
+              <div className="flex flex-wrap items-center gap-6 mb-8">
+                <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                  <Calendar className="h-4 w-4 text-iu-blue" />
+                  {t.published}:{" "}
+                  {new Date(article.publishedAt).toLocaleDateString(locale)}
+                </div>
+                {article.author && (
+                  <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                    <User className="h-4 w-4 text-iu-blue" />
+                    {t.author}: {article.author}
+                  </div>
+                )}
               </div>
+
+              <h3 className="text-4xl sm:text-5xl font-black text-slate-900 dark:text-white mb-8 tracking-tight leading-[1.1] uppercase">
+                {article.title}
+              </h3>
 
               {article.excerpt && (
-                <p className="mt-3 font-medium text-foreground">
-                  {article.excerpt}
-                </p>
+                <div className="p-8 rounded-[2rem] bg-slate-50 dark:bg-white/5 border border-slate-200 dark:border-white/10 mb-10">
+                  <p className="text-lg font-bold text-slate-700 dark:text-slate-300 leading-relaxed italic">
+                    "{article.excerpt}"
+                  </p>
+                </div>
               )}
 
-              <div className="prose dark:prose-invert mt-4 max-w-none text-foreground">
-                <p style={{ whiteSpace: "pre-wrap" }}>{article.content}</p>
+              <div className="prose prose-lg dark:prose-invert max-w-none">
+                <div className="text-slate-600 dark:text-slate-400 leading-relaxed space-y-6 font-medium">
+                  {article.content
+                    ?.split("\n")
+                    .map(
+                      (paragraph, idx) =>
+                        paragraph.trim() && <p key={idx}>{paragraph}</p>
+                    )}
+                </div>
               </div>
-            </>
+            </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="px-5 py-4 border-t border-border flex justify-end">
-          <button onClick={onClose} className="px-4 py-2 rounded-lg border border-input hover:bg-accent hover:text-accent-foreground">
+        <div className="px-8 py-8 border-t border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 flex justify-end">
+          <button
+            onClick={onClose}
+            className="px-10 py-4 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-900 dark:text-white font-black hover:bg-slate-100 dark:hover:bg-white/10 transition-all uppercase tracking-widest text-sm shadow-sm"
+          >
             {t.close}
           </button>
         </div>

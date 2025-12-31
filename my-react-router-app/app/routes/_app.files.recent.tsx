@@ -8,6 +8,10 @@ import {
   ExternalLink,
   FolderOpen,
   Download,
+  Video,
+  X,
+  ClipboardCheck,
+  Headphones,
 } from "lucide-react";
 import {
   getRecentFiles,
@@ -22,50 +26,62 @@ import { useLanguage } from "~/contexts/LanguageContext";
 // ────────────────────────────────────────────────────────────────────────────
 const TRANSLATIONS = {
   de: {
-    title: "Zuletzt gesuchte Dateien",
-    subtitle: "Durchsuche deine Dateien und greife schnell auf kürzlich geöffnete Dokumente zu",
-    noFilesFound: "Keine Dateien gefunden",
-    noFilesDesc: "Es sind noch keine Dateien in der Datenbank. Dateien werden automatisch hinzugefügt, wenn du:",
-    noFilesItem1: "Kurse besuchst und Materialien öffnest",
-    noFilesItem2: "Dokumente im Dokumentencenter ansiehst",
-    noFilesItem3: "Dateien hochlädst",
-    searchPlaceholder: "Dateiname suchen…",
+    title: "Zuletzt besucht",
+    subtitle:
+      "Greife schnell auf deine kürzlich angesehenen Vorlesungsmaterialien, Videos und Ressourcen zu",
+    noFilesFound: "Keine Inhalte gefunden",
+    noFilesDesc:
+      "Es sind noch keine Inhalte in deiner Historie. Inhalte werden automatisch hinzugefügt, wenn du:",
+    noFilesItem1: "Skripte oder PDFs in Kursen öffnest",
+    noFilesItem2: "Vorlesungsvideos oder Podcasts ansiehst",
+    noFilesItem3: "Online-Tests oder Evaluationen startest",
+    searchPlaceholder: "Nach Inhalten suchen…",
     search: "Suchen",
-    recentSearchTerms: "Letzte Suchbegriffe",
-    clear: "Leeren",
-    noSearchTerms: "Keine Suchbegriffe gespeichert.",
-    recentlyOpened: "Zuletzt geöffnete Dateien",
-    noFilesOpened: "Noch keine Dateien geöffnet.",
-    unknownCourse: "Unbekannter Kurs",
+    recentSearchTerms: "Letzte Suchen",
+    clear: "Verlauf leeren",
+    noSearchTerms: "Keine Suchbegriffe.",
+    recentlyOpened: "Deine Timeline",
+    noFilesOpened: "Du hast noch keine Inhalte besucht.",
+    unknownCourse: "Allgemein",
     open: "Öffnen",
     searchResults: "Suchergebnisse",
-    noResults: "Keine Treffer gefunden.",
-    enterSearchTerm: "Gib einen Suchbegriff ein.",
+    noResults: "Keine Treffer.",
+    enterSearchTerm: "Suchbegriff eingeben.",
     remember: "Merken",
     unknown: "Unbekannt",
+    filterAll: "Alle",
+    filterVideos: "Videos",
+    filterDocs: "Dokumente",
+    filterTests: "Tests/Evaluationen",
   },
   en: {
-    title: "Recently Searched Files",
-    subtitle: "Search your files and quickly access recently opened documents",
-    noFilesFound: "No Files Found",
-    noFilesDesc: "There are no files in the database yet. Files will be automatically added when you:",
-    noFilesItem1: "Visit courses and open materials",
-    noFilesItem2: "View documents in the document center",
-    noFilesItem3: "Upload files",
-    searchPlaceholder: "Search filename…",
+    title: "Recently Visited",
+    subtitle:
+      "Quickly access your recently viewed lecture materials, videos and resources",
+    noFilesFound: "No content found",
+    noFilesDesc:
+      "There's no content in your history yet. Content is automatically added when you:",
+    noFilesItem1: "Open scripts or PDFs in courses",
+    noFilesItem2: "Watch lecture videos or podcasts",
+    noFilesItem3: "Start online tests or evaluations",
+    searchPlaceholder: "Search content…",
     search: "Search",
-    recentSearchTerms: "Recent Search Terms",
-    clear: "Clear",
-    noSearchTerms: "No search terms saved.",
-    recentlyOpened: "Recently Opened Files",
-    noFilesOpened: "No files opened yet.",
-    unknownCourse: "Unknown Course",
+    recentSearchTerms: "Recent Searches",
+    clear: "Clear History",
+    noSearchTerms: "No search terms.",
+    recentlyOpened: "Your Timeline",
+    noFilesOpened: "No content visited yet.",
+    unknownCourse: "General",
     open: "Open",
     searchResults: "Search Results",
-    noResults: "No results found.",
-    enterSearchTerm: "Enter a search term.",
+    noResults: "No results.",
+    enterSearchTerm: "Enter search term.",
     remember: "Remember",
     unknown: "Unknown",
+    filterAll: "All",
+    filterVideos: "Videos",
+    filterDocs: "Documents",
+    filterTests: "Tests/Evaluations",
   },
 };
 
@@ -73,28 +89,7 @@ const TRANSLATIONS = {
 /* TYPES                                         */
 /* -------------------------------------------- */
 
-type ModuleFile = {
-  id: number;
-  name: string;
-  size: string;
-  date: string;
-  moduleId?: number;
-  moduleName?: string;
-  fileType?: string;
-  type?: string;
-  url?: string | null;
-  studiengang?: string | null;
-};
-
-type RecentFileEntry = {
-  id: number;
-  name: string;
-  fileType: string | null;
-  url: string | null;
-  moduleName: string | null;
-  studiengang: string | null;
-  at: number;
-};
+import type { ModuleFile, RecentFileEntry } from "~/types/file";
 
 /* -------------------------------------------- */
 /* LOADER                                        */
@@ -108,7 +103,7 @@ export const loader = async () => {
         studiengang: true,
       },
       orderBy: {
-        uploadedAt: 'desc',
+        uploadedAt: "desc",
       },
       take: 100, // Limit to recent 100 files
     });
@@ -133,11 +128,12 @@ export default function RecentFiles() {
   const { files: dbFiles } = useLoaderData<typeof loader>();
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
   const [q, setQ] = useState("");
   const [results, setResults] = useState<ModuleFile[]>([]);
   const [recentTerms, setRecentTerms] = useState<string[]>([]);
   const [recentFiles, setRecentFiles] = useState<RecentFileEntry[]>([]);
+  const [activeFilter, setActiveFilter] = useState("all");
 
   // Convert database files to ModuleFile format
   const FILES: ModuleFile[] = dbFiles.map((f: any) => ({
@@ -231,248 +227,298 @@ export default function RecentFiles() {
   /* RENDER                                        */
   /* -------------------------------------------- */
 
+  /* FILTER LOGIC */
+  const filteredFiles = recentFiles.filter((f) => {
+    if (activeFilter === "all") return true;
+    const type = f.fileType?.toLowerCase() || "";
+    if (activeFilter === "videos")
+      return type === "video" || type === "podcast";
+    if (activeFilter === "docs")
+      return ["pdf", "excel", "xlsx", "xls", "script"].includes(type);
+    if (activeFilter === "tests")
+      return type === "test" || type === "evaluation";
+    return true;
+  });
+
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 p-6">
-      <div className="max-w-7xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-neutral-900 dark:text-white mb-2">
-            Zuletzt gesuchte Dateien
-          </h1>
-          <p className="text-neutral-600 dark:text-neutral-400">
-            Durchsuche deine Dateien und greife schnell auf kürzlich geöffnete Dokumente zu
-          </p>
+    <div className="max-w-6xl mx-auto">
+      {/* Header Section */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <Clock size={28} />
+              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.title}
+              </h1>
+            </div>
+            <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              {t.subtitle}
+            </p>
+          </div>
+          <button
+            onClick={clearFiles}
+            className="inline-flex items-center justify-center gap-2 px-4 py-2 bg-neutral-100 hover:bg-red-50 dark:bg-neutral-800 dark:hover:bg-red-950/30 text-neutral-600 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400 rounded-xl transition-all duration-300 text-sm font-bold border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-900/50 shadow-sm"
+          >
+            <Trash2 className="h-4 w-4" />
+            {t.clear}
+          </button>
         </div>
 
-        {/* No Files Warning */}
-        {FILES.length === 0 && (
-          <div className="bg-amber-50 dark:bg-amber-900/20 border-2 border-amber-200 dark:border-amber-800 rounded-2xl p-6 mb-6">
-            <div className="flex items-start gap-4">
-              <div className="p-3 bg-amber-500 rounded-xl">
-                <FileIcon className="h-6 w-6 text-white" />
-              </div>
-              <div>
-                <h3 className="text-lg font-bold text-amber-900 dark:text-amber-100 mb-2">
-                  Keine Dateien gefunden
-                </h3>
-                <p className="text-amber-700 dark:text-amber-300 mb-3">
-                  Es sind noch keine Dateien in der Datenbank. Dateien werden automatisch hinzugefügt, wenn du:
-                </p>
-                <ul className="list-disc list-inside text-amber-700 dark:text-amber-300 space-y-1">
-                  <li>Kurse besuchst und Materialien öffnest</li>
-                  <li>Dokumente im Dokumentencenter ansiehst</li>
-                  <li>Dateien hochlädst</li>
-                </ul>
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* SEARCH BAR */}
-        <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 mb-6 shadow-sm">
-          <div className="flex gap-3 items-center">
-            <Search className="h-5 w-5 text-neutral-500 dark:text-neutral-400" />
-            <input
-              value={q}
-              onChange={(e) => setQ(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onSearch()}
-              placeholder="Dateiname suchen…"
-              className="flex-1 outline-none bg-transparent text-neutral-900 dark:text-neutral-50 placeholder-neutral-500 dark:placeholder-neutral-600 text-lg"
-              disabled={FILES.length === 0}
-            />
+        {/* Activity Filter */}
+        <div className="flex flex-wrap items-center gap-2 mt-8">
+          {[
+            { id: "all", label: t.filterAll, icon: Clock },
+            { id: "videos", label: t.filterVideos, icon: Video },
+            { id: "docs", label: t.filterDocs, icon: FileIcon },
+            { id: "tests", label: t.filterTests, icon: ClipboardCheck },
+          ].map((filter) => (
             <button
-              onClick={() => onSearch()}
-              disabled={FILES.length === 0}
-              className="px-6 py-3 rounded-xl bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition-colors shadow-lg disabled:opacity-50 disabled:cursor-not-allowed"
+              key={filter.id}
+              onClick={() => setActiveFilter(filter.id)}
+              className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
+                activeFilter === filter.id
+                  ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 translate-y-[-2px]"
+                  : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800"
+              }`}
             >
-              Suchen
+              <filter.icon className="h-4 w-4" />
+              {filter.label}
             </button>
-          </div>
+          ))}
         </div>
+      </header>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* RECENT SEARCH TERMS */}
-          <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-                Letzte Suchbegriffe
-              </h2>
-              <button
-                onClick={clearTerms}
-                className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 inline-flex items-center gap-1 transition-colors"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Leeren
-              </button>
-            </div>
+      {/* Search Bar - Slim Version */}
+      <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 mb-10 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
+        <div className="flex gap-4 items-center">
+          <Search className="h-5 w-5 text-neutral-400" />
+          <input
+            value={q}
+            onChange={(e) => setQ(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && onSearch()}
+            placeholder={t.searchPlaceholder}
+            className="flex-1 outline-none bg-transparent text-neutral-900 dark:text-white placeholder-neutral-500 text-base"
+          />
+          {q && (
+            <button
+              onClick={() => setQ("")}
+              className="p-1 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
+            >
+              <X className="h-4 w-4 text-neutral-400" />
+            </button>
+          )}
+        </div>
+      </div>
 
-            {recentTerms.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Keine Suchbegriffe gespeichert.
-              </p>
-            ) : (
-              <div className="flex flex-wrap gap-2">
-                {recentTerms.map((t) => (
-                  <button
-                    key={t}
-                    onClick={() => onSearch(t)}
-                    className="px-3 py-1.5 rounded-full bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-sm font-semibold transition-colors"
-                  >
-                    {t}
-                  </button>
-                ))}
+      {/* Content Layout */}
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        {/* Main Timeline Column */}
+        <div className="lg:col-span-3 space-y-6">
+          <h2 className="text-xl font-black text-neutral-900 dark:text-white flex items-center gap-2">
+            <Clock className="h-5 w-5 text-blue-500" />
+            {t.recentlyOpened}
+          </h2>
+
+          {filteredFiles.length === 0 ? (
+            <div className="bg-white dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-3xl p-12 text-center">
+              <div className="bg-neutral-100 dark:bg-neutral-800 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
+                <FileIcon className="h-8 w-8 text-neutral-400" />
               </div>
-            )}
-          </section>
-
-          {/* RECENT FILES */}
-          <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-                Zuletzt geöffnete Dateien
-              </h2>
-              <button
-                onClick={clearFiles}
-                className="text-xs text-neutral-500 dark:text-neutral-400 hover:text-neutral-700 dark:hover:text-neutral-200 inline-flex items-center gap-1 transition-colors"
-              >
-                <Trash2 className="h-3.5 w-3.5" /> Leeren
-              </button>
-            </div>
-
-            {recentFiles.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                Noch keine Dateien geöffnet.
+              <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
+                {t.noFilesOpened}
+              </h3>
+              <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto mb-8">
+                {t.noFilesDesc}
               </p>
-            ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {recentFiles.map((f) => {
-                  const fileType = f.fileType?.toLowerCase() ?? "";
+              <ul className="text-xs text-neutral-400 dark:text-neutral-500 space-y-2 inline-block text-left">
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-blue-500"></span>
+                  {t.noFilesItem1}
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-blue-500"></span>
+                  {t.noFilesItem2}
+                </li>
+                <li className="flex items-center gap-2">
+                  <span className="w-1 h-1 rounded-full bg-blue-500"></span>
+                  {t.noFilesItem3}
+                </li>
+              </ul>
+            </div>
+          ) : (
+            <div className="space-y-6">
+              {filteredFiles.map((f, idx) => {
+                const type = f.fileType?.toLowerCase() || "";
 
-                  const getFileTypeBadge = () => {
-                    if (fileType === "pdf")
-                      return (
-                        <span className="text-xs px-2 py-1 rounded-full bg-red-100 dark:bg-red-900/40 text-red-700 dark:text-red-200 font-semibold">
-                          PDF
-                        </span>
-                      );
-                    if (["excel", "xlsx", "xls"].includes(fileType))
-                      return (
-                        <span className="text-xs px-2 py-1 rounded-full bg-green-100 dark:bg-green-900/40 text-green-700 dark:text-green-200 font-semibold">
-                          Excel
-                        </span>
-                      );
-                    if (["podcast", "mp3", "mp4"].includes(fileType))
-                      return (
-                        <span className="text-xs px-2 py-1 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-200 font-semibold">
-                          Podcast
-                        </span>
-                      );
-                    if (fileType === "video")
-                      return (
-                        <span className="text-xs px-2 py-1 rounded-full bg-blue-100 dark:bg-blue-900/40 text-blue-700 dark:text-blue-200 font-semibold">
-                          Video
-                        </span>
-                      );
+                const isVideo = type === "video";
+                const isPodcast = type === "podcast";
+                const isTest = type === "test" || type === "evaluation";
+                const isDoc = [
+                  "pdf",
+                  "excel",
+                  "xlsx",
+                  "xls",
+                  "script",
+                ].includes(type);
 
-                    return null;
-                  };
+                return (
+                  <div
+                    key={f.id + idx}
+                    className="group bg-card/60 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 hover:border-iu-blue/30 hover:bg-card transition-all duration-500 shadow-xl relative overflow-hidden"
+                  >
+                    {/* Hover background effect */}
+                    <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity -mr-32 -mt-32"></div>
 
-                  return (
-                    <li key={f.id} className="py-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded-lg px-2 -mx-2 transition-colors">
-                      <div className="flex items-center gap-3 flex-1 min-w-0">
-                        <FileIcon className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
+                    <div className="flex items-start gap-6 relative z-10">
+                      {/* Type Icon Container */}
+                      <div
+                        className={`p-4 rounded-2xl flex-shrink-0 transition-transform group-hover:scale-110 shadow-lg border ${
+                          isVideo
+                            ? "bg-iu-red/10 border-iu-red/20 text-iu-red"
+                            : isPodcast
+                              ? "bg-iu-purple/10 border-iu-purple/20 text-iu-purple"
+                              : isTest
+                                ? "bg-iu-orange/10 border-iu-orange/20 text-iu-orange"
+                                : "bg-iu-blue/10 border-iu-blue/20 text-iu-blue"
+                        }`}
+                      >
+                        {isVideo ? (
+                          <Video className="h-7 w-7" />
+                        ) : isPodcast ? (
+                          <Headphones className="h-7 w-7" />
+                        ) : isTest ? (
+                          <ClipboardCheck className="h-7 w-7" />
+                        ) : (
+                          <FileIcon className="h-7 w-7" />
+                        )}
+                      </div>
 
-                        <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <div className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
-                              {f.name}
-                            </div>
+                      {/* Info Container */}
+                      <div className="flex-1 min-w-0 space-y-3">
+                        <div className="flex items-center justify-between gap-4 flex-wrap">
+                          <h3 className="text-lg font-bold text-foreground truncate group-hover:text-iu-blue transition-colors">
+                            {f.name}
+                          </h3>
+                          {/* Mediatype Badge */}
+                          <span
+                            className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
+                              isVideo
+                                ? "bg-iu-red/10 border-iu-red/20 text-iu-red"
+                                : isPodcast
+                                  ? "bg-iu-purple/10 border-iu-purple/20 text-iu-purple"
+                                  : isTest
+                                    ? "bg-iu-orange/10 border-iu-orange/20 text-iu-orange"
+                                    : "bg-iu-blue/10 border-iu-blue/20 text-iu-blue"
+                            }`}
+                          >
+                            {type || "Source"}
+                          </span>
+                        </div>
 
-                            {getFileTypeBadge()}
+                        <div className="flex flex-wrap items-center gap-6 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
+                          <div className="flex items-center gap-2">
+                            <FolderOpen className="h-4 w-4 text-muted-foreground/30" />
+                            <span className="truncate">
+                              {f.moduleName || t.unknownCourse}
+                            </span>
                           </div>
-
-                          <div className="text-xs text-neutral-500 dark:text-neutral-400 flex items-center gap-1 mt-1">
-                            {f.moduleName ?? "Unbekannter Kurs"} •
-                            <Clock className="inline h-3.5 w-3.5" />
-                            {new Date(f.at).toLocaleString("de-DE", {
-                              day: "2-digit",
-                              month: "2-digit",
-                              year: "numeric",
-                              hour: "2-digit",
-                              minute: "2-digit",
-                            })}
+                          <div className="flex items-center gap-2">
+                            <Clock className="h-4 w-4 text-muted-foreground/30" />
+                            {new Date(f.at).toLocaleDateString(
+                              language === "de" ? "de-DE" : "en-US",
+                              {
+                                day: "2-digit",
+                                month: "short",
+                                hour: "2-digit",
+                                minute: "2-digit",
+                              }
+                            )}
                           </div>
                         </div>
                       </div>
 
+                      {/* Action Button */}
                       <button
                         onClick={() => {
-                          if (f.url) {
+                          saveRecentFileLib(
+                            {
+                              id: f.id,
+                              name: f.name,
+                              type: f.fileType,
+                              url: f.url,
+                            },
+                            f.moduleName,
+                            f.studiengang
+                          );
+                          if (f.url && f.url !== "#") {
                             window.open(f.url, "_blank", "noopener,noreferrer");
-
-                            const updatedFiles = recentFiles.map((file) =>
-                              file.id === f.id ? { ...file, at: Date.now() } : file
-                            );
-
-                            setRecentFiles(updatedFiles);
-                            localStorage.setItem(
-                              LS_KEYS.recentFiles,
-                              JSON.stringify(updatedFiles)
-                            );
                           } else {
                             window.location.href = "/courses";
                           }
                         }}
-                        className="text-xs inline-flex items-center gap-1 text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-200 ml-2 transition-colors px-3 py-2 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/20 font-semibold"
+                        className="absolute right-8 top-1/2 -translate-y-1/2 p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 duration-300"
                       >
-                        <ExternalLink className="h-3.5 w-3.5" /> Öffnen
+                        <ExternalLink className="h-6 w-6" />
                       </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            )}
-          </section>
-
-          {/* SEARCH RESULTS */}
-          <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-6 shadow-sm">
-            <div className="flex items-center gap-2 mb-4">
-              <FolderOpen className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
-              <h2 className="text-lg font-bold text-neutral-900 dark:text-white">
-                Suchergebnisse
-              </h2>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
+          )}
+        </div>
 
-            {results.length === 0 ? (
-              <p className="text-sm text-neutral-500 dark:text-neutral-400">
-                {q ? "Keine Treffer gefunden." : "Gib einen Suchbegriff ein."}
+        {/* Sidebar Area */}
+        <div className="space-y-8">
+          {/* Search Results / Tags */}
+          <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 shadow-sm">
+            <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-6 flex items-center gap-2">
+              <Search className="h-4 w-4 text-neutral-400" />
+              {t.recentSearchTerms}
+            </h3>
+
+            {recentTerms.length === 0 ? (
+              <p className="text-xs text-neutral-500 italic">
+                {t.noSearchTerms}
               </p>
             ) : (
-              <ul className="divide-y divide-neutral-100 dark:divide-neutral-800">
-                {results.map((f) => (
-                  <li key={f.id} className="py-3 flex items-center justify-between hover:bg-neutral-50 dark:hover:bg-neutral-800/50 rounded-lg px-2 -mx-2 transition-colors">
-                    <div className="flex items-center gap-3 flex-1 min-w-0">
-                      <FileIcon className="h-5 w-5 text-neutral-600 dark:text-neutral-400" />
-                      <div className="flex-1 min-w-0">
-                        <div className="text-sm font-semibold text-neutral-900 dark:text-white truncate">
-                          {f.name}
-                        </div>
-                        <div className="text-xs text-neutral-500 dark:text-neutral-400">
-                          {f.moduleName} • {f.size}
-                        </div>
-                      </div>
-                    </div>
-
-                    <button
-                      onClick={() => saveRecentFile(f)}
-                      className="text-xs inline-flex items-center gap-1 text-neutral-600 dark:text-neutral-300 hover:text-neutral-800 dark:hover:text-neutral-100 px-3 py-2 rounded-lg hover:bg-neutral-100 dark:hover:bg-neutral-800 transition-colors font-semibold"
-                    >
-                      <Download className="h-3.5 w-3.5" /> Merken
-                    </button>
-                  </li>
+              <div className="flex flex-wrap gap-2">
+                {recentTerms.map((term) => (
+                  <button
+                    key={term}
+                    onClick={() => onSearch(term)}
+                    className="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 text-xs font-bold rounded-lg transition-colors"
+                  >
+                    {term}
+                  </button>
                 ))}
-              </ul>
+                <button
+                  onClick={clearTerms}
+                  className="text-[10px] text-neutral-400 hover:text-red-500 font-bold uppercase mt-2 w-full text-left ml-1"
+                >
+                  {t.clear}
+                </button>
+              </div>
             )}
           </section>
+
+          {/* Quick Link Card */}
+          <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 text-white shadow-xl shadow-blue-500/20">
+            <h3 className="font-black text-lg mb-2">Hilfe nötig?</h3>
+            <p className="text-blue-100 text-xs leading-relaxed mb-4">
+              Du findest deine Dokumente nicht? Probier es direkt im Dokumenten
+              Center.
+            </p>
+            <button
+              onClick={() => (window.location.href = "/info-center")}
+              className="w-full py-2.5 bg-white/20 hover:bg-white/30 rounded-xl text-xs font-black transition-colors backdrop-blur-sm"
+            >
+              Info Center öffnen
+            </button>
+          </div>
         </div>
       </div>
     </div>

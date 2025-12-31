@@ -509,7 +509,7 @@ Oder nutze den Pomodoro-Timer rechts, um direkt loszulegen! →`;
   }, []);
 
   return (
-    <main className="max-w-7xl mx-auto px-4 py-6">
+    <main className="max-w-7xl mx-auto">
       {/* Header */}
       <div className="mb-6">
         <Link
@@ -546,11 +546,11 @@ Oder nutze den Pomodoro-Timer rechts, um direkt loszulegen! →`;
                   <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-violet-500 to-purple-600 flex items-center justify-center">
                     <Brain className="w-5 h-5 text-white" />
                   </div>
-                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-emerald-500 rounded-full border-2 border-white dark:border-slate-900" />
+                  <div className="absolute -bottom-1 -right-1 w-4 h-4 bg-iu-blue rounded-full border-2 border-white dark:border-slate-900" />
                 </div>
                 <div>
-                  <h3 className="font-bold text-slate-900 dark:text-white">Lern-KI</h3>
-                  <p className="text-xs text-emerald-600 dark:text-emerald-400">Online</p>
+                  <h3 className="font-black text-slate-900 dark:text-white">Lern-KI</h3>
+                  <p className="text-xs text-iu-blue dark:text-iu-blue">Online</p>
                 </div>
               </div>
               
@@ -692,14 +692,14 @@ Oder nutze den Pomodoro-Timer rechts, um direkt loszulegen! →`;
         <div className="space-y-6">
           {/* Pomodoro Timer */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-lg">
-            <h3 className="font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            <h3 className="font-black text-slate-900 dark:text-white mb-4 flex items-center gap-2">
               <Timer className="w-5 h-5 text-rose-500" />
               {t.pomodoroTitle}
             </h3>
             
             <div className="text-center">
               <div className={`text-5xl font-mono font-bold mb-2 ${
-                isBreak ? 'text-emerald-500' : 'text-violet-600 dark:text-violet-400'
+                isBreak ? 'text-iu-blue' : 'text-violet-600 dark:text-violet-400'
               }`}>
                 {formatTime(pomodoroTime)}
               </div>
@@ -772,7 +772,7 @@ Oder nutze den Pomodoro-Timer rechts, um direkt loszulegen! →`;
 
           {/* Quick Access */}
           <div className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6">
-            <h3 className="font-bold text-slate-900 dark:text-white mb-4">{t.quickActionsTitle}</h3>
+            <h3 className="font-black text-slate-900 dark:text-white mb-4">{t.quickActionsTitle}</h3>
             <div className="space-y-2">
               <Link
                 to="/courses"
@@ -788,8 +788,8 @@ Oder nutze den Pomodoro-Timer rechts, um direkt loszulegen! →`;
                 to="/library"
                 className="flex items-center gap-3 p-3 rounded-xl hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors group"
               >
-                <div className="p-2 rounded-lg bg-emerald-500/10">
-                  <FileText className="w-4 h-4 text-emerald-600" />
+                <div className="p-2 rounded-lg bg-iu-blue/10">
+                  <FileText className="w-4 h-4 text-iu-blue" />
                 </div>
                 <span className="text-sm font-medium text-slate-700 dark:text-slate-300">{t.viewLibrary}</span>
                 <ChevronRight className="w-4 h-4 ml-auto text-slate-400 group-hover:translate-x-1 transition-transform" />

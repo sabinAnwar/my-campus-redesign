@@ -50,32 +50,32 @@ export default function NewsDetail() {
   const [copied, setCopied] = useState(false);
   if (data?.notFound) {
     return (
-    
+      <div className="min-h-screen bg-slate-950 pt-20 px-4">
         <div className="max-w-3xl mx-auto">
-          <p className="text-slate-600">{t.notFound}</p>
+          <p className="text-slate-400 font-bold">{t.notFound}</p>
           <Link
             to={`/news${backSearch}`}
-            className="inline-block mt-4 text-sm font-bold text-slate-900 underline"
+            className="inline-block mt-4 text-sm font-black text-iu-blue uppercase tracking-wider hover:underline"
           >
             {t.back}
           </Link>
         </div>
-    
+      </div>
     );
   }
   if (data?.error && !data?.item) {
     return (
-     
+      <div className="min-h-screen bg-slate-950 pt-20 px-4">
         <div className="max-w-3xl mx-auto">
-          <p className="text-slate-600">{data.error || t.errorFallback}</p>
+          <p className="text-slate-400 font-bold">{data.error || t.errorFallback}</p>
           <Link
             to={`/news${backSearch}`}
-            className="inline-block mt-4 text-sm font-bold text-slate-900 underline"
+            className="inline-block mt-4 text-sm font-black text-iu-blue uppercase tracking-wider hover:underline"
           >
             {t.back}
           </Link>
         </div>
-      
+      </div>
     );
   }
   const { item } = data;
@@ -98,102 +98,114 @@ export default function NewsDetail() {
   }
 
   return (
-    <>
+    <div className="min-h-screen bg-slate-950 pb-20">
       {/* Optional hero when cover image exists */}
       {item.coverImageUrl ? (
         <header className="relative w-full">
           <div
-            className="h-60 md:h-80 w-full bg-slate-200"
+            className="h-60 md:h-96 w-full bg-slate-900"
             style={{
               backgroundImage: `url(${item.coverImageUrl})`,
               backgroundSize: "cover",
               backgroundPosition: "center",
             }}
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-black/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
           <div className="absolute inset-0 flex items-end">
-            <div className="max-w-3xl mx-auto w-full px-4 pb-6">
-              <div className="flex items-center gap-3 mb-2">
-                <span className="text-[11px] px-2 py-1 rounded bg-white/80 text-slate-800 border border-white/80 font-semibold backdrop-blur">
+            <div className="max-w-3xl mx-auto w-full px-4 pb-8">
+              <div className="flex items-center gap-3 mb-4">
+                <span className="text-[11px] px-3 py-1 rounded-none bg-iu-blue text-white font-black uppercase tracking-widest">
                   {item.category || t.categoryFallback}
                 </span>
                 {item.featured && (
-                  <span className="text-[10px] px-2 py-1 rounded bg-amber-200/90 border border-amber-300 text-amber-900 font-bold backdrop-blur">
+                  <span className="text-[10px] px-3 py-1 rounded-none bg-iu-orange text-slate-950 font-black uppercase tracking-widest">
                     {t.featured}
                   </span>
                 )}
               </div>
-              <h1 className="text-3xl md:text-4xl font-black text-white drop-shadow">
+              <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
                 {item.title}
               </h1>
-              <div className="mt-2 text-sm text-white/90 flex items-center gap-1">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  width="14"
-                  height="14"
-                  viewBox="0 0 24 24"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  className="opacity-90"
-                >
-                  <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-                  <path d="M16 2v4"></path>
-                  <path d="M8 2v4"></path>
-                  <path d="M3 10h18"></path>
-                </svg>
-                <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
-                {item.author ? <span>• {item.author}</span> : null}
+              <div className="mt-4 text-sm text-slate-400 font-bold flex items-center gap-4">
+                <div className="flex items-center gap-1.5">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    width="14"
+                    height="14"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="2.5"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  >
+                    <rect width="18" height="18" x="3" y="4" rx="0"></rect>
+                    <path d="M16 2v4"></path>
+                    <path d="M8 2v4"></path>
+                    <path d="M3 10h18"></path>
+                  </svg>
+                  <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
+                </div>
+                {item.author ? (
+                  <div className="flex items-center gap-1.5">
+                    <span className="w-1 h-1 bg-slate-600 rounded-full" />
+                    <span>{item.author}</span>
+                  </div>
+                ) : null}
               </div>
             </div>
           </div>
         </header>
       ) : (
-        <div className="max-w-3xl mx-auto px-4 pt-4">
-          <div className="flex items-center justify-between">
-            <span className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-semibold dark:text-slate-200">
+        <div className="max-w-3xl mx-auto px-4 pt-24">
+          <div className="flex items-center gap-3 mb-4">
+            <span className="text-[11px] px-3 py-1 rounded-none bg-iu-blue text-white font-black uppercase tracking-widest">
               {item.category || t.categoryFallback}
             </span>
             {item.featured && (
-              <span className="text-[10px] px-2 py-1 rounded bg-amber-100 border border-amber-200 text-amber-800 font-bold dark:bg-amber-900/30 dark:text-amber-300 dark:border-amber-800">
+              <span className="text-[10px] px-3 py-1 rounded-none bg-iu-orange text-slate-950 font-black uppercase tracking-widest">
                 {t.featured}
               </span>
             )}
           </div>
-          <h1 className="mt-2 text-3xl font-black text-slate-900 dark:text-slate-100">
+          <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
             {item.title}
           </h1>
-          <div className="mt-2 text-sm text-slate-500 dark:text-slate-400 flex items-center gap-1">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="14"
-              height="14"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="opacity-70"
-            >
-              <rect width="18" height="18" x="3" y="4" rx="2"></rect>
-              <path d="M16 2v4"></path>
-              <path d="M8 2v4"></path>
-              <path d="M3 10h18"></path>
-            </svg>
-            <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
-            {item.author ? <span>• {item.author}</span> : null}
+          <div className="mt-4 text-sm text-slate-400 font-bold flex items-center gap-4">
+            <div className="flex items-center gap-1.5">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="14"
+                height="14"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                strokeWidth="2.5"
+                strokeLinecap="round"
+                strokeLinejoin="round"
+              >
+                <rect width="18" height="18" x="3" y="4" rx="0"></rect>
+                <path d="M16 2v4"></path>
+                <path d="M8 2v4"></path>
+                <path d="M3 10h18"></path>
+              </svg>
+              <span>{new Date(item.publishedAt).toLocaleDateString(locale)}</span>
+            </div>
+            {item.author ? (
+              <div className="flex items-center gap-1.5">
+                <span className="w-1 h-1 bg-slate-600 rounded-full" />
+                <span>{item.author}</span>
+              </div>
+            ) : null}
           </div>
         </div>
       )}
 
       <article className="max-w-3xl mx-auto px-4">
-        <div className="flex items-center justify-between mt-4">
+        <div className="flex items-center justify-between mt-8 pb-8 border-b border-slate-800">
           <Link
             to={`/news${backSearch}`}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-transparent hover:bg-slate-200 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
+            className="inline-flex items-center gap-2 text-xs font-black text-white uppercase tracking-widest px-4 py-2 rounded-none bg-slate-900 hover:bg-iu-blue transition-colors border border-slate-800"
           >
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -202,7 +214,7 @@ export default function NewsDetail() {
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="2"
+              strokeWidth="3"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -212,7 +224,7 @@ export default function NewsDetail() {
           </Link>
           <button
             onClick={copyLink}
-            className="inline-flex items-center gap-1 text-sm font-semibold text-slate-700 dark:text-slate-200 px-3 py-1.5 rounded-lg bg-white dark:bg-transparent hover:bg-slate-50 dark:hover:bg-slate-800 border border-slate-200 dark:border-slate-700"
+            className="inline-flex items-center gap-2 text-xs font-black text-white uppercase tracking-widest px-4 py-2 rounded-none bg-slate-900 hover:bg-iu-pink transition-colors border border-slate-800"
           >
             {copied ? (
               <>
@@ -224,7 +236,7 @@ export default function NewsDetail() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -241,11 +253,11 @@ export default function NewsDetail() {
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="2"
+                  strokeWidth="3"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
-                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2" />
+                  <rect x="9" y="9" width="13" height="13" rx="0" ry="0" />
                   <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
                 </svg>
               </>
@@ -254,19 +266,21 @@ export default function NewsDetail() {
         </div>
 
         {item.excerpt && (
-          <p className="mt-6 text-lg text-slate-700 dark:text-slate-300">{item.excerpt}</p>
+          <p className="mt-10 text-xl text-slate-200 font-bold leading-relaxed italic border-l-4 border-iu-blue pl-6">
+            {item.excerpt}
+          </p>
         )}
 
-        <div className="prose prose-slate dark:prose-invert mt-6 whitespace-pre-wrap">
+        <div className="prose prose-invert prose-slate max-w-none mt-10 whitespace-pre-wrap text-slate-300 font-medium leading-loose">
           {item.content}
         </div>
 
         {tags.length > 0 && (
-          <div className="mt-8 flex flex-wrap gap-2">
+          <div className="mt-12 pt-8 border-t border-slate-800 flex flex-wrap gap-3">
             {tags.map((t) => (
               <span
                 key={t}
-                className="text-xs px-2 py-1 rounded bg-slate-100 dark:bg-transparent border border-slate-200 dark:border-slate-700 font-semibold dark:text-slate-300"
+                className="text-[10px] px-3 py-1 rounded-none bg-slate-900 border border-slate-800 font-black text-slate-400 uppercase tracking-widest hover:text-iu-blue hover:border-iu-blue transition-colors cursor-default"
               >
                 #{t}
               </span>
@@ -274,6 +288,6 @@ export default function NewsDetail() {
           </div>
         )}
       </article>
-    </>
+    </div>
   );
 }
