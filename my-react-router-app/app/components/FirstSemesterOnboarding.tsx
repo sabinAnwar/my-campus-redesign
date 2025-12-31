@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { X, Play, BookOpen, Calendar, FileText, Users, MessageSquare, CheckCircle, ArrowRight } from "lucide-react";
+import { useLanguage } from "~/contexts/LanguageContext";
 
 interface OnboardingStep {
   id: string;
@@ -10,57 +11,106 @@ interface OnboardingStep {
   features: string[];
 }
 
-const ONBOARDING_STEPS: OnboardingStep[] = [
-  {
-    id: "welcome",
-    title: "Willkommen an der IU! 🎓",
-    description: "Herzlich willkommen im IU Student Portal. Wir zeigen dir, wie du dich hier zurechtfindest.",
-    icon: BookOpen,
-    features: [
-      "Dashboard mit allen wichtigen Infos",
-      "Kurse und Lernmaterialien",
-      "Prüfungstermine und Abgaben",
-      "Kontakt zu Kommilitonen und Dozenten",
-    ],
+const ONBOARDING_DATA = {
+  de: {
+    back: "Zurück",
+    next: "Weiter",
+    finish: "Fertig",
+    skip: "Überspringen",
+    step: "Schritt",
+    of: "von",
+    whatYouFind: "Was du hier findest:",
+    floatingTitle: "Onboarding erneut starten",
+    steps: [
+      {
+        id: "welcome",
+        title: "Willkommen an der IU! 🎓",
+        description: "Herzlich willkommen im IU Student Portal. Wir zeigen dir, wie du dich hier zurechtfindest.",
+        icon: BookOpen,
+        features: [
+          "Dashboard mit allen wichtigen Infos",
+          "Kurse und Lernmaterialien",
+          "Prüfungstermine und Abgaben",
+          "Kontakt zu Kommilitonen und Dozenten",
+        ],
+      },
+      {
+        id: "dashboard",
+        title: "Dein Dashboard",
+        description: "Hier findest du alle wichtigen Informationen auf einen Blick.",
+        icon: Calendar,
+        videoUrl: "https://www.youtube.com/embed/om0i4CKwPcM",
+        features: [
+          "Aktuelle Aufgaben und Deadlines",
+          "Neuigkeiten und Ankündigungen",
+          "Schnellzugriff auf Kurse",
+          "Stundenplan und Termine",
+        ],
+      },
+      {
+        id: "courses",
+        title: "Kurse & Materialien",
+        description: "Greife auf alle Kursmaterialien, Videos und Skripte zu.",
+        icon: FileText,
+        features: [
+          "Skripte und Foliensätze herunterladen",
+          "Vorlesungsvideos ansehen",
+          "Übungsaufgaben bearbeiten",
+          "Forum für Fragen nutzen",
+        ],
+      },
+    ] as OnboardingStep[]
   },
-  {
-    id: "dashboard",
-    title: "Dein Dashboard",
-    description: "Hier findest du alle wichtigen Informationen auf einen Blick.",
-    icon: Calendar,
-    videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ", // Placeholder
-    features: [
-      "Aktuelle Aufgaben und Deadlines",
-      "Neuigkeiten und Ankündigungen",
-      "Schnellzugriff auf Kurse",
-      "Stundenplan und Termine",
-    ],
-  },
-  {
-    id: "courses",
-    title: "Kurse & Materialien",
-    description: "Greife auf alle Kursmaterialien, Videos und Skripte zu.",
-    icon: FileText,
-    features: [
-      "Skripte und Foliensätze herunterladen",
-      "Vorlesungsvideos ansehen",
-      "Übungsaufgaben bearbeiten",
-      "Forum für Fragen nutzen",
-    ],
-  },
-  {
-    id: "community",
-    title: "Community & Support",
-    description: "Vernetze dich mit anderen Studierenden und hole dir Hilfe.",
-    icon: Users,
-    features: [
-      "Raumbuchung für Lerngruppen",
-      "FAQ und IU Assistant",
-      "Kontaktformular für Fragen",
-      "Social Media Gruppen",
-    ],
-  },
-];
+  en: {
+    back: "Back",
+    next: "Next",
+    finish: "Finish",
+    skip: "Skip and view later",
+    step: "Step",
+    of: "of",
+    whatYouFind: "In this section:",
+    floatingTitle: "Restart Onboarding",
+    steps: [
+      {
+        id: "welcome",
+        title: "Welcome to IU! 🎓",
+        description: "Welcome to the IU Student Portal. We'll show you how to navigate your studies.",
+        icon: BookOpen,
+        features: [
+          "Dashboard with all key info",
+          "Courses and study materials",
+          "Exam dates and submissions",
+          "Connect with peers and tutors",
+        ],
+      },
+      {
+        id: "dashboard",
+        title: "Your Dashboard",
+        description: "Find all essential information at a single glance.",
+        icon: Calendar,
+        videoUrl: "https://www.youtube.com/embed/om0i4CKwPcM",
+        features: [
+          "Current tasks and deadlines",
+          "News and announcements",
+          "Quick access to courses",
+          "Schedule and appointments",
+        ],
+      },
+      {
+        id: "courses",
+        title: "Courses & Materials",
+        description: "Access all your course content, videos, and scripts.",
+        icon: FileText,
+        features: [
+          "Download scripts and slides",
+          "Watch lecture videos",
+          "Complete practice tasks",
+          "Use the forum for questions",
+        ],
+      },
+    ] as OnboardingStep[]
+  }
+};
 
 interface FirstSemesterOnboardingProps {
   isFirstSemester: boolean;
@@ -68,6 +118,9 @@ interface FirstSemesterOnboardingProps {
 }
 
 export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }: FirstSemesterOnboardingProps) {
+  const { language } = useLanguage();
+  const t = ONBOARDING_DATA[language === "de" ? "de" : "en"];
+  const steps = t.steps;
   const [isOpen, setIsOpen] = useState(false);
   const [currentStep, setCurrentStep] = useState(0);
   const [hasSeenOnboarding, setHasSeenOnboarding] = useState(false);
@@ -95,7 +148,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
   };
 
   const nextStep = () => {
-    if (currentStep < ONBOARDING_STEPS.length - 1) {
+    if (currentStep < steps.length - 1) {
       setCurrentStep(currentStep + 1);
     } else {
       handleComplete();
@@ -108,7 +161,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
     }
   };
 
-  if (!isFirstSemester || hasSeenOnboarding) {
+  if (!isFirstSemester) {
     return null;
   }
 
@@ -118,14 +171,14 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
       <button
         onClick={() => setIsOpen(true)}
         className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 group"
-        title="Onboarding erneut starten"
+        title={t.floatingTitle}
       >
         <Play className="h-6 w-6 group-hover:animate-pulse" />
       </button>
     );
   }
 
-  const step = ONBOARDING_STEPS[currentStep];
+  const step = steps[currentStep];
   const Icon = step.icon;
 
   return (
@@ -143,7 +196,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
         <div className="absolute top-0 left-0 right-0 h-1 bg-slate-200 dark:bg-slate-800">
           <div
             className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-300"
-            style={{ width: `${((currentStep + 1) / ONBOARDING_STEPS.length) * 100}%` }}
+            style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           />
         </div>
 
@@ -159,7 +212,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
                 {step.title}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
-                Schritt {currentStep + 1} von {ONBOARDING_STEPS.length}
+                {t.step} {currentStep + 1} {t.of} {steps.length}
               </p>
             </div>
           </div>
@@ -188,12 +241,12 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
           {/* Features List */}
           <div className="mb-8">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wider">
-              Was du hier findest:
+              {t.whatYouFind}
             </h3>
             <ul className="space-y-2">
-              {step.features.map((feature, index) => (
+              {step.features.map((feature: string, index: number) => (
                 <li key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-emerald-600 dark:text-emerald-400 flex-shrink-0 mt-0.5" />
+                  <CheckCircle className="h-5 w-5 text-iu-blue dark:text-iu-blue flex-shrink-0 mt-0.5" />
                   <span className="text-slate-700 dark:text-slate-300">{feature}</span>
                 </li>
               ))}
@@ -207,11 +260,11 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
               disabled={currentStep === 0}
               className="px-6 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Zurück
+              {t.back}
             </button>
 
             <div className="flex gap-2">
-              {ONBOARDING_STEPS.map((_, index) => (
+              {steps.map((_: OnboardingStep, index: number) => (
                 <div
                   key={index}
                   className={`h-2 w-2 rounded-full transition-all ${
@@ -229,14 +282,14 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
               onClick={nextStep}
               className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
             >
-              {currentStep === ONBOARDING_STEPS.length - 1 ? (
+              {currentStep === steps.length - 1 ? (
                 <>
-                  Fertig
+                  {t.finish}
                   <CheckCircle className="h-5 w-5" />
                 </>
               ) : (
                 <>
-                  Weiter
+                  {t.next}
                   <ArrowRight className="h-5 w-5" />
                 </>
               )}
@@ -249,7 +302,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
               onClick={handleSkip}
               className="text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors"
             >
-              Überspringen und später ansehen
+              {t.skip}
             </button>
           </div>
         </div>
