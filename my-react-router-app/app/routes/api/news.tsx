@@ -31,6 +31,8 @@ export async function loader({ request }: { request: Request }) {
       ...(category && { category: { equals: category, mode: "insensitive" } }),
     };
 
+    const lang = url.searchParams.get("lang") || "de";
+
     const [items, total] = await Promise.all([
       prisma.news.findMany({
         where,
@@ -41,8 +43,14 @@ export async function loader({ request }: { request: Request }) {
           id: true,
           slug: true,
           title: true,
+          titleDe: true,
+          titleEn: true,
           excerpt: true,
+          excerptDe: true,
+          excerptEn: true,
           category: true,
+          categoryDe: true,
+          categoryEn: true,
           tags: true,
           author: true,
           coverImageUrl: true,
@@ -53,8 +61,15 @@ export async function loader({ request }: { request: Request }) {
       prisma.news.count({ where }),
     ]);
 
+    const translatedItems = items.map(item => ({
+      ...item,
+      title: lang === "en" ? (item.titleEn || item.title) : (item.titleDe || item.title),
+      excerpt: lang === "en" ? (item.excerptEn || item.excerpt) : (item.excerptDe || item.excerpt),
+      category: lang === "en" ? (item.categoryEn || item.category) : (item.categoryDe || item.category),
+    }));
+
     const filtered = tag
-      ? items.filter((n: { tags: any; }) => {
+      ? translatedItems.filter((n: { tags: any; }) => {
           try {
             const arr = JSON.parse(n.tags || "[]");
             return (
