@@ -21,6 +21,8 @@ import { StoreProvider } from "./store/StoreProvider";
 // DOCUMENT LAYOUT (keine App-Logik hier)
 // ---------------------------------------------
 export const links: Route.LinksFunction = () => [
+  // Favicon
+  { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
   // Preconnect to font servers early
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -75,7 +77,18 @@ export default function App() {
     <StoreProvider>
       <ThemeProvider defaultTheme="system" storageKey="iu-theme">
         <LanguageProvider storageKey="iu-language">
-          <ToastContainer />
+          <ToastContainer 
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="colored"
+          />
           <Outlet />
         </LanguageProvider>
       </ThemeProvider>
