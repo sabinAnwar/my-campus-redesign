@@ -1,14 +1,16 @@
 // Utility functions for managing recently visited courses in localStorage
 
-const LS_KEY = 'recentlyVisitedCourses';
+const getStorageKey = (userId?: number | string) => userId ? `recentlyVisitedCourses_${userId}` : 'recentlyVisitedCourses';
 
 /**
  * Save a course visit to the recent courses list
  * @param {Object} course - Course object with id, name, and other details
+ * @param {number|string} [userId] - The ID of the current user to isolate data
  */
-export function saveRecentCourse(course: { id: any; name: any; studiengang: any; semester: any; color: any; }) {
+export function saveRecentCourse(course: { id: any; name: any; studiengang: any; semester: any; color: any; }, userId?: number | string) {
   try {
-    const stored = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+    const key = getStorageKey(userId);
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
     const recentCourses = Array.isArray(stored) ? stored : [];
     
     const entry = {
@@ -21,10 +23,10 @@ export function saveRecentCourse(course: { id: any; name: any; studiengang: any;
     };
     
     // Remove duplicates (same course ID) and add new entry at top
-    const dedup = recentCourses.filter((c) => c.id !== entry.id);
+    const dedup = recentCourses.filter((c: any) => c.id !== entry.id);
     const next = [entry, ...dedup].slice(0, 6); // Keep last 6 visited courses
     
-    localStorage.setItem(LS_KEY, JSON.stringify(next));
+    localStorage.setItem(key, JSON.stringify(next));
     
     return next;
   } catch (error) {
@@ -36,11 +38,13 @@ export function saveRecentCourse(course: { id: any; name: any; studiengang: any;
 /**
  * Get the list of recently visited courses
  * @param {number} limit - Maximum number of courses to return (default: 6)
+ * @param {number|string} [userId] - The ID of the current user
  * @returns {Array} Array of recent course objects
  */
-export function getRecentCourses(limit = 6) {
+export function getRecentCourses(limit = 6, userId?: number | string) {
   try {
-    const stored = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+    const key = getStorageKey(userId);
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
     const recentCourses = Array.isArray(stored) ? stored : [];
     return recentCourses.slice(0, limit);
   } catch (error) {
@@ -51,10 +55,12 @@ export function getRecentCourses(limit = 6) {
 
 /**
  * Clear all recently visited courses
+ * @param {number|string} [userId] - The ID of the current user
  */
-export function clearRecentCourses() {
+export function clearRecentCourses(userId?: number | string) {
   try {
-    localStorage.removeItem(LS_KEY);
+    const key = getStorageKey(userId);
+    localStorage.removeItem(key);
   } catch (error) {
     console.error('Failed to clear recent courses:', error);
   }
@@ -63,13 +69,15 @@ export function clearRecentCourses() {
 /**
  * Remove a specific course from recent courses
  * @param {string|number} courseId - ID of the course to remove
+ * @param {number|string} [userId] - The ID of the current user
  */
-export function removeRecentCourse(courseId: any) {
+export function removeRecentCourse(courseId: any, userId?: number | string) {
   try {
-    const stored = JSON.parse(localStorage.getItem(LS_KEY) || '[]');
+    const key = getStorageKey(userId);
+    const stored = JSON.parse(localStorage.getItem(key) || '[]');
     const recentCourses = Array.isArray(stored) ? stored : [];
-    const filtered = recentCourses.filter((c) => c.id !== courseId);
-    localStorage.setItem(LS_KEY, JSON.stringify(filtered));
+    const filtered = recentCourses.filter((c: any) => c.id !== courseId);
+    localStorage.setItem(key, JSON.stringify(filtered));
     return filtered;
   } catch (error) {
     console.error('Failed to remove recent course:', error);

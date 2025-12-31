@@ -36,7 +36,7 @@ export const TRANSLATIONS = {
     grade: "Note",
     feedback: "Feedback",
     status: "Status",
-    submitted: "Eingereicht",
+    submitted: "Abgegeben",
     pending: "Ausstehend",
     graded: "Bewertet",
     similarity: "Ähnlichkeit",
@@ -93,885 +93,233 @@ export const TRANSLATIONS = {
   },
 };
 
-export const getCourseConfig = (language: "de" | "en") => [
-  {
-    id: 1,
-    code: "WEB101",
-    title: language === "de" ? "Webentwicklung" : "Web Development",
-    instructor: "Prof. Dr. Sarah Schmidt",
-    credits: 6,
-    semester: "Wintersemester 2024/25",
-    startDate: "01.10.2024",
-    endDate: "31.01.2025",
-    studiengang: "Wirtschaftsinformatik",
-    color: "blue",
-    description:
-      language === "de"
-        ? "Grundlagen der modernen Webentwicklung mit React, HTML, CSS und JavaScript"
-        : "Fundamentals of modern web development with React, HTML, CSS and JavaScript",
-    progress: 75,
-    active: true,
-    modules: [
-      {
-        id: 1,
-        title: "HTML & CSS Grundlagen",
-        status: "completed",
-        topics: 3,
-      },
-      {
-        id: 2,
-        title: "JavaScript Essentials",
-        status: "completed",
-        topics: 4,
-      },
-      { id: 3, title: "React Komponenten", status: "inProgress", topics: 5 },
-      { id: 4, title: "State Management", status: "notStarted", topics: 4 },
-      { id: 5, title: "API Integration", status: "notStarted", topics: 3 },
-    ],
-    resources: [
-      {
-        id: 1,
-        type: "video",
-        title: "Einführung in React",
-        duration: "45 min",
-        url: "#",
-      },
-      {
-        id: 2,
-        type: "video",
-        title: "Components & Props",
-        duration: "52 min",
-        url: "#",
-      },
-      {
-        id: 3,
-        type: "script",
-        title: "React Handbook.pdf",
-        size: "3.2 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/skript/React_Handbook.pdf",
-      },
-      {
-        id: 4,
-        type: "script",
-        title: "Best Practices.pdf",
-        size: "1.8 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/skript/Best_Practices.pdf",
-      },
-      {
-        id: 5,
-        type: "file",
-        title: "Projektvorlagen.zip",
-        size: "12 MB",
-        teacher: "Prof. Schmidt",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/foliensaetze/Projektvorlagen.zip",
-      },
-      {
-        id: 6,
-        type: "onlineTest",
-        title: "Quiz 1 - React Grundlagen.pdf",
-        size: "1.2 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Quiz_1_React_Grundlagen.pdf",
-      },
-      {
-        id: 7,
-        type: "evaluation",
-        title: "Selbstevaluation Modul 1.pdf",
-        size: "0.8 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Selbstevaluation_Modul_1.pdf",
-      },
-      {
-        id: 8,
-        type: "test",
-        title: "Online Test - JavaScript.pdf",
-        size: "2.1 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/tests/Online_Test_JavaScript.pdf",
-      },
-      {
-        id: 11,
-        type: "podcast",
-        title: "Web Dev Podcast - Episode 1",
-        duration: "35 min",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Webentwicklung/podcasts/Web_Dev_Podcast_Episode_1.mp3",
-      },
-    ],
-    assignments: [
-      {
-        id: 1,
-        title:
-          language === "de"
-            ? "Projektarbeit: React App"
-            : "Project: React App",
-        dueDate: "20.01.2025",
-        status: "submitted",
-        submissions: [
-          {
-            date: "18.01.2025",
-            grade: "1.3",
-            similarity: 12,
-            feedback:
-              language === "de"
-                ? "Sehr gute Umsetzung!"
-                : "Excellent implementation!",
-          },
-        ],
-      },
-      {
-        id: 2,
-        title:
-          language === "de"
-            ? "Quiz: JavaScript Grundlagen"
-            : "Quiz: JavaScript Basics",
-        dueDate: "15.01.2025",
-        status: "graded",
-        submissions: [
-          {
-            date: "14.01.2025",
-            grade: "1.7",
-            similarity: null,
-            feedback: language === "de" ? "Gut beantwortet" : "Well answered",
-          },
-        ],
-      },
-      {
-        id: 3,
-        title:
-          language === "de"
-            ? "Hausaufgabe: State Management"
-            : "Homework: State Management",
-        dueDate: "22.01.2025",
-        status: "pending",
-        submissions: [],
-      },
-    ],
-    forumTopics: [
-      {
-        id: 1,
-        title: language === "de" ? "Frage zu Hooks" : "Question about Hooks",
-        author: "Max Mustermann",
-        replies: 5,
-        views: 42,
-        lastPost: "15.01.2025",
-        status: "active",
-      },
-      {
-        id: 2,
-        title:
-          language === "de"
-            ? "Problem mit State Update"
-            : "Issue with State Update",
-        author: "Anna Schmidt",
-        replies: 3,
-        views: 28,
-        lastPost: "14.01.2025",
-        status: "active",
-      },
-      {
-        id: 3,
-        title:
-          language === "de"
-            ? "Beste Praktiken für Props"
-            : "Best Practices for Props",
-        author: "Prof. Dr. Sarah Schmidt",
-        replies: 12,
-        views: 156,
-        lastPost: "10.01.2025",
-        status: "pinned",
-      },
-    ],
-  },
-  {
-    id: 2,
-    code: "DB101",
-    title: language === "de" ? "Datenbankdesign" : "Database Design",
-    instructor: "Prof. Dr. Thomas Müller",
-    credits: 6,
-    semester: "Wintersemester 2024/25",
-    startDate: "01.10.2024",
-    endDate: "31.01.2025",
-    studiengang: "Wirtschaftsinformatik",
-    color: "purple",
-    description:
-      language === "de"
-        ? "Design und Implementierung von relationalen Datenbanken mit SQL"
-        : "Design and implementation of relational databases with SQL",
-    progress: 60,
-    active: true,
-    modules: [
-      {
-        id: 1,
-        title: "Datenbank Grundlagen",
-        status: "completed",
-        topics: 3,
-      },
-      { id: 2, title: "SQL Grundlagen", status: "completed", topics: 5 },
-      { id: 3, title: "Normalisierung", status: "inProgress", topics: 4 },
-      { id: 4, title: "Indexierung", status: "notStarted", topics: 3 },
-    ],
-    resources: [
-      {
-        id: 1,
-        type: "video",
-        title: "SQL SELECT Statements",
-        duration: "38 min",
-        url: "#",
-      },
-      {
-        id: 2,
-        type: "video",
-        title: "JOIN Operations",
-        duration: "55 min",
-        url: "#",
-      },
-      {
-        id: 3,
-        type: "script",
-        title: "SQL Reference.pdf",
-        size: "2.5 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/skript/SQL_Reference.pdf",
-      },
-      {
-        id: 4,
-        type: "file",
-        title: "Sample Database.sql",
-        size: "5.3 MB",
-        teacher: "Prof. Müller",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/foliensaetze/Sample_Database.sql",
-      },
-      {
-        id: 9,
-        type: "onlineTest",
-        title: "SQL Quiz - Grundlagen.pdf",
-        size: "1.5 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/tests/SQL_Quiz_Grundlagen.pdf",
-      },
-      {
-        id: 10,
-        type: "evaluation",
-        title: "Bewertungsbogen Normalisierung.pdf",
-        size: "0.9 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/tests/Bewertungsbogen_Normalisierung.pdf",
-      },
-      {
-        id: 12,
-        type: "podcast",
-        title: "Database Design Podcast",
-        duration: "42 min",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/Datenbanken/podcasts/Database_Design_Podcast.mp3",
-      },
-    ],
-    assignments: [
-      {
-        id: 1,
-        title:
-          language === "de" ? "ER-Diagramm Projekt" : "ER Diagram Project",
-        dueDate: "25.01.2025",
-        status: "pending",
-        submissions: [],
-      },
-    ],
-    forumTopics: [
-      {
-        id: 1,
-        title:
-          language === "de"
-            ? "Normalformen Erklärung"
-            : "Explaining Normal Forms",
-        author: "Prof. Dr. Thomas Müller",
-        replies: 8,
-        views: 73,
-        lastPost: "16.01.2025",
-        status: "pinned",
-      },
-    ],
-  },
-  // Additional Active Courses
-  {
-    id: 3,
-    code: "ALGO201",
-    title:
-      language === "de"
-        ? "Algorithmen, Datenstrukturen und..."
-        : "Algorithms, Data Structures and...",
-    instructor: "Prof. Dr. Meier",
-    credits: 5,
-    semester: "Sommersemester 2025",
-    startDate: "01.04.2025",
-    endDate: "31.07.2025",
-    studiengang: "Wirtschaftsinformatik",
-    color: "green",
-    description:
-      language === "de"
-        ? "Grundlagen effizienter Algorithmen und Datenstrukturen"
-        : "Core algorithms and data structures",
-    progress: 40,
-    active: true,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
-  },
-  {
-    id: 4,
-    code: "ECOM301",
-    title: "E-Commerce",
-    instructor: "Prof. Dr. Wagner",
-    credits: 5,
-    semester: "Sommersemester 2025",
-    startDate: "01.04.2025",
-    endDate: "31.07.2025",
-    studiengang: "Wirtschaftsinformatik",
-    color: "orange",
-    description:
-      language === "de"
-        ? "Online-Handel, Plattformen, Payment und Recht"
-        : "Online commerce, platforms, payment and law",
-    progress: 55,
-    active: true,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
-  },
-  {
-    id: 5,
-    code: "PRJ601",
-    title: language === "de" ? "Praxisprojekt VI" : "Practical Project VI",
-    instructor: "Projektbetreuungsteam",
-    credits: 10,
-    semester: "Sommersemester 2025",
-    startDate: "01.04.2025",
-    endDate: "31.07.2025",
-    studiengang: "Wirtschaftsinformatik",
-    color: "pink",
-    description:
-      language === "de"
-        ? "Praxisnahes Projekt mit Unternehmenspartnern"
-        : "Hands-on project with industry partner",
-    progress: 20,
-    active: true,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
-  },
-  {
-    id: 6,
-    code: "PUF401",
-    title:
-      language === "de"
-        ? "Personal- und Unternehmensführung"
-        : "People and Corporate Management",
-    instructor: "Prof. Dr. Richter",
-    credits: 5,
-    semester: "Sommersemester 2025",
-    startDate: "01.04.2025",
-    endDate: "31.07.2025",
-    description:
-      language === "de"
-        ? "Führung, Organisation und Change Management"
-        : "Leadership, organization and change",
-    progress: 15,
-    active: true,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
-  },
-  // Completed/Inactive Courses
-  {
-    id: 7,
-    code: "ENTR201",
-    title:
-      language === "de"
-        ? "Unternehmensgründung und..."
-        : "Entrepreneurship and...",
-    instructor: "Prof. Dr. Keller",
-    credits: 5,
-    semester: "Wintersemester 2023/24",
-    startDate: "01.10.2023",
-    endDate: "31.01.2024",
-    description:
-      language === "de"
-        ? "Ideen, Businessplan und Finanzierung"
-        : "Ideas, business plan and funding",
-    progress: 100,
-    active: false,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
-  },
-  {
-    id: 8,
-    code: "MATH101",
-    title:
-      language === "de"
-        ? "Mathematik Grundlagen"
-        : "Mathematics Fundamentals",
-    instructor: "Prof. Dr. König",
-    credits: 5,
-    semester: "Wintersemester 2023/24",
-    startDate: "01.10.2023",
-    endDate: "31.01.2024",
-    description:
-      language === "de"
-        ? "Lineare Algebra, Analysis, Stochastik"
-        : "Linear Algebra, Calculus, Probability",
-    progress: 100,
-    active: false,
-    modules: [],
-    resources: [
-      // Videos
-      {
-        id: 115,
-        type: "video",
-        title: "Einführung Lineare Algebra",
-        duration: "52 min",
-        url: "#",
-      },
-      {
-        id: 116,
-        type: "video",
-        title: "Analysis Grundlagen",
-        duration: "45 min",
-        url: "#",
-      },
-      {
-        id: 117,
-        type: "video",
-        title: "Stochastik - Wahrscheinlichkeitsrechnung",
-        duration: "38 min",
-        url: "#",
-      },
-      // Scripts/PDFs - from public folder
-      {
-        id: 118,
-        type: "script",
-        title: "001-2024-0730_IMT102-01_Course_Book.pdf",
-        size: "3.5 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/skript/001-2024-0730_IMT102-01_Course_Book.pdf",
-      },
+// ALL COURSES CONFIGURATION - Synced with prisma/seed.js
 
-      // Podcasts - from public folder
-      {
-        id: 121,
-        type: "podcast",
-        title: "IMT102-01_Podcast_00.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_00.mp3",
-      },
-      {
-        id: 122,
-        type: "podcast",
-        title: "IMT102-01_Podcast_01.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_01.mp3",
-      },
-      {
-        id: 123,
-        type: "podcast",
-        title: "IMT102-01_Podcast_02.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_02.mp3",
-      },
-      {
-        id: 124,
-        type: "podcast",
-        title: "IMT102-01_Podcast_03.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_03.mp3",
-      },
-      {
-        id: 125,
-        type: "podcast",
-        title: "IMT102-01_Podcast_04.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_04.mp3",
-      },
-      {
-        id: 126,
-        type: "podcast",
-        title: "IMT102-01_Podcast_05.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_05.mp3",
-      },
-      {
-        id: 127,
-        type: "podcast",
-        title: "IMT102-01_Podcast_06.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_06.mp3",
-      },
-      {
-        id: 128,
-        type: "podcast",
-        title: "IMT102-01_Podcast_07.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_07.mp3",
-      },
-      {
-        id: 129,
-        type: "podcast",
-        title: "IMT102-01_Podcast_08.mp3",
-        duration: "Podcast",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/podcasts/IMT102-01_Podcast_08.mp3",
-      },
-      // Musterklausuren - from public folder
-      {
-        id: 133,
-        type: "musterklausur",
-        title: "IMT102-01.pdf",
-        size: "1.2 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01.pdf",
-      },
-      {
-        id: 134,
-        type: "musterklausur",
-        title: "IMT102-01 Musterklausur 2.pdf",
-        size: "1.3 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterklausur 2.pdf",
-      },
-      {
-        id: 135,
-        type: "musterklausur",
-        title: "IMT102-01 MK3.pdf",
-        size: "1.1 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 MK3.pdf",
-      },
-      {
-        id: 136,
-        type: "musterklausur",
-        title: "IMT102-01 Musterlösung.pdf",
-        size: "1.4 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterlösung.pdf",
-      },
-      {
-        id: 137,
-        type: "musterklausur",
-        title: "IMT102-01 Musterlösung 2.pdf",
-        size: "1.2 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 Musterlösung 2.pdf",
-      },
-      {
-        id: 138,
-        type: "musterklausur",
-        title: "IMT102-01 MK3 Musterlösung.pdf",
-        size: "1.5 MB",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/musterklausuren/IMT102-01 MK3 Musterlösung.pdf",
-      },
-      // Online Tests (Lektion 01-08)
-      {
-        id: 123,
-        type: "onlineTest",
-        title: "Online Test: Lektion 01.pdf",
-        size: "1.2 MB",
-        url: "#",
-      },
-      {
-        id: 124,
-        type: "onlineTest",
-        title: "Online Test: Lektion 02.pdf",
-        size: "1.1 MB",
-        url: "#",
-      },
-      {
-        id: 125,
-        type: "onlineTest",
-        title: "Online Test: Lektion 03.pdf",
-        size: "1.3 MB",
-        url: "#",
-      },
-      {
-        id: 126,
-        type: "onlineTest",
-        title: "Online Test: Lektion 04.pdf",
-        size: "1.4 MB",
-        url: "#",
-      },
-      {
-        id: 127,
-        type: "onlineTest",
-        title: "Online Test: Lektion 05.pdf",
-        size: "1.2 MB",
-        url: "#",
-      },
-      {
-        id: 128,
-        type: "onlineTest",
-        title: "Online Test: Lektion 06.pdf",
-        size: "1.5 MB",
-        url: "#",
-      },
-      {
-        id: 129,
-        type: "onlineTest",
-        title: "Online Test: Lektion 07.pdf",
-        size: "1.3 MB",
-        url: "#",
-      },
-      {
-        id: 130,
-        type: "onlineTest",
-        title: "Online Test: Lektion 08.pdf",
-        size: "1.4 MB",
-        url: "#",
-      },
-      // Foliensätze - from public folder
-      {
-        id: 131,
-        type: "file",
-        title: "20220623_IMT102-01_Einheit2.pdf",
-        size: "2.1 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/20220623_IMT102-01_Einheit2.pdf",
-      },
-      {
-        id: 132,
-        type: "file",
-        title: "IMT102-01_Einheit1.pdf",
-        size: "1.8 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit1.pdf",
-      },
-      {
-        id: 140,
-        type: "file",
-        title: "IMT102-01_Einheit3.pdf",
-        size: "1.9 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit3.pdf",
-      },
-      {
-        id: 141,
-        type: "file",
-        title: "IMT102-01_Einheit4.pdf",
-        size: "2.0 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit4.pdf",
-      },
-      {
-        id: 142,
-        type: "file",
-        title: "IMT102-01_Einheit5.pdf",
-        size: "1.7 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit5.pdf",
-      },
-      {
-        id: 143,
-        type: "file",
-        title: "IMT102-01_Einheit6.pdf",
-        size: "2.2 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Einheit6.pdf",
-      },
-      {
-        id: 144,
-        type: "file",
-        title: "IMT102-01_Sechsteilung.pdf",
-        size: "1.5 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/IMT102-01_Sechsteilung.pdf",
-      },
-      {
-        id: 145,
-        type: "file",
-        title: "Lineare Algebra.xlsx",
-        size: "0.8 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/folien/Lineare Algebra.xlsx",
-      },
-      // Tutorium Dokumente - from public folder
-      {
-        id: 146,
-        type: "file",
-        title: "IMT102-01_Vorlesung_Lektion 1_Einführung in Matrizen.pdf",
-        size: "1.3 MB",
-        teacher: "Prof. Dr. König",
-        url: "/uploads/studiengaenge/Wirtschaftsinformatik/MatheGrundlageI/toturium/IMT102-01_Vorlesung_Lektion 1_Einführung in Matrizen.pdf",
-      },
-      // Further Literature (existing)
-      {
-        id: 100,
-        type: "furtherLiterature",
-        title:
-          "Ballard, G. et al. (2014): Communication Costs of Strassen's Matrix Multiplication. In: Communications of the ACM, 57. Jg., Heft 2, S. 107–114.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 101,
-        type: "furtherLiterature",
-        title:
-          "Schramm, T. (2003): Mathematik lernen mit Computer und Algebrasystemen. In: c't – Magazin für Computertechnik, Heft 3, S. 170–172.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 102,
-        type: "furtherLiterature",
-        title:
-          "Sparks, D. (2010): A method for Matrix Inversion. In: Civil Engineering, 18. Jg., Heft 6, S. 10–13.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 103,
-        type: "furtherLiterature",
-        title:
-          "Eich-Soellner, E. (2010): Formelsammlung Wirtschaftsmathematik. 2. Auflage, Rudolf Haufe, Planegg.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 104,
-        type: "furtherLiterature",
-        title:
-          "Kasyanov, V. N./Kasyanova, E. V. (2013): Information visualisation based on graph models. In: Enterprise Information Systems, 7. Jg., Heft 2, S. 187–197.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 105,
-        type: "furtherLiterature",
-        title:
-          "Adelson-Velsky, G. M./Levner, E. (2002): Project Scheduling In And–Or Graphs. A Generalization of Dijkstra's Algorithm. In: Mathematics of Operations Research, 27. Jg., Heft 3, S. 504–517.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 106,
-        type: "furtherLiterature",
-        title:
-          "Al-Naymat, G./Sakr, S. (2010): Graph indexing and querying. A review. In: International Journal of Web Information Systems, 6. Jg., Heft 2, S. 101–120.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 107,
-        type: "furtherLiterature",
-        title:
-          "Stewart Jr., W. R. (2001): Chinese Postman problem. In: Gass, S. I/Harris, C. M. (Hrsg.): Encyclopedia of Operations Research & Management Science. Kluwer Academic Publishers, Boston, MA, S. 84–87.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 108,
-        type: "furtherLiterature",
-        title:
-          "Schönberger, J. (2015): Synchronisation in Transportsystemen. Fahrzeugübergreifende Ablaufplanung für die Erfüllung komplexer Serviceanforderungen im Straßengüterverkehr. In: Industrie Management, 31. Jg., Heft 2, S. 15–18.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 109,
-        type: "furtherLiterature",
-        title:
-          "Svestka, J. A./Huckfeldt, V. E. (1973): Computational Experience with an M-Salesman Traveling Salesman Algorithm. In: Management Science, 19. Jg., Heft 7, S. 790–799.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 110,
-        type: "furtherLiterature",
-        title:
-          "Goyal, S. K. (1971): The tree development method for solving the travelling-salesman problem. In: International Journal of Production Research, 9. Jg., Heft 2, S. 239–246.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 111,
-        type: "furtherLiterature",
-        title:
-          "Markl, V./Ramsak, F. (2001): Datenbanktechnik. Datenbankindexe in mehreren Dimensionen. In: c't – Magazin für Computertechnik, Heft 1, S. 174–179.",
-        url: "#",
-        isExternal: true,
-      },
-      {
-        id: 112,
-        type: "onlineTest",
-        title: "Mathematik Test 1 - Lineare Algebra.pdf",
-        size: "1.8 MB",
-        url: "#",
-      },
-      {
-        id: 113,
-        type: "test",
-        title: "Klausurvorbereitung - Analysis.pdf",
-        size: "2.3 MB",
-        url: "#",
-      },
-      {
-        id: 114,
-        type: "evaluation",
-        title: "Selbsteinschätzung Mathematik.pdf",
-        size: "0.7 MB",
-        url: "#",
-      },
-    ],
-    assignments: [],
-    forumTopics: [],
+export const getCourseConfig = (language: "de" | "en") => [
+  // =================================================================================================
+  // WIRTSCHAFTSINFORMATIK (Business Informatics)
+  // =================================================================================================
+
+  // Semester 1
+  {
+    id: 101, code: "WI101",
+    title: language === "de" ? "Einführung Wirtschaftsinformatik" : "Intro to Business Informatics",
+    titleDE: "Einführung Wirtschaftsinformatik",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Wirtschaftsinformatik", color: "blue", active: false, progress: 100,
   },
   {
-    id: 9,
-    code: "BWL101",
-    title:
-      language === "de" ? "BWL Grundlagen" : "Business Administration Basics",
-    instructor: "Prof. Dr. Hahn",
-    credits: 5,
-    semester: "Sommersemester 2024",
-    startDate: "01.04.2024",
-    endDate: "31.07.2024",
-    description:
-      language === "de"
-        ? "Betriebswirtschaftliche Grundbegriffe"
-        : "Basic business concepts",
-    progress: 100,
-    active: false,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
+    id: 102, code: "BWL101",
+    title: language === "de" ? "Grundlagen BWL" : "Business Administration Basics",
+    titleDE: "Grundlagen BWL",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Wirtschaftsinformatik", color: "purple", active: false, progress: 100,
   },
   {
-    id: 10,
-    code: "STAT201",
-    title: "Statistik",
-    instructor: "Prof. Dr. Braun",
-    credits: 5,
-    semester: "Sommersemester 2024",
-    startDate: "01.04.2024",
-    endDate: "31.07.2024",
-    description:
-      language === "de"
-        ? "Deskriptive und induktive Statistik"
-        : "Descriptive and inferential statistics",
-    progress: 100,
-    active: false,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
+    id: 103, code: "ACC101",
+    title: language === "de" ? "Buchführung" : "Bookkeeping",
+    titleDE: "Buchführung",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Wirtschaftsinformatik", color: "green", active: false, progress: 100,
   },
   {
-    id: 11,
-    code: "ENG101",
-    title:
-      language === "de" ? "Wissenschaftliches Arbeiten" : "Academic Writing",
-    instructor: "Prof. Dr. Fischer",
-    credits: 5,
-    semester: "Wintersemester 2023/24",
-    startDate: "01.10.2023",
-    endDate: "31.01.2024",
-    description:
-      language === "de"
-        ? "Methodik und Zitieren"
-        : "Methodology and citations",
-    progress: 100,
-    active: false,
-    modules: [],
-    resources: [],
-    assignments: [],
-    forumTopics: [],
+    id: 104, code: "MATH101",
+    title: language === "de" ? "Mathematik I" : "Mathematics I",
+    titleDE: "Mathematik I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Wirtschaftsinformatik", color: "orange", active: false, progress: 100,
   },
-];
+  {
+    id: 105, code: "PRX101",
+    title: language === "de" ? "Praxisprojekt I" : "Practical Project I",
+    titleDE: "Praxisprojekt I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Wirtschaftsinformatik", color: "pink", active: false, progress: 100,
+  },
+
+  // Semester 2
+  {
+    id: 201, code: "PROG101",
+    title: language === "de" ? "Programmierung I" : "Programming I",
+    titleDE: "Programmierung I",
+    credits: 5, semester: language === "de" ? "2. Semester" : "2nd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "blue", active: false, progress: 100,
+  },
+  {
+    id: 202, code: "COST101",
+    title: language === "de" ? "Kostenrechnung" : "Cost Accounting",
+    titleDE: "Kostenrechnung",
+    credits: 5, semester: language === "de" ? "2. Semester" : "2nd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "purple", active: false, progress: 100,
+  },
+  {
+    id: 203, code: "SCI101",
+    title: language === "de" ? "Wissenschaftliches Arbeiten" : "Academic Work",
+    titleDE: "Wissenschaftliches Arbeiten",
+    credits: 5, semester: language === "de" ? "2. Semester" : "2nd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "green", active: false, progress: 100,
+  },
+  {
+    id: 204, code: "STAT101",
+    title: language === "de" ? "Statistik" : "Statistics",
+    titleDE: "Statistik",
+    credits: 5, semester: language === "de" ? "2. Semester" : "2nd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "orange", active: false, progress: 100,
+  },
+  {
+    id: 205, code: "PRX102",
+    title: language === "de" ? "Praxisprojekt II" : "Practical Project II",
+    titleDE: "Praxisprojekt II",
+    credits: 5, semester: language === "de" ? "2. Semester" : "2nd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "pink", active: false, progress: 100,
+  },
+
+    // Semester 3
+  {
+    id: 301, code: "DB101",
+    title: language === "de" ? "Datenbanken" : "Databases",
+    titleDE: "Datenbanken",
+    credits: 5, semester: language === "de" ? "3. Semester" : "3rd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "blue", active: false, progress: 100,
+  },
+  {
+    id: 302, code: "LAW101",
+    title: language === "de" ? "Wirtschaftsprivatrecht" : "Business Law",
+    titleDE: "Wirtschaftsprivatrecht",
+    credits: 5, semester: language === "de" ? "3. Semester" : "3rd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "purple", active: false, progress: 100,
+  },
+  {
+    id: 303, code: "ECON101",
+    title: language === "de" ? "Volkswirtschaftslehre" : "Economics",
+    titleDE: "Volkswirtschaftslehre",
+    credits: 5, semester: language === "de" ? "3. Semester" : "3rd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "green", active: false, progress: 100,
+  },
+  {
+    id: 304, code: "PROG102",
+    title: language === "de" ? "Programmierung II" : "Programming II",
+    titleDE: "Programmierung II",
+    credits: 5, semester: language === "de" ? "3. Semester" : "3rd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "orange", active: false, progress: 100,
+  },
+  {
+    id: 305, code: "PRX103",
+    title: language === "de" ? "Praxisprojekt III" : "Practical Project III",
+    titleDE: "Praxisprojekt III",
+    credits: 5, semester: language === "de" ? "3. Semester" : "3rd Semester",
+    studiengang: "Wirtschaftsinformatik", color: "pink", active: false, progress: 100,
+  },
+
+  // Semester 7
+  {
+    id: 701, code: "THESIS",
+    title: language === "de" ? "Bachelorarbeit" : "Bachelor Thesis",
+    titleDE: "Bachelorarbeit",
+    credits: 10, semester: language === "de" ? "7. Semester" : "7th Semester",
+    studiengang: "Wirtschaftsinformatik", color: "blue", active: true, progress: 0,
+  },
+  {
+    id: 702, code: "KOLL101",
+    title: language === "de" ? "Kolloquium" : "Colloquium",
+    titleDE: "Kolloquium",
+    credits: 5, semester: language === "de" ? "7. Semester" : "7th Semester",
+    studiengang: "Wirtschaftsinformatik", color: "purple", active: true, progress: 0,
+  },
+  {
+    id: 703, code: "ETHIK101",
+    title: language === "de" ? "IT-Ethik" : "IT Ethics",
+    titleDE: "IT-Ethik",
+    credits: 5, semester: language === "de" ? "7. Semester" : "7th Semester",
+    studiengang: "Wirtschaftsinformatik", color: "green", active: true, progress: 0,
+  },
+  {
+    id: 705, code: "PRX107",
+    title: language === "de" ? "Praxisprojekt VII" : "Practical Project VII",
+    titleDE: "Praxisprojekt VII",
+    credits: 5, semester: language === "de" ? "7. Semester" : "7th Semester",
+    studiengang: "Wirtschaftsinformatik", color: "pink", active: true, progress: 0,
+  },
+
+  // =================================================================================================
+  // MARKETING (Dual)
+  // =================================================================================================
+
+  // Semester 1
+  {
+    id: 1101, code: "MKTG101",
+    title: language === "de" ? "Grundlagen Marketing" : "Marketing Basics",
+    titleDE: "Grundlagen Marketing",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Marketing", color: "blue", active: false, progress: 100,
+  },
+  {
+    id: 1102, code: "BWL101",
+    title: language === "de" ? "BWL I" : "Business Admin I",
+    titleDE: "BWL I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Marketing", color: "purple", active: false, progress: 100,
+  },
+  {
+    id: 1103, code: "MATH101",
+    title: language === "de" ? "Wirtschaftsmathematik" : "Business Math",
+    titleDE: "Wirtschaftsmathematik",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Marketing", color: "green", active: false, progress: 100,
+  },
+  {
+    id: 1104, code: "DIG101",
+    title: language === "de" ? "Digitale Business Modelle" : "Digital Business Models",
+    titleDE: "Digitale Business Modelle",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Marketing", color: "orange", active: false, progress: 100,
+  },
+  {
+    id: 1105, code: "PRX1101",
+    title: language === "de" ? "Praxisprojekt I" : "Practical Project I",
+    titleDE: "Praxisprojekt I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Marketing", color: "pink", active: false, progress: 100,
+  },
+
+  // =================================================================================================
+  // INFORMATIK (Dual)
+  // =================================================================================================
+
+  // Semester 1
+  {
+    id: 2101, code: "CS101",
+    title: language === "de" ? "Einführung Informatik" : "Intro to CS",
+    titleDE: "Einführung Informatik",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Informatik", color: "blue", active: false, progress: 100,
+  },
+  {
+    id: 2102, code: "MATH101",
+    title: language === "de" ? "Mathematik I" : "Calculus I",
+    titleDE: "Mathematik I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Informatik", color: "purple", active: false, progress: 100,
+  },
+  {
+    id: 2103, code: "PROG101",
+    title: language === "de" ? "Programmierung I" : "Programming I",
+    titleDE: "Programmierung I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Informatik", color: "green", active: false, progress: 100,
+  },
+  {
+    id: 2104, code: "LOGIC101",
+    title: language === "de" ? "Digitale Logik" : "Digital Logic",
+    titleDE: "Digitale Logik",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Informatik", color: "orange", active: false, progress: 100,
+  },
+  {
+    id: 2105, code: "PRX2101",
+    title: language === "de" ? "Praxisprojekt I" : "Practical Project I",
+    titleDE: "Praxisprojekt I",
+    credits: 5, semester: language === "de" ? "1. Semester" : "1st Semester",
+    studiengang: "Informatik", color: "pink", active: false, progress: 100,
+  },
+].map(c => ({...c, modules: [], resources: [], assignments: [], forumTopics: []}));

@@ -13,7 +13,7 @@ const LS_KEYS = {
  * @param {string} moduleLabel - Course/module name
  * @param {string} studiengangName - Studiengang name (optional)
  */
-export function saveRecentFile(file: { id: string; name: string; type: any; url: any; }, moduleLabel: any, studiengangName: any) {
+export function saveRecentFile(file: { id: string | number; name: string; type: any; url: any; duration?: string; }, moduleLabel: any, studiengangName: any) {
   try {
     const stored = JSON.parse(localStorage.getItem(LS_KEYS.recentFiles) || '[]');
     const recentFiles = Array.isArray(stored) ? stored : [];

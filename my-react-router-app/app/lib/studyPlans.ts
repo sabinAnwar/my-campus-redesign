@@ -18,90 +18,115 @@ export type StudyPlan = {
   blocks: StudyBlock[];
   paletteOverrides?: Partial<Record<DayStatus, PaletteEntry>>;
   autoWeekends?: boolean;
+  // Link to Studiengang - can be ID or name pattern
+  studiengangPattern?: string[];
 };
 
 export const DEFAULT_PALETTE: Record<DayStatus, PaletteEntry> = {
   praxis: {
     label: "Praxiszeit",
-    bg: "bg-emerald-300 dark:bg-emerald-700/50",
-    text: "text-emerald-900 dark:text-emerald-50",
-    ring: "ring-emerald-500 dark:ring-emerald-400",
+    bg: "bg-emerald-500/10",
+    text: "text-emerald-600 dark:text-emerald-400",
+    ring: "ring-emerald-500/20",
   },
   vorlesung: {
     label: "Vorlesungstermine",
-    bg: "bg-blue-300 dark:bg-blue-700/50",
-    text: "text-blue-900 dark:text-blue-50",
-    ring: "ring-blue-500 dark:ring-blue-400",
+    bg: "bg-primary/10",
+    text: "text-primary",
+    ring: "ring-primary/20",
   },
   theoriephase: {
     label: "Theoriewoche",
-    bg: "bg-fuchsia-300 dark:bg-fuchsia-700/50",
-    text: "text-fuchsia-900 dark:text-fuchsia-50",
-    ring: "ring-fuchsia-500 dark:ring-fuchsia-400",
+    bg: "bg-fuchsia-500/10",
+    text: "text-fuchsia-600 dark:text-fuchsia-400",
+    ring: "ring-fuchsia-500/20",
   },
   klausurphase: {
-    label: "Prüfungsphase",
-    bg: "bg-red-400 dark:bg-red-700/60",
-    text: "text-red-950 dark:text-red-50",
-    ring: "ring-red-600 dark:ring-red-400",
+    label: "Klausurwoche",
+    bg: "bg-destructive/10",
+    text: "text-destructive",
+    ring: "ring-destructive/20",
   },
   nachpruefung: {
     label: "Nachprüfungsphase",
-    bg: "bg-slate-300 dark:bg-slate-600/50",
-    text: "text-slate-900 dark:text-slate-50",
-    ring: "ring-slate-500 dark:ring-slate-400",
+    bg: "bg-muted",
+    text: "text-muted-foreground",
+    ring: "ring-border",
   },
   wochenende: {
     label: "Wochenenden (frei von Praxis)",
-    bg: "bg-amber-300 dark:bg-amber-700/50",
-    text: "text-amber-900 dark:text-amber-50",
-    ring: "ring-amber-500 dark:ring-amber-400",
+    bg: "bg-amber-500/10",
+    text: "text-amber-600 dark:text-amber-400",
+    ring: "ring-amber-500/20",
   },
   feiertag: {
     label: "Feiertag",
-    bg: "bg-slate-800 dark:bg-slate-900",
-    text: "text-white",
-    ring: "ring-slate-700 dark:ring-slate-500",
+    bg: "bg-foreground text-background",
+    text: "text-background",
+    ring: "ring-foreground/20",
   },
 };
 
+const COMMON_BLOCKS: StudyBlock[] = [
+  // 2025 Holidays
+  { start: "2025-01-01", end: "2025-01-01", status: "feiertag" },
+  { start: "2025-04-18", end: "2025-04-18", status: "feiertag" },
+  { start: "2025-04-21", end: "2025-04-21", status: "feiertag" },
+  { start: "2025-05-01", end: "2025-05-01", status: "feiertag" },
+  { start: "2025-05-29", end: "2025-05-29", status: "feiertag" },
+  { start: "2025-06-09", end: "2025-06-09", status: "feiertag" },
+  { start: "2025-10-03", end: "2025-10-03", status: "feiertag" },
+  { start: "2025-12-25", end: "2025-12-26", status: "feiertag" },
+  // 2026 Holidays
+  { start: "2026-01-01", end: "2026-01-01", status: "feiertag" },
+  { start: "2026-04-03", end: "2026-04-03", status: "feiertag" },
+  { start: "2026-04-06", end: "2026-04-06", status: "feiertag" },
+  { start: "2026-05-01", end: "2026-05-01", status: "feiertag" },
+  { start: "2026-05-14", end: "2026-05-14", status: "feiertag" },
+  { start: "2026-05-25", end: "2026-05-25", status: "feiertag" },
+  { start: "2026-10-03", end: "2026-10-03", status: "feiertag" },
+  { start: "2026-12-25", end: "2026-12-26", status: "feiertag" },
+];
+
 export const STUDY_PLANS: StudyPlan[] = [
   {
-    id: "ws25-26",
-    label: "7. Semester (Blockmodell) Okt 2025 – Mär 2026",
+    id: "ws25-26-informatik",
+    label: "7. Semester (Blockmodell) Okt 2025 – Mär 2026 - Informatik",
     description:
-      "Angelehnt an den Plan im Screenshot, inkl. Theorie-/Prüfungsphasen.",
+      "Plan für Informatik-Studiengänge inkl. Theorie-/Klausurphasen.",
     autoWeekends: true,
+    // Matches Studiengang names containing these patterns
+    studiengangPattern: ["Informatik", "Software", "Data Science", "IT"],
     paletteOverrides: {
       theoriephase: {
         label: "Theoriewoche (Jan bis Mär)",
-        bg: "bg-fuchsia-300 dark:bg-fuchsia-500/20",
-        text: "text-fuchsia-900 dark:text-fuchsia-100",
-        ring: "ring-fuchsia-500/70 dark:ring-fuchsia-500/50",
+        bg: "bg-fuchsia-500/10",
+        text: "text-fuchsia-600 dark:text-fuchsia-400",
+        ring: "ring-fuchsia-500/20",
       },
       praxis: {
         label: "Praxiswochen (Okt bis Dez)",
-        bg: "bg-lime-300 dark:bg-lime-500/20",
-        text: "text-lime-900 dark:text-lime-100",
-        ring: "ring-lime-500/70 dark:ring-lime-500/50",
+        bg: "bg-emerald-500/10",
+        text: "text-emerald-600 dark:text-emerald-400",
+        ring: "ring-emerald-500/20",
       },
       klausurphase: {
-        label: "Prüfungswoche",
-        bg: "bg-red-400 dark:bg-red-500/20",
-        text: "text-red-50 dark:text-red-100",
-        ring: "ring-red-500/70 dark:ring-red-500/50",
+        label: "Klausurwoche",
+        bg: "bg-destructive/10",
+        text: "text-destructive",
+        ring: "ring-destructive/20",
       },
       nachpruefung: {
         label: "Nachprüfungsphase",
-        bg: "bg-slate-400 dark:bg-slate-700",
-        text: "text-slate-900 dark:text-slate-100",
-        ring: "ring-slate-500/70",
+        bg: "bg-muted",
+        text: "text-muted-foreground",
+        ring: "ring-border",
       },
       wochenende: {
         label: "Wochenenden (max. 2/Monat arbeiten)",
-        bg: "bg-amber-300 dark:bg-amber-500/20",
-        text: "text-amber-900 dark:text-amber-100",
-        ring: "ring-amber-500/70 dark:ring-amber-500/50",
+        bg: "bg-amber-500/10",
+        text: "text-amber-600 dark:text-amber-400",
+        ring: "ring-amber-500/20",
       },
       feiertag: {
         label: "Nationaler Feiertag",
@@ -111,18 +136,67 @@ export const STUDY_PLANS: StudyPlan[] = [
       },
     },
     blocks: [
-      { start: "2025-10-01", end: "2025-12-31", status: "praxis" },
-      { start: "2026-01-01", end: "2026-03-31", status: "theoriephase" },
+      ...COMMON_BLOCKS,
       { start: "2026-02-15", end: "2026-02-21", status: "klausurphase" },
       { start: "2026-03-10", end: "2026-03-20", status: "nachpruefung" },
-      { start: "2025-12-24", end: "2025-12-26", status: "feiertag" },
+      { start: "2025-10-01", end: "2025-12-31", status: "praxis" },
+      { start: "2026-01-01", end: "2026-03-31", status: "theoriephase" },
+    ],
+  },
+  {
+    id: "ws25-26-bwl",
+    label: "7. Semester (Blockmodell) Okt 2025 – Mär 2026 - BWL",
+    description: "Plan für BWL-Studiengänge mit anderen Klausurzeiten.",
+    autoWeekends: true,
+    // Matches Studiengang names containing these patterns
+    studiengangPattern: [
+      "BWL",
+      "Business",
+      "Marketing",
+      "Wirtschaft",
+      "Management",
+    ],
+    paletteOverrides: {
+      theoriephase: {
+        label: "Theoriewoche (Dez bis Feb)",
+        bg: "bg-indigo-300 dark:bg-indigo-500/20",
+        text: "text-indigo-900 dark:text-indigo-100",
+        ring: "ring-indigo-500/70 dark:ring-indigo-500/50",
+      },
+      praxis: {
+        label: "Praxiswochen (Okt bis Nov)",
+        bg: "bg-teal-300 dark:bg-teal-500/20",
+        text: "text-teal-900 dark:text-teal-100",
+        ring: "ring-teal-500/70 dark:ring-teal-500/50",
+      },
+      klausurphase: {
+        label: "Klausurwoche",
+        bg: "bg-orange-400 dark:bg-orange-500/20",
+        text: "text-orange-50 dark:text-orange-100",
+        ring: "ring-orange-500/70 dark:ring-orange-500/50",
+      },
+      nachpruefung: {
+        label: "Nachprüfungsphase",
+        bg: "bg-gray-400 dark:bg-gray-700",
+        text: "text-gray-900 dark:text-gray-100",
+        ring: "ring-gray-500/70",
+      },
+    },
+    blocks: [
+      ...COMMON_BLOCKS,
+      { start: "2026-02-23", end: "2026-02-28", status: "klausurphase" },
+      { start: "2026-03-15", end: "2026-03-25", status: "nachpruefung" },
+      { start: "2025-10-01", end: "2025-11-30", status: "praxis" },
+      { start: "2025-12-01", end: "2026-02-22", status: "theoriephase" },
+      { start: "2026-03-01", end: "2026-03-31", status: "praxis" },
     ],
   },
   {
     id: "ss26",
     label: "Sommersemester Beispiel 2026",
-    description: "Abweichende Farben und Blöcke, falls sich der Plan ändert.",
+    description: "Fallback-Plan für alle Studiengänge im SS26.",
     autoWeekends: true,
+    // No pattern = default fallback
     paletteOverrides: {
       praxis: {
         label: "Praxisphase",
@@ -137,19 +211,35 @@ export const STUDY_PLANS: StudyPlan[] = [
         ring: "ring-indigo-500/70 dark:ring-indigo-500/50",
       },
       klausurphase: {
-        label: "Prüfungen",
+        label: "Klausurwoche",
         bg: "bg-rose-400 dark:bg-rose-500/20",
         text: "text-rose-50 dark:text-rose-100",
         ring: "ring-rose-500/70 dark:ring-rose-500/50",
       },
     },
     blocks: [
+      ...COMMON_BLOCKS,
       { start: "2026-04-01", end: "2026-05-31", status: "theoriephase" },
       { start: "2026-06-01", end: "2026-07-31", status: "praxis" },
       { start: "2026-08-01", end: "2026-08-10", status: "klausurphase" },
     ],
   },
 ];
+
+// Helper function to find study plan by Studiengang name
+export function getStudyPlanByStudiengang(studiengangName: string | null | undefined): StudyPlan {
+  if (!studiengangName) return STUDY_PLANS[0]; // Default fallback
+  
+  // Find plan that matches the Studiengang pattern
+  const matchingPlan = STUDY_PLANS.find(plan => {
+    if (!plan.studiengangPattern) return false;
+    return plan.studiengangPattern.some(pattern => 
+      studiengangName.toLowerCase().includes(pattern.toLowerCase())
+    );
+  });
+  
+  return matchingPlan || STUDY_PLANS[0]; // Return matching or default
+}
 
 export function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
