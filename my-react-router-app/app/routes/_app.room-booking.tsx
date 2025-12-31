@@ -9,9 +9,10 @@ import {
   Clock,
   MapPin,
   Users,
-  Check,
-  ShieldCheck,
-  Info,
+  ArrowLeft,
+  Trash2,
+  Lock,
+  CalendarCheck,
 } from "lucide-react";
 
 import { prisma } from "../lib/prisma";
@@ -29,7 +30,7 @@ import { useLanguage } from "~/contexts/LanguageContext";
 const TRANSLATIONS = {
   de: {
     backToDashboard: "← Zurück zum Dashboard",
-    roomBooking: "Room Booking",
+    roomBooking: "Raumbuchung",
     title: "Raumbuchung – IU Hamburg Campus",
     today: "Heute",
     from: "Von",
@@ -52,20 +53,40 @@ const TRANSLATIONS = {
     availableRooms: "Verfügbare Räume",
     capacity: "Kapazität",
     persons: "Personen",
+    seats: "Plätze",
     freeNow: "Jetzt frei",
     occupied: "Belegt",
     yourBooking: "Deine Buchung",
     cancel: "Stornieren",
+    cancelBooking: "Buchung stornieren",
     book: "Buchen",
+    bookNow: "Jetzt buchen",
     lecture: "Vorlesung",
     userNotLoggedIn: "Benutzer nicht angemeldet",
     selectStartEndTime: "Bitte wählen Sie Start- und Endzeit",
     startBeforeEnd: "Startzeit muss vor der Endzeit liegen",
     roomsAvailable: (n: number, t: number) => `${n} von ${t} Räumen verfügbar`,
     bookingRoom: "wird gebucht...",
+    isBeingBooked: "Wird gebucht...",
     time: "Zeit",
-    cancellingBooking: "Buchung wird storniert...",
+    cancellingBooking: "Wird storniert...",
     bookingNotFound: "Buchung nicht gefunden",
+    available: "Verfügbar",
+    occupiedByLecture: "Belegt durch Vorlesung",
+    alreadyBooked: "Bereits gebucht",
+    bookedBy: "Gebucht (du)",
+    booked: "Gebucht",
+    student: "Student",
+    lecturer: "Dozent:in",
+    liveStatus: "Live-Status",
+    listView: "Listenansicht",
+    weekView: "Wochenansicht",
+    monthView: "Monatsansicht",
+    rooms: "Räume",
+    bookRoom: "Raum buchen",
+    bookingTitle: "Titel der Buchung",
+    confirmBooking: "Buchung bestätigen",
+    selectRoomToSeeWeek: "Wähle einen Raum aus, um den Wochenplan zu sehen",
   },
   en: {
     backToDashboard: "← Back to Dashboard",
@@ -92,20 +113,40 @@ const TRANSLATIONS = {
     availableRooms: "Available Rooms",
     capacity: "Capacity",
     persons: "Persons",
+    seats: "Seats",
     freeNow: "Free now",
     occupied: "Occupied",
     yourBooking: "Your booking",
     cancel: "Cancel",
+    cancelBooking: "Cancel Booking",
     book: "Book",
+    bookNow: "Book Now",
     lecture: "Lecture",
     userNotLoggedIn: "User not logged in",
     selectStartEndTime: "Please select start and end time",
     startBeforeEnd: "Start time must be before end time",
     roomsAvailable: (n: number, t: number) => `${n} of ${t} rooms available`,
     bookingRoom: "is being booked...",
+    isBeingBooked: "Booking...",
     time: "Time",
-    cancellingBooking: "Cancelling booking...",
+    cancellingBooking: "Cancelling...",
     bookingNotFound: "Booking not found",
+    available: "Available",
+    occupiedByLecture: "Occupied by Lecture",
+    alreadyBooked: "Already Booked",
+    bookedBy: "Booked (you)",
+    booked: "Booked",
+    student: "Student",
+    lecturer: "Lecturer",
+    liveStatus: "Live Status",
+    listView: "List View",
+    weekView: "Week View",
+    monthView: "Month View",
+    rooms: "Rooms",
+    bookRoom: "Book Room",
+    bookingTitle: "Booking Title",
+    confirmBooking: "Confirm Booking",
+    selectRoomToSeeWeek: "Select a room to see its weekly schedule",
   },
 };
 
@@ -202,7 +243,7 @@ const DEMO_OCCUPANCY = [
 ];
 
 // Helper function to get session token from request cookies
-function getSessionToken(request: { headers: { get: (arg0: string) => any; }; }) {
+function getSessionToken(request: { headers: { get: (arg0: string) => any } }) {
   const cookieHeader = request.headers.get("Cookie");
   if (!cookieHeader) return null;
 
@@ -251,18 +292,21 @@ export async function loader({ request }: { request: Request }) {
       },
     });
 
-    console.log(
-      "📚 Loading all bookings - Found:",
-      bookings.length
-    );
+    console.log("📚 Loading all bookings - Found:", bookings.length);
 
     // Convert date objects to ISO strings for JSON serialization
-    const serializedBookings = bookings.map((booking: { date: { toISOString: () => string; }; createdAt: { toISOString: () => any; }; updatedAt: { toISOString: () => any; }; }) => ({
-      ...booking,
-      date: booking.date.toISOString().split("T")[0],
-      createdAt: booking.createdAt.toISOString(),
-      updatedAt: booking.updatedAt.toISOString(),
-    }));
+    const serializedBookings = bookings.map(
+      (booking: {
+        date: { toISOString: () => string };
+        createdAt: { toISOString: () => any };
+        updatedAt: { toISOString: () => any };
+      }) => ({
+        ...booking,
+        date: booking.date.toISOString().split("T")[0],
+        createdAt: booking.createdAt.toISOString(),
+        updatedAt: booking.updatedAt.toISOString(),
+      })
+    );
 
     return { bookings: serializedBookings, userId };
   } catch (error) {
@@ -435,13 +479,21 @@ export default function RoomBooking() {
   const revalidator = useRevalidator();
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
   type CampusKey = keyof typeof CAMPUS_ROOMS;
-  const [selectedLocation, setSelectedLocation] = useState<CampusKey>("Hammerbrook");
+  const [selectedLocation, setSelectedLocation] =
+    useState<CampusKey>("Hammerbrook");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("11:00");
   const [isLoading, setIsLoading] = useState(false);
   const [availabilityChecked, setAvailabilityChecked] = useState(false);
+  const [now, setNow] = useState(new Date());
+
+  // Update current time every minute
+  useEffect(() => {
+    const timer = setInterval(() => setNow(new Date()), 60000);
+    return () => clearInterval(timer);
+  }, []);
 
   // Get user ID and bookings from loader
   const userId = loaderData?.userId || 1;
@@ -461,9 +513,12 @@ export default function RoomBooking() {
   const rooms = CAMPUS_ROOMS[selectedLocation] || [];
 
   // Buchungsfunktion - uses Form submission to server action
-  const handleBookRoom = (room: { id: React.Key | null | undefined; name: string | number | React.ReactNode; }) => {
+  const handleBookRoom = (room: {
+    id: React.Key | null | undefined;
+    name: string | number | React.ReactNode;
+  }) => {
     if (!userId) {
-      showErrorToast("Benutzer nicht angemeldet");
+      showErrorToast(t.userNotLoggedIn);
       return;
     }
 
@@ -513,19 +568,19 @@ export default function RoomBooking() {
     form.submit();
 
     showSuccessToast(
-      `Raum ${String(room.name)} wird gebucht... Zeit: ${startTime} - ${endTime}`
+      `${t.room} ${String(room.name)} ${t.bookingRoom} ${t.time}: ${startTime} - ${endTime}`
     );
   };
 
   // Verfügbarkeit prüfen
   const handleCheckAvailability = () => {
     if (!startTime || !endTime) {
-      showErrorToast("Bitte wählen Sie Start- und Endzeit");
+      showErrorToast(t.selectStartEndTime);
       return;
     }
 
     if (startTime >= endTime) {
-      showErrorToast("Startzeit muss vor der Endzeit liegen");
+      showErrorToast(t.startBeforeEnd);
       return;
     }
 
@@ -536,24 +591,25 @@ export default function RoomBooking() {
     });
     setAvailabilityChecked(true);
 
-    const availableRooms = rooms.filter((room: { name: any; }) => {
+    const availableRooms = rooms.filter((room: { name: any }) => {
       const { status } = getRoomStatus(room.name);
       return status === "frei";
     });
 
     showSuccessToast(
-      `${availableRooms.length} von ${rooms.length} Räumen verfügbar für ${startTime} - ${endTime}`
+      `${t.roomsAvailable(availableRooms.length, rooms.length)} (${startTime} - ${endTime})`
     );
   };
 
   // Stornierungsfunktion mit React Router action
   const handleCancelBooking = (roomName: any) => {
     const booking = bookings.find(
-      (b: { roomName: any; campus: string; }) => b.roomName === roomName && b.campus === selectedLocation
+      (b: { roomName: any; campus: string }) =>
+        b.roomName === roomName && b.campus === selectedLocation
     );
 
     if (!booking) {
-      showErrorToast("Buchung nicht gefunden");
+      showErrorToast(t.bookingNotFound);
       return;
     }
 
@@ -586,7 +642,7 @@ export default function RoomBooking() {
     document.body.appendChild(form);
     form.submit();
 
-    showInfoToast(`Buchung für ${roomName} wird storniert...`);
+    showInfoToast(`${t.room} ${roomName} - ${t.cancellingBooking}`);
   };
 
   // Get lectures for selected campus and today
@@ -619,8 +675,8 @@ export default function RoomBooking() {
     todayLectures.forEach((lec) =>
       rows.push({
         room: lec.roomName,
-        purpose: `Vorlesung: ${lec.title}`,
-        person: "Dozent:in",
+        purpose: `${t.lecture}: ${lec.title}`,
+        person: t.lecturer,
         until: lec.endTime,
         key: `lec-${lec.id}`,
       })
@@ -632,8 +688,10 @@ export default function RoomBooking() {
         const isMyBooking = b.userId === userId;
         rows.push({
           room: b.roomName,
-          purpose: isMyBooking ? "Gebucht (du)" : "Gebucht",
-          person: b.user ? (b.user.name || b.user.username) : `User #${b.userId}`,
+          purpose: isMyBooking ? t.bookedBy : t.booked,
+          person: b.user
+            ? b.user.name || b.user.username
+            : `${t.student} #${b.userId}`,
           until: `${b.startTime}–${b.endTime}`,
           key: `book-${b.id}`,
         });
@@ -663,7 +721,12 @@ export default function RoomBooking() {
     const name = String(roomName);
 
     // Helper function to check if two time ranges overlap
-    const timesOverlap = (start1: string, end1: string, start2: string, end2: string) => {
+    const timesOverlap = (
+      start1: string,
+      end1: string,
+      start2: string,
+      end2: string
+    ) => {
       return start1 < end2 && start2 < end1;
     };
 
@@ -694,335 +757,248 @@ export default function RoomBooking() {
     return { status: "frei", lecture: null, booking: null };
   };
 
+  // Helper to check if a room is currently occupied
+  const isRoomOccupied = (roomName: string) => {
+    const { status } = getRoomStatus(roomName);
+    return (
+      status === "belegt" || status === "belegt-user" || status === "gebucht"
+    );
+  };
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100 pb-12">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8 space-y-8">
-        {/* Header */}
-        <div className="flex flex-col gap-2">
-          <Link
-            to="/dashboard"
-            className="inline-flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white text-sm font-semibold"
-          >
-            ← Zurück zum Dashboard
-          </Link>
-          <div className="rounded-2xl bg-white/80 dark:bg-slate-900/70 border border-slate-200 dark:border-slate-800 p-6 shadow-sm flex flex-wrap items-start gap-4 justify-between">
-            <div>
-              <div className="flex items-center gap-2 text-xs uppercase tracking-[0.2em] text-slate-500 dark:text-slate-400">
-                <ShieldCheck className="h-4 w-4" />
-                Room Booking
+    <div className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8 md:space-y-12 px-1 sm:px-0">
+      {/* Header Section */}
+      <header className="mb-6 sm:mb-8 md:mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 lg:gap-8">
+          <div className="space-y-3 sm:space-y-4">
+            <div className="flex items-center gap-2 sm:gap-3">
+              <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <MapPin className="w-5 h-5 sm:w-7 sm:h-7" />
               </div>
-              <h1 className="text-3xl font-bold mt-1 text-slate-900 dark:text-white">
-                Raumbuchung – IU Hamburg Campus
+              <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight">
+                {t.roomBooking}
               </h1>
-              <p className="text-slate-600 dark:text-slate-300 mt-1 max-w-2xl">
-                {campusDetail.subtitle}. {campusDetail.note}
-              </p>
             </div>
-            <div className="flex items-center gap-3 bg-slate-100 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 rounded-xl px-4 py-3 text-sm shadow-inner">
-              <Clock className="h-4 w-4 text-indigo-500" />
-              <div>
-                <div className="font-semibold">Heute</div>
-                <div className="text-slate-600 dark:text-slate-300">
-                  {new Date().toLocaleDateString("de-DE", {
-                    weekday: "long",
-                    day: "2-digit",
-                    month: "2-digit",
-                  })}
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+            <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+              {language === "de"
+                ? "Verwalte deine Raumbuchungen und finde freie Lernplätze auf dem Campus."
+                : "Manage your room bookings and find available study spots on campus."}
+            </p>
 
-        {/* Campus selector */}
-        <div className="flex flex-wrap gap-3">
-          {(Object.keys(CAMPUS_ROOMS) as (keyof typeof CAMPUS_ROOMS)[]).map(
-            (campus) => (
-              <button
-                key={campus}
-                onClick={() => setSelectedLocation(campus)}
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border text-sm font-semibold transition-all ${
-                  selectedLocation === campus
-                    ? "bg-indigo-600 text-white border-indigo-500 shadow-lg shadow-indigo-500/20"
-                    : "bg-white dark:bg-slate-900 border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-indigo-300 dark:hover:border-indigo-400"
-                }`}
-              >
-                <MapPin className="h-4 w-4" />
-                {campus}
-              </button>
-            )
-          )}
-        </div>
-
-        {/* Time Filter + legend */}
-        <div className="grid gap-4 lg:grid-cols-[1.4fr,0.6fr]">
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-5 shadow-sm">
-            <div className="flex flex-wrap items-center gap-4">
-              <div className="flex items-center gap-3">
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  Von
-                </label>
-                <div className="relative">
-                  <input
-                    type="time"
-                    value={startTime}
-                    onChange={(e) => setStartTime(e.target.value)}
-                    className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <Clock className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                </div>
-              </div>
-              <div className="flex items-center gap-3">
-                <label className="text-sm font-semibold text-slate-800 dark:text-slate-100">
-                  Bis
-                </label>
-                <div className="relative">
-                  <input
-                    type="time"
-                    value={endTime}
-                    onChange={(e) => setEndTime(e.target.value)}
-                    className="px-4 py-2 rounded-lg border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                  />
-                  <Clock className="h-4 w-4 absolute right-3 top-1/2 -translate-y-1/2 text-slate-400" />
-                </div>
-              </div>
-              <button
-                onClick={handleCheckAvailability}
-                className="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-5 py-2.5 rounded-xl transition shadow-lg shadow-indigo-500/20"
-              >
-                <Check className="h-4 w-4" />
-                Verfügbarkeit prüfen
-              </button>
-              {availabilityChecked ? (
-                <span className="text-sm text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Slots geprüft
-                </span>
-              ) : (
-                <span className="text-sm text-slate-500 dark:text-slate-400">
-                  Wähle Zeitfenster aus und prüfe die freien Räume.
-                </span>
-              )}
+            <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border bg-card/50 text-xs sm:text-sm font-medium w-fit">
+              <Clock size={16} className="text-iu-blue" />
+              <span>
+                {new Date().toLocaleDateString(
+                  language === "de" ? "de-DE" : "en-US",
+                  { weekday: "long", day: "2-digit", month: "2-digit" }
+                )}
+              </span>
             </div>
           </div>
 
-          <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 shadow-sm space-y-3">
-            <div className="flex items-center gap-2 text-sm font-semibold text-slate-700 dark:text-slate-200">
-              <Info className="h-4 w-4" />
-              Legende
+          <div className="flex p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-xl border border-border gap-3 sm:gap-4 items-center shadow-sm">
+            <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue">
+              <Users className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <div className="grid grid-cols-2 gap-3 text-sm">
-              {[
-                { label: "Frei", cls: "bg-emerald-500" },
-                { label: "Belegt (Vorlesung)", cls: "bg-orange-500" },
-                { label: "Gebucht von dir", cls: "bg-fuchsia-500" },
-                { label: "Bald belegt", cls: "bg-yellow-400" },
-              ].map((item) => (
-                <div key={item.label} className="flex items-center gap-2">
-                  <span className={`w-4 h-4 rounded ${item.cls}`} />
-                  <span className="text-slate-600 dark:text-slate-300">
-                    {item.label}
-                  </span>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-
-        {/* Quick occupancy snapshot */}
-        <div className="rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm">
-          <div className="flex items-center justify-between px-5 py-4 border-b border-slate-200 dark:border-slate-800">
             <div>
-              <p className="text-xs uppercase tracking-[0.24em] text-slate-500 dark:text-slate-400 font-semibold">
-                Live Übersicht
-              </p>
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white">
-                Wer nutzt gerade welchen Raum?
-              </h3>
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+                {t.liveStatus}
+              </div>
+              <div className="flex items-baseline gap-2">
+                <span className="text-xl sm:text-2xl font-black text-foreground">
+                  {occupancyRows.length}
+                </span>
+                <span className="text-xs font-bold text-muted-foreground">
+                  {t.occupied}
+                </span>
+              </div>
             </div>
-            <Users className="h-5 w-5 text-indigo-500" />
           </div>
-          <div className="overflow-x-auto">
-            <table className="min-w-full text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-800/70 text-slate-600 dark:text-slate-300">
+        </div>
+      </header>
+
+      {/* Campus selector */}
+      <div className="flex flex-wrap gap-2 sm:gap-3">
+        {(Object.keys(CAMPUS_ROOMS) as (keyof typeof CAMPUS_ROOMS)[]).map(
+          (campus) => (
+            <button
+              key={campus}
+              onClick={() => setSelectedLocation(campus)}
+              className={`inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl border text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all duration-500 ${
+                selectedLocation === campus
+                  ? "bg-iu-blue text-white border-iu-blue scale-105"
+                  : "bg-card/50 border-border text-muted-foreground hover:border-iu-blue/50 hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <MapPin
+                className={`h-3 w-3 ${selectedLocation === campus ? "text-white" : "text-iu-blue"}`}
+              />
+              {campus}
+            </button>
+          )
+        )}
+      </div>
+
+      {/* Quick occupancy snapshot (Table) */}
+      <div className="bg-card/50 backdrop-blur-2xl border border-border rounded-2xl sm:rounded-[2.5rem] overflow-hidden">
+        <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 border-b border-border">
+          <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+            <Users className="w-5 h-5 sm:w-6 sm:h-6" />
+          </div>
+          <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground tracking-tight">
+            {t.whoUsesRoom}
+          </h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="min-w-full text-sm">
+            <thead className="bg-muted/50 text-muted-foreground">
+              <tr>
+                <th className="text-left px-3 sm:px-6 md:px-10 py-3 sm:py-4 font-bold text-[10px] sm:text-xs">
+                  {t.room}
+                </th>
+                <th className="text-left px-3 sm:px-6 md:px-10 py-3 sm:py-4 font-bold text-[10px] sm:text-xs hidden sm:table-cell">
+                  {t.where}
+                </th>
+                <th className="text-left px-3 sm:px-6 md:px-10 py-3 sm:py-4 font-bold text-[10px] sm:text-xs">
+                  {t.purpose}
+                </th>
+                <th className="text-left px-3 sm:px-6 md:px-10 py-3 sm:py-4 font-bold text-[10px] sm:text-xs">
+                  {t.until}
+                </th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-border">
+              {occupancyRows.length === 0 ? (
                 <tr>
-                  <th className="text-left px-4 py-2 font-semibold">Raum</th>
-                  <th className="text-left px-4 py-2 font-semibold">Wo?</th>
-                  <th className="text-left px-4 py-2 font-semibold">Zweck</th>
-                  <th className="text-left px-4 py-2 font-semibold">bis</th>
+                  <td
+                    colSpan={4}
+                    className="px-4 sm:px-10 py-6 sm:py-10 text-muted-foreground font-bold italic text-center text-sm sm:text-base"
+                  >
+                    {t.noOccupancies}
+                  </td>
                 </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-200 dark:divide-slate-800">
-                {occupancyRows.length === 0 ? (
-                  <tr>
-                    <td
-                      colSpan={4}
-                      className="px-4 py-3 text-slate-500 dark:text-slate-400"
-                    >
-                      Keine Belegungen für heute.
+              ) : (
+                occupancyRows.map((row) => (
+                  <tr
+                    key={row.key}
+                    className="hover:bg-muted/30 transition-all duration-300 group"
+                  >
+                    <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 font-bold text-foreground text-sm sm:text-base md:text-lg group-hover:text-iu-blue transition-colors">
+                      {row.room}
+                    </td>
+                    <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 hidden sm:table-cell">
+                      <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-lg bg-muted/50 border border-border text-muted-foreground font-bold text-[10px] sm:text-xs">
+                        <MapPin className="h-3 w-3 text-iu-blue" />
+                        {selectedLocation}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 text-muted-foreground font-medium">
+                      <span className="text-foreground font-bold text-xs sm:text-sm">
+                        {row.purpose}
+                      </span>
+                      <div className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-bold">
+                        {row.person}
+                      </div>
+                    </td>
+                    <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6">
+                      <div className="inline-flex items-center gap-1.5 sm:gap-2 text-iu-blue font-bold text-sm sm:text-base">
+                        <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                        {row.until}
+                      </div>
                     </td>
                   </tr>
-                ) : (
-                  occupancyRows.map((row) => (
-                    <tr key={row.key} className="hover:bg-slate-50 dark:hover:bg-slate-800/60 transition-colors">
-                      <td className="px-4 py-3 font-semibold text-slate-900 dark:text-white">
-                        {row.room}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                        {selectedLocation}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                        {row.purpose} — {row.person}
-                      </td>
-                      <td className="px-4 py-3 text-slate-600 dark:text-slate-300">
-                        {row.until}
-                      </td>
-                    </tr>
-                  ))
-                )}
-              </tbody>
-            </table>
-          </div>
+                ))
+              )}
+            </tbody>
+          </table>
         </div>
+      </div>
 
-        {/* Room Cards Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {rooms.map((room: { name: any; id: React.Key | null | undefined; capacity: number; }) => {
+      {/* Room Cards Grid */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
+        {rooms.map(
+          (room: {
+            name: any;
+            id: React.Key | null | undefined;
+            capacity: number;
+            type?: string;
+          }) => {
             const { status, lecture, booking } = getRoomStatus(room.name);
-
-            const stateStyles =
-              status === "belegt" || status === "belegt-user"
-                ? {
-                    border: "border-orange-300 dark:border-orange-700",
-                    bg: "bg-gradient-to-br from-white via-orange-50/30 to-orange-100/50 dark:from-slate-900 dark:via-orange-950/20 dark:to-orange-900/30",
-                    text: "text-orange-600 dark:text-orange-400",
-                    badge: "bg-orange-500 text-white shadow-lg shadow-orange-500/30",
-                    glow: "shadow-orange-200 dark:shadow-orange-900/50",
-                  }
-                : status === "gebucht"
-                ? {
-                    border: "border-fuchsia-300 dark:border-fuchsia-700",
-                    bg: "bg-gradient-to-br from-white via-fuchsia-50/30 to-fuchsia-100/50 dark:from-slate-900 dark:via-fuchsia-950/20 dark:to-fuchsia-900/30",
-                    text: "text-fuchsia-600 dark:text-fuchsia-400",
-                    badge: "bg-fuchsia-500 text-white shadow-lg shadow-fuchsia-500/30",
-                    glow: "shadow-fuchsia-200 dark:shadow-fuchsia-900/50",
-                  }
-                : {
-                    border: "border-emerald-300 dark:border-emerald-700",
-                    bg: "bg-gradient-to-br from-white via-emerald-50/30 to-emerald-100/50 dark:from-slate-900 dark:via-emerald-950/20 dark:to-emerald-900/30",
-                    text: "text-emerald-600 dark:text-emerald-400",
-                    badge: "bg-emerald-500 text-white shadow-lg shadow-emerald-500/30",
-                    glow: "shadow-emerald-200 dark:shadow-emerald-900/50",
-                  };
+            const occupied = status !== "frei";
 
             return (
               <div
                 key={room.id}
-                className={`group relative rounded-2xl ${stateStyles.bg} border-2 ${stateStyles.border} shadow-lg ${stateStyles.glow} hover:shadow-2xl hover:scale-[1.02] transition-all duration-300 p-6 flex flex-col gap-4 overflow-hidden`}
+                className={`group relative rounded-2xl sm:rounded-[2rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 hover:-translate-y-2 transition-all duration-500 p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-5 md:gap-6 overflow-hidden`}
               >
-                {/* Decorative gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-white/5 pointer-events-none" />
-                
-                {/* Content */}
-                <div className="relative z-10 flex items-start justify-between gap-3">
+                <div className="relative z-10 flex items-start justify-between gap-3 sm:gap-4">
                   <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <MapPin className="h-3.5 w-3.5 text-slate-400 dark:text-slate-500" />
-                      <p className="text-[10px] uppercase tracking-[0.15em] text-slate-500 dark:text-slate-400 font-bold">
+                    <div className="flex items-center gap-2 mb-3">
+                      <MapPin className="h-3 w-3 text-iu-blue" />
+                      <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
                         {selectedLocation}
                       </p>
                     </div>
-                    <h3 className={`text-2xl font-black ${stateStyles.text} mb-2 tracking-tight`}>
+                    <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-2 sm:mb-3 md:mb-4 tracking-tight leading-none group-hover:text-iu-blue transition-colors">
                       {room.name}
                     </h3>
-                    <div className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-300">
-                      <div className="flex items-center gap-1.5 bg-white/60 dark:bg-slate-800/60 px-2.5 py-1 rounded-full backdrop-blur-sm border border-slate-200/50 dark:border-slate-700/50">
-                        <Users className="h-3.5 w-3.5" />
-                        <span className="font-semibold text-xs">{room.capacity} Plätze</span>
+                    <div className="flex items-center gap-2">
+                      <div className="flex items-center gap-1.5 sm:gap-2 bg-muted/50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-border">
+                        <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-iu-blue" />
+                        <span className="font-bold text-[9px] sm:text-[10px] text-foreground uppercase tracking-widest">
+                          {room.capacity} {t.seats}
+                        </span>
                       </div>
                     </div>
                   </div>
-                  <div className={`px-3 py-1.5 rounded-full text-xs font-bold ${stateStyles.badge} flex items-center gap-1.5`}>
-                    {status === "gebucht" && <Check className="h-3 w-3" />}
-                    {status === "gebucht"
-                      ? "Gebucht"
-                      : status === "belegt" || status === "belegt-user"
-                      ? "Belegt"
-                      : "Frei"}
+                  <div
+                    className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] border flex items-center gap-1.5 sm:gap-2 ${
+                      occupied
+                        ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
+                        : "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+                    }`}
+                  >
+                    {occupied ? t.occupied : t.available}
                   </div>
                 </div>
 
                 {/* Status Details */}
                 <div className="relative z-10">
                   {lecture ? (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-orange-200 dark:border-orange-800 rounded-xl p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
-                          <Clock className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-orange-900 dark:text-orange-100 font-bold mb-0.5">
-                            {lecture.title}
-                          </p>
-                          <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
-                            {lecture.startTime} – {lecture.endTime}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-orange-500/10">
+                      <p className="text-[8px] sm:text-[9px] text-orange-500 font-bold uppercase tracking-widest mb-1">
+                        {t.lecture}
+                      </p>
+                      <p className="text-xs sm:text-sm text-foreground font-bold truncate">
+                        {lecture.title}
+                      </p>
+                      <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">
+                        {lecture.startTime} – {lecture.endTime}
+                      </p>
                     </div>
-                  ) : status === "gebucht" && booking ? (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-fuchsia-200 dark:border-fuchsia-800 rounded-xl p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-fuchsia-100 dark:bg-fuchsia-900/40 rounded-lg">
-                          <Check className="h-4 w-4 text-fuchsia-600 dark:text-fuchsia-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-fuchsia-900 dark:text-fuchsia-100 font-bold mb-0.5">
-                            Deine Buchung
-                          </p>
-                          <p className="text-xs text-fuchsia-700 dark:text-fuchsia-300 font-semibold">
-                            {booking.startTime} – {booking.endTime}
-                          </p>
-                          <p className="text-xs text-fuchsia-600 dark:text-fuchsia-400 mt-1">
-                            {new Date(booking.date).toLocaleDateString("de-DE", {
-                              weekday: "short",
-                              day: "2-digit",
-                              month: "2-digit",
-                            })}
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-                  ) : status === "belegt-user" && booking ? (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-orange-200 dark:border-orange-800 rounded-xl p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-orange-100 dark:bg-orange-900/40 rounded-lg">
-                          <Users className="h-4 w-4 text-orange-600 dark:text-orange-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-orange-900 dark:text-orange-100 font-bold mb-0.5">
-                            {booking.user?.name || booking.user?.username || "Student"}
-                          </p>
-                          <p className="text-xs text-orange-700 dark:text-orange-300 font-semibold">
-                            {booking.startTime} – {booking.endTime}
-                          </p>
-                        </div>
-                      </div>
+                  ) : booking ? (
+                    <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10">
+                      <p className="text-[8px] sm:text-[9px] text-iu-blue font-bold uppercase tracking-widest mb-1">
+                        {booking.userId === userId ? t.bookedBy : t.booked}
+                      </p>
+                      <p className="text-xs sm:text-sm text-foreground font-bold truncate">
+                        {booking.user?.name || "Student"}
+                      </p>
+                      <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">
+                        {booking.startTime} – {booking.endTime}
+                      </p>
                     </div>
                   ) : (
-                    <div className="bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm border border-emerald-200 dark:border-emerald-800 rounded-xl p-4 shadow-sm">
-                      <div className="flex items-start gap-3">
-                        <div className="p-2 bg-emerald-100 dark:bg-emerald-900/40 rounded-lg">
-                          <Check className="h-4 w-4 text-emerald-600 dark:text-emerald-400" />
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-emerald-900 dark:text-emerald-100 font-bold mb-0.5">
-                            Verfügbar
-                          </p>
-                          <p className="text-xs text-emerald-700 dark:text-emerald-300 font-semibold">
-                            {startTime} – {endTime}
-                          </p>
-                        </div>
-                      </div>
+                    <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10">
+                      <p className="text-[8px] sm:text-[9px] text-iu-blue font-bold uppercase tracking-widest mb-1">
+                        {t.available}
+                      </p>
+                      <p className="text-xs sm:text-sm text-foreground font-bold">
+                        {t.freeNow}
+                      </p>
+                      <p className="text-[9px] sm:text-[10px] text-muted-foreground mt-1">
+                        {startTime} – {endTime}
+                      </p>
                     </div>
                   )}
                 </div>
@@ -1033,38 +1009,34 @@ export default function RoomBooking() {
                     <button
                       onClick={() => handleCancelBooking(room.name)}
                       disabled={isLoading}
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 text-white font-bold px-5 py-3 transition-all shadow-lg shadow-red-500/20 hover:shadow-xl hover:shadow-red-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                      className="w-full inline-flex justify-center items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl bg-orange-500/10 hover:bg-orange-500 text-orange-500 hover:text-white font-bold px-4 sm:px-6 py-3 sm:py-4 transition-all uppercase tracking-widest text-[9px] sm:text-[10px] border border-orange-500/20"
                     >
-                      {isLoading ? "Wird storniert..." : "Buchung stornieren"}
-                    </button>
-                  ) : status === "belegt" ? (
-                    <button
-                      disabled
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-5 py-3 cursor-not-allowed border-2 border-slate-300 dark:border-slate-700"
-                    >
-                      Belegt durch Vorlesung
-                    </button>
-                  ) : status === "belegt-user" ? (
-                    <button
-                      disabled
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-slate-200 dark:bg-slate-800 text-slate-500 dark:text-slate-400 font-bold px-5 py-3 cursor-not-allowed border-2 border-slate-300 dark:border-slate-700"
-                    >
-                      Bereits gebucht
+                      <Trash2 className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      {t.cancelBooking}
                     </button>
                   ) : (
                     <button
                       onClick={() => handleBookRoom(room)}
-                      disabled={isLoading}
-                      className="w-full inline-flex justify-center items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-600 to-emerald-700 hover:from-emerald-700 hover:to-emerald-800 text-white font-bold px-5 py-3 transition-all shadow-lg shadow-emerald-500/20 hover:shadow-xl hover:shadow-emerald-500/30 disabled:opacity-50 disabled:cursor-not-allowed active:scale-95"
+                      disabled={isLoading || occupied}
+                      className={`w-full inline-flex justify-center items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-bold px-4 sm:px-6 py-3 sm:py-4 transition-all uppercase tracking-widest text-[9px] sm:text-[10px] ${
+                        occupied
+                          ? "bg-muted text-muted-foreground cursor-not-allowed"
+                          : "bg-iu-blue hover:bg-iu-blue text-white"
+                      }`}
                     >
-                      {isLoading ? "Wird gebucht..." : "Jetzt buchen"}
+                      {occupied ? (
+                        <Lock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      ) : (
+                        <CalendarCheck className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
+                      )}
+                      {occupied ? t.occupied : t.bookNow}
                     </button>
                   )}
                 </div>
               </div>
             );
-          })}
-        </div>
+          }
+        )}
       </div>
     </div>
   );

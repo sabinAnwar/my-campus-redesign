@@ -114,18 +114,24 @@ export default function SecurityGuidelines() {
   const guidelines = t.guidelines.map((g, index) => ({
     ...g,
     icon: iconMap[index],
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-100 dark:bg-emerald-900/20",
+    color: "text-iu-blue",
+    bgColor: "bg-iu-blue/10",
+    borderColor: "border-iu-blue/30",
   }));
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8">
+    <div className="max-w-7xl mx-auto space-y-12">
       {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-3xl font-black text-slate-900 dark:text-white">
-          {t.title}
-        </h1>
-        <p className="text-slate-600 dark:text-slate-400 text-lg max-w-3xl">
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+            <Shield size={28} />
+          </div>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">
+            {t.title}
+          </h1>
+        </div>
+        <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
           {t.subtitle}
         </p>
       </div>
@@ -133,31 +139,33 @@ export default function SecurityGuidelines() {
       {/* Grid */}
       <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
         {guidelines.map((item) => (
-          <div 
+          <div
             key={item.id}
-            className="group relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl p-6 hover:shadow-xl hover:-translate-y-1 transition-all duration-300 overflow-hidden"
+            className="group relative bg-card/60 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-iu-blue/30 hover:shadow-xl transition-all duration-300 overflow-hidden"
           >
             {/* Background Number */}
-            <div className="absolute -right-4 -bottom-8 text-9xl font-black text-slate-100 dark:text-slate-800/50 select-none transition-colors group-hover:text-emerald-50 dark:group-hover:text-emerald-900/10">
+            <div className="absolute -right-4 -bottom-8 text-9xl font-black text-foreground/5 select-none transition-colors group-hover:text-iu-blue/5">
               {item.id}
             </div>
 
             <div className="relative z-10">
               {/* Icon & Badge */}
-              <div className="flex justify-between items-start mb-4">
-                <div className={`p-3 rounded-xl ${item.bgColor} ${item.color} group-hover:scale-110 transition-transform duration-300`}>
+              <div className="flex justify-between items-start mb-6">
+                <div
+                  className={`p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm group-hover:scale-110 transition-transform duration-500`}
+                >
                   <item.icon className="w-6 h-6" />
                 </div>
-                <span className="font-mono font-bold text-emerald-600 dark:text-emerald-400 text-sm bg-emerald-50 dark:bg-emerald-900/20 px-2 py-1 rounded">
+                <span className="font-black text-iu-blue text-[10px] bg-iu-blue/10 border border-iu-blue/20 px-2 py-1 rounded-lg uppercase tracking-widest">
                   {t.rule} {item.id}
                 </span>
               </div>
 
               {/* Content */}
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-2 group-hover:text-emerald-600 dark:group-hover:text-emerald-400 transition-colors">
+              <h3 className="text-lg font-black text-foreground mb-3 tracking-tight group-hover:text-iu-blue transition-colors">
                 {item.title}
               </h3>
-              <p className="text-slate-600 dark:text-slate-400 text-sm leading-relaxed">
+              <p className="text-muted-foreground font-medium text-sm leading-relaxed">
                 {item.description}
               </p>
             </div>
@@ -166,14 +174,25 @@ export default function SecurityGuidelines() {
       </div>
 
       {/* Footer Note */}
-      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl p-6 flex items-start gap-4">
-        <div className="p-2 bg-blue-100 dark:bg-blue-900/40 rounded-lg shrink-0">
-          <FileWarning className="w-6 h-6 text-blue-600 dark:text-blue-400" />
+      <div className="bg-card/60 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 flex flex-col md:flex-row items-center gap-8 relative overflow-hidden group shadow-xl">
+        <div className="absolute top-0 right-0 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
+
+        <div className="p-4 bg-iu-blue/10 rounded-2xl text-iu-blue shrink-0 group-hover:scale-110 transition-transform duration-500 shadow-sm">
+          <FileWarning className="w-8 h-8" />
         </div>
-        <div>
-          <h4 className="font-bold text-slate-900 dark:text-white mb-1">{t.reportIncident}</h4>
-          <p className="text-slate-600 dark:text-slate-300 text-sm">
-            {t.reportIncidentDesc} <a href="mailto:datenschutz@iu.org" className="text-blue-600 dark:text-blue-400 font-semibold hover:underline">datenschutz@iu.org</a>.
+        <div className="text-center md:text-left relative z-10">
+          <h4 className="text-xl font-black text-foreground mb-2 tracking-tight">
+            {t.reportIncident}
+          </h4>
+          <p className="text-muted-foreground font-medium text-base leading-relaxed">
+            {t.reportIncidentDesc}{" "}
+            <a
+              href="mailto:datenschutz@iu.org"
+              className="text-iu-blue hover:text-iu-blue/80 transition-colors font-bold hover:underline"
+            >
+              datenschutz@iu.org
+            </a>
+            .
           </p>
         </div>
       </div>

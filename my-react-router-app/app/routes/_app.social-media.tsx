@@ -114,41 +114,46 @@ export default function SocialMedia() {
       name: "Instagram (IU Internationale Hochschule)",
       url: "https://www.instagram.com/iu.internationale.hochschule/",
       icon: Instagram,
-      color: "text-pink-600",
-      bgColor: "bg-pink-100 dark:bg-pink-900/20",
-      description: t.channels.instagram
+      color: "text-pink-500",
+      bgColor: "bg-pink-500/10",
+      borderColor: "border-pink-500/20",
+      description: t.channels.instagram,
     },
     {
       name: "Instagram (IU Career)",
       url: "https://www.instagram.com/iu.career/",
       icon: Instagram,
-      color: "text-purple-600",
-      bgColor: "bg-purple-100 dark:bg-purple-900/20",
-      description: t.channels.instagramCareer
+      color: "text-violet-500",
+      bgColor: "bg-violet-500/10",
+      borderColor: "border-violet-500/20",
+      description: t.channels.instagramCareer,
     },
     {
       name: "LinkedIn",
       url: "https://www.linkedin.com/school/iu-internationale-hochschule/",
       icon: Linkedin,
-      color: "text-blue-700",
-      bgColor: "bg-blue-100 dark:bg-blue-900/20",
-      description: t.channels.linkedin
+      color: "text-blue-600",
+      bgColor: "bg-blue-600/10",
+      borderColor: "border-blue-600/20",
+      description: t.channels.linkedin,
     },
     {
       name: "Facebook",
       url: "https://www.facebook.com/iu.internationale.hochschule",
       icon: Facebook,
-      color: "text-blue-600",
-      bgColor: "bg-blue-100 dark:bg-blue-900/20",
-      description: t.channels.facebook
+      color: "text-blue-500",
+      bgColor: "bg-blue-500/10",
+      borderColor: "border-blue-500/20",
+      description: t.channels.facebook,
     },
     {
       name: "YouTube",
       url: "https://www.youtube.com/c/IUInternationaleHochschule",
       icon: Youtube,
-      color: "text-red-600",
-      bgColor: "bg-red-100 dark:bg-red-900/20",
-      description: t.channels.youtube
+      color: "text-red-500",
+      bgColor: "bg-red-500/10",
+      borderColor: "border-red-500/20",
+      description: t.channels.youtube,
     },
     {
       name: "X (Twitter)",
@@ -170,9 +175,10 @@ export default function SocialMedia() {
           <path d="M4 20l6.768 -6.768m2.46 -2.46l6.772 -6.772" />
         </svg>
       ),
-      color: "text-slate-900 dark:text-slate-100",
-      bgColor: "bg-slate-100 dark:bg-slate-800",
-      description: t.channels.twitter
+      color: "text-foreground",
+      bgColor: "bg-foreground/5",
+      borderColor: "border-foreground/10",
+      description: t.channels.twitter,
     },
     {
       name: "TikTok",
@@ -193,18 +199,20 @@ export default function SocialMedia() {
           <path d="M9 12a4 4 0 1 0 4 4V4a5 5 0 0 0 5 5" />
         </svg>
       ),
-      color: "text-slate-900 dark:text-slate-100",
-      bgColor: "bg-slate-100 dark:bg-slate-800",
-      description: t.channels.tiktok
+      color: "text-foreground",
+      bgColor: "bg-foreground/5",
+      borderColor: "border-foreground/10",
+      description: t.channels.tiktok,
     },
     {
       name: "IU Website",
       url: "https://www.iu.de/",
       icon: Globe,
-      color: "text-blue-600",
-      bgColor: "bg-blue-50 dark:bg-blue-900/10",
-      description: t.channels.website
-    }
+      color: "text-iu-blue",
+      bgColor: "bg-iu-blue/10",
+      borderColor: "border-iu-blue/20",
+      description: t.channels.website,
+    },
   ];
 
   const facultyChannels = [
@@ -213,82 +221,90 @@ export default function SocialMedia() {
       url: "https://www.instagram.com/studium_unplugged?igsh=MWlsOWVvZndlbGs3aA==",
       icon: Instagram,
       description: t.faculty.unplugged,
-      color: "text-pink-600",
-      bgColor: "bg-pink-100 dark:bg-pink-900/20",
-      tag: t.tags.instagram
+      color: "text-pink-500",
+      bgColor: "bg-pink-500/10",
+      borderColor: "border-pink-500/20",
+      tag: t.tags.instagram,
     },
     {
-      title: language === "de" ? "Wissenschaftliches Arbeiten" : "Academic Writing",
+      title:
+        language === "de" ? "Wissenschaftliches Arbeiten" : "Academic Writing",
       url: "#",
       icon: BookOpen,
       description: t.faculty.wissenschaftlich,
-      color: "text-emerald-600",
-      bgColor: "bg-emerald-100 dark:bg-emerald-900/20",
-      tag: t.tags.learning
+      color: "text-iu-blue",
+      bgColor: "bg-iu-blue/10",
+      borderColor: "border-iu-blue/20",
+      tag: t.tags.learning,
     },
     {
       title: language === "de" ? "Mathe-Support Kanal" : "Math Support Channel",
       url: "#",
       icon: Lightbulb,
       description: t.faculty.mathe,
-      color: "text-amber-600",
-      bgColor: "bg-amber-100 dark:bg-amber-900/20",
-      tag: t.tags.course
+      color: "text-amber-500",
+      bgColor: "bg-amber-500/10",
+      borderColor: "border-amber-500/20",
+      tag: t.tags.course,
     },
-    {
-      title: "Tech & Innovation Blog",
-      url: "#",
-      icon: GraduationCap,
-      description: t.faculty.tech,
-      color: "text-indigo-600",
-      bgColor: "bg-indigo-100 dark:bg-indigo-900/20",
-      tag: t.tags.expertise
-    }
   ];
 
   return (
-    <div className="max-w-6xl mx-auto space-y-12 py-8">
-      {/* Header */}
-      <div className="space-y-2">
-        <h1 className="text-4xl font-black text-foreground">{t.title}</h1>
-        <p className="text-muted-foreground text-lg max-w-2xl">
+    <main className="max-w-7xl mx-auto relative z-10 space-y-12">
+      {/* Header Section */}
+      <div className="animate-in fade-in slide-in-from-top-4 duration-700">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+            <Users size={28} />
+          </div>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">
+            {t.title}
+          </h1>
+        </div>
+        <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
           {t.subtitle}
         </p>
       </div>
 
       {/* Official Channels Section */}
-      <section>
-        <div className="flex items-center gap-3 mb-6">
-          <div className="p-2 bg-primary/10 rounded-lg">
-            <Globe className="w-6 h-6 text-primary" />
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-100">
+        <div className="flex items-center gap-4 mb-12">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue">
+            <Globe size={28} />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground">{t.officialChannels}</h2>
-            <p className="text-muted-foreground text-sm">{t.officialSubtitle}</p>
+            <h2 className="text-3xl font-bold text-foreground">
+              {t.officialChannels}
+            </h2>
+            <p className="text-sm text-muted-foreground font-medium">
+              {t.officialSubtitle}
+            </p>
           </div>
         </div>
-        
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {officialChannels.map((channel) => (
+
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+          {officialChannels.map((channel, idx) => (
             <a
               key={channel.name}
               href={channel.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="group bg-card border border-border rounded-2xl p-6 shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+              className="group p-8 rounded-[2.5rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 transition-all duration-500 flex flex-col"
             >
-              <div className="flex items-start justify-between mb-4">
-                <div className={`p-3 rounded-xl ${channel.bgColor} ${channel.color} group-hover:scale-110 transition-transform duration-300`}>
+              <div className="flex items-start justify-between mb-8">
+                <div
+                  className={`p-4 rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} group-hover:scale-110 transition-transform duration-500`}
+                >
                   <channel.icon className="w-8 h-8" />
                 </div>
-                <div className="p-2 rounded-full bg-accent/50 text-muted-foreground group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
-                  <Globe className="w-4 h-4" />
+                <div className="p-2 rounded-full bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white transition-all duration-500">
+                  <Globe size={16} />
                 </div>
               </div>
-              <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+              <h3 className="text-lg font-bold text-foreground mb-3 leading-tight group-hover:text-iu-blue transition-colors">
                 {channel.name}
               </h3>
-              <p className="text-muted-foreground text-sm leading-relaxed">
+              <p className="text-sm text-muted-foreground font-medium leading-relaxed flex-1">
                 {channel.description}
               </p>
             </a>
@@ -297,44 +313,55 @@ export default function SocialMedia() {
       </section>
 
       {/* Faculty Channels Section */}
-      <section className="relative">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-50 to-indigo-50 dark:from-blue-950/20 dark:to-indigo-950/20 rounded-3xl -z-10 transform scale-[1.02]" />
-        <div className="p-6 md:p-8 rounded-3xl border border-blue-100 dark:border-blue-900/50">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-indigo-100 dark:bg-indigo-900/30 rounded-lg">
-              <GraduationCap className="w-6 h-6 text-indigo-600 dark:text-indigo-400" />
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
+        <div className="rounded-[3rem] bg-card/30 backdrop-blur-xl p-10 md:p-16 border border-border relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-500/10 blur-[80px] rounded-full" />
+
+          <div className="flex items-center gap-4 mb-12 relative z-10">
+            <div className="p-3 rounded-2xl bg-violet-500/10 text-violet-500">
+              <GraduationCap size={28} />
             </div>
             <div>
-              <h2 className="text-2xl font-bold text-foreground">{t.facultyChannels}</h2>
-              <p className="text-muted-foreground text-sm">{t.facultySubtitle}</p>
+              <h2 className="text-3xl font-bold text-foreground">
+                {t.facultyChannels}
+              </h2>
+              <p className="text-sm text-muted-foreground font-medium">
+                {t.facultySubtitle}
+              </p>
             </div>
           </div>
 
-          <div className="grid gap-6 md:grid-cols-3">
+          <div className="grid gap-8 md:grid-cols-3 relative z-10">
             {facultyChannels.map((channel) => (
-              <a 
-                key={channel.title} 
+              <a
+                key={channel.title}
                 href={channel.url}
                 target={channel.url.startsWith("http") ? "_blank" : undefined}
-                rel={channel.url.startsWith("http") ? "noopener noreferrer" : undefined}
-                className="bg-background border border-border rounded-2xl p-6 shadow-sm hover:shadow-md transition-all cursor-pointer group block"
+                rel={
+                  channel.url.startsWith("http")
+                    ? "noopener noreferrer"
+                    : undefined
+                }
+                className="bg-background/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 hover:border-violet-500/30 transition-all duration-500 group block"
               >
-                <div className="flex justify-between items-start mb-4">
-                  <div className={`w-12 h-12 rounded-xl ${channel.bgColor} ${channel.color} flex items-center justify-center`}>
-                    <channel.icon className="w-6 h-6" />
+                <div className="flex justify-between items-start mb-8">
+                  <div
+                    className={`w-14 h-14 rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} flex items-center justify-center`}
+                  >
+                    <channel.icon size={28} />
                   </div>
-                  <span className="px-3 py-1 rounded-full bg-accent text-xs font-medium text-muted-foreground">
+                  <span className="px-4 py-1.5 rounded-full bg-muted/50 text-[10px] font-black text-muted-foreground uppercase tracking-widest border border-border">
                     {channel.tag}
                   </span>
                 </div>
-                <h3 className="text-lg font-bold text-foreground mb-2 group-hover:text-primary transition-colors">
+                <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-violet-500 transition-colors">
                   {channel.title}
                 </h3>
-                <p className="text-muted-foreground text-sm mb-4 leading-relaxed">
+                <p className="text-sm text-muted-foreground font-medium mb-8 leading-relaxed">
                   {channel.description}
                 </p>
-                <div className="flex items-center text-sm font-semibold text-primary group-hover:translate-x-1 transition-transform">
-                  {t.toChannel} <span className="ml-1">→</span>
+                <div className="flex items-center text-sm font-bold text-violet-500 uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+                  {t.toChannel} <span className="ml-2">→</span>
                 </div>
               </a>
             ))}
@@ -343,125 +370,152 @@ export default function SocialMedia() {
       </section>
 
       {/* Alumni Community Section */}
-      <section>
-        <div className="py-6">
-          <div className="flex items-center gap-3 mb-8">
-            <div className="p-2 bg-white dark:bg-white/10 rounded-lg shadow-sm dark:shadow-none">
-              <Users className="w-6 h-6 text-slate-900 dark:text-white" />
+      <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-300">
+        <div className="flex items-center gap-4 mb-12">
+          <div className="p-3 rounded-2xl bg-blue-500/10 text-blue-500">
+            <Users size={28} />
+          </div>
+          <div>
+            <h2 className="text-3xl font-bold text-foreground">
+              {t.alumniCommunity}
+            </h2>
+            <p className="text-sm text-muted-foreground font-medium">
+              {t.alumniSubtitle}
+            </p>
+          </div>
+        </div>
+
+        <div className="grid gap-8 lg:grid-cols-2">
+          {/* Left Column: Connect & Discounts */}
+          <div className="space-y-8">
+            {/* IU Connect */}
+            <div className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 hover:border-blue-500/30 transition-all duration-500 group">
+              <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-foreground">
+                <Globe size={24} className="text-blue-500" />
+                {t.iuConnect}
+              </h3>
+              <p className="text-muted-foreground font-medium text-base mb-10 leading-relaxed">
+                {t.iuConnectDesc}
+              </p>
+              <div className="flex flex-wrap gap-4">
+                <a
+                  href="https://connect.iu.de/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-blue-600/20"
+                >
+                  {t.registerNow}
+                </a>
+                <a
+                  href="https://www.linkedin.com/groups/152020/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 px-8 py-4 bg-[#0077b5] hover:bg-[#0077b5]/90 text-white rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-[#0077b5]/20"
+                >
+                  <Linkedin size={20} />
+                  {t.linkedinGroup}
+                </a>
+              </div>
             </div>
-            <div>
-              <h2 className="text-2xl font-bold text-slate-900 dark:text-white">{t.alumniCommunity}</h2>
-              <p className="text-slate-600 dark:text-slate-300 text-sm">{t.alumniSubtitle}</p>
+
+            {/* Discounts */}
+            <div className="bg-iu-blue/5 border border-iu-blue/20 rounded-[2.5rem] p-10 relative overflow-hidden group">
+              <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-iu-blue/10 blur-[40px] rounded-full" />
+
+              <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-iu-blue dark:text-iu-blue relative z-10">
+                <Trophy size={24} />
+                {t.alumniDiscounts}
+              </h3>
+
+              <div className="space-y-4 relative z-10">
+                <div className="bg-background/50 backdrop-blur-xl border border-iu-blue/20 rounded-3xl p-6 shadow-xl group-hover:border-iu-blue transition-colors duration-500">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-bold text-lg text-foreground">
+                      {t.masterDiscount}
+                    </span>
+                    <span className="bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/30 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">
+                      Koopalumni
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    {t.masterDiscountNote}
+                  </p>
+                </div>
+
+                <div className="bg-background/50 backdrop-blur-xl border border-iu-blue/20 rounded-3xl p-6 shadow-xl group-hover:border-iu-blue transition-colors duration-500">
+                  <div className="flex justify-between items-start mb-2">
+                    <span className="font-bold text-lg text-foreground">
+                      {t.trainingDiscount}
+                    </span>
+                    <span className="bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/30 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">
+                      ALUMNIUPS10
+                    </span>
+                  </div>
+                  <p className="text-xs text-muted-foreground font-medium">
+                    {t.trainingDiscountNote}
+                  </p>
+                </div>
+              </div>
             </div>
           </div>
 
-          <div className="grid gap-8 lg:grid-cols-2">
-            {/* Left Column: Connect & Discounts */}
-            <div className="space-y-6">
-              {/* IU Connect */}
-              <div className="bg-white dark:bg-white/10 border border-slate-200 dark:border-white/10 rounded-2xl p-6 hover:shadow-md dark:hover:bg-white/15 transition-all">
-                <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
-                  <Globe className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                  {t.iuConnect}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm mb-4 leading-relaxed">
-                  {t.iuConnectDesc}
-                </p>
-                <div className="flex gap-3">
-                  <a 
-                    href="https://connect.iu.de/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-semibold transition-colors"
-                  >
-                    {t.registerNow}
-                  </a>
-                  <a 
-                    href="https://www.linkedin.com/groups/152020/" 
-                    target="_blank" 
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[#0077b5] hover:bg-[#006396] text-white rounded-lg text-sm font-semibold transition-colors"
-                  >
-                    <Linkedin className="w-4 h-4" />
-                    {t.linkedinGroup}
-                  </a>
+          {/* Right Column: Micro Affiliate */}
+          <div className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 flex flex-col hover:border-violet-500/30 transition-all duration-500 group">
+            <div className="mb-12">
+              <h3 className="text-2xl font-bold mb-4 flex items-center gap-3 text-foreground">
+                <Presentation size={24} className="text-violet-500" />
+                {t.brandAmbassador}
+              </h3>
+              <p className="text-muted-foreground font-medium text-base leading-relaxed">
+                {t.ambassadorDesc}
+              </p>
+            </div>
+
+            <div className="space-y-10 flex-1">
+              <div className="flex gap-6">
+                <div className="p-4 rounded-2xl bg-violet-500/10 text-violet-500 h-fit">
+                  <Users size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">
+                    {t.whatAwaits}
+                  </h4>
+                  <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
+                    {t.whatAwaitsDesc}
+                  </p>
                 </div>
               </div>
 
-              {/* Discounts */}
-              <div className="bg-gradient-to-br from-emerald-50 to-emerald-100/50 dark:from-emerald-900/50 dark:to-emerald-800/30 border border-emerald-200 dark:border-emerald-500/30 rounded-2xl p-6">
-                <h3 className="text-xl font-bold mb-4 flex items-center gap-2 text-emerald-700 dark:text-emerald-400">
-                  <Trophy className="w-5 h-5" />
-                  {t.alumniDiscounts}
-                </h3>
-                
-                <div className="space-y-4">
-                  <div className="bg-white dark:bg-black/20 rounded-xl p-4 border border-emerald-100 dark:border-white/5 shadow-sm dark:shadow-none">
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold text-lg text-slate-900 dark:text-white">{t.masterDiscount}</span>
-                      <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs px-2 py-1 rounded font-mono border border-emerald-200 dark:border-transparent">Koopalumni</span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.masterDiscountNote}</p>
-                  </div>
-
-                  <div className="bg-white dark:bg-black/20 rounded-xl p-4 border border-emerald-100 dark:border-white/5 shadow-sm dark:shadow-none">
-                    <div className="flex justify-between items-start mb-1">
-                      <span className="font-bold text-lg text-slate-900 dark:text-white">{t.trainingDiscount}</span>
-                      <span className="bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300 text-xs px-2 py-1 rounded font-mono border border-emerald-200 dark:border-transparent">ALUMNIUPS10</span>
-                    </div>
-                    <p className="text-xs text-slate-500 dark:text-slate-400">{t.trainingDiscountNote}</p>
-                  </div>
+              <div className="flex gap-6">
+                <div className="p-4 rounded-2xl bg-violet-500/10 text-violet-500 h-fit">
+                  <Globe size={24} />
+                </div>
+                <div>
+                  <h4 className="font-bold text-lg text-foreground">
+                    {t.yourProfile}
+                  </h4>
+                  <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
+                    {t.yourProfileDesc}
+                  </p>
                 </div>
               </div>
             </div>
 
-            {/* Right Column: Micro Affiliate */}
-            <div className="bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 rounded-2xl p-6 flex flex-col hover:shadow-md transition-all">
-              <div className="mb-6">
-                <h3 className="text-xl font-bold mb-2 flex items-center gap-2 text-slate-900 dark:text-white">
-                  <Presentation className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                  {t.brandAmbassador}
-                </h3>
-                <p className="text-slate-600 dark:text-slate-300 text-sm">
-                  {t.ambassadorDesc}
-                </p>
-              </div>
-
-              <div className="space-y-4 flex-1">
-                <div className="flex gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-500/20 rounded-lg h-fit">
-                    <Users className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{t.whatAwaits}</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t.whatAwaitsDesc}</p>
-                  </div>
-                </div>
-                
-                <div className="flex gap-3">
-                  <div className="p-2 bg-purple-100 dark:bg-purple-500/20 rounded-lg h-fit">
-                    <Globe className="w-4 h-4 text-purple-600 dark:text-purple-300" />
-                  </div>
-                  <div>
-                    <h4 className="font-semibold text-sm text-slate-900 dark:text-white">{t.yourProfile}</h4>
-                    <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">{t.yourProfileDesc}</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className="mt-6 pt-6 border-t border-slate-100 dark:border-white/10">
-                <p className="text-sm text-slate-600 dark:text-slate-300 mb-3">{t.interested}</p>
-                <a 
-                  href="mailto:micro-affiliate@iu.org"
-                  className="block w-full text-center py-2.5 bg-slate-900 hover:bg-slate-800 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-100 text-white font-bold rounded-lg transition-colors"
-                >
-                  micro-affiliate@iu.org
-                </a>
-              </div>
+            <div className="mt-12 pt-10 border-t border-border">
+              <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
+                {t.interested}
+              </p>
+              <a
+                href="mailto:micro-affiliate@iu.org"
+                className="block w-full text-center py-5 bg-foreground text-background hover:bg-violet-500 hover:text-white font-bold rounded-2xl transition-all duration-300 uppercase tracking-widest text-sm shadow-xl"
+              >
+                micro-affiliate@iu.org
+              </a>
             </div>
           </div>
         </div>
       </section>
-    </div>
+    </main>
   );
 }
+

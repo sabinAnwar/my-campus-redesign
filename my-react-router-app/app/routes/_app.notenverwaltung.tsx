@@ -1,376 +1,96 @@
 import React, { useMemo, useState } from "react";
+import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/lib/prisma";
+import { getUserFromRequest } from "~/lib/auth.server";
+import { useLoaderData } from "react-router-dom";
+import { getCourseConfig } from "../data/coursesConfig";
+import {
+  GraduationCap,
+  TrendingUp,
+  CheckCircle2,
+  AlertCircle,
+  Clock,
+  Search,
+  Download,
+  FileText,
+  ChevronDown,
+  ChevronUp,
+  Filter,
+  ArrowUpDown,
+  Award,
+  BookOpen,
+  Calendar,
+  BarChart3,
+  MoreHorizontal,
+  Printer,
+  FileSpreadsheet,
+} from "lucide-react";
 
-export const loader = async () => null;
+export const loader = async ({ request }: { request: Request }) => {
+  // 1. Try session user
+  const user = await getUserFromRequest(request);
+  let userId = user?.id;
 
-type StatusKey = "P" | "F" | "M" | "CE" | "E";
+  // 2. Fallback to Sabin
+  if (!userId) {
+    const sabin = await prisma.user.findUnique({
+      where: { email: "sabin.elanwar@iu-study.org" },
+      select: { id: true },
+    });
+    userId = sabin?.id;
+  }
 
-interface GradeModule {
-  name: string;
-  status: StatusKey;
-  note: number | null;
-  credits: number;
-  datum: string;
-  bewertung?: string;
-}
+  if (!userId) return { user: null, marks: [], praxisPartner: null };
 
-interface Section {
-  name: string;
-  modules: GradeModule[];
-}
+  const dbUser = await prisma.user.findUnique({
+    where: { id: userId },
+    include: {
+      marks: {
+        include: { teacher: true },
+        orderBy: { date: "desc" },
+      },
+      praxisPartner: true,
+      studiengang: true,
+    },
+  });
 
-/* ---------- STUDENT ---------- */
-const studentData = {
-  vorname: "Sabin",
-  name: "El Anwar",
-  matrikelnummer: "102203036",
-  studiengang: "Wirtschaftsinformatik (HH-BA-WINFO-WiSe-22-GTW)",
-  gesamtDurchschnitt: 1.58,
+  return {
+    user: dbUser,
+    marks: dbUser?.marks || [],
+    praxisPartner: dbUser?.praxisPartner || null,
+  };
 };
 
-/* ---------- DATA: SEMESTER + VERTIEFUNG + ZUSATZ ---------- */
-const semesters: Section[] = [
-  {
-    name: "1. Semester",
-    modules: [
-      {
-        name: "Grundlagen der BWL",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "31.03.2023",
-      },
-      {
-        name: "Mathematik I",
-        status: "P",
-        note: 2.3,
-        credits: 5,
-        datum: "21.02.2023",
-      },
-      {
-        name: "Industrielle Softwaretechnik (MP)",
-        status: "P",
-        note: 2.0,
-        credits: 5,
-        datum: "16.02.2023",
-      },
-      {
-        name: "Wissenschaftliches Arbeiten",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "26.03.2023",
-      },
-      {
-        name: "Praxisprojekt I",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "29.06.2023",
-      },
-    ],
-  },
-  {
-    name: "2. Semester",
-    modules: [
-      {
-        name: "Buchführung und Jahresabschluss",
-        status: "P",
-        note: 1.7,
-        credits: 5,
-        datum: "21.08.2023",
-        bewertung: "90/100",
-      },
-      {
-        name: "Mathematik Grundlagen II",
-        status: "P",
-        note: 4.0,
-        credits: 5,
-        datum: "25.08.2023",
-        bewertung: "51.11/100",
-      },
-      {
-        name: "Objektorientierte Programmierung I",
-        status: "P",
-        note: 2.7,
-        credits: 5,
-        datum: "18.08.2023",
-        bewertung: "84.3/90",
-      },
-      {
-        name: "Fallstudie Digitale Business Modelle",
-        status: "P",
-        note: 1.7,
-        credits: 5,
-        datum: "20.07.2023",
-        bewertung: "89/100",
-      },
-      {
-        name: "Praxisprojekt II",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "24.10.2023",
-        bewertung: "100/100",
-      },
-    ],
-  },
-  {
-    name: "3. Semester",
-    modules: [
-      {
-        name: "Kosten- und Leistungsrechnung",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "06.02.2024",
-        bewertung: "91.11/100",
-      },
-      {
-        name: "Marketing",
-        status: "P",
-        note: 2.0,
-        credits: 5,
-        datum: "–",
-        bewertung: "81/100",
-      },
-      {
-        name: "Requirement Engineering (MP)",
-        status: "P",
-        note: 2.3,
-        credits: 5,
-        datum: "14.02.2024",
-        bewertung: "70.5/90",
-      },
-      {
-        name: "Praxisprojekt III",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "30.03.2024",
-        bewertung: "86.4/80",
-      },
-      {
-        name: "Objektorientierte Programmierung II",
-        status: "P",
-        note: 2.3,
-        credits: 5,
-        datum: "–",
-        bewertung: "76/100",
-      },
-    ],
-  },
-  {
-    name: "4. Semester",
-    modules: [
-      {
-        name: "Datenschutz und IT-Sicherheit (MP)",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "15.08.2024",
-        bewertung: "87/90",
-      },
-      {
-        name: "Fallstudie Software-Engineering (MP)",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "–",
-        bewertung: "91.3/100",
-      },
-      {
-        name: "IT-Consulting & Dienstleistungsmanagement",
-        status: "P",
-        note: 1.7,
-        credits: 5,
-        datum: "30.09.2024",
-        bewertung: "81/90",
-      },
-      {
-        name: "Praxisprojekt IV",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "01.10.2024",
-        bewertung: "97/100",
-      },
-      {
-        name: "Qualitätssicherung im Softwareprozess (MP)",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "–",
-        bewertung: "96.25/100",
-      },
-    ],
-  },
-  {
-    name: "5. Semester",
-    modules: [
-      {
-        name: "Data Analytics und Big Data (MP)",
-        status: "P",
-        note: 1.0,
-        credits: 5,
-        datum: "–",
-        bewertung: "96/100",
-      },
-      {
-        name: "Design Thinking",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "–",
-        bewertung: "91/100",
-      },
-      {
-        name: "Betriebssysteme, Rechnernetze & verteilte Systeme",
-        status: "P",
-        note: 1.7,
-        credits: 5,
-        datum: "11.02.2025",
-        bewertung: "78/90",
-      },
-      {
-        name: "Praxisprojekt V",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "01.04.2025",
-        bewertung: "91/100",
-      },
-    ],
-  },
-  {
-    name: "6. Semester",
-    modules: [
-      {
-        name: "IT-Architekturmanagement",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "21.08.2025",
-        bewertung: "93.33/100",
-      },
-      {
-        name: "Planen und Entscheiden",
-        status: "P",
-        note: 1.3,
-        credits: 5,
-        datum: "31.07.2025",
-        bewertung: "92/100",
-      },
-      {
-        name: "Praxisprojekt VI",
-        status: "E",
-        note: null,
-        credits: 5,
-        datum: "29.09.2025",
-        bewertung: "Bewertung folgt",
-      },
-    ],
-  },
-  {
-    name: "7. Semester",
-    modules: [
-      { name: "E-Commerce", status: "CE", note: null, credits: 5, datum: "–" },
-      {
-        name: "Personal- und Unternehmensführung",
-        status: "CE",
-        note: null,
-        credits: 5,
-        datum: "–",
-      },
-      {
-        name: "Unternehmensgründung & Innovationsmanagement",
-        status: "CE",
-        note: null,
-        credits: 5,
-        datum: "–",
-      },
-      {
-        name: "Bachelorarbeit",
-        status: "M",
-        note: null,
-        credits: 10,
-        datum: "–",
-      },
-      {
-        name: "Praxisberichte VII",
-        status: "CE",
-        note: null,
-        credits: 5,
-        datum: "–",
-      },
-    ],
-  },
-];
 
-const vertiefungDataAnalytics: Section = {
-  name: "Vertiefung: Data Analytics",
-  modules: [
-    {
-      name: "Algorithmen, Datenstrukturen & Programmiersprachen I",
-      status: "P",
-      note: 1.7,
-      credits: 5,
-      datum: "19.08.2025",
-    },
-    { name: "… Fallstudie", status: "CE", note: null, credits: 5, datum: "–" },
-    {
-      name: "Business Intelligence I",
-      status: "P",
-      note: 1.3,
-      credits: 5,
-      datum: "–",
-      bewertung: "92/100",
-    },
-    {
-      name: "Business Intelligence II",
-      status: "P",
-      note: 1.0,
-      credits: 5,
-      datum: "01.08.2025",
-      bewertung: "100/100",
-    },
-  ],
-};
 
-const zusatzModule: Section = {
-  name: "Zusatzmodule & Projekte",
-  modules: [
-    {
-      name: "Projekt: KI-Exzellenz mit kreativen Prompt-Techniken",
-      status: "P",
-      note: 1.0,
-      credits: 5,
-      datum: "23.02.2025",
-      bewertung: "100/100",
-    },
-    {
-      name: "Artificial Intelligence (Wahlbereich)",
-      status: "M",
-      note: null,
-      credits: 5,
-      datum: "–",
-    },
-  ],
-};
+import {
+  TRANSLATIONS,
+  STUDENT_DATA,
+  SEMESTERS,
+  VERTIEFUNG_DATA_ANALYTICS,
+  ZUSATZ_MODULE,
+  CHIP_CLASSES,
+  CHIP_LABEL,
+} from "~/constants/grades";
+import type {
+  GradeStatusKey as StatusKey,
+  GradeModule,
+  GradeSection as Section,
+} from "~/types/grades";
 
-/* ---------- STATUS CHIP COLORS ---------- */
-const chipClasses: Record<StatusKey, string> = {
-  P: "bg-emerald-50 text-emerald-700 ring-1 ring-emerald-200",
-  F: "bg-red-50 text-red-700 ring-1 ring-red-200",
-  M: "bg-amber-50 text-amber-700 ring-1 ring-amber-200",
-  CE: "bg-blue-50 text-blue-700 ring-1 ring-blue-200",
-  E: "bg-violet-50 text-violet-700 ring-1 ring-violet-200",
-};
-const chipLabel: Record<StatusKey, string> = {
-  P: "Bestanden",
-  F: "Nicht bestanden",
-  M: "Offen",
-  CE: "Angemeldet",
-  E: "Zur Prüfung angemeldet",
+
+
+
+
+
+
+
+
+
+
+// Helper function to get translated chip label
+const getChipLabel = (status: StatusKey, language: "de" | "en"): string => {
+  return TRANSLATIONS[language].chipLabels[status];
 };
 
 function parseDate(d: string) {
@@ -395,19 +115,147 @@ function formatCSVCell(val: unknown) {
 }
 
 export default function GradesDashboardIU() {
-  const [expanded, setExpanded] = useState([0, 1, 2]); // some open by default
+  const { language } = useLanguage();
+  const { user, marks, praxisPartner } = useLoaderData<typeof loader>();
+  const t = TRANSLATIONS[language];
+
+  // State for expanded sections (default: current semester is open)
+  const [expanded, setExpanded] = useState<number[]>(() => {
+    const current = user?.semester ? user.semester - 1 : 0;
+    return [current];
+  });
   const [statusFilter, setStatusFilter] = useState<"ALL" | StatusKey>("ALL");
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<"none" | "datum" | "note">("none");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("desc");
+  const [activeTab, setActiveTab] = useState<"OVERVIEW" | "FAILED" | "OPEN">(
+    "OVERVIEW"
+  );
+
+  // Group DB marks by semester and include all courses from config
+  const courseConfig = getCourseConfig(language);
+  const dbSections: Section[] = useMemo(() => {
+    const config = getCourseConfig("de"); // Use German titles for matching
+    const sectionsMap: Record<string, GradeModule[]> = {};
+
+    // Get the localized semester names from the current language config
+    const localizedConfig = getCourseConfig(language);
+    const maxSemesterNum = Math.max(
+      ...localizedConfig.map((cc) => parseInt(cc.semester) || 0)
+    );
+    const maxSemesterStr = maxSemesterNum.toString();
+
+    localizedConfig.forEach((cc, idx) => {
+      const sem = cc.semester;
+      if (!sectionsMap[sem]) sectionsMap[sem] = [];
+
+      // Find if this user has a mark for this course (match by titleDE)
+      const dbMark = marks.find((m: any) => m.course === cc.titleDE);
+
+      let status: StatusKey = dbMark ? (dbMark.value > 4.0 ? "F" : "P") : "M";
+      let note = dbMark ? dbMark.value : null;
+      let datum = dbMark
+        ? new Date(dbMark.date).toLocaleDateString(
+            language === "de" ? "de-DE" : "en-US"
+          )
+        : "—";
+      let bewertung = dbMark
+        ? dbMark.value <= 4.0
+          ? language === "de"
+            ? "Bestanden"
+            : "Pass"
+          : language === "de"
+            ? "Nicht bestanden"
+            : "Fail"
+        : "—";
+
+      // Force last semester courses to be registered (CE)
+      if (sem.startsWith(maxSemesterStr)) {
+        status = "CE";
+        note = null;
+        datum = "—";
+        bewertung = "—";
+      }
+
+      // Active courses (current semester) must not have marks if not passed
+      const currentSemStr = (user?.semester || 1).toString();
+      if (sem.startsWith(currentSemStr) && status !== "P") {
+        note = null;
+        bewertung = "—";
+      }
+
+      sectionsMap[sem].push({
+        name: language === "de" ? cc.titleDE : cc.title,
+        status,
+        note,
+        credits: cc.credits,
+        datum,
+        bewertung,
+      });
+    });
+
+    // Convert map to sorted array
+    return Object.entries(sectionsMap)
+      .map(([name, modules]) => ({
+        name,
+        modules,
+      }))
+      .sort((a, b) => {
+        // Sort by semester number if possible
+        const numA = parseInt(a.name) || 0;
+        const numB = parseInt(b.name) || 0;
+        return numA - numB;
+      });
+  }, [marks, language]);
+
+  // Handle Tab Filtering
+  const displayedSections = useMemo(() => {
+    if (activeTab === "OVERVIEW") return dbSections;
+
+    return dbSections
+      .map((section) => ({
+        ...section,
+        modules: section.modules.filter((m) => {
+          if (activeTab === "FAILED") return m.status === "F";
+          if (activeTab === "OPEN")
+            return m.status === "M" || m.status === "CE" || m.status === "E";
+          return true;
+        }),
+      }))
+      .filter((section) => section.modules.length > 0);
+  }, [dbSections, activeTab]);
+
+  const studentData = {
+    vorname: user?.name?.split(" ")[0] || "Student",
+    name: user?.name?.split(" ").slice(1).join(" ") || "",
+    matrikelnummer: user?.matriculationNumber || "N/A",
+    studiengang: user?.studyProgram || user?.studiengang?.name || "N/A",
+    gesamtDurchschnitt: (() => {
+      const pm = marks.filter((m: any) => m.value <= 4.0);
+      let totalCr = 0;
+      let wSum = 0;
+      pm.forEach((m: any) => {
+        const config = courseConfig.find((cc) => cc.titleDE === m.course);
+        const cr = config?.credits || 5;
+        totalCr += cr;
+        wSum += m.value * cr;
+      });
+      return totalCr > 0 ? (wSum / totalCr).toFixed(2) : "0.00";
+    })(),
+    company:
+      praxisPartner?.companyName ||
+      (language === "de"
+        ? "Kein Unternehmen hinterlegt"
+        : "No company assigned"),
+  };
 
   const allSections = useMemo<Section[]>(
-    () => [...semesters, vertiefungDataAnalytics, zusatzModule],
-    []
+    () => displayedSections,
+    [displayedSections]
   );
 
   const stats = useMemo(() => {
-    const modules = allSections.flatMap((s) => s.modules);
+    const modules = dbSections.flatMap((s) => s.modules);
     const total = modules.length;
     const passed = modules.filter((m) => m.status === "P").length;
     const open = modules.filter((m) =>
@@ -415,8 +263,50 @@ export default function GradesDashboardIU() {
     ).length;
     const failed = modules.filter((m) => m.status === "F").length;
     const passRate = total ? Math.round((passed / total) * 100) : 0;
-    return { total, passed, open, failed, passRate };
-  }, [allSections]);
+
+    // ECTS Progress
+    const totalECTS = modules.reduce((acc, m) => acc + (m.credits || 0), 0);
+    const passedECTS = modules
+      .filter((m) => m.status === "P")
+      .reduce((acc, m) => acc + (m.credits || 0), 0);
+    const ectsProgress = totalECTS
+      ? Math.round((passedECTS / totalECTS) * 100)
+      : 0;
+
+    // Grade Distribution
+    const grades = modules
+      .filter((m) => m.status === "P" && m.note !== null)
+      .map((m) => m.note as number);
+    const distribution = {
+      excellent: grades.filter((g) => g <= 1.5).length,
+      good: grades.filter((g) => g > 1.5 && g <= 2.5).length,
+      satisfactory: grades.filter((g) => g > 2.5 && g <= 3.5).length,
+      sufficient: grades.filter((g) => g > 3.5 && g <= 4.0).length,
+    };
+
+    // Progress for current semester
+    const currentSemNum = user?.semester || 1;
+    const currentSemSection = dbSections.find((s) =>
+      s.name.startsWith(currentSemNum.toString())
+    );
+    const currentSemTotal = currentSemSection?.modules.length || 0;
+    const currentSemPassed =
+      currentSemSection?.modules.filter((m) => m.status === "P").length || 0;
+
+    return {
+      total,
+      passed,
+      open,
+      failed,
+      passRate,
+      currentSemTotal,
+      currentSemPassed,
+      totalECTS,
+      passedECTS,
+      ectsProgress,
+      distribution,
+    };
+  }, [dbSections, user]);
 
   const toggle = (i: number) =>
     setExpanded((prev: number[]) =>
@@ -427,8 +317,7 @@ export default function GradesDashboardIU() {
   const expandAll = () => setExpanded(allSections.map((_, i) => i));
 
   const moduleMatches = (m: GradeModule) => {
-    const sOk =
-      statusFilter === "ALL" ? true : m.status === statusFilter;
+    const sOk = statusFilter === "ALL" ? true : m.status === statusFilter;
     const q = search.trim().toLowerCase();
     const qOk = !q || (m.name || "").toLowerCase().includes(q);
     return sOk && qOk;
@@ -574,345 +463,433 @@ export default function GradesDashboardIU() {
   };
 
   return (
-  
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-white to-slate-50 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
-        {/* HEADER */}
-        <div className="max-w-6xl mx-auto px-4 pt-8">
-          <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm">
-            {/* soft gradient accent */}
-            <div className="absolute inset-0 bg-[radial-gradient(1200px_600px_at_80%_-10%,rgba(99,102,241,0.08),transparent_60%)] pointer-events-none" />
-            <div className="absolute inset-0 bg-[radial-gradient(800px_400px_at_10%_120%,rgba(6,182,212,0.08),transparent_60%)] pointer-events-none" />
-
-            <div className="relative p-6 sm:p-8">
-              <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-6">
-                <div>
-                  <div className="text-slate-400 dark:text-slate-500 uppercase tracking-wider text-xs font-semibold">
-                    Transcript & Notenverwaltung
-                  </div>
-                  <h1 className="text-2xl sm:text-3xl font-extrabold text-slate-900 dark:text-white mt-1">
-                    IU Internationale Hochschule
-                  </h1>
-                  <div className="mt-2 text-slate-600 dark:text-slate-400">
-                    {studentData.vorname} {studentData.name} •{" "}
-                    {studentData.matrikelnummer}
-                  </div>
-                  <div className="text-slate-500 dark:text-slate-400 text-sm">
-                    {studentData.studiengang}
-                  </div>
-                </div>
-
-                <div className="shrink-0">
-                  <div className="rounded-xl border border-cyan-200 dark:border-cyan-900/50 bg-cyan-50 dark:bg-cyan-950/40 p-4 text-right">
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
-                      Gesamtdurchschnitt
-                    </div>
-                    <div className="text-3xl font-extrabold text-slate-900 dark:text-white">
-                      {studentData.gesamtDurchschnitt}
-                    </div>
-                  </div>
-                </div>
+    <div className="max-w-7xl mx-auto space-y-10">
+      {/* HEADER BANNER */}
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <GraduationCap size={28} />
               </div>
-
-              {/* KPIs */}
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 mt-6">
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Module gesamt
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.total}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Bestanden
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.passed}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Offen/Angem.
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.open}
-                  </div>
-                </div>
-                <div className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-4">
-                  <div className="text-xs text-slate-500 dark:text-slate-400">
-                    Durchgefallen
-                  </div>
-                  <div className="text-2xl font-bold text-slate-900 dark:text-white">
-                    {stats.failed}
-                  </div>
-                </div>
-              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
+                {t.transcriptTitle}
+              </h1>
+            </div>
+            <div className="flex items-center gap-2 text-lg text-muted-foreground font-medium">
+              <Award size={20} className="text-iu-blue" />
+              {t.universityName}
             </div>
           </div>
 
-          {/* CONTROLS (Below Header) */}
-          <div className="mt-4 flex flex-col lg:flex-row gap-3">
-            {/* Search */}
-            <div className="flex-1">
-              <div className="relative">
-                <input
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  placeholder="Suchen (Modulname)…"
-                  className="w-full rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-4 py-2.5 pr-10 shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-slate-900 dark:text-white placeholder-slate-400 dark:placeholder-slate-500 transition-all"
-                />
-                <svg
-                  className="w-5 h-5 text-slate-400 absolute right-3 top-2.5"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth="2"
-                    d="M21 21l-4.35-4.35M10 18a8 8 0 100-16 8 8 0 000 16z"
-                  />
-                </svg>
+          <div className="flex flex-wrap gap-4">
+            <button
+              onClick={exportPDF}
+              className="group flex items-center gap-2 bg-iu-blue hover:bg-iu-blue/90 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-iu-blue/20"
+            >
+              <Printer className="h-4 w-4" />
+              {t.exportPDF}
+            </button>
+            <button
+              onClick={exportCSV}
+              className="group flex items-center gap-2 bg-card hover:bg-muted text-foreground font-bold py-3 px-6 rounded-xl transition-all duration-300 border border-border"
+            >
+              <FileSpreadsheet className="h-4 w-4" />
+              {t.exportCSV}
+            </button>
+          </div>
+        </div>
+      </header>
+
+      {/* STATS GRID */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+        {[
+          {
+            label: t.overallAverage,
+            val: studentData.gesamtDurchschnitt,
+            icon: TrendingUp,
+            color: "iu-blue",
+            bg: "bg-iu-blue",
+          },
+          {
+            label: t.totalModules,
+            val: stats.total,
+            icon: BookOpen,
+            color: "iu-purple",
+            bg: "bg-iu-purple",
+          },
+          {
+            label: t.passed,
+            val: stats.passed,
+            icon: CheckCircle2,
+            color: "iu-green",
+            bg: "bg-iu-green",
+          },
+          {
+            label: t.failed,
+            val: stats.failed,
+            icon: AlertCircle,
+            color: "iu-red",
+            bg: "bg-iu-red",
+          },
+        ].map((stat, idx) => (
+          <div
+            key={idx}
+            className="group relative overflow-hidden rounded-[2.5rem] bg-card/60 backdrop-blur-xl border border-border p-10 shadow-2xl hover:shadow-iu-blue/10 transition-all duration-500 hover:-translate-y-2"
+          >
+            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
+              <stat.icon className="h-24 w-24" />
+            </div>
+            <div className="relative z-10">
+              <div
+                className={`p-4 rounded-2xl ${stat.bg}/10 w-fit mb-6 group-hover:scale-110 transition-transform duration-500`}
+              >
+                <stat.icon className={`h-8 w-8 text-${stat.color}`} />
               </div>
+              <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">
+                {stat.label}
+              </p>
+              <p className="text-5xl font-black text-foreground tracking-tight">
+                {stat.val}
+              </p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* CONTROLS & FILTER */}
+      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="p-3 bg-iu-blue/10 rounded-2xl">
+            <Filter className="h-8 w-8 text-iu-blue" />
+          </div>
+          <h2 className="text-3xl font-black text-foreground tracking-tight">
+            {t.filterAndSort}
+          </h2>
+        </div>
+
+        <div className="flex flex-col lg:flex-row gap-6">
+          <div className="flex-1 relative group">
+            <Search
+              className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-iu-blue transition-colors"
+              size={24}
+            />
+            <input
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              placeholder={t.searchPlaceholder}
+              className="w-full pl-16 pr-6 py-5 rounded-2xl border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-4 focus:ring-iu-blue/10 focus:border-iu-blue transition-all shadow-inner text-lg font-bold"
+            />
+          </div>
+
+          <div className="flex flex-wrap items-center gap-4">
+            <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl px-6 py-4 shadow-inner group focus-within:border-iu-blue transition-colors">
+              <Filter
+                size={20}
+                className="text-muted-foreground group-focus-within:text-iu-blue"
+              />
+              <select
+                value={statusFilter}
+                onChange={(e) => setStatusFilter(e.target.value as any)}
+                className="bg-transparent text-base font-black uppercase tracking-widest text-foreground focus:outline-none cursor-pointer"
+              >
+                <option value="ALL">{t.allStatus}</option>
+                <option value="P">{t.statusPassed}</option>
+                <option value="M">{t.statusOpen}</option>
+                <option value="CE">{t.statusRegistered}</option>
+                <option value="E">{t.statusExamRegistered}</option>
+                <option value="F">{t.statusFailed}</option>
+              </select>
             </div>
 
-            {/* Status Filter */}
-            <select
-              value={statusFilter}
-              onChange={(e) =>
-                setStatusFilter(e.target.value as "ALL" | StatusKey)
-              }
-              className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-slate-900 dark:text-white transition-all"
-            >
-              <option value="ALL">Alle Status</option>
-              <option value="P">P — Bestanden</option>
-              <option value="M">M — Offen</option>
-              <option value="CE">CE — Angemeldet</option>
-              <option value="E">E — Zur Prüfung angemeldet</option>
-              <option value="F">F — Nicht bestanden</option>
-            </select>
-
-            {/* Sort */}
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl px-6 py-4 shadow-inner group focus-within:border-iu-blue transition-colors">
+              <ArrowUpDown
+                size={20}
+                className="text-muted-foreground group-focus-within:text-iu-blue"
+              />
               <select
                 value={sortKey}
-                onChange={(e) =>
-                  setSortKey(e.target.value as "none" | "datum" | "note")
-                }
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm focus:outline-none focus:ring-2 focus:ring-cyan-500 dark:focus:ring-cyan-400 text-slate-900 dark:text-white transition-all"
+                onChange={(e) => setSortKey(e.target.value as any)}
+                className="bg-transparent text-base font-black uppercase tracking-widest text-foreground focus:outline-none cursor-pointer"
               >
-                <option value="none">Sortierung: Keine</option>
-                <option value="datum">Datum</option>
-                <option value="note">Note</option>
+                <option value="none">{t.sortNone}</option>
+                <option value="datum">{t.sortDate}</option>
+                <option value="note">{t.sortGrade}</option>
               </select>
-
               <button
                 onClick={() =>
                   setSortDir((d) => (d === "asc" ? "desc" : "asc"))
                 }
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white transition-all"
-                title="Richtung umschalten"
+                className="p-2 hover:bg-iu-blue/10 rounded-xl transition-colors text-iu-blue"
               >
-                {sortDir === "asc" ? "↑" : "↓"}
+                {sortDir === "asc" ? (
+                  <ChevronUp size={20} />
+                ) : (
+                  <ChevronDown size={20} />
+                )}
               </button>
             </div>
 
-            {/* Expand/Collapse */}
-            <div className="flex gap-2">
+            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-2xl border border-border">
               <button
                 onClick={expandAll}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white transition-all"
+                className="px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all"
               >
-                Alle ausklappen
+                {t.expandAll}
               </button>
+              <div className="w-px h-6 bg-border" />
               <button
                 onClick={collapseAll}
-                className="rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 px-3 py-2.5 shadow-sm hover:bg-slate-50 dark:hover:bg-slate-700 text-slate-900 dark:text-white transition-all"
+                className="px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all"
               >
-                Alle einklappen
+                {t.collapseAll}
               </button>
-            </div>
-
-            {/* Exports */}
-            <div className="flex gap-2">
-              <button
-                onClick={exportPDF}
-                className="rounded-xl border border-indigo-200 bg-indigo-600 text-white px-3 py-2.5 shadow-sm hover:bg-indigo-700"
-              >
-                Export PDF
-              </button>
-              <button
-                onClick={exportCSV}
-                className="rounded-xl border border-cyan-200 bg-cyan-600 text-white px-3 py-2.5 shadow-sm hover:bg-cyan-700"
-              >
-                Export CSV
-              </button>
-            </div>
-          </div>
-
-          {/* PERFORMANCE */}
-          <div className="mt-4 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
-            <div className="flex items-center justify-between">
-              <div className="font-semibold text-slate-800 dark:text-white">
-                Performance-Übersicht
-              </div>
-              <div className="text-sm text-slate-500 dark:text-slate-400">
-                Passrate: {stats.passRate}%
-              </div>
-            </div>
-            <div className="mt-3 h-3 w-full rounded-full bg-slate-100 dark:bg-slate-700 overflow-hidden">
-              <div
-                className="h-3 bg-gradient-to-r from-cyan-500 to-cyan-400"
-                style={{ width: `${stats.passRate}%` }}
-              />
-            </div>
-            <div className="mt-2 flex gap-4 text-sm text-slate-500 dark:text-slate-400">
-              <span>✅ Bestanden: {stats.passed}</span>
-              <span>🕒 Offen/CE/E: {stats.open}</span>
-              <span>⛔️ F: {stats.failed}</span>
-            </div>
-          </div>
-
-          {/* SECTIONS */}
-          <div className="mt-6 space-y-4">
-            {filteredSections.map((section, i) => {
-              const isOpen = expanded.includes(i);
-              return (
-                <div
-                  key={section.name}
-                  className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 shadow-sm overflow-hidden"
-                >
-                  <button
-                    onClick={() => toggle(i)}
-                    className="w-full text-left px-5 py-4 bg-gradient-to-r from-slate-50 dark:from-slate-700 to-cyan-50 dark:to-slate-750 border-b border-slate-200 dark:border-slate-700 flex items-center justify-between text-slate-800 dark:text-slate-100 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
-                  >
-                    <span className="font-semibold">{section.name}</span>
-                    <span className="text-slate-500 dark:text-slate-400">
-                      {isOpen ? "▴" : "▾"}
-                    </span>
-                  </button>
-
-                  {isOpen && (
-                    <div className="p-4">
-                      {section.modules.length === 0 ? (
-                        <div className="text-sm text-slate-500 dark:text-slate-400 px-2 py-4">
-                          Keine Einträge für diesen Filter.
-                        </div>
-                      ) : (
-                        <div className="overflow-x-auto">
-                          <table className="min-w-[720px] w-full">
-                            <thead>
-                              <tr className="text-xs uppercase tracking-wide text-slate-500 dark:text-slate-400 bg-slate-50 dark:bg-slate-900">
-                                {[
-                                  "Modul",
-                                  "Status",
-                                  "Note",
-                                  "Credits",
-                                  "Datum",
-                                  "Bewertung",
-                                ].map((h) => (
-                                  <th
-                                    key={h}
-                                    className="text-left px-3 py-3 border-b border-slate-200 dark:border-slate-700"
-                                  >
-                                    {h}
-                                  </th>
-                                ))}
-                              </tr>
-                            </thead>
-                            <tbody>
-                              {section.modules.map((m, j) => (
-                                <tr
-                                  key={j}
-                                  className="border-b border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-750 transition-colors"
-                                >
-                                  <td className="px-3 py-3 font-medium text-slate-800 dark:text-slate-100">
-                                    {m.name}
-                                  </td>
-                                  <td className="px-3 py-3">
-                                    <span
-                                      className={`inline-flex items-center rounded-full px-2.5 py-1 text-xs font-semibold ${chipClasses[m.status] || "bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 ring-1 ring-slate-200 dark:ring-slate-700"}`}
-                                    >
-                                      {m.status} · {chipLabel[m.status] || "—"}
-                                    </span>
-                                  </td>
-                                  <td className="px-3 py-3">
-                                    {m.note == null ? (
-                                      <span className="text-slate-400 dark:text-slate-500">
-                                        —
-                                      </span>
-                                    ) : (
-                                      <span className="inline-flex items-center rounded-lg border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 px-2.5 py-1 text-sm font-bold text-slate-900 dark:text-white">
-                                        {m.note}
-                                      </span>
-                                    )}
-                                  </td>
-                                  <td className="px-3 py-3 font-semibold text-slate-800 dark:text-slate-100">
-                                    {m.credits ?? "—"}
-                                  </td>
-                                  <td className="px-3 py-3 text-slate-600 dark:text-slate-400">
-                                    {m.datum ?? "—"}
-                                  </td>
-                                  <td className="px-3 py-3 text-slate-600 dark:text-slate-400">
-                                    {m.bewertung ?? "—"}
-                                  </td>
-                                </tr>
-                              ))}
-                            </tbody>
-                          </table>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-              );
-            })}
-          </div>
-
-          {/* LEGEND */}
-          <div className="mt-6 rounded-2xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 p-5 shadow-sm">
-            <div className="font-extrabold text-slate-900 dark:text-white mb-3">
-              Legende
-            </div>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3">
-              {[
-                { c: "bg-emerald-500", label: "P — Bestanden" },
-                { c: "bg-blue-500", label: "CE — Angemeldet" },
-                { c: "bg-violet-500", label: "E — Zur Prüfung angemeldet" },
-                { c: "bg-amber-500", label: "M — Offen" },
-                { c: "bg-red-500", label: "F — Nicht bestanden" },
-              ].map((it) => (
-                <div
-                  key={it.label}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3"
-                >
-                  <span className={`h-3 w-3 rounded ${it.c}`} />
-                  <div className="text-sm text-slate-700 dark:text-slate-300">{it.label}</div>
-                </div>
-              ))}
-              {[
-                { c: "bg-emerald-500", label: "Note ≤ 1.5 · sehr gut" },
-                { c: "bg-blue-500", label: "1.6–2.5 · gut" },
-                { c: "bg-amber-500", label: "2.6–3.5 · befriedigend" },
-                { c: "bg-red-500", label: "≥ 3.6 · ausreichend / mangelhaft" },
-              ].map((it) => (
-                <div
-                  key={it.label}
-                  className="flex items-center gap-3 rounded-xl border border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 p-3"
-                >
-                  <span className={`h-3 w-3 rounded ${it.c}`} />
-                  <div className="text-sm text-slate-700 dark:text-slate-300">{it.label}</div>
-                </div>
-              ))}
-            </div>
-            <div className="mt-3 text-center text-xs text-slate-500">
-              Modernes SaaS-Layout · Light Mode · Indigo/Cyan Akzente
             </div>
           </div>
         </div>
       </div>
-   
+
+      {/* SECTIONS */}
+      <div className="space-y-8 pb-20">
+        {filteredSections.map((section, i) => {
+          const isOpen = expanded.includes(i);
+          const sectionPassed = section.modules.filter(
+            (m) => m.status === "P"
+          ).length;
+          const sectionTotal = section.modules.length;
+          const sectionProgress =
+            sectionTotal > 0
+              ? Math.round((sectionPassed / sectionTotal) * 100)
+              : 0;
+
+          return (
+            <div
+              key={section.name}
+              className={`group rounded-[2.5rem] border transition-all duration-500 overflow-hidden ${
+                isOpen
+                  ? "border-iu-blue/30 bg-card/80 shadow-2xl shadow-iu-blue/10"
+                  : "border-border bg-card/40 hover:border-iu-blue/30 hover:bg-card/60"
+              }`}
+            >
+              <button
+                onClick={() => toggle(i)}
+                className={`w-full text-left px-10 py-8 flex items-center justify-between transition-all ${
+                  isOpen ? "bg-iu-blue/5" : ""
+                }`}
+              >
+                <div className="flex items-center gap-6">
+                  <div
+                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                      isOpen
+                        ? "bg-iu-blue text-white shadow-xl shadow-iu-blue/20 scale-110"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    <BookOpen size={28} />
+                  </div>
+                  <div>
+                    <h4 className="text-2xl font-black text-foreground tracking-tight mb-2">
+                      {section.name}
+                    </h4>
+                    <div className="flex items-center gap-6">
+                      <div className="flex items-center gap-2 text-xs font-black text-muted-foreground uppercase tracking-widest">
+                        <CheckCircle2 size={14} className="text-iu-blue" />
+                        {sectionPassed} / {sectionTotal}{" "}
+                        {language === "de" ? "Abgeschlossen" : "Completed"}
+                      </div>
+                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden shadow-inner">
+                        <div
+                          className="h-full bg-iu-blue shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000"
+                          style={{ width: `${sectionProgress}%` }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <div
+                  className={`p-4 rounded-2xl transition-all duration-500 ${
+                    isOpen
+                      ? "bg-iu-blue/10 text-iu-blue rotate-180"
+                      : "bg-muted text-muted-foreground"
+                  }`}
+                >
+                  <ChevronDown size={24} />
+                </div>
+              </button>
+
+              {isOpen && (
+                <div className="px-10 pb-10">
+                  {section.modules.length === 0 ? (
+                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
+                      <Search size={64} className="mb-6 opacity-10" />
+                      <p className="text-lg font-bold uppercase tracking-widest">
+                        {t.noEntries}
+                      </p>
+                    </div>
+                  ) : (
+                    <div className="overflow-x-auto">
+                      <table className="w-full border-separate border-spacing-y-4">
+                        <thead>
+                          <tr className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
+                            <th className="text-left px-6 py-4">{t.module}</th>
+                            <th className="text-left px-6 py-4">{t.status}</th>
+                            <th className="text-center px-6 py-4">{t.grade}</th>
+                            <th className="text-center px-6 py-4">
+                              {t.credits}
+                            </th>
+                            <th className="text-left px-6 py-4">{t.date}</th>
+                            <th className="text-right px-6 py-4">
+                              {t.assessment}
+                            </th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          {section.modules.map((m, j) => (
+                            <tr
+                              key={j}
+                              className="group/row bg-background/40 hover:bg-iu-blue/5 transition-all duration-300 rounded-2xl"
+                            >
+                              <td className="px-6 py-6 rounded-l-2xl border-y border-l border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="font-black text-foreground text-base leading-tight uppercase tracking-tight group-hover/row:text-iu-blue transition-colors">
+                                  {m.name}
+                                </div>
+                              </td>
+                              <td className="px-6 py-6 border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                <span
+                                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-sm ${
+                                    m.status === "P"
+                                      ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/20"
+                                      : m.status === "F"
+                                        ? "bg-iu-red/10 text-iu-red border border-iu-red/20"
+                                        : m.status === "M"
+                                          ? "bg-iu-orange/10 text-iu-orange border border-iu-orange/20"
+                                          : "bg-iu-blue/10 text-iu-blue border border-iu-blue/20"
+                                  }`}
+                                >
+                                  {m.status === "P" && (
+                                    <CheckCircle2 size={12} />
+                                  )}
+                                  {m.status === "F" && (
+                                    <AlertCircle size={12} />
+                                  )}
+                                  {["M", "CE", "E"].includes(m.status) && (
+                                    <Clock size={12} />
+                                  )}
+                                  {getChipLabel(m.status, language)}
+                                </span>
+                              </td>
+                              <td className="px-6 py-6 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                {m.note == null ? (
+                                  <span className="text-muted-foreground/30 font-black">
+                                    —
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl font-black text-base shadow-lg transition-transform group-hover/row:scale-110 ${
+                                      m.note <= 1.5
+                                        ? "bg-iu-blue text-white shadow-iu-blue/20"
+                                        : m.note <= 2.5
+                                          ? "bg-iu-purple text-white shadow-iu-purple/20"
+                                          : m.note <= 3.5
+                                            ? "bg-iu-orange text-white shadow-iu-orange/20"
+                                            : "bg-muted-foreground text-white shadow-muted/20"
+                                    }`}
+                                  >
+                                    {m.note.toFixed(1)}
+                                  </span>
+                                )}
+                              </td>
+                              <td className="px-6 py-6 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-sm font-black text-foreground">
+                                  {m.credits}{" "}
+                                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest ml-1">
+                                    ECTS
+                                  </span>
+                                </div>
+                              </td>
+                              <td className="px-6 py-6 border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-sm font-bold text-muted-foreground">
+                                  {m.datum}
+                                </div>
+                              </td>
+                              <td className="px-6 py-6 text-right rounded-r-2xl border-y border-r border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-xs font-bold text-muted-foreground italic">
+                                  {m.bewertung || "—"}
+                                </div>
+                              </td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+          );
+        })}
+      </div>
+
+      {/* LEGEND */}
+      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
+        <div className="flex items-center gap-4 mb-10">
+          <div className="p-3 bg-iu-blue/10 text-iu-blue rounded-2xl">
+            <MoreHorizontal size={28} />
+          </div>
+          <h3 className="text-3xl font-black text-foreground tracking-tight">
+            {t.legend}
+          </h3>
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
+          {[
+            { c: "bg-iu-green", label: t.statusPassed, icon: CheckCircle2 },
+            { c: "bg-iu-blue", label: t.statusRegistered, icon: Clock },
+            {
+              c: "bg-iu-purple",
+              label: t.statusExamRegistered,
+              icon: Calendar,
+            },
+            { c: "bg-iu-orange", label: t.statusOpen, icon: Clock },
+            { c: "bg-iu-red", label: t.statusFailed, icon: AlertCircle },
+          ].map((it, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-4 rounded-2xl border border-border bg-background/40 p-5 transition-all hover:bg-iu-blue/5 hover:border-iu-blue/30 group"
+            >
+              <div
+                className={`w-12 h-12 rounded-xl ${it.c} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}
+              >
+                <it.icon size={20} />
+              </div>
+              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-tight">
+                {it.label}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
+          {[
+            { c: "bg-iu-blue", label: t.gradeExcellent },
+            { c: "bg-iu-purple", label: t.gradeGood },
+            { c: "bg-iu-orange", label: t.gradeSatisfactory },
+            { c: "bg-muted-foreground", label: t.gradeSufficient },
+          ].map((it, idx) => (
+            <div
+              key={idx}
+              className="flex items-center gap-4 rounded-2xl border border-border bg-background/40 p-5 transition-all hover:bg-iu-blue/5 hover:border-iu-blue/30 group"
+            >
+              <div
+                className={`w-5 h-5 rounded-lg ${it.c} shadow-lg group-hover:scale-125 transition-transform`}
+              />
+              <div className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground">
+                {it.label}
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
   );
 }

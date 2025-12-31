@@ -1,99 +1,25 @@
 import React, { useState, useEffect } from "react";
 import { useFetcher } from "react-router-dom";
-
+import { 
+  Settings as SettingsIcon, 
+  User, 
+  Bell, 
+  Clock, 
+  Shield, 
+  Mail, 
+  Smartphone, 
+  Globe, 
+  Moon, 
+  Save, 
+  LogOut,
+  CheckCircle2,
+  AlertCircle,
+  ArrowLeft
+} from "lucide-react";
+import { Link } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 import { useLanguage } from "~/contexts/LanguageContext";
-
-const TRANSLATIONS = {
-  de: {
-    settings: "Einstellungen",
-    profile: "Profil",
-    preferences: "Einstellungen",
-    security: "Sicherheit",
-    notifications: "Benachrichtigungen",
-    logout: "Abmelden",
-    profileInfo: "Profilinformationen",
-    personalData: "Persönliche Daten",
-    email: "E-Mail",
-    phone: "Telefon",
-    address: "Adresse",
-    dateOfBirth: "Geburtsdatum",
-    studentId: "Studentennummer",
-    major: "Studiengang",
-    company: "Unternehmen",
-    supervisor: "Betreuer",
-    changePassword: "Passwort ändern",
-    currentPassword: "Aktuelles Passwort",
-    newPassword: "Neues Passwort",
-    confirmPassword: "Passwort bestätigen",
-    changePasswordBtn: "Passwort ändern",
-    language: "Sprache",
-    theme: "Design",
-    darkMode: "Dunkler Modus",
-    notificationSettings: "Benachrichtigungen",
-    emailNotifications: "E-Mail-Benachrichtigungen",
-    messageNotifications: "Nachrichtenbenachrichtigungen",
-    calendarNotifications: "Kalenderbenachrichtigungen",
-    enableAll: "Alle aktivieren",
-    disableAll: "Alle deaktivieren",
-    save: "Speichern",
-    saved: "Gespeichert!",
-    cancel: "Abbrechen",
-    edit: "Bearbeiten",
-    back: "Zurück",
-    twoFactor: "Zwei-Faktor-Authentifizierung",
-    activeSession: "Aktive Sitzungen",
-    loginHistory: "Anmeldungsverlauf",
-    dataExport: "Datenexport",
-    deleteAccount: "Konto löschen",
-    accountDeletion: "Kontolöschung",
-    deleteAccountWarning: "Dies kann nicht rückgängig gemacht werden",
-  },
-  en: {
-    settings: "Settings",
-    profile: "Profile",
-    preferences: "Preferences",
-    security: "Security",
-    notifications: "Notifications",
-    logout: "Logout",
-    profileInfo: "Profile Information",
-    personalData: "Personal Data",
-    email: "Email",
-    phone: "Phone",
-    address: "Address",
-    dateOfBirth: "Date of Birth",
-    studentId: "Student ID",
-    major: "Major",
-    company: "Company",
-    supervisor: "Supervisor",
-    changePassword: "Change Password",
-    currentPassword: "Current Password",
-    newPassword: "New Password",
-    confirmPassword: "Confirm Password",
-    changePasswordBtn: "Change Password",
-    language: "Language",
-    theme: "Theme",
-    darkMode: "Dark Mode",
-    notificationSettings: "Notifications",
-    emailNotifications: "Email Notifications",
-    messageNotifications: "Message Notifications",
-    calendarNotifications: "Calendar Notifications",
-    enableAll: "Enable All",
-    disableAll: "Disable All",
-    save: "Save",
-    saved: "Saved!",
-    cancel: "Cancel",
-    edit: "Edit",
-    back: "Back",
-    twoFactor: "Two-Factor Authentication",
-    activeSession: "Active Sessions",
-    loginHistory: "Login History",
-    dataExport: "Data Export",
-    deleteAccount: "Delete Account",
-    accountDeletion: "Account Deletion",
-    deleteAccountWarning: "This cannot be undone",
-  },
-};
+import { TRANSLATIONS, REMINDER_CACHE_KEY } from "~/constants/settings";
 
 export const loader = async () => {
   return null;
@@ -101,8 +27,8 @@ export const loader = async () => {
 
 export default function Settings() {
   const fetcher = useFetcher();
-  const REMINDER_CACHE_KEY = "iu-reminder-preferences";
   const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderHour, setReminderHour] = useState(18);
   const [reminderMinute, setReminderMinute] = useState(0);
@@ -199,8 +125,8 @@ export default function Settings() {
             ? `E-Mail-Erinnerung aktiv: täglich um ${hh}:${mm}`
             : "Erinnerungen deaktiviert"
           : enabled
-          ? `Daily email reminder scheduled at ${hh}:${mm}`
-          : "Reminders disabled";
+            ? `Daily email reminder scheduled at ${hh}:${mm}`
+            : "Reminders disabled";
       showSuccessToast(message);
       try {
         localStorage.setItem(
@@ -227,212 +153,296 @@ export default function Settings() {
   };
 
   return (
-    <div className="max-w-5xl mx-auto space-y-10 text-slate-900 dark:text-slate-100">
-      {/* Hero */}
-      <div className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-r from-blue-600 via-indigo-500 to-fuchsia-500 px-6 py-8 shadow-xl">
-        <div className="absolute inset-0 opacity-20 mix-blend-screen bg-[radial-gradient(circle_at_20%_20%,white,transparent_35%),radial-gradient(circle_at_80%_0%,#c4f1f9,transparent_25%)]" />
-        <div className="relative">
-          <p className="text-xs uppercase tracking-[0.4em] text-white/80 font-semibold">
-            Control Center
-          </p>
-          <h1 className="text-3xl font-black text-white drop-shadow-sm">Einstellungen</h1>
-          <p className="mt-2 text-sm text-white/80">
-            Verwalte Konto, Benachrichtigungen und Erinnerungen.
-          </p>
+    <div className="max-w-7xl mx-auto space-y-12">
+      {/* Header Section */}
+      <div className="mb-12">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+            <SettingsIcon size={28} />
+          </div>
+          <h1 className="text-4xl font-black text-foreground tracking-tight">
+            {t.title}
+          </h1>
         </div>
+        <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          {t.subtitle}
+        </p>
       </div>
 
-      {/* Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {/* Profil */}
-        <section className="lg:col-span-2 rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900/80 p-6 shadow-lg shadow-blue-100/50 dark:shadow-none">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-blue-600 dark:text-blue-300 font-semibold">
-                Profil
-              </p>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Persönliche Daten</h2>
-            </div>
-            <span className="px-3 py-1 text-xs font-semibold rounded-full bg-blue-50 text-blue-700 dark:bg-blue-900/40 dark:text-blue-200 border border-blue-200 dark:border-blue-800">
-              Sicher gespeichert
-            </span>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="group">
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                Name
-              </label>
-              <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900/30 dark:to-indigo-900/30 opacity-0 group-hover:opacity-100 transition" />
-                <input
-                  className="w-full relative rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-inner shadow-slate-100/60 dark:shadow-black/20"
-                  value={userName || ""}
-                  readOnly
-                />
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {/* Profile Section */}
+        <section className="lg:col-span-2 bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+                  <User className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-black text-foreground tracking-tight">
+                  {t.personalData}
+                </h2>
+              </div>
+              <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-xs font-bold">
+                <Shield className="w-3.5 h-3.5" />
+                {t.securelyStored}
               </div>
             </div>
-            <div className="group">
-              <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-                E‑Mail
-              </label>
-              <div className="relative">
-                <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-fuchsia-100 to-pink-100 dark:from-fuchsia-900/30 dark:to-pink-900/30 opacity-0 group-hover:opacity-100 transition" />
-                <input
-                  className="w-full relative rounded-xl border border-slate-200 dark:border-slate-700 px-3 py-2 text-sm bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 shadow-inner shadow-slate-100/60 dark:shadow-black/20"
-                  value={userEmail || ""}
-                  readOnly
-                />
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
+                  Name
+                </label>
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-4 flex items-center text-muted-foreground group-focus-within/input:text-iu-blue transition-colors">
+                    <User className="w-4 h-4" />
+                  </div>
+                  <input
+                    className="w-full bg-background/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue/20 focus:border-iu-blue transition-all"
+                    value={userName || ""}
+                    readOnly
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
+                  {t.email}
+                </label>
+                <div className="relative group/input">
+                  <div className="absolute inset-y-0 left-4 flex items-center text-muted-foreground group-focus-within/input:text-iu-blue transition-colors">
+                    <Mail className="w-4 h-4" />
+                  </div>
+                  <input
+                    className="w-full bg-background/50 border border-border rounded-2xl py-4 pl-12 pr-4 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue/20 focus:border-iu-blue transition-all"
+                    value={userEmail || ""}
+                    readOnly
+                  />
+                </div>
               </div>
             </div>
           </div>
         </section>
 
-        {/* Benachrichtigungen */}
-        <section className="rounded-2xl border border-slate-200 dark:border-slate-800 bg-gradient-to-b from-white via-white to-blue-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 p-6 shadow-lg shadow-fuchsia-100/50 dark:shadow-none">
-          <div className="flex items-center justify-between mb-3">
-            <div>
-              <p className="text-[11px] uppercase tracking-[0.3em] text-fuchsia-600 dark:text-fuchsia-300 font-semibold">
-                Alerts
-              </p>
-              <h2 className="text-lg font-bold text-slate-900 dark:text-white">Benachrichtigungen</h2>
+        {/* Notifications Section */}
+        <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+          <div className="absolute -top-12 -right-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+                  <Bell className="w-6 h-6" />
+                </div>
+                <h2 className="text-xl font-black text-foreground tracking-tight">
+                  {t.notifications}
+                </h2>
+              </div>
+              <div className="h-2 w-2 rounded-full bg-iu-blue animate-pulse" />
             </div>
-            <span className="h-2 w-2 rounded-full bg-emerald-500 animate-pulse" aria-hidden />
-          </div>
-          <div className="space-y-3">
-            <label className="flex items-center justify-between text-sm rounded-xl px-3 py-2 border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-800/70 shadow-sm">
-              <span className="text-slate-700 dark:text-slate-200">
-                E‑Mail‑Benachrichtigungen
-              </span>
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-blue-600"
-                checked={notifEmail}
-                onChange={(e) => setNotifEmail(e.target.checked)}
-              />
-            </label>
-            <label className="flex items-center justify-between text-sm rounded-xl px-3 py-2 border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-800/70 shadow-sm">
-              <span className="text-slate-700 dark:text-slate-200">Nachrichten</span>
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-indigo-600"
-                checked={notifMessages}
-                onChange={(e) => setNotifMessages(e.target.checked)}
-              />
-            </label>
-            <label className="flex items-center justify-between text-sm rounded-xl px-3 py-2 border border-slate-200 dark:border-slate-800 bg-white/70 dark:bg-slate-800/70 shadow-sm">
-              <span className="text-slate-700 dark:text-slate-200">Kalender</span>
-              <input
-                type="checkbox"
-                className="h-4 w-4 accent-fuchsia-600"
-                checked={notifCalendar}
-                onChange={(e) => setNotifCalendar(e.target.checked)}
-              />
-            </label>
-          </div>
-          <div className="mt-5">
+
+            <div className="space-y-4">
+              {[
+                {
+                  label: t.emailNotifications,
+                  icon: Mail,
+                  state: notifEmail,
+                  setter: setNotifEmail,
+                },
+                {
+                  label: t.messageNotifications,
+                  icon: Smartphone,
+                  state: notifMessages,
+                  setter: setNotifMessages,
+                },
+                {
+                  label: t.calendarNotifications,
+                  icon: Clock,
+                  state: notifCalendar,
+                  setter: setNotifCalendar,
+                },
+              ].map((item, i) => (
+                <label
+                  key={i}
+                  className="flex items-center justify-between p-4 rounded-2xl border border-border bg-background/30 hover:bg-background/50 transition-all cursor-pointer group/item"
+                >
+                  <div className="flex items-center gap-3">
+                    <item.icon
+                      className={`w-4 h-4 ${item.state ? "text-iu-blue" : "text-muted-foreground"} transition-colors`}
+                    />
+                    <span className="text-sm font-bold text-foreground/80 group-hover/item:text-foreground">
+                      {item.label}
+                    </span>
+                  </div>
+                  <div
+                    className={`w-10 h-6 rounded-full p-1 transition-colors ${item.state ? "bg-iu-blue" : "bg-muted"}`}
+                  >
+                    <div
+                      className={`w-4 h-4 rounded-full bg-white transition-transform ${item.state ? "translate-x-4" : "translate-x-0"}`}
+                    />
+                  </div>
+                  <input
+                    type="checkbox"
+                    className="hidden"
+                    checked={item.state}
+                    onChange={(e) => item.setter(e.target.checked)}
+                  />
+                </label>
+              ))}
+            </div>
+
             <button
               type="button"
               onClick={handleNotificationsSave}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-indigo-600 to-blue-600 text-white px-4 py-2 text-sm font-semibold shadow-lg shadow-indigo-200 hover:shadow-indigo-300 transition"
+              className="w-full mt-8 inline-flex items-center justify-center gap-2 rounded-2xl bg-iu-blue text-white px-6 py-4 text-sm font-black shadow-xl shadow-iu-blue/20 hover:shadow-iu-blue/40 transition-all active:scale-95 uppercase tracking-widest"
             >
-              Änderungen speichern
+              <Save className="w-4 h-4" />
+              {t.save}
             </button>
           </div>
         </section>
       </div>
 
-      {/* Reminder card full width */}
-      <section className="relative overflow-hidden rounded-2xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 p-6 shadow-xl shadow-blue-100/60 dark:shadow-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-cyan-50 via-blue-50 to-indigo-50 dark:from-slate-900 dark:via-slate-900 dark:to-slate-950 opacity-60 pointer-events-none" />
-        <div className="relative flex items-start justify-between gap-6 flex-wrap">
-          <div>
-            <p className="text-[11px] uppercase tracking-[0.3em] text-cyan-600 dark:text-cyan-300 font-semibold">
-              Daily flow
-            </p>
-            <h3 className="text-base font-semibold text-slate-900 dark:text-white">
-              Praxisbericht‑Erinnerung (täglich)
-            </h3>
-            <p className="text-sm text-slate-600 dark:text-slate-300 mt-1">
-              Tägliche E‑Mail‑Erinnerung zur gewünschten Uhrzeit.
-            </p>
-          </div>
-          <label className="inline-flex items-center gap-2 text-sm bg-white/80 dark:bg-slate-800/80 px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700">
-            <input
-              type="checkbox"
-              className="h-4 w-4 accent-emerald-600"
-              checked={reminderEnabled}
-              onChange={(e) => setReminderEnabled(e.target.checked)}
-            />
-            <span className="font-medium text-slate-900 dark:text-white">
-              Aktivieren
-            </span>
-          </label>
-        </div>
+      {/* Reminder Section */}
+      <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+        <div className="absolute -top-12 -right-12 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full group-hover:bg-iu-blue/10 transition-colors" />
 
-        <div className="relative mt-5 flex items-center gap-4 flex-wrap">
-          <div>
-            <label className="block text-xs font-semibold text-slate-500 dark:text-slate-400 mb-1">
-              Uhrzeit
-            </label>
-            <div className="flex items-center gap-2">
-              <select
-                value={reminderHour}
-                onChange={(e) => setReminderHour(Number(e.target.value))}
-                className="w-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 text-slate-900 dark:text-slate-100 shadow-sm"
-              >
-                {Array.from({ length: 24 }).map((_, h) => (
-                  <option key={h} value={h}>
-                    {String(h).padStart(2, "0")}
-                  </option>
-                ))}
-              </select>
-              <span className="text-slate-500 dark:text-slate-400">:</span>
-              <select
-                value={reminderMinute}
-                onChange={(e) => setReminderMinute(Number(e.target.value))}
-                className="w-24 rounded-xl border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-300 dark:focus:ring-blue-700 text-slate-900 dark:text-slate-100 shadow-sm"
-              >
-                {Array.from({ length: 60 }).map((_, m) => (
-                  <option key={m} value={m}>
-                    {String(m).padStart(2, "0")}
-                  </option>
-                ))}
-              </select>
-              <span className="text-slate-600 dark:text-slate-300 text-sm">Uhr</span>
+        <div className="relative z-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-6">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+                <Clock className="w-6 h-6" />
+              </div>
+              <div>
+                <h2 className="text-xl font-black text-foreground tracking-tight">
+                  {t.reminderTitle}
+                </h2>
+                <p className="text-sm text-muted-foreground font-medium">
+                  {t.reminderSubtitle}
+                </p>
+              </div>
             </div>
+
+            <label className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-background/50 border border-border hover:border-iu-blue/30 transition-all cursor-pointer group/toggle">
+              <div
+                className={`w-10 h-6 rounded-full p-1 transition-colors ${reminderEnabled ? "bg-iu-blue" : "bg-muted"}`}
+              >
+                <div
+                  className={`w-4 h-4 rounded-full bg-white transition-transform ${reminderEnabled ? "translate-x-4" : "translate-x-0"}`}
+                />
+              </div>
+              <span className="text-sm font-black uppercase tracking-widest text-foreground">
+                {t.activate}
+              </span>
+              <input
+                type="checkbox"
+                className="hidden"
+                checked={reminderEnabled}
+                onChange={(e) => setReminderEnabled(e.target.checked)}
+              />
+            </label>
           </div>
 
-          <fetcher.Form
-            method="post"
-            action="/api/reminders/preferences"
-            className="mt-6 sm:mt-0 flex items-center gap-2"
-          >
-            <input
-              type="hidden"
-              name="enabled"
-              value={reminderEnabled ? "true" : "false"}
-            />
-            <input type="hidden" name="hour" value={reminderHour} />
-            <input type="hidden" name="minute" value={reminderMinute} />
-            <button
-              type="submit"
-              disabled={fetcher.state === "submitting"}
-              className="inline-flex items-center gap-2 rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white px-5 py-2 text-sm font-semibold shadow-lg shadow-emerald-200 hover:shadow-emerald-300 transition disabled:opacity-60"
+          <div className="flex flex-col md:flex-row items-end gap-8">
+            <div className="space-y-2">
+              <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
+                {t.time}
+              </label>
+              <div className="flex items-center gap-3">
+                <select
+                  value={reminderHour}
+                  onChange={(e) => setReminderHour(Number(e.target.value))}
+                  className="bg-background/50 border border-border rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue/20 cursor-pointer appearance-none min-w-[80px] text-center"
+                >
+                  {Array.from({ length: 24 }).map((_, h) => (
+                    <option key={h} value={h}>
+                      {String(h).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-2xl font-black text-muted-foreground">
+                  :
+                </span>
+                <select
+                  value={reminderMinute}
+                  onChange={(e) => setReminderMinute(Number(e.target.value))}
+                  className="bg-background/50 border border-border rounded-xl px-4 py-3 text-sm font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue/20 cursor-pointer appearance-none min-w-[80px] text-center"
+                >
+                  {Array.from({ length: 60 }).map((_, m) => (
+                    <option key={m} value={m}>
+                      {String(m).padStart(2, "0")}
+                    </option>
+                  ))}
+                </select>
+                <span className="text-sm font-black text-muted-foreground uppercase tracking-widest ml-2">
+                  {t.hour}
+                </span>
+              </div>
+            </div>
+
+            <fetcher.Form
+              method="post"
+              action="/api/reminders/preferences"
+              className="flex-1 w-full md:w-auto"
             >
-              {fetcher.state === "submitting" ? "Speichern…" : "Speichern"}
-            </button>
-          </fetcher.Form>
-          <div className="text-xs text-slate-600 dark:text-slate-400 mt-2">
-            Wird täglich um{" "}
-            <span className="font-medium text-slate-900 dark:text-slate-100">
-              {String(reminderHour).padStart(2, "0")}:
-              {String(reminderMinute).padStart(2, "0")} Uhr
-            </span>
-            {reminderTimezone ? ` (${reminderTimezone})` : ""} gesendet.
+              <input
+                type="hidden"
+                name="enabled"
+                value={reminderEnabled ? "true" : "false"}
+              />
+              <input type="hidden" name="hour" value={reminderHour} />
+              <input type="hidden" name="minute" value={reminderMinute} />
+              <button
+                type="submit"
+                disabled={fetcher.state === "submitting"}
+                className="w-full inline-flex items-center justify-center gap-3 rounded-2xl bg-iu-blue text-white px-8 py-4 text-sm font-black shadow-xl shadow-iu-blue/20 hover:shadow-iu-blue/40 transition-all disabled:opacity-60 active:scale-95 uppercase tracking-widest"
+              >
+                {fetcher.state === "submitting" ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                    {t.saving}
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4" />
+                    {t.save}
+                  </>
+                )}
+              </button>
+            </fetcher.Form>
+
+            <div className="hidden md:block p-4 rounded-2xl bg-iu-blue/5 border border-iu-blue/10">
+              <p className="text-[10px] font-bold text-muted-foreground leading-relaxed">
+                {language === "de" ? "Nächster Versand:" : "Next delivery:"}
+                <br />
+                <span className="text-iu-blue font-black text-xs">
+                  {String(reminderHour).padStart(2, "0")}:
+                  {String(reminderMinute).padStart(2, "0")}{" "}
+                  {reminderTimezone ? `(${reminderTimezone})` : ""}
+                </span>
+              </p>
+            </div>
           </div>
         </div>
       </section>
-    </div>
 
+      {/* Footer Actions */}
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8">
+        <Link
+          to="/dashboard"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          {t.back}
+        </Link>
+
+        <button className="flex items-center gap-2 px-6 py-3 rounded-xl text-destructive hover:bg-destructive/10 font-bold transition-all">
+          <LogOut className="w-4 h-4" />
+          {t.logout}
+        </button>
+      </div>
+    </div>
   );
 }

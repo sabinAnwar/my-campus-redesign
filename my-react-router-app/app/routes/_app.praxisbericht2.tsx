@@ -4,17 +4,38 @@ import { useNavigate } from "react-router-dom";
 import { apiGet, apiJson } from "../lib/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
-import { CalendarRange, ListChecks, ChevronLeft, ChevronRight, CheckCircle, AlertCircle, CalendarClock, GraduationCap, ClipboardList, FileEdit, BadgeCheck, Smile } from "lucide-react";
+import {
+  CalendarRange,
+  ListChecks,
+  ChevronLeft,
+  ChevronRight,
+  CheckCircle,
+  AlertCircle,
+  CalendarClock,
+  GraduationCap,
+  ClipboardList,
+  FileEdit,
+  BadgeCheck,
+  Smile,
+  Info,
+  ArrowLeft,
+  X,
+  Calendar,
+  Clock,
+  BarChart3,
+} from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
 
 // Translations
 const TRANSLATIONS = {
   de: {
+    backToDashboard: "← Zurück zum Dashboard",
     title: "Praxisberichte",
     subtitle: "Dokumentiere und reiche deine wöchentlichen Praxisberichte ein.",
     reminder: "Praxisbericht Erinnerung",
     reminderActive: "Aktiv: tägliche E-Mail um",
-    reminderDisabled: "Deaktiviert: aktiviere tägliche Erinnerung in den Einstellungen",
+    reminderDisabled:
+      "Deaktiviert: aktiviere tägliche Erinnerung in den Einstellungen",
     openSettings: "Einstellungen öffnen",
     submitted: "Eingereicht",
     mustSubmit: "Muss eingereicht werden",
@@ -22,7 +43,6 @@ const TRANSLATIONS = {
     reviewed: "Geprüft",
     klausurWeeks: "Klausurwochen",
     completion: "Fertigstellung",
-    satisfied: "Zufrieden",
     calendar: "Kalender",
     list: "Liste",
     goToCurrentWeek: "Zur aktuellen Woche",
@@ -42,8 +62,49 @@ const TRANSLATIONS = {
     editedLegend: "Bearbeitet in letzten 48h",
     noReports: "Noch keine Berichte vorhanden.",
     colorsReflect: "Farben zeigen den wöchentlichen Status",
+    openReport: "Bericht öffnen",
+    totalHours: "Gesamtstunden",
+    weeklyHours: "Wochenstunden",
+    applyMonToAll: "Mo auf alle anwenden",
+    clearAll: "Alle löschen",
+    fillStandard: "09:00–17:00 füllen",
+    day: "Tag",
+    from: "Von",
+    till: "Bis",
+    hours: "Std.",
+    holiday: "Feiertag",
+    hold: "Pause",
+    rating: "Bewertung",
+    notes: "Notizen",
+    weeklySummary: "Wochenzusammenfassung",
+    describeWork:
+      "Beschreibe deine praktische Arbeit und Erfolge in dieser Woche...",
+    gradeOptional: "Note (optional)",
+    saveDraft: "Entwurf speichern",
+    submit: "Einreichen",
+    cancel: "Abbrechen",
+    saving: "Speichert...",
+    reportPrivateInfo:
+      "Berichte sind privat, bis sie eingereicht werden. Nach dem Einreichen werden sie vom Prüfungsamt geprüft.",
+    saveAsDraftInfo:
+      "Du kannst als Entwurf speichern, um später fortzufahren, oder Einreichen, wenn dein Bericht fertig ist.",
+    setMondayFirst:
+      "Setze zuerst die Zeiten für Montag, um sie auf alle anzuwenden.",
+    noTasks: "Noch keine Aufgaben dokumentiert...",
+    happy: "Glücklich",
+    satisfied: "Zufrieden",
+    sad: "Traurig",
+    angry: "Wütend",
+    mon: "Mo",
+    tue: "Di",
+    wed: "Mi",
+    thu: "Do",
+    fri: "Fr",
+    sat: "Sa",
+    sun: "So",
   },
   en: {
+    backToDashboard: "← Back to Dashboard",
     title: "Practical Reports",
     subtitle: "Document and submit your weekly practical work reports.",
     reminder: "Practical Report Reminder",
@@ -56,7 +117,6 @@ const TRANSLATIONS = {
     reviewed: "Reviewed",
     klausurWeeks: "Exam Weeks",
     completion: "Completion",
-    satisfied: "Satisfied",
     calendar: "Calendar",
     list: "List",
     goToCurrentWeek: "Go to current week",
@@ -76,18 +136,92 @@ const TRANSLATIONS = {
     editedLegend: "Edited in last 48h",
     noReports: "No reports to show yet.",
     colorsReflect: "Colors reflect weekly status",
+    openReport: "Open Report",
+    totalHours: "Total Hours",
+    weeklyHours: "Weekly Hours",
+    applyMonToAll: "Apply Mon to all",
+    clearAll: "Clear all",
+    fillStandard: "Fill 09:00–17:00",
+    day: "Day",
+    from: "From",
+    till: "Till",
+    hours: "Hours",
+    holiday: "Holiday",
+    hold: "Hold",
+    rating: "Rating",
+    notes: "Notes",
+    weeklySummary: "Weekly Summary",
+    describeWork: "Describe your practical work and achievements this week...",
+    gradeOptional: "Grade (optional)",
+    saveDraft: "Save Draft",
+    submit: "Submit",
+    cancel: "Cancel",
+    saving: "Saving...",
+    reportPrivateInfo:
+      "Reports are private until submitted. Once submitted, they will be reviewed by the examination office.",
+    saveAsDraftInfo:
+      "You can save as Draft to continue later, or Submit when your report is complete.",
+    setMondayFirst: "Set Monday times first to apply to all.",
+    noTasks: "No tasks documented yet...",
+    happy: "Happy",
+    satisfied: "Satisfied",
+    sad: "Sad",
+    angry: "Angry",
+    mon: "Mon",
+    tue: "Tue",
+    wed: "Wed",
+    thu: "Thu",
+    fri: "Fri",
+    sat: "Sat",
+    sun: "Sun",
   },
 };
 
+const STATUS_STYLES = {
+  DUE: {
+    bg: "bg-orange-500/10",
+    text: "text-orange-500",
+    border: "border-orange-500/20",
+  },
+  DRAFT: {
+    bg: "bg-iu-blue/10",
+    text: "text-iu-blue",
+    border: "border-iu-blue/20",
+  },
+  SUBMITTED: {
+    bg: "bg-iu-blue/20",
+    text: "text-iu-blue dark:text-iu-blue",
+    border: "border-iu-blue/30",
+  },
+  APPROVED: {
+    bg: "bg-purple-500/10",
+    text: "text-purple-500",
+    border: "border-purple-500/20",
+  },
+  KLAUSURPHASE: {
+    bg: "bg-muted/50",
+    text: "text-muted-foreground",
+    border: "border-border",
+  },
+  ALL: {
+    bg: "bg-card/50",
+    text: "text-foreground",
+    border: "border-border",
+  },
+};
 
 // Helpers
 function getISOWeekKey(date: Date) {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate())
+  );
   // Thursday in current week decides the year
   const dayNum = d.getUTCDay() || 7; // 1..7, Mon..Sun
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil(
+    ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7
+  );
   const weekStr = String(weekNo).padStart(2, "0");
   return `${d.getUTCFullYear()}-W${weekStr}`;
 }
@@ -153,7 +287,7 @@ function getSemesterWeekKeys(semStartYear: number, semStartMonth: number) {
 export default function Praxisbericht2() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
   const [view, setView] = useState("calendar");
   const [reports, setReports] = useState<any[]>([]);
   const [activeWeekKey, setActiveWeekKey] = useState<string | null>(null);
@@ -215,6 +349,7 @@ export default function Praxisbericht2() {
   const stats = useMemo(() => {
     const statusMap = new Map();
     for (const r of reports) {
+      if (!r) continue;
       const s = r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status;
       statusMap.set(r.isoWeekKey, s);
     }
@@ -244,7 +379,7 @@ export default function Praxisbericht2() {
       else if (!s || s === "DUE") due += 1;
 
       // satisfied: majority of mooded days are happy/satisfied
-      const rep = reports.find((r) => r.isoWeekKey === wk);
+      const rep = reports.find((r) => r && r.isoWeekKey === wk);
       if (rep && rep.days) {
         const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         let pos = 0,
@@ -266,446 +401,449 @@ export default function Praxisbericht2() {
   }, [reports, mode, year, month, semStartYear, semStartMonth]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 text-slate-900 dark:text-slate-100">
-      <div className="bg-white dark:bg-slate-900/70 backdrop-blur border-b border-slate-200 dark:border-slate-800 shadow-sm transition-colors">
-        <div className="max-w-7xl mx-auto px-6 py-10">
-          <h1 className="text-4xl font-bold text-slate-900 dark:text-white mb-2">
-            {t.title}
-          </h1>
-          <p className="text-slate-600 dark:text-slate-300">
-            {t.subtitle}
-          </p>
-        </div>
-      </div>
+    <div className="max-w-7xl mx-auto">
+        {/* Header Section */}
+        <header className="mb-12">
+          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+            <div className="space-y-4">
+              <div className="flex items-center gap-3">
+                <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue">
+                  <ClipboardList size={28} />
+                </div>
+                <h1 className="text-4xl font-black text-foreground tracking-tight">
+                  {t.title}
+                </h1>
+              </div>
+              <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+                {t.subtitle}
+              </p>
+            </div>
 
-      <div className="max-w-7xl mx-auto px-6 py-8">
-          {/* Daily reminder banner */}
-          <div className="mb-6 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg p-4 flex items-center justify-between transition-colors">
+
+          </div>
+        </header>
+
+        {/* Daily reminder banner */}
+        <div className="mb-12 bg-card/50 backdrop-blur-xl border border-border rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6">
+          <div className="flex items-center gap-6">
+            <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
+              <CalendarClock className="h-8 w-8 text-iu-blue" />
+            </div>
             <div>
-              <div className="font-semibold text-slate-900 dark:text-white">
+              <div className="text-xl font-black text-foreground mb-1">
                 {t.reminder}
               </div>
-              <div className="text-sm text-slate-600 dark:text-slate-300">
+              <div className="text-muted-foreground font-medium">
                 {reminderEnabled ? (
-                  <>
-                    {t.reminderActive}{" "}
-                    {String(reminderHour).padStart(2, "0")}:00
-                  </>
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-iu-blue animate-pulse" />
+                    {t.reminderActive} {String(reminderHour).padStart(2, "0")}
+                    :00
+                  </span>
                 ) : (
-                  <>
+                  <span className="flex items-center gap-2">
+                    <span className="h-2 w-2 rounded-full bg-muted" />
                     {t.reminderDisabled}
-                  </>
+                  </span>
                 )}
               </div>
             </div>
-            <button
-              onClick={() => navigate("/settings")}
-              className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
+          </div>
+          <button
+            onClick={() => navigate("/settings")}
+            className="w-full md:w-auto px-8 py-4 text-sm font-bold rounded-2xl bg-iu-blue text-white hover:bg-iu-blue transition-all"
+          >
+            {t.openSettings}
+          </button>
+        </div>
+
+        {/* Stats Grid */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-12">
+          {[
+            {
+              label: t.submitted,
+              val: stats.submitted,
+              icon: CheckCircle,
+              color: "iu-blue",
+            },
+            {
+              label: t.mustSubmit,
+              val: stats.due,
+              icon: AlertCircle,
+              color: "orange-500",
+            },
+            {
+              label: t.drafts,
+              val: stats.drafts,
+              icon: FileEdit,
+              color: "iu-blue",
+            },
+            {
+              label: t.reviewed,
+              val: stats.approved,
+              icon: BadgeCheck,
+              color: "purple-500",
+            },
+            {
+              label: t.klausurWeeks,
+              val: stats.klausur,
+              icon: CalendarClock,
+              color: "slate-400",
+            },
+            {
+              label: t.completion,
+              val: `${stats.completion}%`,
+              icon: GraduationCap,
+              color: "pink-500",
+            },
+            {
+              label: t.satisfied,
+              val: stats.satisfied,
+              icon: Smile,
+              color: "iu-blue",
+            },
+          ].map((stat, i) => (
+            <div
+              key={i}
+              className="bg-card/50 backdrop-blur-xl rounded-3xl border border-border p-6 hover:scale-[1.02] transition-all duration-300 group"
             >
-              {t.openSettings}
+              <div
+                className={`h-10 w-10 rounded-2xl bg-${stat.color}/10 flex items-center justify-center border border-${stat.color}/20 mb-4 group-hover:scale-110 transition-transform`}
+              >
+                <stat.icon className={`h-5 w-5 text-${stat.color}`} />
+              </div>
+              <div className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">
+                {stat.label}
+              </div>
+              <div
+                className={`text-3xl font-bold text-foreground`}
+              >
+                {stat.val}
+              </div>
+            </div>
+          ))}
+        </div>
+
+        <div className="flex flex-col gap-6 mb-10 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-2 bg-card/50 backdrop-blur-xl rounded-2xl border border-border p-1.5">
+            <button
+              onClick={() => setView("calendar")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
+                view === "calendar"
+                  ? "bg-iu-blue text-white"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <CalendarRange size={18} />
+              {t.calendar}
+            </button>
+            <button
+              onClick={() => setView("list")}
+              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
+                view === "list"
+                  ? "bg-iu-blue text-white"
+                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
+              }`}
+            >
+              <ListChecks size={18} />
+              {t.list}
             </button>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-8">
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
-                <CheckCircle size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.submitted}
-              </div>
-              <div className="text-3xl font-bold text-emerald-700">
-                {stats.submitted}
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-amber-200 text-amber-950 flex items-center justify-center border border-amber-500">
-                <AlertCircle size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.mustSubmit}
-              </div>
-              <div className="text-3xl font-bold text-amber-700">
-                {stats.due}
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-blue-200 text-blue-950 flex items-center justify-center border border-blue-500">
-                <FileEdit size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.drafts}
-              </div>
-              <div className="text-3xl font-bold text-blue-700">
-                {stats.drafts}
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-teal-200 text-teal-950 flex items-center justify-center border border-teal-500">
-                <BadgeCheck size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.reviewed}
-              </div>
-              <div className="text-3xl font-bold text-teal-700">
-                {stats.approved}
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-zinc-200 text-zinc-800 flex items-center justify-center border border-zinc-500">
-                <CalendarClock size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.klausurWeeks}
-              </div>
-              <div className="text-3xl font-bold text-zinc-700">
-                {stats.klausur}
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-indigo-100 text-indigo-700 flex items-center justify-center">
-                <GraduationCap size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.completion}
-              </div>
-              <div className="text-3xl font-bold text-emerald-600">
-                {stats.completion}%
-              </div>
-            </div>
-            <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 relative overflow-hidden transition-colors">
-              <div className="absolute right-3 top-3 h-9 w-9 rounded-full bg-emerald-200 text-emerald-950 flex items-center justify-center border border-emerald-500">
-                <Smile size={18} />
-              </div>
-              <div className="text-slate-600 dark:text-slate-300 text-sm font-medium mb-1">
-                {t.satisfied}
-              </div>
-              <div className="text-3xl font-bold text-emerald-700">
-                {stats.satisfied}
-              </div>
-            </div>
+          <div className="flex items-center gap-3">
+            <button
+              className="px-6 py-3 text-sm font-bold rounded-xl border border-border text-foreground bg-card/50 hover:bg-muted/50 transition-all"
+              onClick={() => {
+                const now = new Date();
+                setYear(now.getFullYear());
+                setMonth(now.getMonth());
+                const wk = getISOWeekKey(now);
+                const r = reports.find((x) => x && x.isoWeekKey === wk) || null;
+                setActiveReport(r);
+                setActiveWeekKey(wk);
+              }}
+            >
+              {t.goToCurrentWeek}
+            </button>
+            <button
+              className="px-6 py-3 text-sm font-bold rounded-xl bg-iu-blue text-white hover:bg-iu-blue transition-all"
+              onClick={() => {
+                const now = new Date();
+                const wk = getISOWeekKey(now);
+                setActiveReport(null);
+                setActiveWeekKey(wk);
+              }}
+            >
+              {t.newDraft}
+            </button>
           </div>
+        </div>
 
-          <div className="flex flex-col gap-3 mb-6 sm:flex-row sm:items-center sm:justify-between">
-            <div className="flex items-center gap-2 bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-1.5 transition-colors">
-              <button
-                onClick={() => setView("calendar")}
-                className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                  view === "calendar"
-                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                }`}
-              >
-                <CalendarRange size={18} className="inline mr-2" />{t.calendar}
-              </button>
-              <button
-                onClick={() => setView("list")}
-                className={`px-4 py-2 rounded-md font-medium text-sm transition-colors ${
-                  view === "list"
-                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                    : "text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800"
-                }`}
-              >
-                <ListChecks size={18} className="inline mr-2" />{t.list}
-              </button>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                className="px-3 py-2 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                onClick={() => {
-                  const now = new Date();
-                  setYear(now.getFullYear());
-                  setMonth(now.getMonth());
-                  const wk = getISOWeekKey(now);
-                  const r = reports.find((x) => x.isoWeekKey === wk) || null;
-                  setActiveReport(r);
-                  setActiveWeekKey(wk);
-                }}
-              >
-                {t.goToCurrentWeek}
-              </button>
-              <button
-                className="px-3 py-2 text-sm rounded-md bg-slate-900 text-white hover:opacity-90 dark:bg-slate-100 dark:text-slate-900 transition-colors"
-                onClick={() => {
-                  const now = new Date();
-                  const wk = getISOWeekKey(now);
-                  setActiveReport(null);
-                  setActiveWeekKey(wk);
-                }}
-              >
-                {t.newDraft}
-              </button>
-            </div>
+        {loading ? (
+          <div className="grid grid-cols-1 gap-3">
+            <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
+            <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
           </div>
-
-          {/* Status filter chips */}
-          <div className="flex items-center gap-2 mb-2">
-            {[
-              { k: "ALL", label: t.all },
-              { k: "DUE", label: t.due },
-              { k: "DRAFT", label: t.draft },
-              { k: "SUBMITTED", label: t.submitted },
-              { k: "APPROVED", label: t.reviewed },
-              { k: "KLAUSURPHASE", label: t.klausurphase },
-            ].map((f) => (
-              <button
-                key={f.k}
-                onClick={() => setStatusFilter(f.k)}
-                className={`text-xs px-2.5 py-1.5 rounded-full border transition-colors ${
-                  statusFilter === f.k
-                    ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                    : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
-                }`}
-              >
-                {f.label}
-              </button>
-            ))}
-          </div>
-
-          {loading ? (
-            <div className="grid grid-cols-1 gap-3">
-              <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
-              <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
-            </div>
-          ) : view === "calendar" ? (
-            <>
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-                <div className="lg:col-span-2">
-                  <div className="flex items-center justify-between mb-3">
+        ) : view === "calendar" ? (
+          <>
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+              <div className="lg:col-span-2">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2">
+                    <button
+                      className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                        mode === "month"
+                          ? "bg-iu-blue text-white"
+                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                      }`}
+                      onClick={() => setMode("month")}
+                    >
+                      {t.month}
+                    </button>
+                    <button
+                      className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                        mode === "semester"
+                          ? "bg-iu-blue text-white"
+                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                      }`}
+                      onClick={() => setMode("semester")}
+                    >
+                      {t.semester}
+                    </button>
+                  </div>
+                  {mode === "month" ? (
                     <div className="flex items-center gap-2">
                       <button
-                        className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors ${
-                          mode === "month"
-                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
-                        }`}
-                        onClick={() => setMode("month")}
+                        className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        onClick={() => {
+                          const d = new Date(year, month - 1, 1);
+                          setYear(d.getFullYear());
+                          setMonth(d.getMonth());
+                        }}
                       >
-                        {t.month}
+                        <ChevronLeft size={14} />
                       </button>
+                      <div className="text-sm font-semibold text-foreground dark:text-slate-100">
+                        {new Date(year, month, 1).toLocaleString(undefined, {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </div>
                       <button
-                        className={`px-2.5 py-1.5 text-xs rounded-md border transition-colors ${
-                          mode === "semester"
-                            ? "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
-                            : "bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 border-slate-200 dark:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-800"
-                        }`}
-                        onClick={() => setMode("semester")}
+                        className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                        onClick={() => {
+                          const d = new Date(year, month + 1, 1);
+                          setYear(d.getFullYear());
+                          setMonth(d.getMonth());
+                        }}
                       >
-                        {t.semester}
+                        <ChevronRight size={14} />
                       </button>
                     </div>
-                    {mode === "month" ? (
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                          onClick={() => {
-                            const d = new Date(year, month - 1, 1);
-                            setYear(d.getFullYear());
-                            setMonth(d.getMonth());
-                          }}
-                        >
-                          <ChevronLeft size={14} />
-                        </button>
-                        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-                          {new Date(year, month, 1).toLocaleString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </div>
-                        <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                          onClick={() => {
-                            const d = new Date(year, month + 1, 1);
-                            setYear(d.getFullYear());
-                            setMonth(d.getMonth());
-                          }}
-                        >
-                          <ChevronRight size={14} />
-                        </button>
-                      </div>
-                    ) : (
-                      <div className="flex items-center gap-2">
-                        <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
-                          onClick={() => {
-                            // move semester 6 months back
-                            const d = new Date(
-                              semStartYear,
-                              semStartMonth - 6,
-                              1
-                            );
-                            setSemStartYear(d.getFullYear());
-                            setSemStartMonth(d.getMonth());
-                          }}
-                        >
-                          <ChevronLeft size={14} />
-                        </button>
-                        <div className="text-sm font-semibold text-slate-900">
-                          {new Date(
-                            semStartYear,
-                            semStartMonth,
-                            1
-                          ).toLocaleString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                          {" – "}
-                          {new Date(
-                            semStartYear,
-                            semStartMonth + 5,
-                            1
-                          ).toLocaleString(undefined, {
-                            month: "long",
-                            year: "numeric",
-                          })}
-                        </div>
-                        <button
-                          className="px-2 py-1 text-xs rounded border flex items-center gap-1"
-                          onClick={() => {
-                            const d = new Date(
-                              semStartYear,
-                              semStartMonth + 6,
-                              1
-                            );
-                            setSemStartYear(d.getFullYear());
-                            setSemStartMonth(d.getMonth());
-                          }}
-                        >
-                          <ChevronRight size={14} />
-                        </button>
-                      </div>
-                    )}
-                  </div>
-
-                  {mode === "month" ? (
-                    <CalendarView
-                        reports={reports}
-                        year={year}
-                        month={month}
-                        filter={statusFilter}
-                        onDayClick={(weekKey: string) => {
-                          const r =
-                            reports.find((x) => x.isoWeekKey === weekKey) || null;
-                          setActiveReport(r);
-                          setActiveWeekKey(weekKey);
-                        }}
-                      />
                   ) : (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      {Array.from({ length: 6 }).map((_, i) => {
-                        const d = new Date(semStartYear, semStartMonth + i, 1);
-                        const y = d.getFullYear();
-                        const m = d.getMonth();
-                        return (
-                          <CalendarView
-                            key={`${y}-${m}`}
-                            reports={reports}
-                            year={y}
-                            month={m}
-                            filter={statusFilter}
-                            onDayClick={(weekKey: string) => {
-                              const r =
-                                reports.find((x) => x.isoWeekKey === weekKey) ||
-                                null;
-                              setActiveReport(r);
-                              setActiveWeekKey(weekKey);
-                            }}
-                          />
-                        );
-                      })}
+                    <div className="flex items-center gap-2">
+                      <button
+                        className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                        onClick={() => {
+                          // move semester 6 months back
+                          const d = new Date(
+                            semStartYear,
+                            semStartMonth - 6,
+                            1
+                          );
+                          setSemStartYear(d.getFullYear());
+                          setSemStartMonth(d.getMonth());
+                        }}
+                      >
+                        <ChevronLeft size={14} />
+                      </button>
+                      <div className="text-sm font-semibold text-foreground">
+                        {new Date(
+                          semStartYear,
+                          semStartMonth,
+                          1
+                        ).toLocaleString(undefined, {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                        {" – "}
+                        {new Date(
+                          semStartYear,
+                          semStartMonth + 5,
+                          1
+                        ).toLocaleString(undefined, {
+                          month: "long",
+                          year: "numeric",
+                        })}
+                      </div>
+                      <button
+                        className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                        onClick={() => {
+                          const d = new Date(
+                            semStartYear,
+                            semStartMonth + 6,
+                            1
+                          );
+                          setSemStartYear(d.getFullYear());
+                          setSemStartMonth(d.getMonth());
+                        }}
+                      >
+                        <ChevronRight size={14} />
+                      </button>
                     </div>
                   )}
                 </div>
-                <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-5 transition-colors">
-                  <h3 className="font-semibold text-slate-900 dark:text-white mb-4">Legend</h3>
-                  <Legend />
-                </div>
+
+                {mode === "month" ? (
+                  <CalendarView
+                    reports={reports}
+                    year={year}
+                    month={month}
+                    filter={statusFilter}
+                    onDayClick={(weekKey: string) => {
+                      const r =
+                        reports.find((x) => x && x.isoWeekKey === weekKey) ||
+                        null;
+                      setActiveReport(r);
+                      setActiveWeekKey(weekKey);
+                    }}
+                  />
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    {Array.from({ length: 6 }).map((_, i) => {
+                      const d = new Date(semStartYear, semStartMonth + i, 1);
+                      const y = d.getFullYear();
+                      const m = d.getMonth();
+                      return (
+                        <CalendarView
+                          key={`${y}-${m}`}
+                          reports={reports}
+                          year={y}
+                          month={m}
+                          filter={statusFilter}
+                          onDayClick={(weekKey: string) => {
+                            const r =
+                              reports.find(
+                                (x) => x && x.isoWeekKey === weekKey
+                              ) || null;
+                            setActiveReport(r);
+                            setActiveWeekKey(weekKey);
+                          }}
+                        />
+                      );
+                    })}
+                  </div>
+                )}
               </div>
+              <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2.5rem] border border-border dark:border-white/10 p-8 h-fit">
+                <div className="flex items-center gap-3 mb-8">
+                  <div className="p-3 bg-iu-blue/10 rounded-2xl">
+                    <Info className="h-6 w-6 text-iu-blue" />
+                  </div>
+                  <h3 className="text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
+                    {t.legend}
+                  </h3>
+                </div>
+                <Legend />
+              </div>
+            </div>
 
-              {/* WeekModal moved outside so it also works in List view */}
-            </>
-          ) : (
-            <ListView
-              reports={reports}
-              filter={statusFilter}
-              onOpen={(weekKey: string) => {
-                const r = reports.find((x) => x.isoWeekKey === weekKey) || null;
-                setActiveReport(r);
-                setActiveWeekKey(weekKey);
-              }}
-            />
-          )}
-
-          {/* Shared Week Modal (available for both Calendar and List views) */}
-          <WeekModal
-            open={!!activeWeekKey}
-            weekKey={activeWeekKey}
-            report={activeReport}
-            onClose={() => {
-              setActiveWeekKey(null);
-              setActiveReport(null);
-            }}
-            onSaved={(saved: { isoWeekKey: any; }) => {
-              setReports((prev) => {
-                const idx = prev.findIndex(
-                  (p) => p.isoWeekKey === saved.isoWeekKey
-                );
-                if (idx === -1) return [...prev, saved];
-                const next = prev.slice();
-                next[idx] = saved;
-                return next;
-              });
+            {/* WeekModal moved outside so it also works in List view */}
+          </>
+        ) : (
+          <ListView
+            reports={reports}
+            filter={statusFilter}
+            onOpen={(weekKey: string) => {
+              const r =
+                reports.find((x) => x && x.isoWeekKey === weekKey) || null;
+              setActiveReport(r);
+              setActiveWeekKey(weekKey);
             }}
           />
+        )}
 
-          {/* Global ToastContainer is defined in root.jsx */}
-        </div>
+        {/* Shared Week Modal (available for both Calendar and List views) */}
+        <WeekModal
+          open={!!activeWeekKey}
+          weekKey={activeWeekKey}
+          report={activeReport}
+          onClose={() => {
+            setActiveWeekKey(null);
+            setActiveReport(null);
+          }}
+          onSaved={(saved: { isoWeekKey: any }) => {
+            if (!saved) return;
+            setReports((prev) => {
+              const idx = prev.findIndex(
+                (p) => p && p.isoWeekKey === saved.isoWeekKey
+              );
+              if (idx === -1) return [...prev, saved];
+              const next = prev.slice();
+              next[idx] = saved;
+              return next;
+            });
+          }}
+        />
+
+        {/* Global ToastContainer is defined in root.jsx */}
       </div>
-  
   );
 }
 
-const STATUS_STYLES = {
-  DUE: { bg: "bg-amber-200", text: "text-amber-950", border: "border-amber-500" },
-  DRAFT: { bg: "bg-blue-200", text: "text-blue-950", border: "border-blue-500" },
-  SUBMITTED: { bg: "bg-green-200", text: "text-green-950", border: "border-green-500" },
-  APPROVED: { bg: "bg-teal-200", text: "text-teal-950", border: "border-teal-500" },
-  KLAUSUR: { bg: "bg-zinc-200", text: "text-zinc-800", border: "border-zinc-500" },
-  KLAUSURPHASE: { bg: "bg-zinc-200", text: "text-zinc-800", border: "border-zinc-500" },
-};
 
 function Legend() {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
   const items = [
-    { label: "Must be submitted (no report)", cls: STATUS_STYLES.DUE },
-    { label: "Draft", cls: STATUS_STYLES.DRAFT },
-    { label: "Submitted (green)", cls: STATUS_STYLES.SUBMITTED },
-    { label: "Reviewed (Prüfungsamt)", cls: STATUS_STYLES.APPROVED },
-    { label: "Klausurphase", cls: STATUS_STYLES.KLAUSURPHASE },
-    { label: "Edited in last 48h", ring: true },
+    { label: t.mustSubmitLegend, cls: STATUS_STYLES.DUE },
+    { label: t.draftLegend, cls: STATUS_STYLES.DRAFT },
+    { label: t.submittedLegend, cls: STATUS_STYLES.SUBMITTED },
+    { label: t.reviewedLegend, cls: STATUS_STYLES.APPROVED },
+    { label: t.klausurphaseLegend, cls: STATUS_STYLES.KLAUSURPHASE },
+    { label: t.editedLegend, ring: true },
   ];
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
       {items.map((it, i) => (
-        <div key={i} className="flex items-center gap-3 text-sm">
+        <div key={i} className="flex items-center gap-4 group">
           <div
-            className={`h-4 w-4 rounded border ${
-              it.cls ? `${it.cls.bg} ${it.cls.border}` : "bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-700"
-            } ${it.ring ? "ring-2 ring-offset-1 ring-indigo-400 dark:ring-indigo-500/70" : ""}`}
+            className={`h-6 w-6 rounded-lg border transition-transform group-hover:scale-110 ${
+              it.cls
+                ? `${it.cls.bg} ${it.cls.border}`
+                : "bg-card/50 border-border"
+            } ${it.ring ? "ring-2 ring-offset-2 ring-offset-background ring-iu-blue" : ""}`}
           ></div>
-          <span className="text-slate-700 dark:text-slate-200">{it.label}</span>
+          <span className="text-muted-foreground font-bold text-sm group-hover:text-foreground transition-colors">
+            {it.label}
+          </span>
         </div>
       ))}
     </div>
   );
 }
 
-function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { reports: any[]; onDayClick?: (weekKey: string) => void; year: number; month: number; filter?: string }) {
+function CalendarView({
+  reports,
+  onDayClick,
+  year,
+  month,
+  filter = "ALL",
+}: {
+  reports: any[];
+  onDayClick?: (weekKey: string) => void;
+  year: number;
+  month: number;
+  filter?: string;
+}) {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
   const headerDate = new Date(year, month, 1);
   const weeks = useMemo(() => buildMonth(year, month), [year, month]);
 
   const statusByWeek = useMemo(() => {
     const map = new Map();
     for (const r of reports) {
-      map.set(r.isoWeekKey, r.status);
+      if (r) map.set(r.isoWeekKey, r.status);
     }
     return map;
   }, [reports]);
@@ -727,18 +865,21 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
     const toMin = (t: string | null | undefined) => {
       if (!t || typeof t !== "string" || !t.includes(":")) return null;
       const [hh, mm] = t.split(":");
-      const h = Number(hh), m = Number(mm);
+      const h = Number(hh),
+        m = Number(mm);
       if (Number.isNaN(h) || Number.isNaN(m)) return null;
       return h * 60 + m;
     };
     for (const r of reports) {
+      if (!r) continue;
       let sum = 0;
       const days = r?.days || {};
-      for (const k of ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]) {
+      for (const k of ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]) {
         const d = days[k];
         if (!d || d.holiday) continue;
-        const a = toMin(d.from), b = toMin(d.till);
-        if (a != null && b != null && b > a) sum += (b - a);
+        const a = toMin(d.from),
+          b = toMin(d.till);
+        if (a != null && b != null && b > a) sum += b - a;
       }
       if (sum > 0) map.set(r.isoWeekKey, sum);
     }
@@ -751,35 +892,34 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
     let status = statusByWeek.get(weekKey) || "DUE";
     // normalize legacy values
     if (status === "KLAUSUR") status = "KLAUSURPHASE";
-    const clsObj =
-      STATUS_STYLES[status as keyof typeof STATUS_STYLES] || {
-        bg: "bg-white dark:bg-slate-900",
-        text: "text-slate-900 dark:text-slate-100",
-        border: "border-slate-200 dark:border-slate-700",
-      };
+    const clsObj = STATUS_STYLES[status as keyof typeof STATUS_STYLES] || {
+      bg: "bg-card/50",
+      text: "text-foreground",
+      border: "border-border",
+    };
     // Always show week color starting Monday, even on trailing/leading days; fade if out of month
     const dimByFilter = filter !== "ALL" && status !== filter;
-    const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-60"} ${dimByFilter ? "opacity-40" : ""}`;
+    const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-30"} ${dimByFilter ? "opacity-20" : ""}`;
     const isEdited = editedByWeek.get(weekKey);
     const mins = minutesByWeek.get(weekKey);
-    const hoursLabel = mins ? `${Math.floor(mins/60)}h ${mins%60}m` : null;
+    const hoursLabel = mins ? `${Math.floor(mins / 60)}h ${mins % 60}m` : null;
     const isMonday = date.getDay() === 1; // Monday badge: week number
     const weekNumber = Number(weekKey.split("-W")[1]);
     return (
       <button
         type="button"
         onClick={() => onDayClick && onDayClick(weekKey)}
-        className={`relative h-16 rounded-md border text-xs font-semibold flex items-start p-2 text-left transition hover:brightness-95 ${base} ${isEdited ? "ring-2 ring-offset-1 ring-indigo-400" : ""}`}
-        title={`${weekKey} • ${status}${hoursLabel ? " • "+hoursLabel : ""}${isEdited ? " • edited" : ""}`}
+        className={`relative h-20 rounded-2xl border text-xs font-bold flex items-start p-3 text-left transition-all duration-300 hover:scale-[1.05] hover:z-10 ${base} ${isEdited ? "ring-2 ring-offset-2 ring-offset-background ring-iu-blue" : ""}`}
+        title={`${weekKey} • ${status}${hoursLabel ? " • " + hoursLabel : ""}${isEdited ? " • edited" : ""}`}
       >
         {isMonday && (
-          <span className="absolute top-1 right-1 text-[10px] px-1.5 py-0.5 rounded bg-white/70 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+          <span className="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-muted/80 backdrop-blur-md border border-border text-muted-foreground uppercase tracking-widest">
             W{weekNumber}
           </span>
         )}
-        <span>{date.getDate()}</span>
+        <span className="text-lg">{date.getDate()}</span>
         {hoursLabel && (
-          <span className="absolute bottom-1 right-1 text-[10px] px-1 py-0.5 rounded bg-white/70 dark:bg-slate-900/80 border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200">
+          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-muted/80 backdrop-blur-md border border-border text-iu-blue font-bold uppercase tracking-widest">
             {hoursLabel}
           </span>
         )}
@@ -787,22 +927,22 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
     );
   };
 
-  const dow = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const dow = [t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun];
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-4 transition-colors">
-      <div className="flex items-center justify-between mb-3">
-        <div className="text-sm font-semibold text-slate-900 dark:text-slate-100">
-          {headerDate.toLocaleString(undefined, { month: "long", year: "numeric" })}
+    <div className="bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 transition-all duration-500">
+      <div className="flex items-center justify-between mb-8">
+        <div className="text-3xl font-bold text-foreground uppercase tracking-tighter">
+          {headerDate.toLocaleString(undefined, {
+            month: "long",
+            year: "numeric",
+          })}
         </div>
-        <div className="text-xs text-slate-500 dark:text-slate-400">
-          Colors reflect weekly status
+        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+          {t.colorsReflect}
         </div>
       </div>
-      <div className="grid grid-cols-7 text-[11px] text-slate-500 dark:text-slate-400 mb-2 font-medium">
-        {dow.map((d) => (<div key={d} className="text-center py-1">{d}</div>))}
-      </div>
-      <div className="grid grid-cols-7 gap-1">
+      <div className="grid grid-cols-7 text-[10px] text-muted-foreground mb-4 font-bold uppercase tracking-widest">
         {weeks.flat().map((date, idx) => (
           <DayCell key={idx} date={date} />
         ))}
@@ -811,49 +951,70 @@ function CalendarView({ reports, onDayClick, year, month, filter = "ALL" }: { re
   );
 }
 
-function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?: string; onOpen?: (weekKey: string) => void }) {
+function ListView({
+  reports,
+  filter = "ALL",
+  onOpen,
+}: {
+  reports: any[];
+  filter?: string;
+  onOpen?: (weekKey: string) => void;
+}) {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
   const truncate = (s: string, n = 140) => {
     if (!s) return "";
-    const t = s.trim();
-    return t.length > n ? t.slice(0, n - 1) + "…" : t;
+    const trimmed = s.trim();
+    return trimmed.length > n ? trimmed.slice(0, n - 1) + "…" : trimmed;
   };
   const statusPill = (s: string) => {
-    if (!s) return "bg-amber-100 text-amber-900 border-amber-500";
+    if (!s) return "bg-orange-500/10 text-orange-500 border-orange-500/20";
     if (s === "KLAUSUR") s = "KLAUSURPHASE";
-    return s === "DRAFT" ? "bg-blue-100 text-blue-900 border-blue-500" :
-           s === "SUBMITTED" ? "bg-green-100 text-green-900 border-green-500" :
-           s === "APPROVED" ? "bg-teal-100 text-teal-900 border-teal-500" :
-           s === "KLAUSURPHASE" ? "bg-zinc-200 text-zinc-800 border-zinc-500" :
-           "bg-amber-100 text-amber-900 border-amber-500";
+    return s === "DRAFT"
+      ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+      : s === "SUBMITTED"
+        ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border-iu-blue/20"
+        : s === "APPROVED"
+          ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+          : s === "KLAUSURPHASE"
+            ? "bg-muted text-muted-foreground border-border"
+            : "bg-orange-500/10 text-orange-500 border-orange-500/20";
   };
   const toMinutes = (t: string | null | undefined) => {
     if (typeof t !== "string" || !t.includes(":")) return null;
     const [hh, mm] = t.split(":");
-    const h = Number(hh), m = Number(mm);
+    const h = Number(hh),
+      m = Number(mm);
     if (Number.isNaN(h) || Number.isNaN(m)) return null;
     return h * 60 + m;
   };
   const weekMinutes = (rep: any) => {
     let sum = 0;
     const days: Record<string, any> = rep?.days || {};
-    for (const k of ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"]) {
+    for (const k of ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]) {
       const d = days[k];
       if (!d || d.holiday) continue;
-      const a = toMinutes(d.from), b = toMinutes(d.till);
-      if (a != null && b != null && b > a) sum += (b - a);
+      const a = toMinutes(d.from),
+        b = toMinutes(d.till);
+      if (a != null && b != null && b > a) sum += b - a;
     }
     return sum;
   };
 
-  const normalized = reports.map((r: any) => ({
-    ...r,
-    normStatus: r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status || "DUE",
-  }));
+  const normalized = reports
+    .filter((r) => r !== null)
+    .map((r: any) => ({
+      ...r,
+      normStatus: r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status || "DUE",
+    }));
 
-  const filtered = normalized.filter((r: any) => filter === "ALL" || r.normStatus === filter);
+  const filtered = normalized.filter(
+    (r: any) => filter === "ALL" || r.normStatus === filter
+  );
 
-  const parseWeek = (wk: { split: (arg0: string) => [any, any]; }) => {
+  const parseWeek = (wk: any) => {
     // wk: YYYY-Www
+    if (typeof wk !== "string") return { y: 0, w: 0 };
     const [y, w] = wk.split("-W");
     return { y: Number(y) || 0, w: Number(w) || 0 };
   };
@@ -866,39 +1027,70 @@ function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?
 
   if (!sorted.length) {
     return (
-      <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 p-8 text-center transition-colors">
-        <p className="text-slate-600 dark:text-slate-300">No reports to show yet.</p>
+      <div className="bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border p-16 text-center">
+        <div className="p-6 bg-iu-blue/10 rounded-3xl w-fit mx-auto mb-6">
+          <ClipboardList className="h-12 w-12 text-iu-blue" />
+        </div>
+        <p className="text-xl text-muted-foreground font-medium">
+          {t.noReports}
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 divide-y divide-slate-200 dark:divide-slate-800 transition-colors">
-      {sorted.map((r: { isoWeekKey: boolean | React.Key | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; normStatus: string | number | bigint | boolean | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | Promise<string | number | bigint | boolean | React.ReactPortal | React.ReactElement<unknown, string | React.JSXElementConstructor<any>> | Iterable<React.ReactNode> | null | undefined> | null | undefined; tasks: any; }) => {
-        const start = typeof r.isoWeekKey === "string" ? parseISOWeekStart(r.isoWeekKey) : null;
-        const dates = start ? `${start.toLocaleDateString()} – ${new Date(start.getFullYear(), start.getMonth(), start.getDate()+6).toLocaleDateString()}` : r.isoWeekKey;
+    <div className="bg-card/50 backdrop-blur-xl rounded-[2rem] border border-border overflow-hidden divide-y divide-border">
+      {sorted.map((r: any) => {
+        const start =
+          typeof r.isoWeekKey === "string"
+            ? parseISOWeekStart(r.isoWeekKey)
+            : null;
+        const dates = start
+          ? `${start.toLocaleDateString()} – ${new Date(start.getFullYear(), start.getMonth(), start.getDate() + 6).toLocaleDateString()}`
+          : r.isoWeekKey;
         const mins = weekMinutes(r);
-        const hours = mins > 0 ? `${Math.floor(mins/60)}h ${mins%60}m` : "–";
+        const hours =
+          mins > 0 ? `${Math.floor(mins / 60)}h ${mins % 60}m` : "–";
         return (
-          <div key={String(r.isoWeekKey)} className="p-4 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-            <div className="min-w-0">
-              <div className="flex items-center gap-2 flex-wrap">
-                <div className="font-semibold text-slate-900 dark:text-slate-100">{r.isoWeekKey}</div>
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${statusPill(String(r.normStatus || ""))}`}>
-                  {r.normStatus === "APPROVED" ? "Reviewed (Prüfungsamt)" : r.normStatus}
+          <div
+            key={String(r.isoWeekKey)}
+            className="p-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between hover:bg-muted/30 transition-all duration-300 group"
+          >
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-4 flex-wrap mb-3">
+                <div className="text-3xl font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+                  {r.isoWeekKey}
+                </div>
+                <span
+                  className={`inline-flex items-center rounded-xl px-3 py-1 text-[10px] border font-bold uppercase tracking-widest ${statusPill(String(r.normStatus || ""))}`}
+                >
+                  {r.normStatus === "APPROVED" ? t.reviewed : r.normStatus}
                 </span>
-                <span className="text-xs text-slate-500 dark:text-slate-400">{dates}</span>
-                <span className="text-xs text-slate-600 dark:text-slate-300">• {hours}</span>
+                <div className="flex items-center gap-2 text-xs text-muted-foreground font-bold uppercase tracking-widest">
+                  <Calendar className="h-3 w-3" />
+                  {dates}
+                </div>
+                <div className="flex items-center gap-2 text-xs text-iu-blue font-bold uppercase tracking-widest">
+                  <Clock className="h-3 w-3" />
+                  {hours}
+                </div>
               </div>
-              <div className="text-sm text-slate-700 dark:text-slate-200 mt-1">
-                {truncate(r.tasks, 180) || <span className="italic text-slate-500 dark:text-slate-400">No tasks yet</span>}
+              <div className="text-sm text-muted-foreground leading-relaxed max-w-3xl">
+                {truncate(r.tasks, 180) || (
+                  <span className="italic opacity-50">{t.noTasks}</span>
+                )}
               </div>
             </div>
-            <div className="flex items-center gap-2 shrink-0">
+            <div className="flex items-center gap-3 shrink-0">
               <button
-                className="px-3 py-1.5 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                onClick={() => { if (typeof r.isoWeekKey === "string" && onOpen) onOpen(r.isoWeekKey); }}
-              >Open</button>
+                className="px-6 py-3 text-sm font-bold rounded-xl border border-border text-foreground bg-card/50 hover:bg-muted/50 transition-all"
+                onClick={() => {
+                  if (typeof r.isoWeekKey === "string" && onOpen)
+                    onOpen(r.isoWeekKey);
+                }}
+              >
+                {t.openReport}
+              </button>
             </div>
           </div>
         );
@@ -907,16 +1099,33 @@ function ListView({ reports, filter = "ALL", onOpen }: { reports: any[]; filter?
   );
 }
 
-function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean; weekKey: string | null; report: any | null; onClose?: () => void; onSaved?: (saved: any) => void }) {
+function WeekModal({
+  open,
+  weekKey,
+  report,
+  onClose,
+  onSaved,
+}: {
+  open: boolean;
+  weekKey: string | null;
+  report: any | null;
+  onClose?: () => void;
+  onSaved?: (saved: any) => void;
+}) {
+  const { language } = useLanguage();
+  const t = TRANSLATIONS[language];
   const [tasks, setTasks] = useState("");
   const [saving, setSaving] = useState(false);
   const [saveMode, setSaveMode] = useState("SUBMITTED");
   const [daysState, setDaysState] = useState<Record<string, any>>({});
   const [grade, setGrade] = useState("");
   const navigate = useNavigate();
-  const dayKeys = ["Mon","Tue","Wed","Thu","Fri","Sat","Sun"];
+  const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const taskLen = (tasks || "").trim().length;
-  const weekStart = useMemo(() => (weekKey ? parseISOWeekStart(weekKey) : null), [weekKey]);
+  const weekStart = useMemo(
+    () => (weekKey ? parseISOWeekStart(weekKey) : null),
+    [weekKey]
+  );
   const weekDates = useMemo(() => {
     if (!weekStart) return [];
     return Array.from({ length: 7 }).map((_, i) => {
@@ -927,14 +1136,14 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
   }, [weekStart]);
 
   // helper to parse HH:MM -> minutes
-    const parseToMinutes = (t: string | null | undefined): number | null => {
-      if (typeof t !== "string" || !t.includes(":")) return null;
-      const [hh, mm] = t.split(":");
-      const h = Number(hh);
-      const m = Number(mm);
-      if (Number.isNaN(h) || Number.isNaN(m)) return null;
-      return h * 60 + m;
-    };
+  const parseToMinutes = (t: string | null | undefined): number | null => {
+    if (typeof t !== "string" || !t.includes(":")) return null;
+    const [hh, mm] = t.split(":");
+    const h = Number(hh);
+    const m = Number(mm);
+    if (Number.isNaN(h) || Number.isNaN(m)) return null;
+    return h * 60 + m;
+  };
 
   // Compute weekly total minutes based on from/till times ignoring holidays
   const totalMinutes = useMemo(() => {
@@ -986,38 +1195,46 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
         }
       }
       setSaving(true);
- async function apiJson(path: URL | RequestInfo, method = "POST", body: any = null, headers: Record<string, string> = {}) {
-  const opts: RequestInit = {
-    method,
-    headers: { "Content-Type": "application/json", ...headers },
-    credentials: "include",
-  };
-  if (body !== null && body !== undefined) {
-    opts.body = JSON.stringify(body);
-  }
-  const res = await fetch(path, opts);
-  let data;
-  let text;
-  try {
-    data = await res.json();
-  } catch (_) {
-    try {
-      text = await res.text();
-    } catch (_) {
-      text = null;
-    }
-    data = null;
-  }
-  if (!res.ok) {
-    const fallback = text && text.length < 500 ? text : null;
-    const msg = (data && (data.error || data.message)) || fallback || `HTTP ${res.status}`;
-    const err = new Error(msg) as Error & { status?: number; data?: any };
-    err.status = res.status;
-    err.data = data || { text: fallback };
-    throw err;
-  }
-  return data;
-}
+      async function apiJson(
+        path: URL | RequestInfo,
+        method = "POST",
+        body: any = null,
+        headers: Record<string, string> = {}
+      ) {
+        const opts: RequestInit = {
+          method,
+          headers: { "Content-Type": "application/json", ...headers },
+          credentials: "include",
+        };
+        if (body !== null && body !== undefined) {
+          opts.body = JSON.stringify(body);
+        }
+        const res = await fetch(path, opts);
+        let data;
+        let text;
+        try {
+          data = await res.json();
+        } catch (_) {
+          try {
+            text = await res.text();
+          } catch (_) {
+            text = null;
+          }
+          data = null;
+        }
+        if (!res.ok) {
+          const fallback = text && text.length < 500 ? text : null;
+          const msg =
+            (data && (data.error || data.message)) ||
+            fallback ||
+            `HTTP ${res.status}`;
+          const err = new Error(msg) as Error & { status?: number; data?: any };
+          err.status = res.status;
+          err.data = data || { text: fallback };
+          throw err;
+        }
+        return data;
+      }
       const body = {
         isoWeekKey: weekKey,
         tasks: tasks || "",
@@ -1025,7 +1242,11 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
         grade: grade !== "" ? Number(grade) : undefined,
         status: mode,
       };
-      const saved = await apiJson(`/api/praxisberichte/${weekKey}`, "PUT", body);
+      const saved = await apiJson(
+        `/api/praxisberichte/${weekKey}`,
+        "PUT",
+        body
+      );
       toast.success(mode === "DRAFT" ? "Draft saved" : "Week submitted");
       onSaved && onSaved(saved);
       onClose && onClose();
@@ -1044,224 +1265,385 @@ function WeekModal({ open, weekKey, report, onClose, onSaved }: { open: boolean;
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-      <div className="w-[96vw] max-w-4xl rounded-lg bg-white dark:bg-slate-950 shadow-2xl border border-slate-200 dark:border-slate-800 transition-colors">
-        <div className="px-5 py-4 border-b border-slate-200 dark:border-slate-800 flex items-center justify-between">
-          <div>
-            <div className="text-sm text-slate-500 dark:text-slate-400">Praxisbericht</div>
-            <div className="flex items-center gap-3">
-              <div className="font-semibold text-slate-900 dark:text-white">{weekKey}</div>
-              {report?.status && (
-                <span className={`inline-flex items-center rounded-full px-2 py-0.5 text-[11px] border ${
-                  report.status === "DRAFT" ? "bg-blue-100 text-blue-900 border-blue-500" :
-                  report.status === "SUBMITTED" ? "bg-green-100 text-green-900 border-green-500" :
-                  report.status === "APPROVED" ? "bg-teal-100 text-teal-900 border-teal-500" :
-                  report.status === "KLAUSURPHASE" || report.status === "KLAUSUR" ? "bg-zinc-200 text-zinc-800 border-zinc-500" :
-                  "bg-amber-100 text-amber-900 border-amber-500"
-                }`}>
-                  {report.status === "APPROVED" ? "Reviewed (Prüfungsamt)" : report.status}
-                </span>
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 sm:p-8">
+      <div
+        className="absolute inset-0 bg-black/80 backdrop-blur-xl"
+        onClick={onClose}
+      />
+
+      <div className="relative w-full max-w-5xl bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border overflow-hidden flex flex-col max-h-[90vh]">
+        {/* Modal Header */}
+        <div className="px-8 py-8 border-b border-border bg-muted/50 flex items-center justify-between">
+          <div className="flex items-center gap-6">
+            <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
+              <ClipboardList className="h-8 w-8 text-iu-blue" />
+            </div>
+            <div>
+              <div className="flex items-center gap-3 mb-1">
+                <h2 className="text-3xl font-black text-foreground tracking-tight">
+                  {weekKey}
+                </h2>
+                {report?.status && (
+                  <span
+                    className={`inline-flex items-center rounded-xl px-3 py-1 text-[10px] border font-bold uppercase tracking-widest ${
+                      report.status === "DRAFT"
+                        ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+                        : report.status === "SUBMITTED"
+                          ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border-iu-blue/20"
+                          : report.status === "APPROVED"
+                            ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+                            : report.status === "KLAUSURPHASE" ||
+                                report.status === "KLAUSUR"
+                              ? "bg-muted text-muted-foreground border-border"
+                              : "bg-orange-500/10 text-orange-500 border-orange-500/20"
+                    }`}
+                  >
+                    {report.status === "APPROVED" ? t.reviewed : report.status}
+                  </span>
+                )}
+              </div>
+              {weekDates?.length === 7 && (
+                <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Calendar className="h-3 w-3" />
+                  {weekDates[0].toLocaleDateString()} –{" "}
+                  {weekDates[6].toLocaleDateString()}
+                </div>
               )}
             </div>
-            {weekDates?.length === 7 && (
-              <div className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
-                {weekDates[0].toLocaleDateString()} – {weekDates[6].toLocaleDateString()}
-              </div>
-            )}
           </div>
-          <div className="flex items-center gap-3">
-            <div className="text-xs text-slate-600 dark:text-slate-300">
-              Total:&nbsp;
-              <span className="font-semibold text-slate-900 dark:text-white">
-                {Math.floor(totalMinutes/60)}h {totalMinutes%60}m
-              </span>
+          <div className="flex items-center gap-6">
+            <div className="hidden md:flex flex-col items-end">
+              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                {t.totalHours}
+              </div>
+              <div className="text-2xl font-bold text-iu-blue">
+                {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
+              </div>
             </div>
-            <button className="text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-white transition-colors" onClick={onClose}>✕</button>
+            <button
+              className="p-3 hover:bg-muted/50 rounded-2xl text-muted-foreground hover:text-foreground transition-all duration-300"
+              onClick={onClose}
+            >
+              <X className="h-6 w-6" />
+            </button>
           </div>
         </div>
-        <div className="p-5">
-          <div className="space-y-4 max-h-[70vh] overflow-y-auto pr-1">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-            <div className="text-sm font-medium text-slate-900 dark:text-white">Weekly hours</div>
-            <div className="flex flex-wrap items-center gap-2">
-              <button
-                type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                onClick={() => {
-                  const monday = daysState.Mon || {};
-                  if (!monday.from || !monday.till) {
-                    toast.info("Set Monday times first to apply to all.");
-                    return;
-                  }
-                  setDaysState((prev) => {
-                    const next = { ...prev };
-                    for (const k of dayKeys) {
-                      if (!next[k]?.holiday) {
-                        next[k] = { ...next[k], from: monday.from, till: monday.till };
-                      }
-                    }
-                    return next;
-                  });
-                }}
-              >Apply Mon to all</button>
-              <button
-                type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                onClick={() => {
-                  setDaysState((prev) => {
-                    const next = { ...prev };
-                    for (const k of dayKeys) {
-                      next[k] = { ...next[k], from: "", till: "" };
-                    }
-                    return next;
-                  });
-                }}
-              >Clear all times</button>
-              <button
-                type="button"
-                className="text-xs px-2 py-1 rounded border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-800 hover:bg-slate-50 dark:hover:bg-slate-700 transition-colors"
-                onClick={() => {
-                  setDaysState((prev) => {
-                    const next = { ...prev };
-                    const setIf = (k: string, from: string, till: string) => {
-                      if (!next[k]?.holiday) next[k] = { ...next[k], from, till };
-                    };
-                    setIf("Mon", "09:00", "17:00");
-                    setIf("Tue", "09:00", "17:00");
-                    setIf("Wed", "09:00", "17:00");
-                    setIf("Thu", "09:00", "17:00");
-                    setIf("Fri", "09:00", "17:00");
-                    return next;
-                  });
-                }}
-              >Fill 09:00–17:00 (Mon–Fri)</button>
-            </div>
-          </div>
-          <div className="overflow-auto rounded-md border border-slate-200 dark:border-slate-800">
-            <table className="w-full text-xs sm:text-sm">
-              <thead className="bg-slate-50 dark:bg-slate-900 text-slate-600 dark:text-slate-300 sticky top-0 z-10">
-                <tr>
-                  <th className="text-left px-3 py-2 font-medium">Day</th>
-                  <th className="text-left px-3 py-2 font-medium">From</th>
-                  <th className="text-left px-3 py-2 font-medium">Till</th>
-                  <th className="text-left px-3 py-2 font-medium">Hours</th>
-                  <th className="text-left px-3 py-2 font-medium">Feiertag</th>
-                  <th className="text-left px-3 py-2 font-medium">On hold</th>
-                  <th className="text-left px-3 py-2 font-medium">Rating</th>
-                  <th className="text-left px-3 py-2 font-medium">Sonstiges</th>
-                </tr>
-              </thead>
-              <tbody>
-                {dayKeys.map((k, idx) => (
-                  <tr key={k} className={`border-t border-slate-200 dark:border-slate-800 transition-colors ${daysState[k]?.holiday ? "bg-slate-50 dark:bg-slate-900/60 opacity-70" : "hover:bg-slate-50/70 dark:hover:bg-slate-800/80"}`}>
-                    <td className="px-3 py-2 whitespace-nowrap">
-                      <div className="font-semibold text-slate-900 dark:text-slate-100">{k}</div>
-                      <div className="text-[11px] text-slate-500 dark:text-slate-400">{weekDates[idx]?.toLocaleDateString?.() || ""}</div>
-                    </td>
-                    <td className="px-3 py-2 align-middle">
-                      <input type="time" className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1" value={daysState[k]?.from || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], from: e.target.value } }))} />
-                    </td>
-                    <td className="px-3 py-2 align-middle">
-                      <input type="time" className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1" value={daysState[k]?.till || ""} disabled={!!daysState[k]?.holiday} title={daysState[k]?.holiday ? "Disabled due to holiday" : undefined} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], till: e.target.value } }))} />
-                    </td>
-                    <td className="px-3 py-2 align-middle text-slate-700 dark:text-slate-200">
-                      {(() => {
-                        const d = daysState[k];
-                        if (!d || d.holiday) return "–";
-                        const a = parseToMinutes(d.from), b = parseToMinutes(d.till);
-                        if (a == null || b == null || b <= a) return "–";
-                        const mins = b - a; const h = Math.floor(mins/60), m = mins%60;
-                        return `${h}h ${m}m`;
-                      })()}
-                    </td>
-                    <td className="px-3 py-2 align-middle text-center">
-                      <input type="checkbox" className="accent-slate-900 dark:accent-slate-100" checked={!!daysState[k]?.holiday} onChange={(e) => setDaysState((prev) => {
-                        const checked = e.target.checked;
-                        const next = { ...prev, [k]: { ...prev[k], holiday: checked } };
-                        if (checked) {
-                          next[k].from = "";
-                          next[k].till = "";
-                        }
-                        return next;
-                      })} />
-                    </td>
-                    <td className="px-3 py-2 align-middle text-center">
-                      <input type="checkbox" className="accent-slate-900 dark:accent-slate-100" checked={!!daysState[k]?.hold} onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], hold: e.target.checked } }))} />
-                    </td>
-                    <td className="px-3 py-2">
-                      <select
-                        className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1"
-                        value={daysState[k]?.mood || ""}
-                        onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], mood: e.target.value } }))}
-                      >
-                        <option value="">–</option>
-                        <option value="happy">😃 happy</option>
-                        <option value="satisfied">🙂 satisfied</option>
-                        <option value="sad">😞 sad</option>
-                        <option value="angry">😡 angry</option>
-                      </select>
-                    </td>
-                    <td className="px-3 py-2">
-                      <input
-                        type="text"
-                        className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-800 text-slate-900 dark:text-slate-100 px-2 py-1"
-                        placeholder="Notes"
-                        value={daysState[k]?.notes || ""}
-                        onChange={(e) => setDaysState((prev) => ({ ...prev, [k]: { ...prev[k], notes: e.target.value } }))}
-                      />
-                    </td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-          <div className="flex justify-end text-xs text-slate-600 dark:text-slate-300 mt-2">
-            {(() => {
-              const h = Math.floor(totalMinutes / 60);
-              const m = totalMinutes % 60;
-              return <span>Weekly total: <span className="font-medium text-slate-800 dark:text-slate-100">{h}h {m}m</span></span>;
-            })()}
-          </div>
 
-          <div>
-            <div className="flex items-center justify-between mb-1">
-              <label className="block text-sm font-medium text-slate-700 dark:text-slate-200">Tasks (brief weekly summary, min 10 chars to submit)</label>
-              <span className={`text-[11px] ${taskLen >= 10 ? "text-emerald-700" : "text-slate-500 dark:text-slate-400"}`}>{taskLen}/10</span>
-            </div>
-            <textarea
-              className="w-full min-h-[120px] rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-400 dark:focus:ring-slate-600"
-              value={tasks}
-              onChange={(e) => setTasks(e.target.value)}
-              placeholder="Describe your practical work this week..."
-            />
-            <div className="mt-2 grid grid-cols-2 gap-3 max-w-sm">
-              <div>
-                <label className="block text-sm font-medium text-slate-700 dark:text-slate-200 mb-1">Grade (optional)</label>
-                <select
-                  className="w-full rounded-md border border-slate-300 dark:border-slate-700 bg-white dark:bg-slate-900 text-slate-900 dark:text-slate-100 px-2 py-1"
-                  value={grade}
-                  onChange={(e) => setGrade(e.target.value)}
+        <div className="flex-1 overflow-y-auto p-8 custom-scrollbar bg-transparent">
+          <div className="space-y-10">
+            {/* Quick Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+              <div className="text-xl font-black text-foreground tracking-tight">
+                {t.weeklyHours}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <button
+                  type="button"
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  onClick={() => {
+                    const monday = daysState.Mon || {};
+                    if (!monday.from || !monday.till) {
+                      toast.info(t.setMondayFirst);
+                      return;
+                    }
+                    setDaysState((prev) => {
+                      const next = { ...prev };
+                      for (const k of dayKeys) {
+                        if (!next[k]?.holiday) {
+                          next[k] = {
+                            ...next[k],
+                            from: monday.from,
+                            till: monday.till,
+                          };
+                        }
+                      }
+                      return next;
+                    });
+                  }}
                 >
-                  <option value="">—</option>
-                  <option value="1">1</option>
-                  <option value="2">2</option>
-                  <option value="3">3</option>
-                  <option value="4">4</option>
-                  <option value="5">5</option>
-                  <option value="6">6</option>
-                </select>
+                  {t.applyMonToAll}
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  onClick={() => {
+                    setDaysState((prev) => {
+                      const next = { ...prev };
+                      for (const k of dayKeys) {
+                        next[k] = { ...next[k], from: "", till: "" };
+                      }
+                      return next;
+                    });
+                  }}
+                >
+                  {t.clearAll}
+                </button>
+                <button
+                  type="button"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 hover:bg-iu-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  onClick={() => {
+                    setDaysState((prev) => {
+                      const next = { ...prev };
+                      const setIf = (k: string, from: string, till: string) => {
+                        if (!next[k]?.holiday)
+                          next[k] = { ...next[k], from, till };
+                      };
+                      setIf("Mon", "09:00", "17:00");
+                      setIf("Tue", "09:00", "17:00");
+                      setIf("Wed", "09:00", "17:00");
+                      setIf("Thu", "09:00", "17:00");
+                      setIf("Fri", "09:00", "17:00");
+                      return next;
+                    });
+                  }}
+                >
+                  {t.fillStandard}
+                </button>
               </div>
             </div>
+
+            {/* Days Table */}
+            <div className="bg-card/50 rounded-3xl border border-border overflow-hidden">
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="bg-muted/50 text-muted-foreground border-b border-border">
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.day}
+                      </th>
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.from}
+                      </th>
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.till}
+                      </th>
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.hours}
+                      </th>
+                      <th className="text-center px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.holiday}
+                      </th>
+                      <th className="text-center px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.hold}
+                      </th>
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.rating}
+                      </th>
+                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                        {t.notes}
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border">
+                    {dayKeys.map((k, idx) => (
+                      <tr
+                        key={k}
+                        className={`transition-colors ${daysState[k]?.holiday ? "bg-muted/20 opacity-50" : "hover:bg-muted/30"}`}
+                      >
+                        <td className="px-6 py-4 whitespace-nowrap">
+                          <div className="font-bold text-foreground">
+                            {k}
+                          </div>
+                          <div className="text-[10px] text-muted-foreground font-bold">
+                            {weekDates[idx]?.toLocaleDateString?.() || ""}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <input
+                            type="time"
+                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            value={daysState[k]?.from || ""}
+                            disabled={!!daysState[k]?.holiday}
+                            onChange={(e) =>
+                              setDaysState((prev) => ({
+                                ...prev,
+                                [k]: { ...prev[k], from: e.target.value },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <input
+                            type="time"
+                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            value={daysState[k]?.till || ""}
+                            disabled={!!daysState[k]?.holiday}
+                            onChange={(e) =>
+                              setDaysState((prev) => ({
+                                ...prev,
+                                [k]: { ...prev[k], till: e.target.value },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-iu-blue font-bold">
+                          {(() => {
+                            const d = daysState[k];
+                            if (!d || d.holiday) return "–";
+                            const a = parseToMinutes(d.from),
+                              b = parseToMinutes(d.till);
+                            if (a == null || b == null || b <= a) return "–";
+                            const mins = b - a;
+                            const h = Math.floor(mins / 60),
+                              m = mins % 60;
+                            return `${h}h ${m}m`;
+                          })()}
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <input
+                            type="checkbox"
+                            className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
+                            checked={!!daysState[k]?.holiday}
+                            onChange={(e) =>
+                              setDaysState((prev) => {
+                                const checked = e.target.checked;
+                                const next = {
+                                  ...prev,
+                                  [k]: { ...prev[k], holiday: checked },
+                                };
+                                if (checked) {
+                                  next[k].from = "";
+                                  next[k].till = "";
+                                }
+                                return next;
+                              })
+                            }
+                          />
+                        </td>
+                        <td className="px-6 py-4 text-center">
+                          <input
+                            type="checkbox"
+                            className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
+                            checked={!!daysState[k]?.hold}
+                            onChange={(e) =>
+                              setDaysState((prev) => ({
+                                ...prev,
+                                [k]: { ...prev[k], hold: e.target.checked },
+                              }))
+                            }
+                          />
+                        </td>
+                        <td className="px-6 py-4">
+                          <select
+                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            value={daysState[k]?.mood || ""}
+                            onChange={(e) =>
+                              setDaysState((prev) => ({
+                                ...prev,
+                                [k]: { ...prev[k], mood: e.target.value },
+                              }))
+                            }
+                          >
+                            <option value="">–</option>
+                            <option value="happy">😃 {t.happy}</option>
+                            <option value="satisfied">🙂 {t.satisfied}</option>
+                            <option value="sad">😞 {t.sad}</option>
+                            <option value="angry">😡 {t.angry}</option>
+                          </select>
+                        </td>
+                        <td className="px-6 py-4">
+                          <input
+                            type="text"
+                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            placeholder="Notes..."
+                            value={daysState[k]?.notes || ""}
+                            onChange={(e) =>
+                              setDaysState((prev) => ({
+                                ...prev,
+                                [k]: { ...prev[k], notes: e.target.value },
+                              }))
+                            }
+                          />
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          <div className="text-xs text-slate-500 dark:text-slate-400">You can <span className="font-semibold text-sky-700 dark:text-sky-400">save as Draft</span> now or <span className="font-semibold text-emerald-700 dark:text-emerald-400">Submit (green)</span> when ready.</div>
+
+            {/* Tasks Section */}
+            <div className="space-y-6">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="p-3 bg-iu-blue/10 rounded-2xl">
+                    <FileEdit className="h-6 w-6 text-iu-blue" />
+                  </div>
+                  <h3 className="text-xl font-black text-foreground tracking-tight">
+                    Weekly Summary
+                  </h3>
+                </div>
+                <span
+                  className={`text-xs font-bold uppercase tracking-widest ${taskLen >= 10 ? "text-iu-blue dark:text-iu-blue" : "text-muted-foreground"}`}
+                >
+                  {taskLen} / 10 chars
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+                <div className="lg:col-span-2">
+                  <textarea
+                    className="w-full min-h-[200px] rounded-3xl border border-border bg-muted/50 text-foreground px-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-iu-blue transition-all"
+                    value={tasks}
+                    onChange={(e) => setTasks(e.target.value)}
+                    placeholder="Describe your practical work and achievements this week..."
+                  />
+                </div>
+                <div className="space-y-6">
+                  <div className="bg-muted/50 rounded-3xl border border-border p-6">
+                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
+                      Grade (optional)
+                    </label>
+                    <div className="grid grid-cols-3 gap-2">
+                      {["1", "2", "3", "4", "5", "6"].map((g) => (
+                        <button
+                          key={g}
+                          type="button"
+                          onClick={() => setGrade(g === grade ? "" : g)}
+                          className={`py-3 rounded-xl font-bold transition-all duration-300 border ${
+                            grade === g
+                              ? "bg-iu-blue text-white border-iu-blue"
+                              : "bg-card/50 text-muted-foreground border-border hover:border-iu-blue/50"
+                          }`}
+                        >
+                          {g}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
-        <div className="px-5 py-4 border-t border-slate-200 dark:border-slate-800 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-3">
-          <div className="flex-1 text-xs text-slate-500 dark:text-slate-400 sm:text-right">Draft keeps your work private until you submit.</div>
-          <div className="flex items-center justify-end gap-3">
-            <button onClick={onClose} className="px-4 py-2 text-sm rounded-md border border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 bg-white dark:bg-slate-900 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors">Cancel</button>
-            <button disabled={saving} onClick={() => handleSave("DRAFT")} className="px-4 py-2 text-sm rounded-md border border-sky-300 dark:border-sky-700 text-sky-900 dark:text-sky-200 bg-white dark:bg-slate-900 hover:bg-sky-50 dark:hover:bg-slate-800 disabled:opacity-60 transition-colors">{saving && saveMode === "DRAFT" ? "Saving draft..." : "Save draft"}</button>
-            <button disabled={saving || taskLen < 10} title={taskLen < 10 ? "Enter at least 10 characters" : undefined} onClick={() => handleSave("SUBMITTED")} className={`px-4 py-2 text-sm rounded-md text-white hover:opacity-90 ${saving || taskLen < 10 ? "bg-slate-500" : "bg-slate-900 dark:bg-slate-100 dark:text-slate-900"}`}>{saving && saveMode !== "DRAFT" ? "Submitting..." : "Submit"}</button>
+
+        {/* Modal Footer */}
+        <div className="px-8 py-8 border-t border-border bg-muted/50 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-6">
+          <div className="flex items-center justify-end gap-4">
+            <button
+              onClick={onClose}
+              className="px-8 py-4 text-sm font-bold rounded-2xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+            >
+              {t.cancel}
+            </button>
+            <button
+              disabled={saving}
+              onClick={() => handleSave("DRAFT")}
+              className="px-8 py-4 text-sm font-bold rounded-2xl border border-iu-blue/30 text-iu-blue bg-iu-blue/5 hover:bg-iu-blue/10 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all duration-300 uppercase tracking-widest"
+            >
+              {saving && saveMode === "DRAFT" ? t.saving : t.saveDraft}
+            </button>
+            <button
+              disabled={saving || taskLen < 10}
+              onClick={() => handleSave("SUBMITTED")}
+              className={`px-10 py-4 text-sm font-bold rounded-2xl text-white transition-all duration-300 uppercase tracking-widest ${
+                saving || taskLen < 10
+                  ? "bg-muted text-muted-foreground cursor-not-allowed"
+                  : "bg-iu-blue hover:bg-iu-blue hover:scale-[1.02] active:scale-[0.98]"
+              }`}
+            >
+              {saving && saveMode !== "DRAFT" ? t.saving : t.submit}
+            </button>
           </div>
         </div>
       </div>
