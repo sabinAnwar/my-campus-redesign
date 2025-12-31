@@ -93,14 +93,16 @@ export default function UserDetail() {
 
   if (error) {
     return (
-      <div
-        className="min-h-screen flex items-center justify-center"
-        style={{ background: "linear-gradient(135deg, #eff6ff, #e0e7ff)" }}
-      >
-        <div className="bg-white rounded-2xl shadow-xl p-8 max-w-md">
-          <div className="flex items-center justify-center w-16 h-16 rounded-full bg-red-100 mb-6 mx-auto">
+      <div className="min-h-screen flex items-center justify-center bg-slate-950 relative overflow-hidden">
+        {/* Background Glow */}
+        <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+          <div className="absolute -top-[10%] -left-[10%] w-[40%] h-[40%] bg-iu-red/20 blur-[120px] rounded-full" />
+        </div>
+
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-iu-red/30 rounded-none shadow-2xl p-8 max-w-md relative z-10">
+          <div className="flex items-center justify-center w-16 h-16 rounded-none bg-iu-red/10 mb-6 mx-auto border border-iu-red/30">
             <svg
-              className="w-8 h-8 text-red-600"
+              className="w-8 h-8 text-iu-red"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -113,14 +115,14 @@ export default function UserDetail() {
               />
             </svg>
           </div>
-          <h1 className="text-2xl font-bold text-center text-gray-900 mb-4">
+          <h1 className="text-2xl font-black text-center text-white mb-4 uppercase tracking-tighter">
             Error Loading User
           </h1>
-          <p className="text-gray-600 text-center mb-6">{error}</p>
+          <p className="text-slate-400 text-center mb-6 font-bold">{error}</p>
           <div className="flex justify-center">
             <Link
               to="/users"
-              className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+              className="inline-flex items-center px-6 py-3 border border-iu-blue text-sm font-black rounded-none shadow-sm text-white bg-iu-blue hover:bg-iu-blue/80 transition-all duration-200 uppercase tracking-widest"
             >
               Return to Users
             </Link>
@@ -131,15 +133,18 @@ export default function UserDetail() {
   }
 
   return (
-    <div
-      className="min-h-screen"
-      style={{ background: "linear-gradient(135deg, #eff6ff, #e0e7ff)" }}
-    >
-      <div className="container mx-auto px-4 py-8">
+    <div className="min-h-screen bg-slate-950 relative overflow-hidden">
+      {/* Background Glows */}
+      <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
+        <div className="absolute -top-[10%] -right-[10%] w-[40%] h-[40%] bg-iu-blue/10 blur-[120px] rounded-full" />
+        <div className="absolute -bottom-[10%] -left-[10%] w-[40%] h-[40%] bg-iu-purple/10 blur-[120px] rounded-full" />
+      </div>
+
+      <div className="container mx-auto px-4 py-8 relative z-10">
         <div className="mb-6">
           <Link
             to="/users"
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+            className="inline-flex items-center text-iu-blue hover:text-iu-blue/80 font-black uppercase tracking-widest text-sm transition-colors"
           >
             <svg
               className="w-5 h-5 mr-2"
@@ -158,23 +163,25 @@ export default function UserDetail() {
           </Link>
         </div>
 
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-slate-900/50 backdrop-blur-xl border border-slate-800 rounded-none shadow-2xl overflow-hidden">
           <div className="p-6 sm:p-10">
-            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8">
+            <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-8 border-b border-slate-800 pb-8">
               <div>
-                <h1 className="text-3xl font-bold text-gray-900">
+                <h1 className="text-4xl font-black text-white uppercase tracking-tighter">
                   {isEditing ? "Edit User" : user.name || user.username}
                 </h1>
                 {!isEditing && (
-                  <p className="text-gray-500 mt-1">{user.email}</p>
+                  <p className="text-iu-blue mt-1 font-bold tracking-wide">
+                    {user.email}
+                  </p>
                 )}
               </div>
 
               {!isEditing && (
-                <div className="mt-4 md:mt-0 space-x-3">
+                <div className="mt-6 md:mt-0 flex flex-wrap gap-3">
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex items-center px-6 py-2 border border-slate-700 text-sm font-black rounded-none text-white bg-slate-800 hover:bg-slate-700 transition-all duration-200 uppercase tracking-widest"
                   >
                     <svg
                       className="w-4 h-4 mr-2"
@@ -194,7 +201,7 @@ export default function UserDetail() {
 
                   <button
                     onClick={() => setConfirmDelete(true)}
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                    className="inline-flex items-center px-6 py-2 border border-iu-red text-sm font-black rounded-none text-white bg-iu-red hover:bg-iu-red/80 transition-all duration-200 uppercase tracking-widest"
                   >
                     <svg
                       className="w-4 h-4 mr-2"
@@ -216,145 +223,138 @@ export default function UserDetail() {
             </div>
 
             {isEditing ? (
-              <Form method="post" className="space-y-6">
+              <Form method="post" className="space-y-8">
                 <input type="hidden" name="_action" value="update" />
 
-                <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
+                <div className="grid grid-cols-1 gap-y-8 gap-x-6 sm:grid-cols-6">
                   <div className="sm:col-span-3">
                     <label
                       htmlFor="name"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"
                     >
                       Full Name
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="name"
-                        id="name"
-                        defaultValue={user.name}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      name="name"
+                      id="name"
+                      defaultValue={user.name}
+                      className="block w-full bg-slate-950 border border-slate-800 rounded-none px-4 py-3 text-white focus:ring-2 focus:ring-iu-blue focus:border-iu-blue transition-all font-bold"
+                    />
                   </div>
 
                   <div className="sm:col-span-3">
                     <label
                       htmlFor="username"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"
                     >
                       Username
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="text"
-                        name="username"
-                        id="username"
-                        defaultValue={user.username}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="text"
+                      name="username"
+                      id="username"
+                      defaultValue={user.username}
+                      className="block w-full bg-slate-950 border border-slate-800 rounded-none px-4 py-3 text-white focus:ring-2 focus:ring-iu-blue focus:border-iu-blue transition-all font-bold"
+                    />
                   </div>
 
                   <div className="sm:col-span-3">
                     <label
                       htmlFor="email"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"
                     >
                       Email Address
                     </label>
-                    <div className="mt-1">
-                      <input
-                        type="email"
-                        name="email"
-                        id="email"
-                        defaultValue={user.email}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      />
-                    </div>
+                    <input
+                      type="email"
+                      name="email"
+                      id="email"
+                      defaultValue={user.email}
+                      className="block w-full bg-slate-950 border border-slate-800 rounded-none px-4 py-3 text-white focus:ring-2 focus:ring-iu-blue focus:border-iu-blue transition-all font-bold"
+                    />
                   </div>
 
                   <div className="sm:col-span-3">
                     <label
                       htmlFor="role"
-                      className="block text-sm font-medium text-gray-700"
+                      className="block text-xs font-black text-slate-400 uppercase tracking-widest mb-2"
                     >
                       Role
                     </label>
-                    <div className="mt-1">
-                      <select
-                        id="role"
-                        name="role"
-                        defaultValue={user.role}
-                        className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
-                      >
-                        <option value="USER">User</option>
-                        <option value="EDITOR">Editor</option>
-                        <option value="ADMIN">Admin</option>
-                      </select>
-                    </div>
+                    <select
+                      id="role"
+                      name="role"
+                      defaultValue={user.role}
+                      className="block w-full bg-slate-950 border border-slate-800 rounded-none px-4 py-3 text-white focus:ring-2 focus:ring-iu-blue focus:border-iu-blue transition-all font-bold appearance-none"
+                    >
+                      <option value="USER">User</option>
+                      <option value="EDITOR">Editor</option>
+                      <option value="ADMIN">Admin</option>
+                    </select>
                   </div>
                 </div>
 
-                <div className="flex justify-end space-x-3">
+                <div className="flex justify-end space-x-4 pt-6 border-t border-slate-800">
                   <button
                     type="button"
                     onClick={() => setIsEditing(false)}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="px-6 py-3 border border-slate-700 text-sm font-black rounded-none text-white bg-slate-800 hover:bg-slate-700 transition-all duration-200 uppercase tracking-widest"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="px-6 py-3 border border-iu-blue text-sm font-black rounded-none text-white bg-iu-blue hover:bg-iu-blue/80 transition-all duration-200 uppercase tracking-widest"
                   >
                     Save Changes
                   </button>
                 </div>
               </Form>
             ) : (
-              <div className="space-y-8">
-                <div className="bg-gray-50 p-6 rounded-xl border border-gray-100">
-                  <h2 className="text-lg font-medium text-gray-900 mb-4">
+              <div className="space-y-10">
+                <div className="bg-slate-950/50 p-8 rounded-none border border-slate-800">
+                  <h2 className="text-xl font-black text-white mb-8 uppercase tracking-widest flex items-center">
+                    <span className="w-2 h-8 bg-iu-blue mr-4"></span>
                     User Information
                   </h2>
-                  <dl className="grid grid-cols-1 gap-x-4 gap-y-6 sm:grid-cols-2">
+                  <dl className="grid grid-cols-1 gap-x-8 gap-y-10 sm:grid-cols-2">
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         Full Name
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dd className="text-lg text-white font-bold">
                         {user.name || "—"}
                       </dd>
                     </div>
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         Username
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dd className="text-lg text-white font-bold">
                         {user.username}
                       </dd>
                     </div>
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         Email Address
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dd className="text-lg text-iu-blue font-bold">
                         {user.email}
                       </dd>
                     </div>
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         Role
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dd className="mt-1">
                         <span
-                          className={`inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold ${
+                          className={`inline-flex items-center px-4 py-1 rounded-none text-xs font-black uppercase tracking-widest border ${
                             user.role === "ADMIN"
-                              ? "bg-red-100 text-red-800"
+                              ? "bg-iu-red/10 text-iu-red border-iu-red/30"
                               : user.role === "EDITOR"
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-blue-100 text-blue-800"
+                                ? "bg-iu-orange/10 text-iu-orange border-iu-orange/30"
+                                : "bg-iu-blue/10 text-iu-blue border-iu-blue/30"
                           }`}
                         >
                           {user.role === "ADMIN" && "👑 "}
@@ -367,69 +367,80 @@ export default function UserDetail() {
                       </dd>
                     </div>
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         User ID
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">{user.id}</dd>
+                      <dd className="text-lg text-white font-bold font-mono">
+                        {user.id}
+                      </dd>
                     </div>
                     <div className="sm:col-span-1">
-                      <dt className="text-sm font-medium text-gray-500">
+                      <dt className="text-xs font-black text-slate-500 uppercase tracking-widest mb-2">
                         Created At
                       </dt>
-                      <dd className="mt-1 text-sm text-gray-900">
+                      <dd className="text-lg text-white font-bold">
                         {new Date(user.createdAt).toLocaleDateString()}{" "}
-                        {new Date(user.createdAt).toLocaleTimeString()}
+                        <span className="text-slate-500 text-sm ml-2">
+                          {new Date(user.createdAt).toLocaleTimeString()}
+                        </span>
                       </dd>
                     </div>
                   </dl>
                 </div>
-
-                {/* Additional user information blocks can be added here */}
               </div>
             )}
 
             {/* Delete confirmation modal */}
             {confirmDelete && (
-              <div className="fixed inset-0 bg-gray-500 bg-opacity-75 flex items-center justify-center z-50">
-                <div className="bg-white rounded-lg shadow-xl max-w-md w-full p-6">
-                  <div className="flex items-center justify-center w-12 h-12 rounded-full bg-red-100 mx-auto mb-4">
-                    <svg
-                      className="w-6 h-6 text-red-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
-                      />
-                    </svg>
-                  </div>
-                  <h3 className="text-lg font-medium text-gray-900 text-center mb-2">
-                    Delete User
-                  </h3>
-                  <p className="text-sm text-gray-500 text-center mb-6">
-                    Are you sure you want to delete this user? This action
-                    cannot be undone.
-                  </p>
-                  <div className="flex justify-center space-x-3">
-                    <button
-                      onClick={() => setConfirmDelete(false)}
-                      className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                    >
-                      Cancel
-                    </button>
-                    <Form method="post" onSubmit={handleDeleteSuccess}>
-                      <input type="hidden" name="_action" value="delete" />
-                      <button
-                        type="submit"
-                        className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+              <div className="fixed inset-0 bg-slate-950/90 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+                <div className="bg-slate-900 border border-iu-red/30 rounded-none shadow-2xl max-w-md w-full p-8 relative overflow-hidden">
+                  {/* Modal Glow */}
+                  <div className="absolute -top-24 -right-24 w-48 h-48 bg-iu-red/10 blur-[60px] rounded-full" />
+
+                  <div className="relative z-10">
+                    <div className="flex items-center justify-center w-16 h-16 rounded-none bg-iu-red/10 mx-auto mb-6 border border-iu-red/30">
+                      <svg
+                        className="w-8 h-8 text-iu-red"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
                       >
-                        Delete
+                        <path
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                          strokeWidth={2}
+                          d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"
+                        />
+                      </svg>
+                    </div>
+                    <h3 className="text-2xl font-black text-white text-center mb-4 uppercase tracking-tighter">
+                      Delete User
+                    </h3>
+                    <p className="text-slate-400 text-center mb-8 font-bold">
+                      Are you sure you want to delete this user? This action
+                      cannot be undone and all associated data will be lost.
+                    </p>
+                    <div className="flex flex-col sm:flex-row justify-center gap-4">
+                      <button
+                        onClick={() => setConfirmDelete(false)}
+                        className="flex-1 px-6 py-3 border border-slate-700 text-sm font-black rounded-none text-white bg-slate-800 hover:bg-slate-700 transition-all duration-200 uppercase tracking-widest"
+                      >
+                        Cancel
                       </button>
-                    </Form>
+                      <Form
+                        method="post"
+                        onSubmit={handleDeleteSuccess}
+                        className="flex-1"
+                      >
+                        <input type="hidden" name="_action" value="delete" />
+                        <button
+                          type="submit"
+                          className="w-full px-6 py-3 border border-iu-red text-sm font-black rounded-none text-white bg-iu-red hover:bg-iu-red/80 transition-all duration-200 uppercase tracking-widest"
+                        >
+                          Delete
+                        </button>
+                      </Form>
+                    </div>
                   </div>
                 </div>
               </div>

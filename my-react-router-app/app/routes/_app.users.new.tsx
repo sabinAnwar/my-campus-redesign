@@ -92,38 +92,55 @@ export default function NewUser() {
   };
   
   return (
-    <div className="min-h-screen" style={{background: 'linear-gradient(135deg, #eff6ff, #e0e7ff)'}}>
+    <div className="min-h-screen bg-transparent">
       <div className="container mx-auto px-4 py-8">
         <div className="mb-6">
-          <Link 
-            to="/users" 
-            className="inline-flex items-center text-indigo-600 hover:text-indigo-800"
+          <Link
+            to="/users"
+            className="inline-flex items-center text-iu-blue hover:text-iu-blue/80 font-black uppercase tracking-widest text-sm"
           >
-            <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+            <svg
+              className="w-5 h-5 mr-2"
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M10 19l-7-7m0 0l7-7m-7 7h18"
+              />
             </svg>
             Back to Users
           </Link>
         </div>
-        
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+
+        <div className="bg-slate-900 rounded-none border border-white/10 shadow-2xl overflow-hidden">
           <div className="p-6 sm:p-10">
             <div className="mb-8">
-              <h1 className="text-3xl font-bold text-gray-900">Add New User</h1>
-              <p className="text-gray-600 mt-2">Create a new user account</p>
+              <h1 className="text-4xl font-black text-white tracking-tight">
+                Add New User
+              </h1>
+              <p className="text-slate-400 mt-2 font-bold">
+                Create a new user account
+              </p>
             </div>
-            
+
             {errors._form && (
-              <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6">
-                <strong className="font-bold">Error:</strong>
+              <div className="bg-iu-red/10 border-2 border-iu-red/50 text-iu-red px-4 py-3 rounded-none mb-6 font-black">
+                <strong className="font-black">Error:</strong>
                 <span className="block sm:inline"> {errors._form}</span>
               </div>
             )}
-            
+
             <Form method="post" className="space-y-6">
               <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                  <label htmlFor="name" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-black text-slate-300 mb-2"
+                  >
                     Full Name
                   </label>
                   <div className="mt-1">
@@ -133,17 +150,22 @@ export default function NewUser() {
                       id="name"
                       value={formData.name}
                       onChange={handleChange}
-                      className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md ${errors.name ? 'border-red-300' : ''}`}
+                      className={`block w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-iu-blue rounded-none transition-all font-bold ${errors.name ? "border-iu-red" : ""}`}
                     />
                     {errors.name && (
-                      <p className="mt-1 text-sm text-red-600">{errors.name}</p>
+                      <p className="mt-1 text-sm text-iu-red font-black">
+                        {errors.name}
+                      </p>
                     )}
                   </div>
                 </div>
-                
+
                 <div className="sm:col-span-3">
-                  <label htmlFor="username" className="block text-sm font-medium text-gray-700">
-                    Username <span className="text-red-500">*</span>
+                  <label
+                    htmlFor="username"
+                    className="block text-sm font-black text-slate-300 mb-2"
+                  >
+                    Username <span className="text-iu-red">*</span>
                   </label>
                   <div className="mt-1">
                     <input
@@ -153,17 +175,22 @@ export default function NewUser() {
                       required
                       value={formData.username}
                       onChange={handleChange}
-                      className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md ${errors.username ? 'border-red-300' : ''}`}
+                      className={`block w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-iu-blue rounded-none transition-all font-bold ${errors.username ? "border-iu-red" : ""}`}
                     />
                     {errors.username && (
-                      <p className="mt-1 text-sm text-red-600">{errors.username}</p>
+                      <p className="mt-1 text-sm text-iu-red font-black">
+                        {errors.username}
+                      </p>
                     )}
                   </div>
                 </div>
-                
+
                 <div className="sm:col-span-4">
-                  <label htmlFor="email" className="block text-sm font-medium text-gray-700">
-                    Email Address <span className="text-red-500">*</span>
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-black text-slate-300 mb-2"
+                  >
+                    Email Address <span className="text-iu-red">*</span>
                   </label>
                   <div className="mt-1">
                     <input
@@ -173,16 +200,21 @@ export default function NewUser() {
                       required
                       value={formData.email}
                       onChange={handleChange}
-                      className={`shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md ${errors.email ? 'border-red-300' : ''}`}
+                      className={`block w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 text-white placeholder-slate-500 focus:outline-none focus:ring-0 focus:border-iu-blue rounded-none transition-all font-bold ${errors.email ? "border-iu-red" : ""}`}
                     />
                     {errors.email && (
-                      <p className="mt-1 text-sm text-red-600">{errors.email}</p>
+                      <p className="mt-1 text-sm text-iu-red font-black">
+                        {errors.email}
+                      </p>
                     )}
                   </div>
                 </div>
-                
+
                 <div className="sm:col-span-2">
-                  <label htmlFor="role" className="block text-sm font-medium text-gray-700">
+                  <label
+                    htmlFor="role"
+                    className="block text-sm font-black text-slate-300 mb-2"
+                  >
                     User Role
                   </label>
                   <div className="mt-1">
@@ -191,7 +223,7 @@ export default function NewUser() {
                       name="role"
                       value={formData.role}
                       onChange={handleChange}
-                      className="shadow-sm focus:ring-indigo-500 focus:border-indigo-500 block w-full sm:text-sm border-gray-300 rounded-md"
+                      className="block w-full px-4 py-3 bg-slate-800 border-2 border-slate-700 text-white focus:outline-none focus:ring-0 focus:border-iu-blue rounded-none transition-all font-bold"
                     >
                       <option value="USER">User</option>
                       <option value="EDITOR">Editor</option>
@@ -200,19 +232,19 @@ export default function NewUser() {
                   </div>
                 </div>
               </div>
-              
-              <div className="border-t border-gray-200 pt-6">
+
+              <div className="border-t border-white/10 pt-6">
                 <div className="flex justify-end space-x-3">
                   <button
                     type="button"
                     onClick={() => navigate("/users")}
-                    className="inline-flex items-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex items-center px-6 py-3 border-2 border-slate-700 text-sm font-black rounded-none text-slate-300 bg-transparent hover:bg-slate-800 hover:border-slate-600 transition-all"
                   >
                     Cancel
                   </button>
                   <button
                     type="submit"
-                    className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    className="inline-flex items-center px-6 py-3 border-2 border-iu-blue text-sm font-black rounded-none text-white bg-iu-blue hover:bg-iu-blue/90 transition-all shadow-lg hover:shadow-iu-blue/20"
                   >
                     Create User
                   </button>

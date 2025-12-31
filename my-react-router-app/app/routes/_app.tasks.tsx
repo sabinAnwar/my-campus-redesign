@@ -1,122 +1,38 @@
-import React, { useState } from "react";
 import {
   Calendar,
   CheckSquare,
   FileText,
+  FileCheck,
   BookOpen,
   Upload,
+  ChevronRight,
+  Info,
+  Clock,
+  X,
+  Briefcase,
+  AlertTriangle,
+  UploadCloud,
+  CheckCircle,
+  MapPin,
 } from "lucide-react";
-import { TaskKind } from "@prisma/client";
-import { useLoaderData } from "react-router-dom";
+import { type LoaderFunctionArgs } from "@react-router/node";
+import { useLoaderData, useNavigate } from "react-router";
+import { useState, useRef, useEffect } from "react";
 import { prisma } from "~/lib/prisma";
+import { TaskKind } from "@prisma/client";
+import { ensureCanonicalTasks } from "~/lib/tasks.server";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { TEXT, WRITING_TYPES } from "~/constants/tasks";
+import type {
+  TaskLoaderSubmission as LoaderSubmission,
+  TaskLoaderData as LoaderData,
+  TaskUISubmission as UISubmission,
+} from "~/types/tasks";
 
-type LoaderSubmission = {
-  id: number;
-  title: string;
-  course: string;
-  courseCode?: string;
-  professor?: string;
-  type: string;
-  dueDateIso: string;
-  dueDate: string;
-  correctionDate: string;
-  correctionDateIso: string;
-};
+import { getUserFromRequest } from "~/lib/auth.server";
 
-type LoaderData = {
-  submissions: LoaderSubmission[];
-};
-
-type UISubmission = LoaderSubmission & {
-  status: "pending" | "submitted";
-  daysUntilDue: number;
-  similarity?: number;
-};
-
-const TEXT = {
-  de: {
-    bulletin: "Campus Bulletin",
-    title: "Wissenschaftliche Arbeiten & Klausurfristen",
-    subtitle:
-      "Verwalte deine Abgaben, lade Dateien hoch und behalte Fristen im Blick – gestaltet wie eine sachliche Nachrichtenübersicht in hell und dunkel.",
-    issue: "Ausgabe | Today",
-    submissionsHeader: "Wissenschaftliche Arbeiten (Turnitin)",
-    submitted: "Abgegeben",
-    pending: "Ausstehend",
-    dueDate: "Abgabefrist:",
-    correction: "Korrektur:",
-    daysLeft: (d: number) => (d > 0 ? `${d} Tage` : "Überfällig"),
-    manageSubmission: "Abgabe verwalten",
-    deadlineMissed: "Frist verpasst – keine Abgabe möglich",
-    similarity: "Turnitin Ähnlichkeit:",
-    examsHeader: "Klausurfristen",
-    daysUntilExam: (d: number) => (d > 0 ? `${d} Tage` : "Heute / vorbei"),
-    modalTitle: "Turnitin Abgabe verwalten",
-    modalSubtitle:
-      "Reiche deine wissenschaftliche Arbeit sicher über Turnitin ein.",
-    honor:
-      "Ich bestätige die Eidesstattliche Erklärung zur eigenständigen Erstellung meiner Arbeit.",
-    privacy:
-      "Ich akzeptiere die Datenschutzbestimmungen für den Upload in Turnitin.",
-    dropHere: "Datei hier ablegen oder klicken, um hochzuladen",
-    orDrag: "oder Datei ablegen",
-    chooseFile: "Datei auswählen",
-    selected: "Ausgewählte Datei:",
-    cancel: "Abbrechen",
-    upload: "Hochladen",
-    toastSuccess: "Deine Abgabe wurde erfolgreich in Turnitin hochgeladen!",
-    alertAccept:
-      "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz.",
-    alertUpload: "Bitte lade deine Datei hoch, bevor du fortfährst.",
-    alertSelect: "Keine Abgabe ausgewählt.",
-  },
-  en: {
-    bulletin: "Campus Bulletin",
-    title: "Academic Papers & Exam Deadlines",
-    subtitle:
-      "Manage your submissions, upload files, and track deadlines — styled like a clear news overview in light and dark.",
-    issue: "Issue | Today",
-    submissionsHeader: "Academic Papers (Turnitin)",
-    submitted: "Submitted",
-    pending: "Pending",
-    dueDate: "Due date:",
-    correction: "Correction:",
-    daysLeft: (d: number) => (d > 0 ? `${d} days` : "Overdue"),
-    manageSubmission: "Manage submission",
-    deadlineMissed: "Deadline missed — no submission possible",
-    similarity: "Turnitin similarity:",
-    examsHeader: "Exam deadlines",
-    daysUntilExam: (d: number) => (d > 0 ? `${d} days` : "Today / past"),
-    modalTitle: "Manage Turnitin submission",
-    modalSubtitle: "Submit your academic paper securely via Turnitin.",
-    honor:
-      "I confirm the declaration of honor for independently creating my work.",
-    privacy: "I accept the privacy policy for uploading to Turnitin.",
-    dropHere: "Drop file here or click to upload",
-    orDrag: "or drag & drop",
-    chooseFile: "Choose file",
-    selected: "Selected file:",
-    cancel: "Cancel",
-    upload: "Upload",
-    toastSuccess: "Your submission was uploaded to Turnitin successfully!",
-    alertAccept: "Please accept the declaration of honor and privacy notice.",
-    alertUpload: "Please upload your file before continuing.",
-    alertSelect: "No submission selected.",
-  },
-};
-
-const courseMeta: Record<string, { courseCode?: string; professor?: string }> =
-  {
-    "E-Commerce": { courseCode: "ECOM301", professor: "Prof. Dr. Wagner" },
-    "Commerce Engineering": {
-      courseCode: "COMM410",
-      professor: "Prof. Dr. Lehmann",
-    },
-  };
-
-export const loader = async () => {
+export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
     const formatGermanDate = (date: Date) =>
       date.toLocaleDateString("de-DE", {
@@ -125,100 +41,105 @@ export const loader = async () => {
         day: "2-digit",
       });
 
-    const writingTypes = [
-      "Hausarbeit",
-      "Seminararbeit",
-      "Bachelorarbeit",
-      "Masterarbeit",
-      "Projektbericht",
-      "Projektarbeit",
-    ];
+    // 1. Try to get user from session
+    const user = await getUserFromRequest(request);
+    let userId = user?.id;
+    let currentSemester = user?.semester || 1;
+    let studiengangName = user?.studiengang?.name || "IU Studium";
 
-    const canonicalTasks = [
-      {
-        title: "Hausarbeit: Customer Journey im Omnichannel Commerce",
-        course: "E-Commerce",
-        kind: TaskKind.ABGABE,
-        type: "Hausarbeit",
-        dueDate: new Date("2025-12-05"),
-      },
-      {
-        title: "Projektarbeit: Commerce Plattform Redesign",
-        course: "Commerce Engineering",
-        kind: TaskKind.ABGABE,
-        type: "Projektarbeit",
-        dueDate: new Date("2025-12-20"),
-      },
-    ];
+    // 2. Fallback to Sabin if no session (Dev/Fallback)
+    if (!userId) {
+      const sabin = await prisma.user.findUnique({
+        where: { email: "sabin.elanwar@iu-study.org" },
+        include: { studiengang: true },
+      });
+      userId = sabin?.id;
+      currentSemester = sabin?.semester || 1;
+      studiengangName = sabin?.studiengang?.name || "IU Studium";
+    }
 
-    // Ensure canonical tasks exist with up-to-date dates
-    await Promise.all(
-      canonicalTasks.map(async (task) => {
-        const existing = await prisma.studentTask.findFirst({
-          where: {
-            title: task.title,
-            course: task.course,
-            type: task.type,
+    if (userId) {
+      await ensureCanonicalTasks(userId);
+    }
+
+    const [rows, userCourses] = await Promise.all([
+      prisma.studentTask.findMany({
+        where: { userId: userId },
+        orderBy: { dueDate: "asc" },
+      }),
+      prisma.course.findMany({
+        where: {
+          studiengang: {
+            users: { some: { id: userId } },
           },
-        });
+        },
+      }),
+    ]);
 
-        if (existing) {
-          await prisma.studentTask.update({
-            where: { id: existing.id },
-            data: { dueDate: task.dueDate, kind: task.kind },
-          });
-        } else {
-          await prisma.studentTask.create({ data: task });
-        }
-      })
-    );
+    const courseMapDb = new Map(userCourses.map((c) => [c.name, c]));
 
-    const allowedTitles = canonicalTasks.map((t) => t.title);
-    const allowedCourses = Object.keys(courseMeta);
+    const allData = rows.map((t: any) => {
+      const dbCourse = courseMapDb.get(t.course);
+      const dueDate = new Date(t.dueDate);
+      const correctionDate = new Date(dueDate);
+      correctionDate.setDate(dueDate.getDate() + 14);
 
-    const rows = await prisma.studentTask.findMany({
-      where: {
-        kind: TaskKind.ABGABE,
-        type: { in: writingTypes },
-        course: { in: allowedCourses },
-        title: { in: allowedTitles },
-      },
-      orderBy: { dueDate: "asc" },
+      return {
+        id: t.id,
+        title: t.title,
+        course: t.course,
+        courseCode:
+          dbCourse?.code || t.course.substring(0, 3).toUpperCase() + "101",
+        professor: "Dozent TBD", // Could be added to Course model later
+        type: t.type,
+        dueDateIso: dueDate.toISOString().slice(0, 10),
+        dueDate: formatGermanDate(dueDate),
+        correctionDate: formatGermanDate(correctionDate),
+        correctionDateIso: correctionDate.toISOString().slice(0, 10),
+      };
     });
-    const submissions: LoaderSubmission[] = rows.map(
-      (t: {
-        id: any;
-        title: any;
-        course: string;
-        type: any;
-        dueDate: { toISOString: () => string | any[] };
-      }) => {
-        const meta = courseMeta[t.course] ?? {};
-        const dueDate = new Date(t.dueDate);
-        const correctionDate = new Date(dueDate);
-        correctionDate.setDate(dueDate.getDate() + 14); // give realistic correction window
-        return {
-          id: t.id,
-          title: t.title,
-          course: t.course,
-          courseCode: meta.courseCode,
-          professor: meta.professor,
-          type: t.type,
-          dueDateIso: dueDate.toISOString().slice(0, 10),
-          dueDate: formatGermanDate(dueDate),
-          correctionDate: formatGermanDate(correctionDate),
-          correctionDateIso: correctionDate.toISOString().slice(0, 10),
-        };
-      }
+
+    const submissions: LoaderSubmission[] = allData.filter((s: any) =>
+      WRITING_TYPES.includes(s.type)
     );
-    return { submissions };
-  } catch {
-    return { submissions: [] };
+    const exams: any[] = allData
+      .filter((s: any) => s.type === "Online-Klausur" || s.type === "Klausur")
+      .map((s: any) => ({
+        id: s.id,
+        title: s.title,
+        course: s.course,
+        type: s.type,
+        date: s.dueDateIso,
+        duration: "90 Minuten",
+        location:
+          s.type === "Online-Klausur" ? "Online (Proctorio)" : "Hörsaal H1",
+        daysUntilExam: calculateDaysLeft(s.dueDateIso),
+      }));
+
+    return { submissions, exams, currentSemester, studiengangName };
+  } catch (error) {
+    console.error("Loader error:", error);
+    return {
+      submissions: [],
+      exams: [],
+      currentSemester: 1,
+      studiengangName: "IU Studium",
+    };
   }
 };
 
 export default function Tasks() {
-  const { submissions: initialSubmissions } = useLoaderData() as LoaderData;
+  const {
+    submissions: initialSubmissions,
+    exams: initialExams,
+    currentSemester,
+    studiengangName,
+  } = useLoaderData() as {
+    submissions: LoaderSubmission[];
+    exams: any[];
+    currentSemester: number;
+    studiengangName: string;
+  };
   const { language } = useLanguage();
   const t = TEXT[language];
   const formatDate = (iso: string) =>
@@ -233,13 +154,18 @@ export default function Tasks() {
         )
       : "";
 
-
   const titleMap: Record<string, { en: string }> = {
     "Hausarbeit: Customer Journey im Omnichannel Commerce": {
       en: "Term Paper: Customer Journey in Omnichannel Commerce",
     },
     "Projektarbeit: Commerce Plattform Redesign": {
       en: "Project Work: Commerce Platform Redesign",
+    },
+    "Online-Klausur: E-Commerce Grundlagen": {
+      en: "Online Exam: E-Commerce Foundations",
+    },
+    "Klausur: Wirtschaftsinformatik II": {
+      en: "Exam: Business Informatics II",
     },
   };
 
@@ -253,10 +179,43 @@ export default function Tasks() {
     Hausarbeit: { en: "Term Paper" },
     Projektarbeit: { en: "Project Work" },
     Klausur: { en: "Exam" },
+    "Online-Klausur": { en: "Online Exam" },
+    Seminararbeit: { en: "Seminar Paper" },
+    Bachelorarbeit: { en: "Bachelor Thesis" },
+    Masterarbeit: { en: "Master Thesis" },
+    Projektbericht: { en: "Project Report" },
+    Workbook: { en: "Workbook" },
+    Fallstudie: { en: "Case Study" },
+    Portfolio: { en: "Portfolio" },
+    Fachpräsentation: { en: "Technical Presentation" },
+    "Wissenschaftliche Arbeit": { en: "Academic Paper" },
   };
 
-  const translate = (value: string, map: Record<string, { en: string }>) =>
-    language === "de" ? value : map[value]?.en || value;
+  const translate = (value: string, map: Record<string, { en: string }>) => {
+    if (language === "de") return value;
+    if (map[value]) return map[value].en;
+
+    // Handle dynamic titles like "Klausur: Course Name"
+    if (value.includes(": ")) {
+      const [prefix, ...rest] = value.split(": ");
+      const suffix = rest.join(": ");
+      const translatedPrefix =
+        prefix === "Klausur"
+          ? "Exam"
+          : prefix === "Hausarbeit"
+            ? "Term Paper"
+            : prefix === "Projektarbeit"
+              ? "Project Work"
+              : prefix === "Fallstudie"
+                ? "Case Study"
+                : prefix === "Online-Klausur"
+                  ? "Online Exam"
+                  : prefix;
+      return `${translatedPrefix}: ${suffix}`;
+    }
+
+    return value;
+  };
 
   const loadSavedStatus = () => {
     if (typeof window === "undefined")
@@ -310,25 +269,11 @@ export default function Tasks() {
   });
   const [uploadedFile, setUploadedFile] = useState<File | null>(null);
 
-  const exams = [
-    {
-      id: 1,
-      title: "Klausur: Wirtschaftsinformatik II",
-      course: "Wirtschaftsinformatik",
-      type: "Klausur",
-      date: "2025-11-19",
-      duration: "90 Minuten",
-      location: "Online (Proctorio)",
-      daysUntilExam: calculateDaysLeft("2025-11-19"),
-    },
-  ];
-  const examsDisplay = exams.map((exam) => ({
+  const [examsList] = useState<any[]>(initialExams);
+
+  const examsDisplay = examsList.map((exam) => ({
     ...exam,
-    title: translate(exam.title, {
-      "Klausur: Wirtschaftsinformatik II": {
-        en: "Exam: Business Informatics II",
-      },
-    }),
+    title: translate(exam.title, titleMap),
     course: translate(exam.course, courseMap),
     type: translate(exam.type, typeMap),
     duration: translate(exam.duration, { "90 Minuten": { en: "90 minutes" } }),
@@ -352,7 +297,7 @@ export default function Tasks() {
     if (file) setUploadedFile(file);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     if (!accepted.honor || !accepted.privacy) {
       alert(t.alertAccept);
       return;
@@ -362,398 +307,343 @@ export default function Tasks() {
       return;
     }
 
-    // Ensure a submission is selected before accessing it
     if (!selectedSubmission) {
       alert(t.alertSelect);
       return;
     }
 
-    // Update status
-    setSubmissions((prev) => {
-      const next = prev.map((s) =>
-        s.id === selectedSubmission.id
-          ? {
-              ...s,
-              status: "submitted",
-              similarity: Math.floor(Math.random() * 10 + 5),
-            }
-          : s
-      );
+    try {
+      const formData = new FormData();
+      formData.append("taskId", selectedSubmission.id.toString());
+      formData.append("fileName", uploadedFile.name);
+      formData.append("courseName", selectedSubmission.course);
 
-      const persisted: Record<
-        number,
-        { status: "pending" | "submitted"; similarity?: number }
-      > = {};
-      next.forEach((s) => {
-        if (s.status === "submitted") {
-          persisted[s.id] = { status: s.status, similarity: s.similarity };
-        }
+      const response = await fetch("/api/upload", {
+        method: "POST",
+        body: formData,
       });
-      persistStatus(persisted);
-      return next;
-    });
-    setShowModal(false);
-    alert(t.toastSuccess);
+
+      if (!response.ok) throw new Error("Upload failed");
+
+      // Update local status as well for immediate feedback
+      setSubmissions((prev) => {
+        const next = prev.map((s) =>
+          s.id === selectedSubmission.id
+            ? {
+                ...s,
+                status: "submitted" as const,
+                similarity: Math.floor(Math.random() * 10 + 5),
+              }
+            : s
+        );
+
+        const persisted: Record<
+          number,
+          { status: "pending" | "submitted"; similarity?: number }
+        > = {};
+        next.forEach((s) => {
+          if (s.status === "submitted") {
+            persisted[s.id] = { status: s.status, similarity: s.similarity };
+          }
+        });
+        persistStatus(persisted);
+        return next;
+      });
+
+      setShowModal(false);
+      alert(t.toastSuccess);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert(language === "de" ? "Fehler beim Upload" : "Upload failed");
+    }
   };
 
   return (
-    <div className="min-h-screen bg-neutral-50 dark:bg-neutral-950 text-neutral-900 dark:text-neutral-100">
-      <div className="max-w-7xl mx-auto px-6 py-10">
-        <header className="mb-10 border-b border-neutral-300 dark:border-neutral-800 pb-6">
-          <div className="flex items-baseline justify-between gap-6">
-            <div>
-              <p className="text-xs uppercase tracking-[0.3em] text-neutral-500 dark:text-neutral-400">
-                {t.bulletin}
-              </p>
-              <h1 className="mt-3 text-4xl font-black leading-tight text-neutral-900 dark:text-white">
+    <div className="max-w-7xl mx-auto">
+      <header className="mb-12">
+        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
+          <div className="space-y-4">
+            <div className="flex items-center gap-3">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+                <Upload size={28} />
+              </div>
+              <h1 className="text-4xl font-black text-foreground tracking-tight">
                 {t.title}
               </h1>
-              <p className="mt-3 text-sm text-neutral-600 dark:text-neutral-300 max-w-3xl">
-                {t.subtitle}
-              </p>
             </div>
-            <span className="hidden md:block text-xs font-semibold uppercase tracking-[0.25em] text-neutral-500 dark:text-neutral-400">
-              {t.issue}
+            <div className="flex items-center gap-2">
+              <span className="px-4 py-1.5 rounded-full bg-iu-orange/10 border border-iu-orange/20 text-iu-orange text-[10px] font-black uppercase tracking-widest">
+                {studiengangName}
+              </span>
+              <span className="px-4 py-1.5 rounded-full bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-[10px] font-black uppercase tracking-widest">
+                {language === "de"
+                  ? `${currentSemester}. Semester`
+                  : `Semester ${currentSemester}`}
+              </span>
+            </div>
+            <p className="text-lg text-muted-foreground leading-relaxed max-w-2xl">
+              {t.subtitle}
+            </p>
+          </div>
+
+          <div className="bg-card/50 backdrop-blur-xl border border-border px-6 py-4 rounded-3xl flex items-center gap-4 shadow-xl">
+            <div className="p-2 bg-iu-blue/20 rounded-xl">
+              <Calendar className="h-6 w-6 text-iu-blue" />
+            </div>
+            <span className="text-sm font-bold text-foreground uppercase tracking-widest">
+              {new Date().toLocaleDateString(
+                language === "de" ? "de-DE" : "en-US",
+                { day: "2-digit", month: "long", year: "numeric" }
+              )}
             </span>
           </div>
-        </header>
-
-        <div className="grid lg:grid-cols-8 gap-8">
-          {/* Submissions */}
-          <div className="lg:col-span-5 space-y-8">
-            <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-6 border-b border-neutral-200 dark:border-neutral-800 pb-4">
-                <div className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
-                  <FileText className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
-                </div>
-                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                  {t.submissionsHeader}
-                </h2>
-              </div>
-
-              <div className="space-y-5">
-                {submissions.map((item) => (
-                  <div
-                    key={item.id}
-                    className="rounded-lg border border-neutral-200 dark:border-neutral-800 p-5 bg-white dark:bg-neutral-950/40 hover:-translate-y-0.5 transition-transform"
-                  >
-                    <div className="flex justify-between items-start mb-3">
-                      <div>
-                        <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mb-1">
-                          {translate(item.title, titleMap)}
-                        </h3>
-                        <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
-                          {translate(item.course, courseMap)}
-                          {item.courseCode ? ` · ${item.courseCode}` : ""}
-                        </p>
-                        <div className="flex items-center gap-2">
-                          <span className="px-2 py-0.5 rounded-sm bg-neutral-100 dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 text-neutral-700 dark:text-neutral-200 text-[11px] font-semibold">
-                            {translate(item.type, typeMap)}
-                          </span>
-                          {item.professor && (
-                            <span className="text-[11px] text-neutral-600 dark:text-neutral-300">
-                              {item.professor}
-                            </span>
-                          )}
-                        </div>
-                      </div>
-
-                      <div>
-                        <span
-                          className={`px-2 py-1 rounded-sm text-xs font-semibold ${
-                            item.status === "submitted"
-                              ? "bg-neutral-900 text-white border border-neutral-900"
-                              : "bg-neutral-100 text-neutral-800 border border-neutral-300 dark:bg-neutral-800 dark:text-neutral-100 dark:border-neutral-700"
-                          }`}
-                        >
-                          {item.status === "submitted"
-                            ? t.submitted
-                            : t.pending}
-                        </span>
-                      </div>
-                    </div>
-
-                    {/* Dates */}
-                    <div className="grid grid-cols-2 gap-4 mt-3 border-t border-neutral-200 dark:border-neutral-800 pt-3">
-                      <div>
-                        <Calendar className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                          {t.dueDate}
-                        </span>
-                        <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
-                          {formatDate(item.dueDateIso)}
-                        </p>
-                      </div>
-                      <div>
-                        <CheckSquare className="h-4 w-4 text-neutral-600 dark:text-neutral-300 inline mr-2" />
-                        <span className="text-xs font-semibold text-neutral-700 dark:text-neutral-300">
-                          {t.correction}
-                        </span>
-                        <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50 mt-1">
-                          {formatDate(item.correctionDateIso)}
-                        </p>
-                      </div>
-                    </div>
-                    <div className="mt-3 flex items-center gap-2 text-xs font-semibold">
-                      <span
-                        className={`px-2 py-1 rounded-sm border ${
-                          item.daysUntilDue > 5
-                            ? "bg-emerald-50 text-emerald-800 border-emerald-200 dark:bg-emerald-900/30 dark:text-emerald-100 dark:border-emerald-800"
-                            : item.daysUntilDue > 0
-                              ? "bg-amber-50 text-amber-800 border-amber-200 dark:bg-amber-900/30 dark:text-amber-100 dark:border-amber-800"
-                              : "bg-rose-50 text-rose-800 border-rose-200 dark:bg-rose-900/30 dark:text-rose-100 dark:border-rose-800"
-                        }`}
-                      >
-                        ⏳ {t.daysLeft(item.daysUntilDue)}
-                      </span>
-                      <span className="px-2 py-1 rounded-sm bg-neutral-100 dark:bg-neutral-800 text-neutral-700 dark:text-neutral-200 border border-neutral-300 dark:border-neutral-700">
-                        📁 {item.course}
-                      </span>
-                    </div>
-
-                    {item.status === "pending" && (
-                      <div className="mt-4 pt-3 border-t border-neutral-200 dark:border-neutral-800">
-                        {item.daysUntilDue > 0 ? (
-                          <button
-                            onClick={() => openModal(item)}
-                            className="w-full py-2 text-sm font-semibold bg-neutral-900 text-white rounded-md hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
-                          >
-                            {t.manageSubmission}
-                          </button>
-                        ) : (
-                          <button
-                            disabled
-                            className="w-full py-2 text-sm font-semibold bg-neutral-400 dark:bg-neutral-700 text-white rounded-md cursor-not-allowed"
-                          >
-                            {t.deadlineMissed}
-                          </button>
-                        )}
-                      </div>
-                    )}
-
-                    {item.status === "submitted" && (
-                      <div className="mt-3 pt-3 border-t border-neutral-200 dark:border-neutral-800 flex justify-between items-center">
-                        <span className="text-xs text-neutral-600 dark:text-neutral-300 font-semibold">
-                          {t.similarity}
-                        </span>
-                        <span className="px-2 py-1 rounded-sm text-xs font-bold bg-neutral-900 text-white border border-neutral-900 dark:bg-neutral-100 dark:text-neutral-900 dark:border-neutral-200">
-                          {item.similarity}%
-                        </span>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
-
-          {/* Sidebar */}
-          <div className="lg:col-span-3 space-y-8">
-            <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-xl p-6 shadow-sm">
-              <div className="flex items-center gap-3 mb-4 border-b border-neutral-200 dark:border-neutral-800 pb-3">
-                <div className="p-2 rounded-md bg-neutral-100 dark:bg-neutral-800 border border-neutral-200 dark:border-neutral-700">
-                  <BookOpen className="h-5 w-5 text-neutral-800 dark:text-neutral-100" />
-                </div>
-                <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
-                  {t.examsHeader}
-                </h2>
-              </div>
-              <div className="space-y-4">
-                {examsDisplay.map((exam) => (
-                  <div
-                    key={exam.id}
-                    className="border border-neutral-200 dark:border-neutral-800 rounded-lg p-4 bg-white dark:bg-neutral-950/40"
-                  >
-                    <h3 className="text-sm font-bold text-neutral-900 dark:text-neutral-100 mb-1">
-                      {exam.title}
-                    </h3>
-                    <p className="text-xs text-neutral-600 dark:text-neutral-300 mb-1">
-                      {exam.course} – {exam.duration}
-                    </p>
-                    <p className="text-sm font-bold text-neutral-900 dark:text-neutral-50">
-                      {exam.date}
-                    </p>
-                    <div className="mt-2 flex flex-wrap gap-2">
-                      <span className="inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border border-neutral-300 dark:border-neutral-700">
-                        🗺️ {exam.location}
-                      </span>
-                      <span
-                        className={`inline-flex items-center gap-1 px-2 py-1 rounded-sm text-[11px] font-semibold border ${
-                          exam.daysUntilExam > 0
-                            ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 border-neutral-300 dark:border-neutral-700"
-                            : "bg-neutral-900 text-white border-neutral-900 dark:bg-white dark:text-neutral-900 dark:border-white"
-                        }`}
-                      >
-                        ⏳ {t.daysUntilExam(exam.daysUntilExam)}
-                      </span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </div>
         </div>
+      </header>
 
-        {/* 🔹 Modal: Upload */}
-        {showModal && (
-          <div className="fixed inset-0 bg-black/60 dark:bg-black/70 backdrop-blur-sm flex items-center justify-center z-50">
-            <div className="bg-white dark:bg-neutral-900 rounded-xl shadow-2xl p-8 w-full max-w-lg relative animate-fadeIn border border-neutral-200 dark:border-neutral-800">
-              <div className="flex items-center gap-3 mb-4">
-                <div className="h-10 w-10 rounded-full bg-neutral-900 dark:bg-white flex items-center justify-center text-white dark:text-neutral-900 font-black shadow-sm">
-                  T
+      <div className="space-y-6 mb-20">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-8 w-1 bg-iu-orange rounded-full" />
+          <h2 className="text-xl font-black text-foreground">
+            {t.submissionsHeader}
+          </h2>
+        </div>
+        {submissions.map((item) => (
+          <div
+            key={item.id}
+            className="group bg-card/60 border border-border rounded-[2.5rem] p-8 flex flex-col md:flex-row md:items-center justify-between gap-8 hover:border-iu-orange/30 hover:bg-card transition-all shadow-xl"
+          >
+            <div className="flex items-start gap-6">
+              <div className="mt-1 p-3.5 rounded-2xl bg-iu-orange/10 border border-iu-orange/20 text-iu-orange shadow-lg">
+                <Clock className="h-7 w-7" />
+              </div>
+              <div>
+                <div className="flex items-center gap-3 mb-3">
+                  <h3 className="text-lg font-bold text-foreground truncate group-hover:text-iu-orange transition-colors">
+                    {translate(item.title, titleMap)}
+                  </h3>
+                  <Info className="h-5 w-5 text-iu-orange/40 cursor-pointer hover:text-iu-orange transition-colors" />
+                </div>
+                <div className="flex flex-wrap items-center gap-6">
+                  <span className="px-5 py-2 rounded-full bg-iu-orange/10 border border-iu-orange/20 text-iu-orange text-xs font-bold uppercase tracking-widest">
+                    {item.status === "pending"
+                      ? language === "de"
+                        ? "In Bearbeitung"
+                        : "In Progress"
+                      : language === "de"
+                        ? "Eingereicht"
+                        : "Submitted"}
+                  </span>
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm font-semibold">
+                    <Calendar className="h-4.5 w-4.5 text-iu-orange/60" />
+                    <span>{formatDate(item.dueDateIso)}</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-muted-foreground text-sm font-semibold">
+                    <BookOpen className="h-4.5 w-4.5 text-iu-orange/60" />
+                    <span>{item.professor || "Prüfungsamt"}</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <button
+              onClick={() => openModal(item)}
+              className="bg-foreground text-background px-10 py-4 rounded-2xl font-bold text-base hover:opacity-90 transition-all flex items-center justify-center gap-3 group/btn shadow-xl active:scale-95 whitespace-nowrap"
+            >
+              {t.manageSubmission}
+              <ChevronRight className="h-5 w-5 group-hover/btn:translate-x-1 transition-transform" />
+            </button>
+          </div>
+        ))}
+      </div>
+
+      {/* Exams Section */}
+      <div className="space-y-6">
+        <div className="flex items-center gap-3 mb-2">
+          <div className="h-8 w-1 bg-iu-blue rounded-full" />
+          <h2 className="text-xl font-black text-foreground">
+            {t.examsHeader}
+          </h2>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          {examsDisplay.map((exam) => (
+            <div
+              key={exam.id}
+              className="group bg-card/60 border border-border rounded-[2.5rem] p-8 hover:border-iu-blue/30 hover:bg-card transition-all shadow-xl flex flex-col justify-between gap-6"
+            >
+              <div>
+                <div className="flex items-center justify-between mb-6">
+                  <div className="p-3.5 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 shadow-lg">
+                    <BookOpen className="h-7 w-7" />
+                  </div>
+                  <span className="px-4 py-1.5 rounded-full bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-[10px] font-black uppercase tracking-widest">
+                    {translate(exam.type, typeMap)}
+                  </span>
+                </div>
+                <h3 className="text-lg font-bold text-foreground mb-6 group-hover:text-iu-blue transition-colors truncate">
+                  {translate(exam.title, titleMap)}
+                </h3>
+                <div className="space-y-4">
+                  <div className="flex items-center gap-3 text-muted-foreground text-sm font-semibold">
+                    <Calendar className="h-5 w-5 text-iu-blue/60" />
+                    <span>{exam.date}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-muted-foreground text-sm font-semibold">
+                    <Clock className="h-5 w-5 text-iu-blue/60" />
+                    <span>{exam.duration}</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-muted-foreground text-sm font-semibold">
+                    <MapPin className="h-5 w-5 text-iu-blue/60" />
+                    <span>{exam.location}</span>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-6 border-t border-border/50">
+                <span
+                  className={`text-sm font-black uppercase tracking-widest ${
+                    exam.daysUntilExam <= 3
+                      ? "text-iu-red"
+                      : "text-muted-foreground"
+                  }`}
+                >
+                  {t.daysUntilExam(exam.daysUntilExam)}
+                </span>
+                <button className="bg-iu-blue/10 text-iu-blue px-6 py-2.5 rounded-xl font-bold text-xs hover:bg-iu-blue hover:text-white transition-all flex items-center gap-2 uppercase tracking-widest">
+                  Details <ChevronRight className="h-4 w-4" />
+                </button>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* 🔹 Modal: Upload */}
+      {showModal && (
+        <div className="fixed inset-0 bg-black/80 backdrop-blur-md flex items-center justify-center z-[100] p-6">
+          <div className="bg-card rounded-[2.5rem] shadow-3xl p-10 w-full max-w-xl relative animate-in fade-in zoom-in-95 duration-300 border border-border">
+            <div className="flex items-start justify-between mb-8">
+              <div className="flex items-center gap-4">
+                <div className="h-14 w-14 rounded-2xl bg-iu-blue flex items-center justify-center text-white font-bold text-2xl shadow-lg shadow-iu-blue/20">
+                  IU
                 </div>
                 <div>
-                  <h2 className="text-xl font-bold text-neutral-900 dark:text-neutral-50">
+                  <h2 className="text-2xl font-bold text-foreground tracking-tight">
                     {t.modalTitle}
                   </h2>
-                  <p className="text-sm text-neutral-600 dark:text-neutral-300">
+                  <p className="text-muted-foreground font-medium">
                     {t.modalSubtitle}
                   </p>
                 </div>
               </div>
+              <button
+                onClick={() => setShowModal(false)}
+                className="p-3 rounded-xl hover:bg-muted text-muted-foreground transition-colors hover:text-foreground"
+              >
+                <X className="h-6 w-6" />
+              </button>
+            </div>
 
-              {/* Eidesstattliche Erklärung + Datenschutz */}
-              <div className="space-y-4 mb-6">
-                <label className="flex items-start gap-2 cursor-pointer">
+            <div className="space-y-5 mb-8">
+              <label className="flex items-start gap-4 cursor-pointer group">
+                <div className="relative flex items-center mt-1">
                   <input
                     type="checkbox"
                     checked={accepted.honor}
                     onChange={(e) =>
-                      setAccepted((prev) => ({
-                        ...prev,
-                        honor: e.target.checked,
-                      }))
+                      setAccepted((v) => ({ ...v, honor: e.target.checked }))
                     }
-                    className="mt-1 accent-neutral-900 dark:accent-white"
+                    className="w-5 h-5 rounded-lg border-border bg-muted text-iu-blue focus:ring-iu-blue transition-all"
                   />
-                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                    {t.honor}
-                  </span>
-                </label>
+                </div>
+                <span className="text-sm text-muted-foreground font-medium leading-relaxed group-hover:text-foreground transition-colors">
+                  {t.honor}
+                </span>
+              </label>
 
-                <label className="flex items-start gap-2 cursor-pointer">
+              <label className="flex items-start gap-4 cursor-pointer group">
+                <div className="relative flex items-center mt-1">
                   <input
                     type="checkbox"
                     checked={accepted.privacy}
                     onChange={(e) =>
-                      setAccepted((prev) => ({
-                        ...prev,
-                        privacy: e.target.checked,
-                      }))
+                      setAccepted((v) => ({ ...v, privacy: e.target.checked }))
                     }
-                    className="mt-1 accent-neutral-900 dark:accent-white"
+                    className="w-5 h-5 rounded-lg border-border bg-muted text-iu-blue focus:ring-iu-blue transition-all"
                   />
-                  <span className="text-sm text-neutral-700 dark:text-neutral-200">
-                    {t.privacy}
-                  </span>
-                </label>
-              </div>
+                </div>
+                <span className="text-sm text-muted-foreground font-medium leading-relaxed group-hover:text-foreground transition-colors">
+                  {t.privacy}
+                </span>
+              </label>
+            </div>
 
-              {/* File Upload Area */}
-              <div
-                className={`border-2 border-dashed rounded-xl p-6 text-center transition-all ${
-                  uploadedFile
-                    ? "border-neutral-600 bg-neutral-50 dark:border-neutral-600 dark:bg-neutral-800/40"
-                    : "border-neutral-300 dark:border-neutral-700 hover:border-neutral-500 dark:hover:border-neutral-500 hover:bg-neutral-100/50 dark:hover:bg-neutral-800/40"
-                }`}
-              >
-                {!uploadedFile && (
-                  <>
-                    <div className="flex flex-col items-center justify-center space-y-2">
-                      <Upload className="h-10 w-10 text-neutral-700 dark:text-neutral-200" />
-                      <p className="text-sm text-neutral-700 dark:text-neutral-200">
-                        {t.dropHere}
-                      </p>
-                    </div>
-                    <input
-                      type="file"
-                      accept=".pdf,.doc,.docx"
-                      onChange={handleFileChange}
-                      className="hidden"
-                      id="file-upload"
-                    />
-                    <label
-                      htmlFor="file-upload"
-                      className="cursor-pointer inline-block mt-4 bg-neutral-900 text-white text-sm px-4 py-2 rounded-md font-semibold shadow-sm hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200 transition-colors"
-                    >
-                      {t.chooseFile}
-                    </label>
-                  </>
-                )}
-
-                {/* Uploaded File Preview */}
-                {uploadedFile && (
-                  <div className="space-y-3 animate-fadeIn">
-                    <div className="flex items-center justify-center gap-2 mt-3">
-                      <div className="flex items-center gap-2 bg-white dark:bg-neutral-800 border border-neutral-300 dark:border-neutral-700 px-3 py-2 rounded-lg shadow-sm">
-                        <svg
-                          xmlns="http://www.w3.org/2000/svg"
-                          className="h-5 w-5 text-neutral-900 dark:text-white"
-                          fill="none"
-                          viewBox="0 0 24 24"
-                          stroke="currentColor"
-                        >
-                          <path
-                            strokeLinecap="round"
-                            strokeLinejoin="round"
-                            strokeWidth={2}
-                            d="M5 13l4 4L19 7"
-                          />
-                        </svg>
-                        <div className="text-left">
-                          <p className="text-sm font-medium text-neutral-900 dark:text-neutral-100">
-                            {uploadedFile.name}
-                          </p>
-                          <p className="text-xs text-neutral-600 dark:text-neutral-300">
-                            {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
-                          </p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Simulated Progress Bar */}
-                    <div className="w-full bg-neutral-200 dark:bg-neutral-700 rounded-full h-2 mt-4 overflow-hidden">
-                      <div
-                        className="h-2 bg-neutral-900 dark:bg-white animate-progress"
-                        style={{ width: "100%" }}
-                      ></div>
-                    </div>
-                    <p className="text-xs text-neutral-700 dark:text-neutral-200 mt-2 animate-fadeIn">
-                      ✅{" "}
-                      {language === "de"
-                        ? "Upload abgeschlossen – Datei wurde erfolgreich übertragen."
-                        : "Upload complete — file transferred successfully."}
-                    </p>
+            <div
+              className={`border-2 border-dashed rounded-[2rem] p-10 text-center transition-all duration-300 ${
+                uploadedFile
+                  ? "border-iu-blue bg-iu-blue/5 shadow-inner"
+                  : "border-border hover:border-iu-blue/30 hover:bg-muted/50"
+              }`}
+            >
+              {!uploadedFile ? (
+                <div className="flex flex-col items-center">
+                  <div className="p-4 rounded-2xl bg-iu-blue/10 text-iu-blue mb-4">
+                    <Upload className="h-8 w-8" />
                   </div>
-                )}
-              </div>
+                  <p className="text-lg font-bold text-foreground mb-2">
+                    {t.dropHere}
+                  </p>
+                  <p className="text-sm text-muted-foreground mb-6 font-medium">
+                    {t.orDrag}
+                  </p>
+                  <input
+                    type="file"
+                    accept=".pdf,.doc,.docx"
+                    onChange={handleFileChange}
+                    className="hidden"
+                    id="file-upload"
+                  />
+                  <label
+                    htmlFor="file-upload"
+                    className="cursor-pointer bg-iu-blue text-white px-8 py-3 rounded-xl font-bold shadow-xl shadow-iu-blue/20 hover:opacity-90 transition-all active:scale-95"
+                  >
+                    {t.chooseFile}
+                  </label>
+                </div>
+              ) : (
+                <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2">
+                  <div className="p-4 rounded-2xl bg-iu-blue/10 text-iu-blue dark:text-iu-blue mb-4 shadow-lg">
+                    <FileCheck className="h-8 w-8" />
+                  </div>
+                  <p className="text-lg font-bold text-foreground mb-1">
+                    {uploadedFile.name}
+                  </p>
+                  <p className="text-sm text-muted-foreground font-medium mb-6">
+                    {(uploadedFile.size / 1024 / 1024).toFixed(2)} MB
+                  </p>
+                  <div className="w-full bg-black rounded-full h-1.5 overflow-hidden">
+                    <div className="h-full bg-iu-blue w-full animate-progress" />
+                  </div>
+                </div>
+              )}
+            </div>
 
-              {/* Buttons */}
-              <div className="flex justify-end gap-3 mt-8">
-                <button
-                  onClick={() => setShowModal(false)}
-                  className="px-4 py-2 rounded-md text-sm font-semibold bg-neutral-200 dark:bg-neutral-800 text-neutral-800 dark:text-neutral-100 hover:bg-neutral-300 dark:hover:bg-neutral-700"
-                >
-                  {t.cancel}
-                </button>
-                <button
-                  onClick={handleSubmit}
-                  disabled={!accepted.honor || !accepted.privacy}
-                  className={`px-4 py-2 rounded-md text-sm font-semibold shadow text-white transition-all ${
-                    accepted.honor && accepted.privacy
-                      ? "bg-neutral-900 hover:bg-neutral-700 dark:bg-white dark:text-neutral-900 dark:hover:bg-neutral-200"
-                      : "bg-neutral-400 dark:bg-neutral-700 cursor-not-allowed"
-                  }`}
-                >
-                  {t.upload}
-                </button>
-              </div>
+            <div className="flex gap-4 mt-10">
+              <button
+                onClick={() => setShowModal(false)}
+                className="flex-1 px-6 py-4 rounded-2xl font-bold bg-muted text-foreground border border-border hover:bg-muted/80 transition-all"
+              >
+                {t.cancel}
+              </button>
+              <button
+                onClick={handleSubmit}
+                disabled={!accepted.honor || !accepted.privacy || !uploadedFile}
+                className="flex-[2] px-6 py-4 rounded-2xl font-bold bg-foreground text-background hover:opacity-90 transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-xl"
+              >
+                {t.upload}
+              </button>
             </div>
           </div>
-        )}
-      </div>
+        </div>
+      )}
     </div>
   );
 }
-
-        

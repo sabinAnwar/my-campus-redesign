@@ -26,303 +26,17 @@ import {
   Check,
 } from "lucide-react";
 
+import { TRANSLATIONS, VERTIEFUNGEN } from "~/constants/specialization";
+
 export const loader = async () => null;
 
-// Translations
-const TRANSLATIONS = {
-  de: {
-    back: "Zurück zur Studienorganisation",
-    title: "Vertiefungswahl",
-    subtitle: "Wählen Sie Ihre Vertiefungsrichtung für den Studiengang",
-    currentChoice: "Aktuelle Wahl",
-    infoTitle: "Wann muss ich wählen?",
-    infoText: "Die Vertiefungswahl erfolgt in der Regel nach dem 4. Semester. Die gewählten Vertiefungskurse werden im 5. und 6. Semester belegt. Sie können Ihre Wahl bis zum Semesterbeginn ändern.",
-    courses: "Kurse",
-    creditPoints: "Credit Points",
-    chosen: "Gewählt",
-    alreadyChosen: "Bereits gewählt",
-    chooseSpecialization: "Vertiefung wählen",
-    coursesInSpec: "Kurse in dieser Vertiefung",
-    semester: "Semester",
-    careerPaths: "Karrieremöglichkeiten",
-    confirmTitle: "Vertiefung bestätigen",
-    confirmText: "Sind Sie sicher, dass Sie",
-    confirmText2: "als Ihre Vertiefung wählen möchten? Diese Wahl kann bis zum Semesterbeginn geändert werden.",
-    cancel: "Abbrechen",
-    confirm: "Bestätigen",
-    successMsg: "Vertiefung erfolgreich gespeichert!",
-    searchCourse: "Kurs suchen...",
-  },
-  en: {
-    back: "Back to Study Organization",
-    title: "Specialization Selection",
-    subtitle: "Choose your specialization for the",
-    currentChoice: "Current Choice",
-    infoTitle: "When do I need to choose?",
-    infoText: "Specialization selection typically occurs after the 4th semester. The chosen specialization courses will be taken in the 5th and 6th semesters. You can change your selection until the semester begins.",
-    courses: "Courses",
-    creditPoints: "Credit Points",
-    chosen: "Chosen",
-    alreadyChosen: "Already chosen",
-    chooseSpecialization: "Choose Specialization",
-    coursesInSpec: "Courses in this Specialization",
-    semester: "Semester",
-    careerPaths: "Career Opportunities",
-    confirmTitle: "Confirm Specialization",
-    confirmText: "Are you sure you want to choose",
-    confirmText2: "as your specialization? This choice can be changed until the semester begins.",
-    cancel: "Cancel",
-    confirm: "Confirm",
-    successMsg: "Specialization saved successfully!",
-    searchCourse: "Search course...",
-  },
-};
-
-// Vertiefungskurse basierend auf Wirtschaftsinformatik Studiengang
-const VERTIEFUNGEN = {
-  datenanalyse: {
-    id: "datenanalyse",
-    name: "Datenanalyse",
-    nameEn: "Data Analytics",
-    icon: BarChart3,
-    color: "emerald",
-    gradient: "from-emerald-500 to-teal-600",
-    darkGradient: "from-emerald-600 to-teal-700",
-    description:
-      "Lernen Sie, aus Daten wertvolle Erkenntnisse zu gewinnen und datengetriebene Entscheidungen zu treffen.",
-    highlights: [
-      "Big Data & Machine Learning",
-      "Statistische Analysen",
-      "Business Intelligence",
-      "Predictive Analytics",
-    ],
-    courses: [
-      {
-        id: "da-101",
-        code: "DLBDSEDA01",
-        name: "Einführung in die Datenanalyse",
-        credits: 5,
-        semester: 5,
-        description:
-          "Grundlagen der explorativen Datenanalyse, Datenvisualisierung und statistische Methoden.",
-        topics: [
-          "Datenaufbereitung",
-          "Explorative Analyse",
-          "Visualisierung",
-          "Statistische Tests",
-        ],
-      },
-      {
-        id: "da-102",
-        code: "DLBDSABD01",
-        name: "Big Data Technologies",
-        credits: 5,
-        semester: 5,
-        description:
-          "Verteilte Datenverarbeitung mit Hadoop, Spark und modernen Cloud-Plattformen.",
-        topics: ["Hadoop", "Apache Spark", "Cloud Analytics", "Data Lakes"],
-      },
-      {
-        id: "da-201",
-        code: "DLBDSEAIS01",
-        name: "Machine Learning",
-        credits: 5,
-        semester: 6,
-        description:
-          "Anwendung von Machine Learning Algorithmen für Vorhersagen und Mustererkennung.",
-        topics: [
-          "Supervised Learning",
-          "Unsupervised Learning",
-          "Neural Networks",
-          "Feature Engineering",
-        ],
-      },
-      {
-        id: "da-202",
-        code: "DLBDSABI01",
-        name: "Business Intelligence & Reporting",
-        credits: 5,
-        semester: 6,
-        description:
-          "BI-Tools, Dashboard-Design und unternehmensweite Reporting-Strategien.",
-        topics: ["Power BI", "Tableau", "KPIs", "Self-Service BI"],
-      },
-    ],
-    careerPaths: [
-      "Data Analyst",
-      "Business Intelligence Analyst",
-      "Data Scientist",
-      "Analytics Consultant",
-    ],
-  },
-  softwareengineering: {
-    id: "softwareengineering",
-    name: "Software Engineering",
-    nameEn: "Software Engineering",
-    icon: Code2,
-    color: "blue",
-    gradient: "from-blue-500 to-indigo-600",
-    darkGradient: "from-blue-600 to-indigo-700",
-    description:
-      "Entwickeln Sie professionelle Software mit modernen Methoden und Best Practices.",
-    highlights: [
-      "Agile Entwicklung",
-      "Clean Code & Testing",
-      "DevOps & CI/CD",
-      "Softwarearchitektur",
-    ],
-    courses: [
-      {
-        id: "se-101",
-        code: "DLBCSESWM01",
-        name: "Moderne Softwaremethodik",
-        credits: 5,
-        semester: 5,
-        description:
-          "Agile Methoden, Scrum, Kanban und modernes Requirements Engineering.",
-        topics: [
-          "Scrum",
-          "Kanban",
-          "User Stories",
-          "Continuous Improvement",
-        ],
-      },
-      {
-        id: "se-102",
-        code: "DLBCSETEST01",
-        name: "Software Testing & Qualitätssicherung",
-        credits: 5,
-        semester: 5,
-        description:
-          "Unit Tests, Integration Tests, TDD und automatisierte Testframeworks.",
-        topics: [
-          "Unit Testing",
-          "Integration Testing",
-          "TDD/BDD",
-          "Test Automation",
-        ],
-      },
-      {
-        id: "se-201",
-        code: "DLBCSESWA01",
-        name: "Softwarearchitektur",
-        credits: 5,
-        semester: 6,
-        description:
-          "Architekturpatterns, Microservices, Domain-Driven Design und Systemdesign.",
-        topics: [
-          "Microservices",
-          "Clean Architecture",
-          "DDD",
-          "Design Patterns",
-        ],
-      },
-      {
-        id: "se-202",
-        code: "DLBCSEDEVOPS01",
-        name: "DevOps & Cloud Engineering",
-        credits: 5,
-        semester: 6,
-        description:
-          "CI/CD Pipelines, Container-Orchestrierung und Cloud-native Entwicklung.",
-        topics: ["Docker", "Kubernetes", "CI/CD", "Infrastructure as Code"],
-      },
-    ],
-    careerPaths: [
-      "Software Developer",
-      "DevOps Engineer",
-      "Software Architect",
-      "Full-Stack Developer",
-    ],
-  },
-  projektmanagement: {
-    id: "projektmanagement",
-    name: "Projektmanagement",
-    nameEn: "Project Management",
-    icon: FolderKanban,
-    color: "amber",
-    gradient: "from-amber-500 to-orange-600",
-    darkGradient: "from-amber-600 to-orange-700",
-    description:
-      "Führen Sie IT-Projekte erfolgreich zum Abschluss mit modernsten PM-Methoden.",
-    highlights: [
-      "Klassisches & Agiles PM",
-      "Ressourcenplanung",
-      "Risikomanagement",
-      "Stakeholder Management",
-    ],
-    courses: [
-      {
-        id: "pm-101",
-        code: "DLBPMITPM01",
-        name: "IT-Projektmanagement Grundlagen",
-        credits: 5,
-        semester: 5,
-        description:
-          "Projektplanung, Steuerung und Kontrolle von IT-Projekten.",
-        topics: [
-          "Projektplanung",
-          "Meilensteine",
-          "Gantt-Charts",
-          "Projektkontrolle",
-        ],
-      },
-      {
-        id: "pm-102",
-        code: "DLBPMARM01",
-        name: "Agiles & Hybrides Projektmanagement",
-        credits: 5,
-        semester: 5,
-        description: "Kombination klassischer und agiler Methoden für flexible Projektführung.",
-        topics: ["Hybrid PM", "Scaled Agile", "SAFe", "Lean Management"],
-      },
-      {
-        id: "pm-201",
-        code: "DLBPMRISK01",
-        name: "Risiko- und Qualitätsmanagement",
-        credits: 5,
-        semester: 6,
-        description:
-          "Identifikation, Bewertung und Steuerung von Projektrisiken.",
-        topics: [
-          "Risikoanalyse",
-          "Qualitätskontrolle",
-          "FMEA",
-          "Stakeholder Analyse",
-        ],
-      },
-      {
-        id: "pm-202",
-        code: "DLBPMPMO01",
-        name: "Portfolio- und Programmmanagement",
-        credits: 5,
-        semester: 6,
-        description:
-          "Strategisches Management mehrerer Projekte und PMO-Aufbau.",
-        topics: [
-          "Portfoliomanagement",
-          "PMO Setup",
-          "Strategic Alignment",
-          "Benefits Realization",
-        ],
-      },
-    ],
-    careerPaths: [
-      "IT Project Manager",
-      "Scrum Master",
-      "Product Owner",
-      "PMO Lead",
-    ],
-  },
-};
-
-type VertiefungId = keyof typeof VERTIEFUNGEN;
+import type { VertiefungId } from "~/types/specialization";
 
 export default function Vertiefungswahl() {
   const navigate = useNavigate();
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
   const [selectedVertiefung, setSelectedVertiefung] =
     useState<VertiefungId | null>(null);
   const [confirmModal, setConfirmModal] = useState(false);
@@ -353,37 +67,35 @@ export default function Vertiefungswahl() {
       { bg: string; text: string; border: string; ring: string }
     > = {
       emerald: {
-        bg: "bg-emerald-500/10 dark:bg-emerald-500/20",
-        text: "text-emerald-600 dark:text-emerald-400",
-        border: "border-emerald-500/30",
-        ring: "ring-emerald-500/30",
+        bg: "bg-iu-blue/10",
+        text: "text-iu-blue dark:text-iu-blue",
+        border: "border-iu-blue/30",
+        ring: "ring-iu-blue/30",
       },
-      blue: {
-        bg: "bg-blue-500/10 dark:bg-blue-500/20",
-        text: "text-blue-600 dark:text-blue-400",
-        border: "border-blue-500/30",
-        ring: "ring-blue-500/30",
+      "iu-blue": {
+        bg: "bg-iu-blue/10",
+        text: "text-iu-blue",
+        border: "border-iu-blue/30",
+        ring: "ring-iu-blue/30",
       },
-      amber: {
-        bg: "bg-amber-500/10 dark:bg-amber-500/20",
-        text: "text-amber-600 dark:text-amber-400",
-        border: "border-amber-500/30",
-        ring: "ring-amber-500/30",
+      "iu-orange": {
+        bg: "bg-iu-orange/10",
+        text: "text-iu-orange",
+        border: "border-iu-orange/30",
+        ring: "ring-iu-orange/30",
       },
     };
-    return colors[color] || colors.blue;
+    return colors[color] || colors["iu-blue"];
   };
 
   return (
-    <main className="max-w-7xl mx-auto px-6 py-12">
+    <main className="max-w-7xl mx-auto">
       {/* Success Toast */}
       {showSuccess && (
         <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-2">
-          <div className="flex items-center gap-3 px-5 py-4 rounded-xl bg-emerald-500 text-white shadow-xl shadow-emerald-500/20">
+          <div className="flex items-center gap-3 px-5 py-4 rounded-none bg-iu-blue text-white shadow-xl shadow-iu-blue/20">
             <CheckCircle2 className="w-5 h-5" />
-            <span className="font-medium">
-              {t.successMsg}
-            </span>
+            <span className="font-black">{t.successMsg}</span>
           </div>
         </div>
       )}
@@ -392,7 +104,7 @@ export default function Vertiefungswahl() {
       <div className="mb-12">
         <Link
           to="/study-organization"
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-300 transition-colors mb-4"
+          className="inline-flex items-center gap-2 text-sm text-muted-foreground hover:text-iu-blue transition-colors mb-4 font-bold"
         >
           <ArrowLeft className="w-4 h-4" />
           {t.back}
@@ -400,26 +112,26 @@ export default function Vertiefungswahl() {
 
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div>
-            <h1 className="text-4xl font-black text-black dark:text-white mb-3 flex items-center gap-3">
-              <GraduationCap className="w-10 h-10 text-primary" />
+            <h1 className="text-4xl md:text-6xl font-black text-foreground mb-6 tracking-tight flex items-center gap-3">
+              <GraduationCap className="w-10 h-10 text-iu-blue" />
               {t.title}
             </h1>
-            <p className="text-lg text-slate-700 dark:text-slate-300 max-w-2xl">
+            <p className="text-lg text-foreground/80 max-w-2xl font-medium">
               {t.subtitle}{" "}
-              <span className="font-semibold text-primary">
+              <span className="font-black text-iu-blue">
                 Wirtschaftsinformatik (B.Sc.)
               </span>
             </p>
           </div>
 
           {savedChoice && (
-            <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-emerald-500/10 dark:bg-emerald-500/20 border border-emerald-500/30">
-              <CheckCircle2 className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="flex items-center gap-3 px-4 py-3 rounded-none bg-iu-blue/10 border border-iu-blue/30">
+              <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-iu-blue" />
               <div>
-                <p className="text-sm text-emerald-700 dark:text-emerald-300 font-medium">
+                <p className="text-sm text-iu-blue dark:text-iu-blue font-bold">
                   {t.currentChoice}
                 </p>
-                <p className="text-emerald-800 dark:text-emerald-200 font-bold">
+                <p className="text-foreground font-black">
                   {VERTIEFUNGEN[savedChoice].name}
                 </p>
               </div>
@@ -429,15 +141,13 @@ export default function Vertiefungswahl() {
       </div>
 
       {/* Info Banner */}
-      <div className="mb-10 p-5 rounded-2xl bg-blue-500/5 dark:bg-blue-500/10 border border-blue-500/20 flex items-start gap-4">
-        <div className="p-2 rounded-lg bg-blue-500/10 dark:bg-blue-500/20">
-          <Info className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+      <div className="mb-10 p-5 rounded-none bg-iu-blue/5 border border-iu-blue/20 flex items-start gap-4">
+        <div className="p-2 rounded-none bg-iu-blue/10">
+          <Info className="w-5 h-5 text-iu-blue" />
         </div>
         <div>
-          <h3 className="font-semibold text-slate-900 dark:text-white mb-1">
-            {t.infoTitle}
-          </h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400">
+          <h3 className="font-black text-foreground mb-1">{t.infoTitle}</h3>
+          <p className="text-sm text-muted-foreground font-medium">
             {t.infoText}
           </p>
         </div>
@@ -454,41 +164,43 @@ export default function Vertiefungswahl() {
           return (
             <div
               key={vertiefung.id}
-              onClick={() => setSelectedVertiefung(vertiefung.id as VertiefungId)}
-              className={`relative group cursor-pointer overflow-hidden rounded-3xl border-2 transition-all duration-300 ${
+              onClick={() =>
+                setSelectedVertiefung(vertiefung.id as VertiefungId)
+              }
+              className={`relative group cursor-pointer overflow-hidden rounded-none border-2 transition-all duration-300 ${
                 isSelected
-                  ? `border-${vertiefung.color}-500 shadow-xl shadow-${vertiefung.color}-500/20`
-                  : "border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700"
-              } bg-white dark:bg-slate-900`}
+                  ? `border-iu-blue shadow-xl shadow-iu-blue/20`
+                  : "border-border hover:border-iu-blue/30"
+              } bg-card`}
             >
               {/* Header Gradient */}
               <div
-                className={`h-32 bg-gradient-to-br ${vertiefung.gradient} dark:${vertiefung.darkGradient} relative`}
+                className={`h-32 bg-gradient-to-br ${vertiefung.gradient} relative`}
               >
                 <div className="absolute inset-0 bg-black/10" />
                 <div className="absolute top-4 left-4 flex items-center gap-2">
-                  <div className="p-2.5 rounded-xl bg-white/20 backdrop-blur-sm">
+                  <div className="p-2.5 rounded-none bg-white/20 backdrop-blur-sm">
                     <Icon className="w-6 h-6 text-white" />
                   </div>
                   {isSaved && (
-                    <span className="px-2 py-1 rounded-full bg-white/30 text-white text-xs font-bold backdrop-blur-sm">
+                    <span className="px-2 py-1 rounded-none bg-white/30 text-white text-xs font-black backdrop-blur-sm">
                       {t.chosen}
                     </span>
                   )}
                 </div>
                 {isSelected && (
-                  <div className="absolute top-4 right-4 p-2 rounded-full bg-white shadow-lg">
-                    <Check className="w-5 h-5 text-emerald-500" />
+                  <div className="absolute top-4 right-4 p-2 rounded-none bg-white shadow-lg">
+                    <Check className="w-5 h-5 text-iu-green" />
                   </div>
                 )}
               </div>
 
               {/* Content */}
               <div className="p-6">
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white mb-2">
+                <h3 className="text-xl font-black text-foreground mb-2">
                   {vertiefung.name}
                 </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400 mb-4">
+                <p className="text-sm text-muted-foreground mb-4 font-medium">
                   {vertiefung.description}
                 </p>
 
@@ -497,23 +209,23 @@ export default function Vertiefungswahl() {
                   {vertiefung.highlights.map((highlight, idx) => (
                     <div
                       key={idx}
-                      className="flex items-center gap-2 text-sm text-slate-600 dark:text-slate-400"
+                      className="flex items-center gap-2 text-sm text-muted-foreground font-bold"
                     >
-                      <Sparkles
-                        className={`w-4 h-4 ${colorClasses.text}`}
-                      />
+                      <Sparkles className={`w-4 h-4 ${colorClasses.text}`} />
                       {highlight}
                     </div>
                   ))}
                 </div>
 
                 {/* Stats */}
-                <div className="flex items-center gap-4 pt-4 border-t border-slate-100 dark:border-slate-800">
-                  <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                <div className="flex items-center gap-4 pt-4 border-t border-border">
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-bold">
                     <BookOpen className="w-4 h-4" />
-                    <span>{vertiefung.courses.length} {t.courses}</span>
+                    <span>
+                      {vertiefung.courses.length} {t.courses}
+                    </span>
                   </div>
-                  <div className="flex items-center gap-1.5 text-sm text-slate-500 dark:text-slate-400">
+                  <div className="flex items-center gap-1.5 text-sm text-muted-foreground font-bold">
                     <Award className="w-4 h-4" />
                     <span>
                       {vertiefung.courses.reduce((a, c) => a + c.credits, 0)} CP
@@ -529,25 +241,25 @@ export default function Vertiefungswahl() {
       {/* Selected Vertiefung Details */}
       {selectedVertiefung && (
         <div className="animate-in slide-in-from-bottom-4 duration-500">
-          <div className="rounded-3xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 overflow-hidden shadow-lg">
+          <div className="rounded-none border border-border bg-card overflow-hidden shadow-lg">
             {/* Header */}
             <div
-              className={`p-8 bg-gradient-to-br ${VERTIEFUNGEN[selectedVertiefung].gradient} dark:${VERTIEFUNGEN[selectedVertiefung].darkGradient}`}
+              className={`p-8 bg-gradient-to-br ${VERTIEFUNGEN[selectedVertiefung].gradient}`}
             >
               <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
                 <div className="flex items-center gap-4">
-                  <div className="p-3 rounded-2xl bg-white/20 backdrop-blur-sm">
+                  <div className="p-3 rounded-none bg-white/20 backdrop-blur-sm">
                     {React.createElement(
                       VERTIEFUNGEN[selectedVertiefung].icon,
                       { className: "w-8 h-8 text-white" }
                     )}
                   </div>
                   <div>
-                    <h2 className="text-2xl font-bold text-white">
+                    <h2 className="text-2xl font-black text-white">
                       {VERTIEFUNGEN[selectedVertiefung].name}
                     </h2>
-                    <p className="text-white/80 text-sm">
-                      {VERTIEFUNGEN[selectedVertiefung].courses.length} Kurse •{" "}
+                    <p className="text-white/80 text-sm font-bold">
+                      {VERTIEFUNGEN[selectedVertiefung].courses.length} Kurse{" "}
                       {VERTIEFUNGEN[selectedVertiefung].courses.reduce(
                         (a, c) => a + c.credits,
                         0
@@ -560,7 +272,7 @@ export default function Vertiefungswahl() {
                 <button
                   onClick={() => setConfirmModal(true)}
                   disabled={savedChoice === selectedVertiefung}
-                  className={`px-6 py-3 rounded-xl font-semibold transition-all flex items-center gap-2 ${
+                  className={`px-6 py-3 rounded-none font-black transition-all flex items-center gap-2 ${
                     savedChoice === selectedVertiefung
                       ? "bg-white/30 text-white/70 cursor-not-allowed"
                       : "bg-white text-slate-900 hover:bg-white/90 shadow-lg hover:shadow-xl active:scale-95"
@@ -583,8 +295,8 @@ export default function Vertiefungswahl() {
 
             {/* Courses Grid */}
             <div className="p-8">
-              <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-6 flex items-center gap-2">
-                <BookOpen className="w-5 h-5 text-primary" />
+              <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-iu-blue" />
                 {t.coursesInSpec}
               </h3>
 
@@ -592,23 +304,23 @@ export default function Vertiefungswahl() {
                 {VERTIEFUNGEN[selectedVertiefung].courses.map((course) => (
                   <div
                     key={course.id}
-                    className="group p-5 rounded-2xl border border-slate-200 dark:border-slate-800 hover:border-slate-300 dark:hover:border-slate-700 bg-slate-50/50 dark:bg-slate-800/30 transition-all hover:shadow-md"
+                    className="group p-5 rounded-none border border-border hover:border-iu-blue/30 bg-muted/50 transition-all hover:shadow-md"
                   >
                     <div className="flex items-start justify-between mb-3">
                       <div>
-                        <p className="text-xs font-mono text-slate-500 dark:text-slate-400 mb-1">
+                        <p className="text-xs font-mono text-muted-foreground mb-1 font-bold">
                           {course.code}
                         </p>
-                        <h4 className="font-semibold text-slate-900 dark:text-white group-hover:text-primary transition-colors">
+                        <h4 className="font-black text-foreground group-hover:text-iu-blue transition-colors">
                           {course.name}
                         </h4>
                       </div>
-                      <span className="px-2 py-1 rounded-lg bg-slate-100 dark:bg-slate-800 text-xs font-medium text-slate-600 dark:text-slate-400">
+                      <span className="px-2 py-1 rounded-none bg-muted text-xs font-black text-muted-foreground">
                         {course.credits} CP
                       </span>
                     </div>
 
-                    <p className="text-sm text-slate-600 dark:text-slate-400 mb-4">
+                    <p className="text-sm text-muted-foreground mb-4 font-medium">
                       {course.description}
                     </p>
 
@@ -616,15 +328,15 @@ export default function Vertiefungswahl() {
                       {course.topics.map((topic, idx) => (
                         <span
                           key={idx}
-                          className="px-2 py-1 rounded-md bg-slate-100 dark:bg-slate-800 text-xs text-slate-600 dark:text-slate-400"
+                          className="px-2 py-1 rounded-none bg-muted text-xs text-muted-foreground font-bold"
                         >
                           {topic}
                         </span>
                       ))}
                     </div>
 
-                    <div className="mt-4 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-sm">
-                      <span className="flex items-center gap-1.5 text-slate-500 dark:text-slate-400">
+                    <div className="mt-4 pt-3 border-t border-border flex items-center justify-between text-sm">
+                      <span className="flex items-center gap-1.5 text-muted-foreground font-bold">
                         <Calendar className="w-4 h-4" />
                         {course.semester}. {t.semester}
                       </span>
@@ -634,9 +346,9 @@ export default function Vertiefungswahl() {
               </div>
 
               {/* Career Paths */}
-              <div className="mt-8 p-6 rounded-2xl bg-slate-50 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700">
-                <h4 className="font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-primary" />
+              <div className="mt-8 p-6 rounded-none bg-muted/50 border border-border">
+                <h4 className="font-black text-foreground mb-4 flex items-center gap-2">
+                  <TrendingUp className="w-5 h-5 text-iu-blue" />
                   {t.careerPaths}
                 </h4>
                 <div className="flex flex-wrap gap-3">
@@ -644,7 +356,7 @@ export default function Vertiefungswahl() {
                     (path, idx) => (
                       <span
                         key={idx}
-                        className="px-4 py-2 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-sm font-medium text-slate-700 dark:text-slate-300 shadow-sm"
+                        className="px-4 py-2 rounded-none bg-card border border-border text-sm font-black text-foreground/80 shadow-sm"
                       >
                         {path}
                       </span>
@@ -660,31 +372,34 @@ export default function Vertiefungswahl() {
       {/* Confirmation Modal */}
       {confirmModal && selectedVertiefung && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-          <div className="max-w-md w-full mx-4 p-6 rounded-3xl bg-white dark:bg-slate-900 shadow-2xl border border-slate-200 dark:border-slate-800 animate-in zoom-in-95">
+          <div className="max-w-md w-full mx-4 p-6 rounded-none bg-card shadow-2xl border border-border animate-in zoom-in-95">
             <div className="flex items-center gap-4 mb-6">
               <div
-                className={`p-3 rounded-xl bg-gradient-to-br ${VERTIEFUNGEN[selectedVertiefung].gradient}`}
+                className={`p-3 rounded-none bg-gradient-to-br ${VERTIEFUNGEN[selectedVertiefung].gradient}`}
               >
                 {React.createElement(VERTIEFUNGEN[selectedVertiefung].icon, {
                   className: "w-6 h-6 text-white",
                 })}
               </div>
               <div>
-                <h3 className="text-xl font-bold text-slate-900 dark:text-white">
+                <h3 className="text-xl font-black text-foreground">
                   {t.confirmTitle}
                 </h3>
-                <p className="text-sm text-slate-500 dark:text-slate-400">
+                <p className="text-sm text-muted-foreground font-bold">
                   {VERTIEFUNGEN[selectedVertiefung].name}
                 </p>
               </div>
             </div>
 
-            <div className="mb-6 p-4 rounded-xl bg-amber-50 dark:bg-amber-500/10 border border-amber-200 dark:border-amber-500/30 text-amber-800 dark:text-amber-200 text-sm">
+            <div className="mb-6 p-4 rounded-none bg-iu-orange/10 border border-iu-orange/30 text-iu-orange text-sm">
               <div className="flex items-start gap-3">
                 <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
-                <p>
+                <p className="font-medium">
                   {t.confirmText}{" "}
-                  <strong>{VERTIEFUNGEN[selectedVertiefung].name}</strong> {t.confirmText2}
+                  <strong className="font-black">
+                    {VERTIEFUNGEN[selectedVertiefung].name}
+                  </strong>{" "}
+                  {t.confirmText2}
                 </p>
               </div>
             </div>
@@ -692,13 +407,13 @@ export default function Vertiefungswahl() {
             <div className="flex flex-col-reverse sm:flex-row gap-3">
               <button
                 onClick={() => setConfirmModal(false)}
-                className="flex-1 px-4 py-3 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 font-medium hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                className="flex-1 px-4 py-3 rounded-none border border-border text-foreground/80 font-black hover:bg-muted transition-colors"
               >
                 {t.cancel}
               </button>
               <button
                 onClick={handleConfirm}
-                className={`flex-1 px-4 py-3 rounded-xl bg-gradient-to-r ${VERTIEFUNGEN[selectedVertiefung].gradient} text-white font-semibold hover:opacity-90 transition-opacity shadow-lg active:scale-95`}
+                className={`flex-1 px-4 py-3 rounded-none bg-gradient-to-r ${VERTIEFUNGEN[selectedVertiefung].gradient} text-white font-black hover:opacity-90 transition-opacity shadow-lg active:scale-95`}
               >
                 {t.confirm}
               </button>

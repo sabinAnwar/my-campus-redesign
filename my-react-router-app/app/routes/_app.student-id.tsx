@@ -1,10 +1,25 @@
 import React, { useRef } from "react";
-import { Link, useLoaderData } from "react-router-dom";
-
+import { Link, useLoaderData } from "react-router";
+import {
+  IdCard,
+  Download,
+  Info,
+  ShieldCheck,
+  ExternalLink,
+  ArrowLeft,
+  GraduationCap,
+  Calendar,
+  User,
+  QrCode,
+  CheckCircle2,
+  AlertCircle,
+} from "lucide-react";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/lib/prisma";
+import { getUserFromRequest } from "~/lib/auth.server";
 
 // ────────────────────────────────────────────────────────────────────────────
 // TRANSLATIONS
@@ -12,97 +27,129 @@ import { useLanguage } from "~/contexts/LanguageContext";
 const TRANSLATIONS = {
   de: {
     title: "Digitaler Studentenausweis",
-    subtitle: "IU Internationale Hochschule · Offizieller Studierendenausweis",
+    subtitle:
+      "Dein offizieller Identitätsnachweis der IU Internationalen Hochschule.",
     viewBenefits: "Student Benefits ansehen",
     frontSide: "Vorderseite",
     backSide: "Rückseite",
-    birthday: "Geburtstag",
-    matriculationNo: "Matrikelnr.",
+    birthday: "Geburtsdatum",
+    matriculationNo: "Matrikelnummer",
     validUntil: "Gültig bis",
     scanToVerify: "Scannen zur Verifizierung",
-    contactInfo: "Kontakt & Info",
-    forGlobalBenefits: "Für globale Vorteile eine",
+    contactInfo: "Kontakt & Information",
+    forGlobalBenefits: "Für weltweite Vorteile eine",
     applyFor: "beantragen.",
-    signature: "Unterschrift",
-    downloadPdf: "Als PDF herunterladen",
-    pdfCreating: "PDF wird erstellt …",
-    pdfSuccess: "PDF erfolgreich heruntergeladen!",
-    pdfError: "Fehler beim Erstellen der PDF",
-    errorLoading: "Fehler beim Laden der Benutzerdaten.",
+    signature: "Unterschrift des Inhabers",
+    downloadPdf: "Als PDF exportieren",
+    pdfCreating: "PDF wird generiert...",
+    pdfSuccess: "Ausweis erfolgreich heruntergeladen!",
+    pdfError: "Fehler beim PDF-Export",
+    errorLoading: "Benutzerdaten konnten nicht geladen werden.",
     usageNotes: "Nutzungshinweise",
-    usageNote1: "Nur in Verbindung mit einem Lichtbildausweis gültig",
-    usageNote2: "Bewahre deinen Ausweis sicher auf",
-    usageNote3: "Bei Verlust informiere umgehend dein Studienzentrum",
-    usageNote4: "Berechtigt zu Vergünstigungen (ÖPNV, Kultur, Freizeit)",
+    usageNote1:
+      "Nur in Verbindung mit einem amtlichen Lichtbildausweis gültig.",
+    usageNote2: "Der Ausweis ist nicht auf andere Personen übertragbar.",
+    usageNote3:
+      "Bei Verlust oder Namensänderung bitte das Prüfungsamt informieren.",
+    usageNote4: "Berechtigt zu studentischen Vergünstigungen weltweit.",
     benefitsFeatures: "Vorteile & Features",
-    benefit1: "Weltweit anerkannt als offizieller Studierendenausweis",
-    benefit2: "Zugang zu Studentenrabatten und -angeboten",
-    benefit3: "QR-Code zur einfachen Verifizierung",
-    benefit4: "Immer verfügbar auf allen deinen Geräten",
+    benefit1:
+      "Offiziell anerkanntes Dokument für Prüfungen und Campus-Zutritt.",
+    benefit2: "Direkter Zugriff auf exklusive IU Partner-Rabatte.",
+    benefit3: "Integrierter QR-Code für schnelle digitale Validierung.",
+    benefit4: "Offline verfügbar nach dem ersten Laden in der App.",
+    backToDashboard: "Zurück zum Dashboard",
+    officialDocument: "OFFIZIELLES DOKUMENT",
+    universityName: "IU Internationale Hochschule",
+    universitySub: "University of Applied Sciences",
   },
   en: {
     title: "Digital Student ID",
-    subtitle: "IU International University · Official Student ID Card",
+    subtitle: "Your official proof of identity at IU International University.",
     viewBenefits: "View Student Benefits",
     frontSide: "Front Side",
     backSide: "Back Side",
-    birthday: "Birthday",
+    birthday: "Date of Birth",
     matriculationNo: "Matriculation No.",
     validUntil: "Valid until",
     scanToVerify: "Scan to verify",
-    contactInfo: "Contact & Info",
+    contactInfo: "Contact & Information",
     forGlobalBenefits: "For global benefits, apply for an",
     applyFor: ".",
-    signature: "Signature",
-    downloadPdf: "Download as PDF",
-    pdfCreating: "Creating PDF …",
-    pdfSuccess: "PDF downloaded successfully!",
-    pdfError: "Error creating PDF",
-    errorLoading: "Error loading user data.",
+    signature: "Holder's Signature",
+    downloadPdf: "Export as PDF",
+    pdfCreating: "Generating PDF...",
+    pdfSuccess: "ID card downloaded successfully!",
+    pdfError: "Error during PDF export",
+    errorLoading: "Could not load user data.",
     usageNotes: "Usage Notes",
-    usageNote1: "Only valid with a photo ID",
-    usageNote2: "Keep your ID card safe",
-    usageNote3: "Report loss immediately to your study center",
-    usageNote4: "Entitles you to discounts (public transport, culture, leisure)",
+    usageNote1: "Only valid in conjunction with an official photo ID.",
+    usageNote2: "The ID card is non-transferable.",
+    usageNote3:
+      "Please inform the examination office in case of loss or name change.",
+    usageNote4: "Entitles you to student discounts worldwide.",
     benefitsFeatures: "Benefits & Features",
-    benefit1: "Internationally recognized as official student ID",
-    benefit2: "Access to student discounts and offers",
-    benefit3: "QR code for easy verification",
-    benefit4: "Always available on all your devices",
+    benefit1: "Officially recognized document for exams and campus access.",
+    benefit2: "Direct access to exclusive IU partner discounts.",
+    benefit3: "Integrated QR code for fast digital validation.",
+    benefit4: "Available offline after initial loading in the app.",
+    backToDashboard: "Back to Dashboard",
+    officialDocument: "OFFICIAL DOCUMENT",
+    universityName: "IU International University",
+    universitySub: "University of Applied Sciences",
   },
 };
 
-export async function loader() {
+export const loader = async ({ request }: { request: Request }) => {
   try {
-    const user = {
-      id: 1,
-      name: "Sabin El Anwar",
-      email: "sabin.elanwar@iu-study.org",
-      birthday: "2000-02-10",
-      studyProgram: "Wirtschaftsinformatik",
-      matriculationNumber: "102203036",
-      validUntil: "2026-03-31",
-    };
-    return { user };
+    const user = await getUserFromRequest(request);
+    let userId = user?.id;
+
+    if (!userId) {
+      const sabin = await prisma.user.findUnique({
+        where: { email: "sabin.elanwar@iu-study.org" },
+      });
+      userId = sabin?.id;
+    }
+
+    if (!userId) return { user: null };
+
+    const dbUser = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        birthday: true,
+        studyProgram: true,
+        matriculationNumber: true,
+        validUntil: true,
+      },
+    });
+
+    return { user: dbUser };
   } catch (error) {
     console.error("Error loading user:", error);
     return { user: null };
   }
-}
+};
 
 export default function StudentIdPage() {
-  const { user } = useLoaderData();
+  const { user } = useLoaderData<typeof loader>();
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  
+
   const frontRef = useRef<HTMLDivElement | null>(null);
   const backRef = useRef<HTMLDivElement | null>(null);
 
   if (!user) {
     return (
-      <div className="flex justify-center py-20">
-        <div className="bg-red-50 border-l-4 border-red-600 text-red-800 p-6 rounded-lg max-w-md shadow">
-          <p className="font-medium text-center">{t.errorLoading}</p>
+      <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
+        <div className="bg-card/60 backdrop-blur-xl border border-destructive/30 text-destructive p-10 rounded-[2.5rem] max-w-md shadow-2xl text-center">
+          <AlertCircle className="w-16 h-16 mx-auto mb-6 opacity-50" />
+          <p className="font-black uppercase tracking-widest">
+            {t.errorLoading}
+          </p>
         </div>
       </div>
     );
@@ -117,7 +164,9 @@ export default function StudentIdPage() {
         format: [85.6, 53.98],
       });
 
-      const renderCard = async (ref: React.RefObject<HTMLDivElement | null>) => {
+      const renderCard = async (
+        ref: React.RefObject<HTMLDivElement | null>
+      ) => {
         if (!ref.current) {
           throw new Error("Ref element is not available");
         }
@@ -136,7 +185,7 @@ export default function StudentIdPage() {
       pdf.addPage();
       pdf.addImage(back, "PNG", 0, 0, 85.6, 53.98);
 
-      pdf.save(`Studentenausweis_${user.matriculationNumber}.pdf`);
+      pdf.save(`IU_Student_ID_${user.matriculationNumber || "ID"}.pdf`);
       showSuccessToast(t.pdfSuccess);
     } catch (error) {
       console.error("PDF error:", error);
@@ -145,266 +194,269 @@ export default function StudentIdPage() {
   };
 
   const dateLocale = language === "de" ? "de-DE" : "en-US";
+  const formatDate = (date: any) => {
+    if (!date) return "---";
+    return new Date(date).toLocaleDateString(dateLocale, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-100 via-blue-50 to-indigo-100 dark:from-slate-950 dark:via-slate-900 dark:to-indigo-950 py-20">
-      <div className="max-w-7xl mx-auto px-6">
-        {/* HEADER */}
-        <header className="text-center mb-14">
-          <h1 className="text-5xl font-extrabold text-slate-900 dark:text-white tracking-tight mb-3">
-            {t.title}
-          </h1>
-          <p className="text-lg text-slate-600 dark:text-slate-300">
+    <div className="max-w-7xl mx-auto space-y-12">
+      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
+        <div>
+          <div className="flex items-center gap-3 mb-4">
+            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+              <IdCard size={28} />
+            </div>
+            <h1 className="text-4xl font-black text-foreground tracking-tight">
+              {t.title}
+            </h1>
+          </div>
+          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
             {t.subtitle}
           </p>
-          <div className="mt-4 flex justify-center">
-            <Link
-              to="/benefits"
-              className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-indigo-200 dark:border-indigo-800 bg-white dark:bg-slate-800 text-indigo-700 dark:text-indigo-300 font-semibold shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all"
-            >
-              {t.viewBenefits}
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </Link>
-          </div>
-        </header>
+        </div>
+        <Link
+          to="/benefits"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue hover:bg-iu-blue/20 font-bold transition-all group"
+        >
+          {t.viewBenefits}
+          <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </Link>
+      </div>
 
-        {/* CARD DISPLAY */}
-        <section className="grid md:grid-cols-2 gap-10 mb-16">
-          {/* FRONT */}
-          <div className="flex flex-col items-center">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
+      {/* Card Display Section */}
+      <div className="grid lg:grid-cols-2 gap-12">
+        {/* FRONT SIDE */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between px-4">
+            <h2 className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em]">
               {t.frontSide}
             </h2>
-            <div
-              ref={frontRef}
-              className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 dark:border-slate-700/50 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
-            >
-              {/* Top Section */}
-              <div className="flex justify-between items-start">
-                <div className="bg-white rounded-lg px-3 py-1.5 shadow-sm">
-                  <span className="text-[#0f172a] font-black text-2xl">
-                    iu
-                  </span>
-                </div>
-                <div className="text-[10px] text-slate-300 text-right leading-tight">
-                  INTERNATIONALE
-                  <br />
-                  HOCHSCHULE
-                  <br />
-                  OF APPLIED SCIENCES
-                </div>
-              </div>
-
-              {/* Student Info */}
-              <div className="mt-3">
-                <h2 className="text-xl font-bold tracking-wide mb-1">
-                  {user.name}
-                </h2>
-                <p className="text-sm text-slate-300 mb-4">
-                  {user.studyProgram}
-                </p>
-
-                <div className="grid grid-cols-2 gap-3 text-[11px] mb-4">
-                  <div>
-                    <p className="text-slate-400 mb-1">{t.birthday}</p>
-                    <p className="font-semibold">
-                      {new Date(user.birthday).toLocaleDateString(dateLocale)}
-                    </p>
-                  </div>
-                  <div>
-                    <p className="text-slate-400 mb-1">{t.matriculationNo}</p>
-                    <p className="font-semibold">
-                      {user.matriculationNumber}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              {/* Footer */}
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-slate-400 text-[10px]">{t.validUntil}</p>
-                  <p className="font-semibold text-sm">
-                    {new Date(user.validUntil).toLocaleDateString(dateLocale)}
-                  </p>
-                </div>
-                <div className="flex flex-col items-center">
-                  <img
-                    src="https://api.qrserver.com/v1/create-qr-code/?size=60x60&data=IU%20Student%20ID"
-                    alt="QR"
-                    className="rounded-md"
-                  />
-                  <span className="text-[9px] text-slate-400 mt-1">
-                    {t.scanToVerify}
-                  </span>
-                </div>
-              </div>
-            </div>
+            <div className="h-px flex-1 bg-border/50 mx-4" />
           </div>
 
-          {/* BACK */}
-          <div className="flex flex-col items-center">
-            <h2 className="text-xl font-semibold text-slate-800 dark:text-slate-200 mb-4">
-              {t.backSide}
-            </h2>
-            <div
-              ref={backRef}
-              className="relative w-full aspect-[85.6/53.98] rounded-2xl overflow-hidden shadow-2xl border border-slate-800/10 dark:border-slate-700/50 bg-gradient-to-br from-[#1e293b] via-[#0f172a] to-[#1e1b4b] text-white p-6 flex flex-col justify-between hover:scale-[1.02] transition-transform duration-300"
-            >
-              <div>
-                <h3 className="text-lg font-bold mb-3">{t.contactInfo}</h3>
-                <p className="text-sm leading-relaxed">
-                  IU Internationale Hochschule
-                  <br />
-                  Albert-Proeller-Str. 15–19
-                  <br />
-                  86675 Buchdorf
-                  <br />
-                  Germany
-                </p>
-
-                <div className="mt-4 border-t border-slate-600 pt-3 text-xs text-slate-300">
-                  <p>
-                    {t.forGlobalBenefits}{" "}
-                    <a
-                      href="https://www.isic.de"
-                      className="text-blue-400 font-semibold hover:text-blue-300"
-                      target="_blank"
-                      rel="noreferrer"
-                    >
-                      ISIC Card
-                    </a>
-                    {t.applyFor}
-                  </p>
-                </div>
-              </div>
-
-              <div className="flex justify-between items-end">
-                <div>
-                  <p className="text-[10px] text-slate-400 mb-1">{t.signature}</p>
-                  <div className="h-[20px] w-[100px] border-b border-slate-400"></div>
-                </div>
-                <div className="text-right text-[10px] text-slate-400">
-                  © {new Date().getFullYear()} IU Internationale Hochschule
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* DOWNLOAD BUTTON */}
-        <div className="flex justify-center mb-20">
-          <button
-            onClick={handleDownloadPDF}
-            className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-blue-600 to-indigo-600 dark:from-blue-700 dark:to-indigo-700 text-white font-bold rounded-xl shadow-lg hover:from-blue-700 hover:to-indigo-700 dark:hover:from-blue-800 dark:hover:to-indigo-800 transform hover:scale-105 transition-all duration-200"
+          <div
+            ref={frontRef}
+            className="relative w-full aspect-[85.6/53.98] rounded-[1.5rem] overflow-hidden shadow-2xl border border-white/10 bg-slate-900 text-white p-8 flex flex-col justify-between group transition-all duration-500 hover:shadow-iu-blue/20"
           >
-            <svg
-              className="w-5 h-5"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-              />
-            </svg>
-            {t.downloadPdf}
-          </button>
+            {/* Premium Background Pattern */}
+            <div className="absolute inset-0 opacity-10 pointer-events-none">
+              <div className="absolute top-0 left-0 w-full h-full bg-[radial-gradient(circle_at_50%_50%,#245eeb_0%,transparent_70%)]" />
+            </div>
+            <div className="absolute -top-24 -right-24 w-64 h-64 bg-iu-blue/20 blur-[80px] rounded-full group-hover:bg-iu-blue/30 transition-colors" />
+
+            {/* Card Header */}
+            <div className="flex justify-between items-start relative z-10">
+              <div className="bg-white rounded-lg px-4 py-2 shadow-lg">
+                <span className="text-slate-950 font-black text-3xl tracking-tighter">
+                  iu
+                </span>
+              </div>
+              <div className="text-[9px] font-black text-white/40 text-right leading-tight uppercase tracking-widest">
+                {t.universityName}
+                <br />
+                {t.universitySub}
+              </div>
+            </div>
+
+            {/* Student Info */}
+            <div className="relative z-10">
+              <h2 className="text-3xl font-black tracking-tight mb-1 uppercase">
+                {user.name || "Student Name"}
+              </h2>
+              <p className="text-sm text-iu-blue font-bold uppercase tracking-widest mb-6">
+                {user.studyProgram || "Study Program"}
+              </p>
+
+              <div className="grid grid-cols-2 gap-8">
+                <div>
+                  <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                    {t.birthday}
+                  </p>
+                  <p className="font-bold text-sm">
+                    {formatDate(user.birthday)}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                    {t.matriculationNo}
+                  </p>
+                  <p className="font-bold text-sm">
+                    {user.matriculationNumber || "---"}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Card Footer */}
+            <div className="flex justify-between items-end relative z-10">
+              <div>
+                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                  {t.validUntil}
+                </p>
+                <p className="font-black text-base text-iu-blue">
+                  {formatDate(user.validUntil)}
+                </p>
+              </div>
+              <div className="flex flex-col items-center gap-2">
+                <div className="bg-white p-1.5 rounded-lg shadow-xl">
+                  <QrCode className="w-10 h-10 text-slate-900" />
+                </div>
+                <span className="text-[7px] font-black text-white/30 uppercase tracking-widest">
+                  {t.scanToVerify}
+                </span>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* NOTES & INFO */}
-        <section className="max-w-4xl mx-auto">
-          <div className="grid md:grid-cols-2 gap-8">
-            <div className="bg-white dark:bg-slate-800 rounded-2xl shadow-lg p-8 border border-slate-100 dark:border-slate-700">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-blue-600 dark:text-blue-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {t.usageNotes}
-              </h3>
-              <ul className="space-y-3 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.usageNote1}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.usageNote2}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.usageNote3}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-blue-600 dark:bg-blue-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.usageNote4}
-                </li>
-              </ul>
+        {/* BACK SIDE */}
+        <div className="space-y-6">
+          <div className="flex items-center justify-between px-4">
+            <h2 className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em]">
+              {t.backSide}
+            </h2>
+            <div className="h-px flex-1 bg-border/50 mx-4" />
+          </div>
+
+          <div
+            ref={backRef}
+            className="relative w-full aspect-[85.6/53.98] rounded-[1.5rem] overflow-hidden shadow-2xl border border-white/10 bg-slate-900 text-white p-8 flex flex-col justify-between group transition-all duration-500 hover:shadow-purple-500/20"
+          >
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-colors" />
+
+            <div className="relative z-10">
+              <div className="flex items-center gap-3 mb-6">
+                <div className="w-1.5 h-6 bg-iu-blue rounded-full" />
+                <h3 className="text-lg font-black uppercase tracking-widest">
+                  {t.contactInfo}
+                </h3>
+              </div>
+              <p className="text-sm font-medium leading-relaxed text-white/60">
+                IU Internationale Hochschule GmbH
+                <br />
+                Juri-Gagarin-Ring 152
+                <br />
+                99084 Erfurt
+                <br />
+                Germany
+              </p>
+
+              <div className="mt-8 pt-6 border-t border-white/10">
+                <p className="text-xs text-white/40 font-medium">
+                  {t.forGlobalBenefits}{" "}
+                  <a
+                    href="https://www.isic.de"
+                    className="text-iu-blue font-black hover:underline uppercase tracking-widest"
+                    target="_blank"
+                    rel="noreferrer"
+                  >
+                    ISIC Card
+                  </a>
+                  {t.applyFor}
+                </p>
+              </div>
             </div>
 
-            <div className="bg-gradient-to-br from-blue-50 to-indigo-100 dark:from-blue-950/30 dark:to-indigo-950/30 rounded-2xl shadow-lg p-8 border border-blue-200/50 dark:border-blue-800/50">
-              <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                <svg
-                  className="w-5 h-5 text-indigo-600 dark:text-indigo-400"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"
-                  />
-                </svg>
-                {t.benefitsFeatures}
-              </h3>
-              <ul className="space-y-3 text-slate-700 dark:text-slate-300 text-sm leading-relaxed">
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.benefit1}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.benefit2}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.benefit3}
-                </li>
-                <li className="flex items-start gap-3">
-                  <div className="w-1.5 h-1.5 bg-indigo-600 dark:bg-indigo-400 rounded-full mt-2 flex-shrink-0"></div>
-                  {t.benefit4}
-                </li>
-              </ul>
+            <div className="flex justify-between items-end relative z-10">
+              <div className="flex-1 max-w-[200px]">
+                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-2">
+                  {t.signature}
+                </p>
+                <div className="h-10 w-full border-b border-white/20 bg-white/5 rounded-t-lg" />
+              </div>
+              <div className="text-right text-[8px] font-black text-white/20 uppercase tracking-widest">
+                © {new Date().getFullYear()} IU UNIVERSITY
+              </div>
             </div>
           </div>
-        </section>
+        </div>
+      </div>
+
+      {/* Actions */}
+      <div className="flex flex-col items-center gap-8 py-12">
+        <button
+          onClick={handleDownloadPDF}
+          className="group relative inline-flex items-center gap-4 px-12 py-5 bg-iu-blue text-white font-black rounded-2xl shadow-2xl shadow-iu-blue/20 hover:shadow-iu-blue/40 transform hover:-translate-y-1 transition-all duration-300 uppercase tracking-[0.2em]"
+        >
+          <Download className="w-6 h-6 group-hover:animate-bounce" />
+          {t.downloadPdf}
+        </button>
+
+        <Link
+          to="/dashboard"
+          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold transition-colors group"
+        >
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          {t.backToDashboard}
+        </Link>
+      </div>
+
+      {/* Info Sections */}
+      <div className="grid md:grid-cols-2 gap-8">
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+          <div className="absolute -top-12 -left-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+                <Info className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-black text-foreground tracking-tight">
+                {t.usageNotes}
+              </h3>
+            </div>
+
+            <ul className="space-y-6">
+              {[t.usageNote1, t.usageNote2, t.usageNote3, t.usageNote4].map(
+                (note, i) => (
+                  <li key={i} className="flex items-start gap-4 group/item">
+                    <div className="mt-1.5">
+                      <CheckCircle2 className="w-5 h-5 text-iu-blue opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-muted-foreground font-medium leading-relaxed group-hover/item:text-foreground transition-colors">
+                      {note}
+                    </span>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
+
+        <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+          <div className="absolute -top-12 -left-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
+
+          <div className="relative z-10">
+            <div className="flex items-center gap-3 mb-6">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+                <ShieldCheck className="w-6 h-6" />
+              </div>
+              <h3 className="text-xl font-black text-foreground tracking-tight">
+                {t.benefitsFeatures}
+              </h3>
+            </div>
+
+            <ul className="space-y-6">
+              {[t.benefit1, t.benefit2, t.benefit3, t.benefit4].map(
+                (benefit, i) => (
+                  <li key={i} className="flex items-start gap-4 group/item">
+                    <div className="mt-1.5">
+                      <CheckCircle2 className="w-5 h-5 text-iu-blue opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                    </div>
+                    <span className="text-muted-foreground font-medium leading-relaxed group-hover/item:text-foreground transition-colors">
+                      {benefit}
+                    </span>
+                  </li>
+                )
+              )}
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   );
