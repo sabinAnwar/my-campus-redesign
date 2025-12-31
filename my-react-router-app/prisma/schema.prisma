@@ -98,6 +98,9 @@ model Course {
   description  String?
   studiengang  Studiengang @relation(fields: [studiengangId], references: [id])
   studiengangId Int
+  credits      Int      @default(5)
+  semester     Int      @default(1)
+  color        String   @default("blue")
   createdAt    DateTime @default(now())
   files        File[]
 }
@@ -203,10 +206,18 @@ enum NewsStatus {
 model News {
   id            Int        @id @default(autoincrement())
   slug          String     @unique
-  title         String
+  title         String     // Fallback
+  titleDe       String?
+  titleEn       String?
   excerpt       String?
+  excerptDe     String?
+  excerptEn     String?
   content       String
+  contentDe     String?
+  contentEn     String?
   category      String?
+  categoryDe    String?
+  categoryEn    String?
   tags          String?    // JSON-encoded string array
   author        String?
   coverImageUrl String?

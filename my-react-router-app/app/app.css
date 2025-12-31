@@ -1,10 +1,48 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;600;700&display=swap');
 @import "tailwindcss";
+
+/* Dashboard Layout Grids - Defined first as requested */
+.dashboard-grid-container {
+  display: flex;
+  flex-direction: column;
+  gap: 3rem; /* matches space-y-12 */
+}
+
+.dashboard-row-top {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+@media (min-width: 1024px) {
+  .dashboard-row-top {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+.dashboard-recent-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .dashboard-recent-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .dashboard-recent-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
 
 @custom-variant dark (&:is(.dark *));
 
 @theme {
-  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --font-sans: "Inter", "Source Sans Pro", ui-sans-serif, system-ui, sans-serif;
   
   --color-background: hsl(var(--background));
   --color-foreground: hsl(var(--foreground));
@@ -33,21 +71,77 @@
   --color-border: hsl(var(--border));
   --color-input: hsl(var(--input));
   --color-ring: hsl(var(--ring));
+
+  --color-glass: var(--glass-bg);
+  --color-glass-border: var(--glass-border);
+
+  /* IU Specific Colors */
+  --color-iu-blue: #245eeb;
+  --color-iu-pink: #fe4df9;
+  --color-iu-orange: #ffa933;
+  --color-iu-green: #55ff4d;
+  --color-iu-purple: #a74ee2;
+  --color-iu-red: #ff4757;
+  
+  /* Neutral Palette (Apple Style) */
+  --color-apple-black: #000000;
+  --color-apple-dark-grey: #1d1d1f;
+  --color-apple-grey: #59595e;
+  --color-apple-light-grey: #b8b8be;
+  --color-apple-lighter-grey: #d9d9dd;
+  --color-apple-bg: #f3f3f5;
+  --color-apple-white: #ffffff;
+  
+  --color-iu-light-green: #bbffb8;
+
+  /* Global Shadow Reset */
+  --shadow-sm: none;
+  --shadow-md: none;
+  --shadow-lg: none;
+  --shadow-xl: none;
+  --shadow-2xl: none;
+  --shadow-3xl: none;
+  --shadow-inner: none;
+
+  /* Global Drop Shadow Reset */
+  --drop-shadow-sm: none;
+  --drop-shadow-md: none;
+  --drop-shadow-lg: none;
+  --drop-shadow-xl: none;
+  --drop-shadow-2xl: none;
 }
 
-/* Zinc Palette */
+/* IU Design System Variables */
 :root {
-  --background: 0 0% 100%;
-  --foreground: 240 10% 3.9%;
+  /* IU Colors */
+  --iu-blue: 223 84% 53%;
+  --iu-pink: 301 99% 65%;
+  --iu-orange: 35 100% 60%;
+  --iu-green: 118 100% 65%;
+  --iu-red: 355 100% 64%;
+  --iu-purple: 276 74% 59%;
+  
+  /* Neutral HSLs */
+  --apple-black: 0 0% 0%;
+  --apple-dark-grey: 240 3% 12%;
+  --apple-grey: 240 3% 36%;
+  --apple-light-grey: 240 3% 73%;
+  --apple-lighter-grey: 240 6% 86%;
+  --apple-bg: 240 8% 96%;
+  --apple-white: 0 0% 100%;
 
-  --card: 0 0% 100%;
-  --card-foreground: 240 10% 3.9%;
+  /* Semantic Mapping - Updated to Apple Neutrals */
+  --background: var(--apple-bg); /* #F3F3F5 */
+  --foreground: var(--apple-dark-grey); /* #1D1D1F */
 
-  --popover: 0 0% 100%;
-  --popover-foreground: 240 10% 3.9%;
+  --card: var(--apple-white); /* #FFFFFF */
+  --card-foreground: var(--apple-dark-grey); /* #1D1D1F */
+  
+  --popover: var(--apple-white);
+  --popover-foreground: var(--apple-dark-grey);
 
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
+  --primary: var(--iu-blue);
+  --primary-foreground: 0 0% 100%;
 
   --secondary: 240 4.8% 95.9%;
   --secondary-foreground: 240 5.9% 10%;
@@ -58,50 +152,85 @@
   --accent: 240 4.8% 95.9%;
   --accent-foreground: 240 5.9% 10%;
 
-  --destructive: 0 84.2% 60.2%;
+  --destructive: var(--iu-red);
   --destructive-foreground: 0 0% 98%;
 
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
-  --ring: 240 10% 3.9%;
-  --radius: 0.5rem;
+  --ring: var(--iu-blue);
+  --radius: 1rem; /* Updated for rounded look */
+
+  --glass-bg: rgba(255, 255, 255, 0.6);
+  --glass-border: rgba(255, 255, 255, 0.5);
+
+  /* IU Raw Variables */
+  --default-cta-color: #2f5ed6;
+  --dark-cta-color: #245eeb;
+  --default-pink-color: #fe4df9;
+  --default-orange-color: #ffa933;
+  --default-green-color: #54ff4e;
+  --default-purple-color: #a74ee2;
+  --default-red-color: #e44d53;
 }
 
 .dark {
-  --background: 240 10% 3.9%;
-  --foreground: 0 0% 98%;
+  --background: 0 0% 0%;
+  --foreground: 0 0% 100%;
 
-  --card: 240 10% 3.9%;
-  --card-foreground: 0 0% 98%;
+  --card: 0 0% 4%;
+  --card-foreground: 0 0% 100%;
 
-  --popover: 240 10% 3.9%;
-  --popover-foreground: 0 0% 98%;
+  --popover: 0 0% 4%;
+  --popover-foreground: 0 0% 100%;
 
-  --primary: 0 0% 98%;
-  --primary-foreground: 240 5.9% 10%;
+  --primary: 223 84% 53%; /* IU Blue */
+  --primary-foreground: 0 0% 100%;
 
-  --secondary: 240 3.7% 15.9%;
-  --secondary-foreground: 0 0% 98%;
+  --secondary: 0 0% 10%;
+  --secondary-foreground: 0 0% 100%;
 
-  --muted: 240 3.7% 15.9%;
-  --muted-foreground: 240 5% 64.9%;
+  --muted: 0 0% 7%;
+  --muted-foreground: 0 0% 53%;
 
-  --accent: 240 3.7% 15.9%;
-  --accent-foreground: 0 0% 98%;
+  --accent: 0 0% 7%;
+  --accent-foreground: 0 0% 100%;
 
-  --destructive: 0 62.8% 30.6%;
+  --destructive: 355 100% 64%; /* IU Red */
   --destructive-foreground: 0 0% 98%;
 
-  --border: 240 3.7% 15.9%;
-  --input: 240 3.7% 15.9%;
-  --ring: 240 4.9% 83.9%;
+  --border: 0 0% 10%;
+  --input: 0 0% 4%;
+  --ring: 223 84% 53%;
+
+  --glass-bg: rgba(0, 0, 0, 0.7);
+  --glass-border: rgba(255, 255, 255, 0.1);
 }
 
 html,
 body {
-  @apply bg-background text-foreground antialiased;
+  @apply bg-background text-foreground antialiased font-sans;
   color-scheme: light dark;
+  font-family: "Inter", sans-serif;
+  /* overflow-x: hidden; */
 }
+
+/* Global Typography Override to match Schedule Page "Premium" Look */
+h1, h2, h3, h4, h5, h6 {
+  @apply tracking-tight font-black;
+  font-family: "Inter", sans-serif;
+}
+
+/* Utility for the consistent "Schedule" subtitle look */
+.uppercase-label {
+  @apply text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground;
+}
+
+/* Base text consistency */
+p, span, div {
+  @apply leading-relaxed;
+}
+
+/* Global Shadow Reset - Removed as it was breaking UI components */
 
 @layer utilities {
   .animate-in {
@@ -143,6 +272,16 @@ body {
   
   .custom-scrollbar::-webkit-scrollbar-thumb:hover {
     background-color: hsl(var(--muted-foreground) / 0.4);
+    border-radius: 20px;
+  }
+  
+  /* Scrollbar Hide Utility */
+  .scrollbar-hide::-webkit-scrollbar {
+      display: none;
+  }
+  .scrollbar-hide {
+      -ms-overflow-style: none;
+      scrollbar-width: none;
   }
 }
 
@@ -165,5 +304,194 @@ body {
     opacity: 1;
   }
 }
+/* Login Page Layout Branding Section */
+.iu-premium-login-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  min-height: 100vh;
+}
 
+@media (min-width: 1024px) {
+  .iu-premium-login-grid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
 
+.iu-login-hero-section {
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+  min-height: 500px; /* Branded section is now visible on mobile */
+}
+
+@media (min-width: 1024px) {
+  .iu-login-hero-section {
+    min-height: 100vh;
+  }
+}
+
+.iu-login-form-content {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  min-height: 100vh;
+  transition: background-color 0.3s ease;
+}
+
+@media (min-width: 1024px) {
+  .iu-login-form-content {
+    padding: 2rem;
+  }
+}
+
+/* Login Campus Locations Grid */
+.login-campus-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  padding-top: 2rem;
+  border-top-width: 1px;
+  border-color: rgb(34 211 238 / 0.3); /* cyan-400/30 */
+}
+
+/* Login Support Links Grid */
+.login-support-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1rem;
+}
+
+/* Dashboard Animations */
+@keyframes wave {
+  0% { transform: rotate(0.0deg); }
+  10% { transform: rotate(14.0deg); }
+  20% { transform: rotate(-8.0deg); }
+  30% { transform: rotate(14.0deg); }
+  40% { transform: rotate(-4.0deg); }
+  50% { transform: rotate(10.0deg); }
+  60% { transform: rotate(0.0deg); }
+  100% { transform: rotate(0.0deg); }
+}
+
+.animate-wave {
+  animation: wave 2.5s infinite;
+  display: inline-block;
+}
+
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 15s linear infinite;
+}
+
+@keyframes bounce-slow {
+  0%, 100% { transform: translateY(-5%); animation-timing-function: cubic-bezier(0.8,0,1,1); }
+  50% { transform: none; animation-timing-function: cubic-bezier(0,0,0.2,1); }
+}
+
+.animate-bounce-slow {
+  animation: bounce-slow 3s infinite;
+}
+
+/* ===========================================
+   UTILITY CLASSES FOR INLINE STYLE REMOVAL
+   =========================================== */
+
+/* Smooth touch scrolling for mobile */
+.touch-scroll {
+  -webkit-overflow-scrolling: touch;
+  overflow-x: auto;
+}
+
+/* Animation duration variants */
+.animate-duration-15s {
+  animation-duration: 15s;
+}
+
+/* Dynamic progress bar widths - use CSS variables */
+.progress-bar {
+  transition: width 1s ease-out;
+}
+
+/* Flex/Grid scroll containers */
+.scroll-container-x {
+  display: flex;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+}
+
+.scroll-container-x > * {
+  scroll-snap-align: start;
+  flex-shrink: 0;
+}
+
+/* Week days horizontal scroll */
+.week-days-scroll {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .week-days-scroll {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    overflow-x: visible;
+    padding-bottom: 0;
+  }
+}
+
+@media (min-width: 768px) {
+  .week-days-scroll {
+    grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* Filter tabs scroll container */
+.filter-tabs-scroll {
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  overflow-x: auto;
+  padding-bottom: 0.5rem;
+  margin-left: -0.75rem;
+  padding-left: 0.75rem;
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (min-width: 640px) {
+  .filter-tabs-scroll {
+    gap: 0.5rem;
+    margin-left: 0;
+    padding-left: 0;
+  }
+}
+
+/* Forum/Chat height calculations */
+.forum-container-height {
+  height: calc(100vh - 420px);
+  min-height: 650px;
+}
+
+/* Animation delays for staggered effects */
+.animate-delay-100 { animation-delay: 100ms; }
+.animate-delay-200 { animation-delay: 200ms; }
+.animate-delay-300 { animation-delay: 300ms; }
+.animate-delay-400 { animation-delay: 400ms; }
+.animate-delay-500 { animation-delay: 500ms; }
