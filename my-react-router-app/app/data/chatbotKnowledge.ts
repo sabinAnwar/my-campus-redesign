@@ -32,9 +32,25 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 - Bei dualen Studiengängen gelten feste Prüfungsphasen
 
 Besuche MyCampus für deine individuellen Termine!`,
-    keywords: ["prüfung", "prüfungen", "klausur", "klausuren", "wann", "termin", "termine", "exam", "exams", "when"],
-    synonyms: ["prüfungstermine", "klausurtermine", "prüfungszeit", "prüfungsphase"],
-    priority: 10
+    keywords: [
+      "prüfung",
+      "prüfungen",
+      "klausur",
+      "klausuren",
+      "wann",
+      "termin",
+      "termine",
+      "exam",
+      "exams",
+      "when",
+    ],
+    synonyms: [
+      "prüfungstermine",
+      "klausurtermine",
+      "prüfungszeit",
+      "prüfungsphase",
+    ],
+    priority: 10,
   },
   {
     id: "exam-register",
@@ -57,9 +73,17 @@ Besuche MyCampus für deine individuellen Termine!`,
 - Änderungen über die Studienberatung möglich
 
 Bei Fragen wende dich an: pruefungsamt@iu.org`,
-    keywords: ["anmelden", "anmeldung", "registrieren", "prüfung", "klausur", "register", "exam"],
+    keywords: [
+      "anmelden",
+      "anmeldung",
+      "registrieren",
+      "prüfung",
+      "klausur",
+      "register",
+      "exam",
+    ],
     synonyms: ["prüfungsanmeldung", "klausuranmeldung"],
-    priority: 9
+    priority: 9,
   },
   {
     id: "exam-repeat",
@@ -82,9 +106,18 @@ Bei Fragen wende dich an: pruefungsamt@iu.org`,
 - Bestandene Prüfungen können zur Notenverbesserung wiederholt werden (einmalig)
 
 Mehr Infos im Prüfungsamt!`,
-    keywords: ["wiederholen", "wiederholung", "durchgefallen", "nicht bestanden", "versuche", "repeat", "fail", "failed"],
+    keywords: [
+      "wiederholen",
+      "wiederholung",
+      "durchgefallen",
+      "nicht bestanden",
+      "versuche",
+      "repeat",
+      "fail",
+      "failed",
+    ],
     synonyms: ["nachprüfung", "zweitversuch", "drittversuch"],
-    priority: 9
+    priority: 9,
   },
   {
     id: "exam-results",
@@ -106,9 +139,19 @@ Mehr Infos im Prüfungsamt!`,
 - Einsichtnahme in die Prüfung über "Online Einsicht" beantragen
 
 Die Noten werden in der Notenverwaltung gespeichert!`,
-    keywords: ["ergebnis", "ergebnisse", "note", "noten", "wann", "results", "grade", "grades", "notenspiegel"],
+    keywords: [
+      "ergebnis",
+      "ergebnisse",
+      "note",
+      "noten",
+      "wann",
+      "results",
+      "grade",
+      "grades",
+      "notenspiegel",
+    ],
     synonyms: ["prüfungsergebnis", "klausurergebnis", "notendurchschnitt"],
-    priority: 8
+    priority: 8,
   },
   {
     id: "exam-sick",
@@ -119,7 +162,7 @@ Die Noten werden in der Notenverwaltung gespeichert!`,
 **Sofort handeln:**
 1. Melde dich **vor** der Prüfung krank (E-Mail an Prüfungsamt)
 2. Besorge dir ein ärztliches Attest
-3. Lade das Attest über MyCampus hoch: "Antragsverwaltung" → "Upload Bescheinigung der Prüfungsunfähigkeit"
+3. Lade das Attest über MyCampus hoch: "Abgaben" → "Upload Bescheinigung der Prüfungsunfähigkeit"
 
 **Fristen:**
 - Attest muss innerhalb von **3 Werktagen** eingereicht werden
@@ -130,9 +173,18 @@ Die Noten werden in der Notenverwaltung gespeichert!`,
 - Ausnahmen nur in begründeten Härtefällen
 
 Kontakt: pruefungsamt@iu.org`,
-    keywords: ["krank", "krankheit", "attest", "prüfungsunfähig", "sick", "ill", "illness", "krankschreibung"],
+    keywords: [
+      "krank",
+      "krankheit",
+      "attest",
+      "prüfungsunfähig",
+      "sick",
+      "ill",
+      "illness",
+      "krankschreibung",
+    ],
     synonyms: ["krankmeldung", "prüfung verpasst", "nicht erschienen"],
-    priority: 9
+    priority: 9,
   },
   {
     id: "exam-tips",
@@ -161,9 +213,19 @@ Kontakt: pruefungsamt@iu.org`,
 - Frühzeitig anmelden (7 Tage vorher)
 
 Viel Erfolg! 💪`,
-    keywords: ["lernen", "vorbereiten", "vorbereitung", "tipps", "studieren", "prüfung", "klausur", "study", "prepare"],
+    keywords: [
+      "lernen",
+      "vorbereiten",
+      "vorbereitung",
+      "tipps",
+      "studieren",
+      "prüfung",
+      "klausur",
+      "study",
+      "prepare",
+    ],
     synonyms: ["prüfungsvorbereitung", "lernplan", "lerntipps"],
-    priority: 10
+    priority: 10,
   },
   {
     id: "dual-study-info",
@@ -191,9 +253,17 @@ Viel Erfolg! 💪`,
 - Praxispartner-Betreuung: Bei Fragen zu deinem Unternehmen
 
 Was möchtest du genauer wissen?`,
-    keywords: ["dual", "duales", "studium", "dualer", "student", "studentin", "praxispartner"],
+    keywords: [
+      "dual",
+      "duales",
+      "studium",
+      "dualer",
+      "student",
+      "studentin",
+      "praxispartner",
+    ],
     synonyms: ["duales studium"],
-    priority: 7
+    priority: 7,
   },
   {
     id: "additional-courses",
@@ -208,7 +278,7 @@ Was möchtest du genauer wissen?`,
 **So geht's:**
 1. MyCampus → "Studienorganisation" → "Zusatzkurs wählen"
 2. Wähle einen Kurs aus dem Katalog
-3. Gehe zur "Antragsverwaltung"
+3. Gehe zu den "Abgaben"
 4. Stelle den "Antrag auf kostenlose Online-Weiterbildung"
 
 **Hinweis:**
@@ -222,9 +292,17 @@ Was möchtest du genauer wissen?`,
 - und viele mehr!
 
 Mehr Info in der Studienorganisation!`,
-    keywords: ["weiterbildung", "weiterbildungskurse", "zusatzkurs", "zusatzkurse", "extra", "kurse", "linkedin"],
+    keywords: [
+      "weiterbildung",
+      "weiterbildungskurse",
+      "zusatzkurs",
+      "zusatzkurse",
+      "extra",
+      "kurse",
+      "linkedin",
+    ],
     synonyms: ["zusätzliche kurse", "weitere kurse", "online weiterbildung"],
-    priority: 8
+    priority: 8,
   },
 
   // ============================================
@@ -253,9 +331,18 @@ Mehr Info in der Studienorganisation!`,
 - Urlaubssemester müssen rechtzeitig beantragt werden
 
 Aktuelle Termine findest du in deinem MyCampus-Kalender!`,
-    keywords: ["semester", "semesterstart", "semesterende", "beginn", "ende", "start", "term", "dates"],
+    keywords: [
+      "semester",
+      "semesterstart",
+      "semesterende",
+      "beginn",
+      "ende",
+      "start",
+      "term",
+      "dates",
+    ],
     synonyms: ["semesterzeiten", "vorlesungszeit", "vorlesungsbeginn"],
-    priority: 8
+    priority: 8,
   },
   {
     id: "specialization",
@@ -283,9 +370,16 @@ Aktuelle Termine findest du in deinem MyCampus-Kalender!`,
 - Danach nur mit Antrag auf Vertiefungswechsel
 
 Besuche die Vertiefungswahl-Seite für Details!`,
-    keywords: ["vertiefung", "vertiefungswahl", "spezialisierung", "schwerpunkt", "specialization", "major"],
+    keywords: [
+      "vertiefung",
+      "vertiefungswahl",
+      "spezialisierung",
+      "schwerpunkt",
+      "specialization",
+      "major",
+    ],
     synonyms: ["vertiefungsrichtung", "schwerpunktwahl"],
-    priority: 8
+    priority: 8,
   },
   {
     id: "practical-report",
@@ -314,9 +408,18 @@ Besuche die Vertiefungswahl-Seite für Details!`,
 - Feedback innerhalb von 4 Wochen
 
 Bei Fragen: studienberatung@iu.org`,
-    keywords: ["praxisbericht", "einreichen", "praktikum", "praxis", "bericht", "report", "practical", "internship"],
+    keywords: [
+      "praxisbericht",
+      "einreichen",
+      "praktikum",
+      "praxis",
+      "bericht",
+      "report",
+      "practical",
+      "internship",
+    ],
     synonyms: ["praktikumsbericht", "praxisphase"],
-    priority: 8
+    priority: 8,
   },
   {
     id: "thesis-registration",
@@ -330,7 +433,7 @@ Bei Fragen: studienberatung@iu.org`,
 - Thema und Betreuer gefunden
 
 **Anmeldung:**
-1. MyCampus → "Antragsverwaltung"
+1. MyCampus → "Abgaben"
 2. "Anmeldung zur Abschlussarbeit Erst-/Zweitversuch"
 3. Formular ausfüllen mit:
    - Arbeitstitel
@@ -343,9 +446,16 @@ Bei Fragen: studienberatung@iu.org`,
 
 **Bei Fragen:**
 abschlussarbeiten@iu.org`,
-    keywords: ["bachelorarbeit", "thesis", "abschlussarbeit", "anmeldung", "bachelor", "anmelden"],
+    keywords: [
+      "bachelorarbeit",
+      "thesis",
+      "abschlussarbeit",
+      "anmeldung",
+      "bachelor",
+      "anmelden",
+    ],
     synonyms: ["ba-arbeit", "bachelor thesis", "abschluss"],
-    priority: 9
+    priority: 9,
   },
 
   // ============================================
@@ -377,9 +487,17 @@ abschlussarbeiten@iu.org`,
 - Regelmäßig prüfen!
 
 IT-Support: it-support@iu.org`,
-    keywords: ["email", "e-mail", "mail", "outlook", "einrichten", "setup", "passwort"],
+    keywords: [
+      "email",
+      "e-mail",
+      "mail",
+      "outlook",
+      "einrichten",
+      "setup",
+      "passwort",
+    ],
     synonyms: ["iu mail", "mailbox", "postfach"],
-    priority: 8
+    priority: 8,
   },
   {
     id: "library",
@@ -410,9 +528,17 @@ IT-Support: it-support@iu.org`,
 - Literaturverwaltung
 
 Öffne die Bibliothek im MyCampus!`,
-    keywords: ["bibliothek", "library", "bücher", "ebook", "springer", "literatur", "recherche"],
+    keywords: [
+      "bibliothek",
+      "library",
+      "bücher",
+      "ebook",
+      "springer",
+      "literatur",
+      "recherche",
+    ],
     synonyms: ["online bibliothek", "bib", "bücherei"],
-    priority: 7
+    priority: 7,
   },
   {
     id: "room-booking",
@@ -442,9 +568,18 @@ IT-Support: it-support@iu.org`,
 - Sa: 9:00 - 17:00 Uhr
 
 Fragen: campusservice@iu.org`,
-    keywords: ["raum", "buchen", "buchung", "raumbuchung", "room", "booking", "campus", "lernraum"],
+    keywords: [
+      "raum",
+      "buchen",
+      "buchung",
+      "raumbuchung",
+      "room",
+      "booking",
+      "campus",
+      "lernraum",
+    ],
     synonyms: ["raum reservieren", "gruppenraum", "studierraum"],
-    priority: 7
+    priority: 7,
   },
   {
     id: "student-id",
@@ -473,9 +608,16 @@ Fragen: campusservice@iu.org`,
 - Physisch: Am Automaten neu drucken
 
 Fragen: studierendensekretariat@iu.org`,
-    keywords: ["studentenausweis", "ausweis", "student id", "card", "karte", "semesterticket"],
+    keywords: [
+      "studentenausweis",
+      "ausweis",
+      "student id",
+      "card",
+      "karte",
+      "semesterticket",
+    ],
     synonyms: ["studierendenausweis", "campuscard", "iCard"],
-    priority: 6
+    priority: 6,
   },
 
   // ============================================
@@ -506,9 +648,18 @@ Fragen: studierendensekretariat@iu.org`,
 - Du erhältst zusätzlich ein Gehalt
 
 Bei Fragen: studienfinanzierung@iu.org`,
-    keywords: ["gebühren", "studiengebühren", "kosten", "geld", "bezahlen", "tuition", "fees", "payment"],
+    keywords: [
+      "gebühren",
+      "studiengebühren",
+      "kosten",
+      "geld",
+      "bezahlen",
+      "tuition",
+      "fees",
+      "payment",
+    ],
     synonyms: ["semestergebühr", "studienkosten"],
-    priority: 7
+    priority: 7,
   },
 
   // ============================================
@@ -542,9 +693,16 @@ Bei Fragen: studienfinanzierung@iu.org`,
 2. Spätestens 6 Monate vor Start
 
 Kontakt: international@iu.org`,
-    keywords: ["erasmus", "ausland", "international", "auslandssemester", "exchange", "abroad"],
+    keywords: [
+      "erasmus",
+      "ausland",
+      "international",
+      "auslandssemester",
+      "exchange",
+      "abroad",
+    ],
     synonyms: ["auslandsaufenthalt", "partnerhochschule", "semester abroad"],
-    priority: 8
+    priority: 8,
   },
 
   // ============================================
@@ -580,9 +738,18 @@ Kontakt: international@iu.org`,
 **Live-Chat:**
 - Verfügbar in MyCampus (rechts unten)
 - Mo-Fr: 9:00-18:00 Uhr`,
-    keywords: ["support", "hilfe", "kontakt", "help", "contact", "telefon", "email", "erreichen"],
+    keywords: [
+      "support",
+      "hilfe",
+      "kontakt",
+      "help",
+      "contact",
+      "telefon",
+      "email",
+      "erreichen",
+    ],
     synonyms: ["ansprechpartner", "hotline", "beratung"],
-    priority: 9
+    priority: 9,
   },
   {
     id: "mental-health",
@@ -610,9 +777,18 @@ Kontakt: international@iu.org`,
 - Studierendenwerk: Psychologische Beratungsstelle
 
 Du bist nicht allein! 💙`,
-    keywords: ["psychologisch", "mental", "beratung", "stress", "angst", "depression", "hilfe", "wellbeing"],
+    keywords: [
+      "psychologisch",
+      "mental",
+      "beratung",
+      "stress",
+      "angst",
+      "depression",
+      "hilfe",
+      "wellbeing",
+    ],
     synonyms: ["psychologische beratung", "seelische gesundheit", "burnout"],
-    priority: 8
+    priority: 8,
   },
 
   // ============================================
@@ -633,7 +809,7 @@ Du bist nicht allein! 💙`,
 Was möchtest du wissen?`,
     keywords: ["hallo", "hi", "hey", "moin", "guten tag", "hello", "servus"],
     synonyms: ["grüß gott", "guten morgen", "guten abend"],
-    priority: 1
+    priority: 1,
   },
   {
     id: "greeting-thanks",
@@ -650,8 +826,8 @@ Kann ich dir noch bei etwas anderem helfen?
 - 📚 Bibliothek nutzen`,
     keywords: ["danke", "thanks", "vielen dank", "dankeschön", "thank you"],
     synonyms: ["thx", "merci"],
-    priority: 1
-  }
+    priority: 1,
+  },
 ];
 
 // Function to find the best matching answer with smart intent detection
