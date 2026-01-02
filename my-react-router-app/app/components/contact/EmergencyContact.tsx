@@ -20,7 +20,7 @@ export function EmergencyContact({ t }: EmergencyContactProps) {
           </p>
         </div>
       </div>
-      <div className="bg-card/80 backdrop-blur-md border border-iu-red/20 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-2xl">
+      <div className="bg-card/80 backdrop-blur-md border border-iu-red/20 rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-xl">
         <p className="text-[9px] sm:text-[10px] font-black text-iu-red mb-2 sm:mb-3 uppercase tracking-[0.2em]">
           {t.emergency}
         </p>

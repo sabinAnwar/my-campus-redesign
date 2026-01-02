@@ -15,22 +15,22 @@ export default function Contact() {
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8 pb-12 px-4 sm:px-0">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 pb-20 px-4 sm:px-6 lg:px-8">
       <ContactHeader t={t} />
 
-      <div className="grid gap-6 sm:gap-8 lg:grid-cols-3">
+      <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 sm:gap-12">
         {/* Main Content: Form and Hours/Emergency */}
-        <div className="space-y-6 sm:space-y-8 lg:col-span-2">
+        <div className="flex flex-col gap-8 sm:gap-12 lg:col-span-2">
           <ContactForm t={t} language={language} />
 
-          <div className="grid gap-6 sm:gap-8 md:grid-cols-2">
+          <div className="grid gap-6 sm:gap-8 md:grid-cols-2 items-stretch">
             <SupportHours t={t} />
             <EmergencyContact t={t} />
           </div>
         </div>
 
         {/* Sidebar: Methods, FAQ, and Locations */}
-        <div className="space-y-6 sm:space-y-8">
+        <div className="flex flex-col gap-8 sm:gap-12">
           <ContactMethods t={t} />
           <FAQLink t={t} />
           <CampusLocations t={t} />

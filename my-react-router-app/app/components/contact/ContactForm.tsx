@@ -59,7 +59,7 @@ export function ContactForm({ t, language }: ContactFormProps) {
   };
 
   return (
-    <div className="bg-card/60 backdrop-blur-xl border border-border sm:rounded-[2.5rem] rounded-2xl shadow-2xl p-6 sm:p-10 relative overflow-hidden h-full">
+    <div className="bg-card/60 backdrop-blur-xl border border-border sm:rounded-[2.5rem] rounded-2xl shadow-2xl p-6 sm:p-10 relative overflow-hidden">
       {/* Hover background effect */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-100 -mr-32 -mt-32"></div>
 
