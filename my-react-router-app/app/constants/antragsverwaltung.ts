@@ -1,150 +1,51 @@
-export const TRANSLATIONS = {
-  de: {
-    title: "Antragsverwaltung",
-    subtitle:
-      "Verwalte deine Anträge, lade Dateien hoch und behalte Fristen im Blick – alles an einem zentralen Ort.",
-    search: "Anträge durchsuchen...",
-    allStatus: "Alle Status",
-    pending: "In Bearbeitung",
-    approved: "Genehmigt",
-    rejected: "Abgelehnt",
-    allCategories: "Alle Kategorien",
-    totalApplications: "Gesamt",
-    pendingCount: "In Bearbeitung",
-    approvedCount: "Genehmigt",
-    rejectedCount: "Abgelehnt",
-    lastUpdated: "Zuletzt aktualisiert",
-    startApplication: "Bearbeiten",
-    moreInfo: "Details",
-    noResults: "Keine Anträge gefunden",
-    noResultsHint: "Versuchen Sie andere Suchbegriffe oder Filter",
-    submitApplication: "Antrag abschließen",
-    cancel: "Abbrechen",
-    submitting: "Wird verarbeitet...",
-    requiredField: "Pflichtfeld",
-    uploadFile: "Datei hochladen",
-    successMessage: "Antrag erfolgreich aktualisiert!",
-    task: "Antragsverwaltung",
-    categories: {
-      examOffice: "Prüfungsamt",
-      studentOffice: "Studierendensekretariat",
-    },
-    itemTitles: {
-      "1": "Anmeldung zur Abschlussarbeit Erst- und Zweitversuch",
-      "2": "Nachteilsausgleich prüfen",
-      "3": "Verlängerung der Bearbeitungszeit",
-      "4": "Beurlaubung einreichen",
-      "5": "Online Einsicht anfordern",
-      "6": "Online Einwand einlegen",
-      "7": "Upload Bescheinigung der Prüfungsunfähigkeit",
-      "8": "Anmeldung zur Abschlussarbeit - Erstversuch",
-      "9": "Anmeldung zur Abschlussarbeit - Zweitversuch",
-      "10": "Verlängerung der Bearbeitungszeit (VFS)",
-      "11": "Zulassung zum Kolloquium",
-      "12": "Campuswechsel beantragen",
-      "13": "Kostenlose Online-Weiterbildung (ab 3. Sem.)",
-      "14": "Studiengangswechsel prüfen",
-      "15": "Vorzeitige Exmatrikulation (Ende 7. Sem.)",
-      "16": "Vertragsverlängerung ins 8. Semester",
-      "17": "Vertiefungswechsel einreichen",
-    },
-  },
-  en: {
-    title: "Application Management",
-    subtitle:
-      "Manage your applications, upload files and keep track of deadlines – all in one central place.",
-    search: "Search applications...",
-    allStatus: "All Status",
-    pending: "In Progress",
-    approved: "Approved",
-    rejected: "Rejected",
-    allCategories: "All Categories",
-    totalApplications: "Total",
-    pendingCount: "In Progress",
-    approvedCount: "Approved",
-    rejectedCount: "Rejected",
-    lastUpdated: "Last updated",
-    startApplication: "Edit",
-    moreInfo: "Details",
-    noResults: "No applications found",
-    noResultsHint: "Try different search terms or filters",
-    submitApplication: "Complete Application",
-    cancel: "Cancel",
-    submitting: "Processing...",
-    requiredField: "Required field",
-    uploadFile: "Upload file",
-    successMessage: "Application updated successfully!",
-    task: "Application Management",
-    categories: {
-      examOffice: "Examination Office",
-      studentOffice: "Student Office",
-    },
-    itemTitles: {
-      "1": "Registration for Thesis First and Second Attempt",
-      "2": "Check disadvantage compensation",
-      "3": "Extension of processing time",
-      "4": "Submit leave of absence",
-      "5": "Request online inspection",
-      "6": "File online objection",
-      "7": "Upload certificate of incapacity for examination",
-      "8": "Registration for Thesis - First Attempt",
-      "9": "Registration for Thesis - Second Attempt",
-      "10": "Extension of processing time (VFS)",
-      "11": "Admission to colloquium",
-      "12": "Apply for campus change",
-      "13": "Free online further education (from 3rd sem.)",
-      "14": "Check change of study program",
-      "15": "Early exmatriculation (end of 7th sem.)",
-      "16": "Contract extension into 8th semester",
-      "17": "Submit change of specialization",
-    },
-  },
-};
+import { TRANSLATIONS } from "~/services/translations/antragsverwaltung";
+import type { ApplicationItem } from "~/types/antragsverwaltung";
 
-export const getFormDefinitions = (t: any) => ({
+export { TRANSLATIONS };
+
+export const getFormDefinitions = (t: typeof TRANSLATIONS.de) => ({
   "1": {
     title: t.itemTitles["1"],
     fields: [
       {
         name: "studentName",
-        label: t.task === "Task" ? "Name" : "Name",
+        label: t.formLabels.name,
         type: "text",
         required: true,
       },
       {
         name: "matrikelNummer",
-        label: t.task === "Task" ? "Matriculation Number" : "Matrikelnummer",
+        label: t.formLabels.matriculationNumber,
         type: "text",
         required: true,
       },
       {
         name: "thesisTitle",
-        label: t.task === "Task" ? "Thesis Title" : "Titel der Abschlussarbeit",
+        label: t.formLabels.thesisTitle,
         type: "text",
         required: true,
       },
       {
         name: "supervisor",
-        label: t.task === "Task" ? "Supervisor" : "Betreuer",
+        label: t.formLabels.supervisor,
         type: "text",
         required: true,
       },
       {
         name: "company",
-        label: t.task === "Task" ? "Company" : "Unternehmen",
+        label: t.formLabels.company,
         type: "text",
         required: false,
       },
       {
         name: "startDate",
-        label:
-          t.task === "Task" ? "Desired Start Date" : "Gewünschtes Startdatum",
+        label: t.formLabels.desiredStartDate,
         type: "date",
         required: true,
       },
       {
         name: "documents",
-        label: t.task === "Task" ? "Upload Documents" : "Dokumente hochladen",
+        label: t.formLabels.uploadDocuments,
         type: "file",
         required: false,
       },
@@ -156,33 +57,31 @@ export const getFormDefinitions = (t: any) => ({
     fields: [
       {
         name: "studentName",
-        label: t.task === "Task" ? "Name" : "Name",
+        label: t.formLabels.name,
         type: "text",
         required: true,
       },
       {
         name: "matrikelNummer",
-        label: t.task === "Task" ? "Matriculation Number" : "Matrikelnummer",
+        label: t.formLabels.matriculationNumber,
         type: "text",
         required: true,
       },
       {
         name: "disability",
-        label:
-          t.task === "Task" ? "Type of impairment" : "Art der Beeinträchtigung",
+        label: t.formLabels.impairmentType,
         type: "textarea",
         required: true,
       },
       {
         name: "requestedAccommodation",
-        label:
-          t.task === "Task" ? "Requested measures" : "Beantragte Maßnahmen",
+        label: t.formLabels.requestedMeasures,
         type: "textarea",
         required: true,
       },
       {
         name: "medicalCertificate",
-        label: t.task === "Task" ? "Medical certificate" : "Ärztliches Attest",
+        label: t.formLabels.medicalCertificate,
         type: "file",
         required: true,
       },
@@ -195,40 +94,37 @@ export const getFormDefinitions = (t: any) => ({
     fields: [
       {
         name: "studentName",
-        label: t.task === "Task" ? "Name" : "Name",
+        label: t.formLabels.name,
         type: "text",
         required: true,
       },
       {
         name: "matrikelNummer",
-        label: t.task === "Task" ? "Matriculation Number" : "Matrikelnummer",
+        label: t.formLabels.matriculationNumber,
         type: "text",
         required: true,
       },
       {
         name: "currentDeadline",
-        label: t.task === "Task" ? "Current deadline" : "Aktuelle Frist",
+        label: t.formLabels.currentDeadline,
         type: "date",
         required: true,
       },
       {
         name: "requestedExtension",
-        label:
-          t.task === "Task"
-            ? "Requested extension (weeks)"
-            : "Beantragte Verlängerung (Wochen)",
+        label: t.formLabels.requestedExtension,
         type: "number",
         required: true,
       },
       {
         name: "reason",
-        label: t.task === "Task" ? "Reason" : "Begründung",
+        label: t.formLabels.reason,
         type: "textarea",
         required: true,
       },
       {
         name: "supportingDocuments",
-        label: t.task === "Task" ? "Supporting documents" : "Nachweise",
+        label: t.formLabels.supportingDocuments,
         type: "file",
         required: false,
       },
@@ -237,29 +133,29 @@ export const getFormDefinitions = (t: any) => ({
       "https://forms.office.com/Pages/ResponsePage.aspx?id=YOUR_FORM_ID_3",
   },
   default: {
-    title: t.task === "Task" ? "General Application" : "Allgemeiner Antrag",
+    title: t.formLabels.generalApplication,
     fields: [
       {
         name: "studentName",
-        label: t.task === "Task" ? "Name" : "Name",
+        label: t.formLabels.name,
         type: "text",
         required: true,
       },
       {
         name: "matrikelNummer",
-        label: t.task === "Task" ? "Matriculation Number" : "Matrikelnummer",
+        label: t.formLabels.matriculationNumber,
         type: "text",
         required: true,
       },
       {
         name: "requestDetails",
-        label: t.task === "Task" ? "Request details" : "Details des Antrags",
+        label: t.formLabels.requestDetails,
         type: "textarea",
         required: true,
       },
       {
         name: "documents",
-        label: t.task === "Task" ? "Documents" : "Dokumente",
+        label: t.formLabels.documents,
         type: "file",
         required: false,
       },
@@ -268,7 +164,7 @@ export const getFormDefinitions = (t: any) => ({
   },
 });
 
-export const MOCK_ITEMS = [
+export const MOCK_ITEMS: ApplicationItem[] = [
   {
     id: "1",
     titleKey: "1",

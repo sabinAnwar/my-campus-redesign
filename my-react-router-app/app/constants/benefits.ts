@@ -1,80 +1,10 @@
 import { Laptop, BarChart3, GraduationCap } from "lucide-react";
 import type { BenefitTool as Tool } from "~/types/benefits";
 
-export const TRANSLATIONS = {
-  de: {
-    backToDashboard: "Zurück zum Dashboard",
-    exclusiveFor: "Exklusiv für IU Studierende",
-    title: "Student Benefits Hub",
-    subtitle: (n: number) => `Zugriff auf ${n}+ Premium-Tools und Services.`,
-    featuredTools: "Featured Tools",
-    searchPlaceholder: "Tools durchsuchen...",
-    allCategories: "Alle Kategorien",
-    tools: "Tools",
-    open: "Öffnen",
-    support: "Support",
-    alternative: "Alternative",
-    regularlyUpdated: "Regelmäßig aktualisiert",
-    lastUpdated: "Zuletzt aktualisiert:",
-    categories: {
-      productivity: "Produktivität & Software",
-      research: "Forschung & Datenbanken",
-      learning: "Lernen & Upskilling",
-    },
-    toolDescriptions: {
-      office365: "Word, Excel, PowerPoint, Teams – gratis mit IU-Mail.",
-      azure: "Cloud-Services testen ohne Kreditkarte.",
-      matlab: "Campuslizenz für MATLAB & Simulink.",
-      linkedin: "Kurse via IU SSO freischalten.",
-      statista: "Zugriff über LIS/OpenAthens.",
-      knovel: "Video-Anleitungen für Knovel.",
-      beck: "Kurzvideo zur Rechtsdatenbank.",
-      nautos: "Normendatenbank – häufige Fragen.",
-      research: "Unipark, WISO, IEEE, Knovel, Elicit.",
-      google: "Kostenlose Digital- und KI-Trainings.",
-      udemy: "Rabattierte Kurse für Tech & Business.",
-      bootcamp: "Programmieren lernen für IU-Studierende.",
-      learnApp: "Skripte, Videos, Tests & Karteikarten.",
-      speexx: "DE/EN/FR/IT/ES – sofort starten, keine ECTS.",
-    },
-  },
-  en: {
-    backToDashboard: "Back to Dashboard",
-    exclusiveFor: "Exclusive for IU Students",
-    title: "Student Benefits Hub",
-    subtitle: (n: number) => `Access to ${n}+ premium tools and services.`,
-    featuredTools: "Featured Tools",
-    searchPlaceholder: "Search tools...",
-    allCategories: "All Categories",
-    tools: "Tools",
-    open: "Open",
-    support: "Support",
-    alternative: "Alternative",
-    regularlyUpdated: "Regularly Updated",
-    lastUpdated: "Last updated:",
-    categories: {
-      productivity: "Productivity & Software",
-      research: "Research & Databases",
-      learning: "Learning & Upskilling",
-    },
-    toolDescriptions: {
-      office365: "Word, Excel, PowerPoint, Teams – free with IU email.",
-      azure: "Test cloud services without a credit card.",
-      matlab: "Campus license for MATLAB & Simulink.",
-      linkedin: "Unlock courses via IU SSO.",
-      statista: "Access via LIS/OpenAthens.",
-      knovel: "Video tutorials for Knovel.",
-      beck: "Short video about the legal database.",
-      nautos: "Standards database – FAQs.",
-      research: "Unipark, WISO, IEEE, Knovel, Elicit.",
-      google: "Free digital and AI training.",
-      udemy: "Discounted courses for Tech & Business.",
-      bootcamp: "Learn programming for IU students.",
-      learnApp: "Scripts, videos, tests & flashcards.",
-      speexx: "DE/EN/FR/IT/ES – start immediately, no ECTS.",
-    },
-  },
-};
+import { TRANSLATIONS } from "~/services/translations/benefits";
+
+// Re-export TRANSLATIONS for convenience
+export { TRANSLATIONS };
 
 export const getToolCategories = (
   t: typeof TRANSLATIONS.de
@@ -180,7 +110,7 @@ export const getToolCategories = (
       {
         name: "IU Bootcamp",
         description: t.toolDescriptions.bootcamp,
-        url: "https://mycampus-classic.iu.org/course/view.php?id=4510",
+        url: "https://programmieren-starten.de/",
         alt: "https://programmieren-starten.de/",
         logo: { text: "BC", bg: "bg-iu-blue" },
         featured: true,
