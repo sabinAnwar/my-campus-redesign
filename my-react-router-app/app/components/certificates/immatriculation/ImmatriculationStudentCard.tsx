@@ -16,7 +16,7 @@ export function ImmatriculationStudentCard({ t, studentData }: ImmatriculationSt
           <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 border border-iu-blue/20 text-iu-blue shadow-lg">
             <User className="h-5 w-5 sm:h-6 sm:w-6" />
           </div>
-          <h2 className="text-lg sm:text-xl md:text-2xl font-bold text-foreground tracking-tight">
+          <h2 className="text-base sm:text-xl md:text-2xl font-bold text-foreground tracking-tight break-words leading-tight min-w-0 [hyphens:auto]">
             {t.studentInfo}
           </h2>
         </div>

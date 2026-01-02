@@ -78,7 +78,7 @@ export function PageHeader({
             <div className={`p-2.5 sm:p-3 rounded-2xl ${iconBg} ${iconColor} shadow-sm`}>
               <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
             </div>
-            <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight">
+            <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight break-words leading-tight min-w-0 [hyphens:auto]">
               {title}
             </h1>
           </div>
@@ -129,7 +129,7 @@ export function SectionHeader({
           <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
         </div>
         <div>
-          <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-foreground tracking-tight">
+          <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-foreground tracking-tight break-words leading-tight min-w-0 [hyphens:auto]">
             {title}
           </h2>
           {subtitle && (
