@@ -15,7 +15,6 @@ import "./app.css";
 import "react-toastify/dist/ReactToastify.css";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
-import { StoreProvider } from "./store/StoreProvider";
 
 // ---------------------------------------------
 // DOCUMENT LAYOUT (keine App-Logik hier)
@@ -74,7 +73,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // ---------------------------------------------
 export default function App() {
   return (
-    <StoreProvider>
+   
       <ThemeProvider defaultTheme="system" storageKey="iu-theme">
         <LanguageProvider storageKey="iu-language">
           <ToastContainer 
@@ -92,7 +91,7 @@ export default function App() {
           <Outlet />
         </LanguageProvider>
       </ThemeProvider>
-    </StoreProvider>
+  
   );
 }
 
