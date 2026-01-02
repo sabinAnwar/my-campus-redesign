@@ -152,11 +152,11 @@ export default function Tasks() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <TasksHeader title={t.title} subtitle={t.subtitle} language={language} />
 
       {/* Submissions Section */}
-      <div className="space-y-6 mb-20">
+      <div className="space-y-4 sm:space-y-6 mb-12 sm:mb-20">
         <SectionHeader title={t.submissionsHeader} color="orange" />
         {submissions.map((item) => (
           <SubmissionCard

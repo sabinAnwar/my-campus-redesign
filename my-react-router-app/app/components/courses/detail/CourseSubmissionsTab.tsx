@@ -12,25 +12,22 @@ interface CourseSubmissionsTabProps {
 
 export function CourseSubmissionsTab({ language, t, submissions, translate, openModal }: CourseSubmissionsTabProps) {
   return (
-    <div className="space-y-4 sm:space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
-      <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 md:gap-8 mb-2 sm:mb-4">
-        <div className="max-w-xl">
-          <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-foreground tracking-tighter mb-1 sm:mb-2 md:mb-3">
+    <div className="space-y-6 sm:space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-4 sm:mb-6">
+        <div className="max-w-2xl">
+          <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight mb-2 sm:mb-3 break-words [hyphens:auto]">
             {t.submissions}
           </h3>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium leading-relaxed">
             {language === "de"
               ? "Behalte deine Deadlines im Auge und verwalte deine schriftlichen Ausarbeitungen an einem zentralen Ort."
               : "Keep track of your deadlines and manage your written assignments in one central place."}
           </p>
         </div>
-        <button className="w-full sm:w-auto px-4 sm:px-6 md:px-8 py-3 sm:py-4 md:py-5 rounded-xl md:rounded-2xl bg-iu-blue text-white font-bold sm:font-black text-xs sm:text-sm hover:bg-iu-blue transition-all shadow-xl shadow-iu-blue/25 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 group shrink-0">
-          <Plus className="w-4 h-4 sm:w-5 sm:h-5 group-hover:rotate-90 transition-transform duration-300" />
-          <span className="hidden sm:inline">
+        <button className="w-full lg:w-auto px-6 sm:px-8 py-3.5 sm:py-4 md:py-5 rounded-xl md:rounded-2xl bg-iu-blue text-white font-bold sm:font-black text-sm hover:bg-iu-blue/90 transition-all shadow-xl shadow-iu-blue/25 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 group shrink-0">
+          <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+          <span>
             {language === "de" ? "Hausarbeit abgeben" : "Submit Assignment"}
-          </span>
-          <span className="sm:hidden">
-            {language === "de" ? "Abgeben" : "Submit"}
           </span>
         </button>
       </div>
