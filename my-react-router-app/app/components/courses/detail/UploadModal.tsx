@@ -26,20 +26,21 @@ export function UploadModal({
   if (!showModal) return null;
 
   return (
-    <div className="fixed inset-0 bg-background/60 dark:bg-black/60 backdrop-blur-xl flex items-center justify-center z-[100] animate-in fade-in duration-300 p-2 sm:p-4">
-      <div className="bg-card/90 backdrop-blur-2xl rounded-xl sm:rounded-2xl md:rounded-[3rem] shadow-2xl p-4 sm:p-6 md:p-10 w-full max-w-2xl relative animate-in zoom-in-95 duration-300 border border-border/50 overflow-hidden max-h-[90vh] overflow-y-auto">
+    <div className="fixed inset-0 bg-background/60 dark:bg-black/60 backdrop-blur-xl flex items-center justify-center z-[100] animate-in fade-in duration-300 sm:p-4 p-0">
+      <div className="bg-card/90 backdrop-blur-2xl sm:rounded-[2rem] rounded-none shadow-2xl sm:p-10 p-6 w-full max-w-2xl relative animate-in zoom-in-95 duration-300 border border-border/50 overflow-hidden sm:max-h-[90vh] max-h-screen h-full sm:h-auto overflow-y-auto custom-scrollbar">
         <div className="absolute top-0 right-0 w-32 sm:w-64 h-32 sm:h-64 bg-iu-blue/10 rounded-full blur-3xl -mr-16 sm:-mr-32 -mt-16 sm:-mt-32" />
         <div className="absolute bottom-0 left-0 w-24 sm:w-48 h-24 sm:h-48 bg-iu-purple/10 rounded-full blur-3xl -ml-12 sm:-ml-24 -mb-12 sm:-mb-24" />
 
-        <div className="relative flex items-center gap-6 mb-10">
-          <div className="h-20 w-20 rounded-[2rem] bg-iu-blue text-white flex items-center justify-center text-3xl font-black shadow-2xl shadow-iu-blue/30">
-            <Upload size={32} />
+        <div className="relative flex items-center gap-4 sm:gap-6 mb-8 sm:mb-10">
+          <div className="h-14 w-14 sm:h-20 sm:w-20 rounded-2xl sm:rounded-[2rem] bg-iu-blue text-white flex items-center justify-center text-2xl sm:text-3xl font-black shadow-2xl shadow-iu-blue/30 shrink-0">
+            <Upload size={24} className="sm:hidden" />
+            <Upload size={32} className="hidden sm:block" />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-foreground tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
               {language === "de" ? "Abgabe verwalten" : "Manage submission"}
             </h2>
-            <p className="text-lg text-muted-foreground font-medium mt-1">
+            <p className="text-base sm:text-lg text-muted-foreground font-medium mt-1">
               {selectedSubmission?.title}
             </p>
           </div>
@@ -76,7 +77,7 @@ export function UploadModal({
         </div>
 
         <div
-          className={`border-4 border-dashed rounded-[2rem] p-12 text-center transition-all relative group/drop ${
+          className={`border-4 border-dashed rounded-[1.5rem] sm:rounded-[2rem] p-8 sm:p-12 text-center transition-all relative group/drop ${
             uploadedFile
               ? "border-iu-blue/50 bg-iu-blue/5 shadow-inner"
               : "border-border hover:border-iu-blue/50 hover:bg-iu-blue/5"
@@ -141,17 +142,17 @@ export function UploadModal({
           )}
         </div>
 
-        <div className="flex items-center gap-4 mt-8 pt-8 border-t border-border/40">
+        <div className="flex flex-col sm:flex-row items-center gap-3 sm:gap-4 mt-8 pt-8 border-t border-border/40">
           <button
             onClick={onClose}
-            className="flex-1 py-4 rounded-xl font-bold text-muted-foreground hover:bg-muted/50 transition-colors"
+            className="w-full sm:flex-1 py-3.5 sm:py-4 rounded-xl font-bold text-muted-foreground hover:bg-muted/50 transition-colors border border-transparent hover:border-border"
           >
             {language === "de" ? "Abbrechen" : "Cancel"}
           </button>
           <button
             onClick={onSubmit}
             disabled={!accepted.honor || !accepted.privacy || !uploadedFile}
-            className="flex-1 py-4 bg-iu-blue text-white rounded-xl font-black shadow-xl shadow-iu-blue/25 hover:bg-iu-blue hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+            className="w-full sm:flex-1 py-3.5 sm:py-4 bg-iu-blue text-white rounded-xl font-black shadow-xl shadow-iu-blue/25 hover:bg-iu-blue hover:scale-[1.02] active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
           >
             {language === "de" ? "Einreichen" : "Submit"}
           </button>
