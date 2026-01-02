@@ -1,9 +1,8 @@
 import { type RouteConfig, index, route } from "@react-router/dev/routes";
 
 export default [
-  // Home
-  index("routes/home.tsx"), // "/"
-  route("login", "routes/login.tsx"),
+  // Login (Startseite)
+  index("routes/login.tsx"), // "/" und "/login"
   route("logout", "routes/logout.tsx"),
   route("reset-password", "routes/reset-password.tsx"),
   route("reset-password/:token", "routes/reset-password.$token.tsx"),
@@ -38,14 +37,8 @@ export default [
     route("news", "routes/_app.news.tsx"),
     route("news/:slug", "routes/_app.news.$slug.tsx"),
 
-    // Users (layout + nested routes)
-    route("users", "routes/_app.users.tsx", [
-      index("routes/_app.users._index.tsx"),
-      route("new", "routes/_app.users.new.tsx"),
-      route(":userId", "routes/_app.users.$userId.tsx"),
-    ]),
     // Other pages
-    route("events", "routes/_app.events.tsx"),
+
     route("faq", "routes/_app.faq.tsx"),
     route("contact", "routes/_app.contact.tsx"),
     route("tasks", "routes/_app.tasks.tsx"),
@@ -73,7 +66,8 @@ export default [
     "api/praxisberichte/:weekKey",
     "routes/api/praxisberichte.$weekKey.tsx"
   ),
-  route("api/room-bookings", "routes/api.room-bookings.tsx"),
+  route("api/room-bookings", "routes/api/room-bookings.tsx"),
+  route("api/upload", "routes/api/upload.tsx"),
   route("api/reminders/preferences", "routes/api/reminders.preferences.tsx"),
   route("api/request-password-reset", "routes/api/request-password-reset.tsx"),
   route("api/reset-password", "routes/api/reset-password.tsx"),
