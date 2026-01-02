@@ -1,7 +1,5 @@
-import { useEffect, useState } from "react";
-import { Link, useNavigate, useLoaderData, useFetcher } from "react-router";
-import { showErrorToast, showSuccessToast } from "~/lib/toast";
-import { prisma } from "~/lib/prisma";
+import { Link, useLoaderData, redirect } from "react-router";
+import { getUserFromRequest } from "~/lib/auth.server";
 import { MOTIVATIONAL_QUOTES } from "~/data/quotes";
 import {
   Mail,
@@ -24,96 +22,155 @@ import {
   LoginSupportLink,
 } from "~/components/login";
 
-
-// TYPES
-
-
+import { useLogin, useQuoteRotation } from "~/hooks/useAuth";
 import type { LoginLoaderData as LoaderData } from "~/types/login";
 
+// ============================================================================
+// LOADER
+// ============================================================================
 
-// CONSTANTS
+export const loader = async ({ request }: { request: Request }) => {
+  // Quick cookie check - skip DB if no session cookie exists
+  const cookieHeader = request.headers.get("Cookie");
+  const hasSession = cookieHeader?.includes("session=");
 
-
-const QUOTE_ROTATION_INTERVAL = 8000;
-const QUOTE_FADE_DURATION = 500;
-
-
-// ACTIONS & LOADERS
-
-
-export const loader = async () => {
-  try {
-    const totalUsers = await prisma.user.count();
-    const activeSessions = await prisma.session.findMany({
-      where: { expiresAt: { gt: new Date() } },
-      select: { userId: true },
-      distinct: ["userId"],
-    });
-    return { totalUsers, onlineUsers: activeSessions.length };
-  } catch (error) {
-    console.error("Failed to fetch login stats:", error);
-    return { totalUsers: 500, onlineUsers: 42 };
+  if (hasSession) {
+    const user = await getUserFromRequest(request);
+    if (user) {
+      throw redirect("/dashboard");
+    }
   }
+
+  return { totalUsers: 500, onlineUsers: 42 };
 };
 
+// ============================================================================
+// SUB-COMPONENTS
+// ============================================================================
 
+function LoginErrorAlert({ error }: { error: string }) {
+  return (
+    <div className="rounded-lg bg-red-50 dark:bg-red-950/40 border-2 border-red-200 dark:border-red-900/50 p-5 backdrop-blur-sm">
+      <div className="flex gap-4">
+        <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
+        <p className="text-base font-semibold text-red-700 dark:text-red-400">
+          {error}
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function LoginSubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
+  return (
+    <button
+      type="submit"
+      disabled={isSubmitting}
+      className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 dark:from-iu-blue via-slate-800 dark:via-iu-blue to-slate-900 dark:to-iu-blue hover:from-slate-800 dark:hover:from-iu-blue hover:via-slate-700 dark:hover:via-iu-blue hover:to-slate-800 dark:hover:to-iu-blue text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl dark:shadow-iu-blue/20 dark:hover:shadow-iu-blue/40 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 border border-slate-700 dark:border-iu-blue/30"
+    >
+      {isSubmitting ? (
+        <>
+          <Loader2 className="animate-spin h-6 w-6" />
+          <span>Signing in...</span>
+        </>
+      ) : (
+        <>
+          <span id="login-button-text">Sign In</span>
+          <ArrowRight className="w-6 h-6" />
+        </>
+      )}
+    </button>
+  );
+}
+
+function RememberMeSection() {
+  return (
+    <div className="flex items-center justify-between pt-4">
+      <div className="flex items-center gap-2">
+        <input
+          id="remember"
+          name="remember"
+          type="checkbox"
+          className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-iu-blue focus:ring-2 focus:ring-slate-900 dark:focus:ring-iu-blue cursor-pointer transition-all"
+        />
+        <label
+          htmlFor="remember"
+          className="text-base text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
+        >
+          Keep me signed in
+        </label>
+      </div>
+      <Link
+        to="/reset-password"
+        title="Forgot password link"
+        className="text-base font-bold text-slate-900 dark:text-iu-blue hover:text-slate-700 dark:hover:text-iu-blue transition duration-200 underline-offset-2 hover:underline"
+      >
+        Forgot password?
+      </Link>
+    </div>
+  );
+}
+
+function SupportSection() {
+  return (
+    <>
+      <div className="relative mt-10">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-slate-300 dark:border-slate-600" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-base">
+            Need Help?
+          </span>
+        </div>
+      </div>
+
+      <div className="login-support-grid mt-10">
+        <LoginSupportLink
+          href="https://iu.de"
+          icon={Globe}
+          label="IU Website"
+          isExternal
+        />
+        <LoginSupportLink
+          href="mailto:support@iu-study.org"
+          icon={Mail}
+          label="Support"
+          isExternal
+        />
+      </div>
+    </>
+  );
+}
+
+function LoginFooter() {
+  return (
+    <div className="mt-10 text-center space-y-3">
+      <p className="text-base text-slate-700 dark:text-slate-400 font-semibold flex items-center justify-center gap-2">
+        <CheckCircle2 className="w-5 h-5 text-iu-blue" />
+        Built by IU Students • Professional Development
+      </p>
+      <p className="text-sm text-slate-500 dark:text-slate-500 flex items-center justify-center gap-2">
+        <ShieldCheck className="w-4 h-4" />
+        Enterprise-grade security • Encrypted connections • Data protected
+      </p>
+    </div>
+  );
+}
+
+// ============================================================================
 // MAIN COMPONENT
+// ============================================================================
 
-
+/**
+ * Login page with branded design
+ * Features quote rotation, user stats, and support links
+ */
 export default function Login() {
   const { totalUsers, onlineUsers } = useLoaderData() as LoaderData;
-  const navigate = useNavigate();
-  const fetcher = useFetcher();
-
-  const [error, setError] = useState<string | null>(null);
-  const [showPassword, setShowPassword] = useState(false);
-  const [currentQuoteIndex, setCurrentQuoteIndex] = useState(() =>
-    Math.floor(Math.random() * MOTIVATIONAL_QUOTES.length)
-  );
-  const [isQuoteFading, setIsQuoteFading] = useState(false);
-
-  const isSubmitting = fetcher.state === "submitting";
-
-  useEffect(() => {
-    if (fetcher.state === "idle" && fetcher.data) {
-      const data = fetcher.data as any;
-      if (data.success) {
-        showSuccessToast("Login successful! Redirecting...");
-        navigate("/dashboard", { replace: true });
-      } else if (data.error) {
-        setError(data.error);
-        showErrorToast(data.error);
-      }
-    }
-  }, [fetcher.state, fetcher.data, navigate]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setIsQuoteFading(true);
-      setTimeout(() => {
-        setCurrentQuoteIndex((prev) => (prev + 1) % MOTIVATIONAL_QUOTES.length);
-        setIsQuoteFading(false);
-      }, QUOTE_FADE_DURATION);
-    }, QUOTE_ROTATION_INTERVAL);
-    return () => clearInterval(interval);
-  }, []);
-
-  const handleDotClick = (idx: number) => {
-    setIsQuoteFading(true);
-    setTimeout(() => {
-      setCurrentQuoteIndex(idx);
-      setIsQuoteFading(false);
-    }, 300);
-  };
-
-  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
-    setError(null);
-    fetcher.submit(new FormData(e.currentTarget), {
-      method: "POST",
-      action: "/api/login",
-    });
-  };
+  const { error, isSubmitting, handleSubmit } = useLogin();
+  const { currentQuote, currentIndex, isFading, handleDotClick } =
+    useQuoteRotation();
 
   return (
     <div className="iu-premium-login-grid bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -128,10 +185,10 @@ export default function Login() {
         <div className="relative z-10 text-center text-white max-w-md">
           <LoginLogo />
           <LoginQuoteSection
-            currentQuote={MOTIVATIONAL_QUOTES[currentQuoteIndex]}
-            isFading={isQuoteFading}
+            currentQuote={currentQuote}
+            isFading={isFading}
             onDotClick={handleDotClick}
-            activeIndex={currentQuoteIndex}
+            activeIndex={currentIndex}
           />
           <LoginCampusLocations />
           <LoginUserStats total={totalUsers} online={onlineUsers} />
@@ -159,101 +216,19 @@ export default function Login() {
                 icon={Lock}
                 type="password"
                 placeholder="Enter your password"
-                showPassword={showPassword}
-                onTogglePassword={() => setShowPassword(!showPassword)}
               />
 
-              <div className="flex items-center justify-between pt-4">
-                <div className="flex items-center gap-2">
-                  <input
-                    id="remember"
-                    name="remember"
-                    type="checkbox"
-                    className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-iu-blue focus:ring-2 focus:ring-slate-900 dark:focus:ring-iu-blue cursor-pointer transition-all"
-                  />
-                  <label
-                    htmlFor="remember"
-                    className="text-base text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
-                  >
-                    Keep me signed in
-                  </label>
-                </div>
-                <Link
-                  to="/reset-password"
-                  title="Forgot password link"
-                  className="text-base font-bold text-slate-900 dark:text-iu-blue hover:text-slate-700 dark:hover:text-iu-blue transition duration-200 underline-offset-2 hover:underline"
-                >
-                  Forgot password?
-                </Link>
-              </div>
+              <RememberMeSection />
 
-              {error && (
-                <div className="rounded-lg bg-red-50 dark:bg-red-950/40 border-2 border-red-200 dark:border-red-900/50 p-5 backdrop-blur-sm">
-                  <div className="flex gap-4">
-                    <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
-                    <p className="text-base font-semibold text-red-700 dark:text-red-400">
-                      {error}
-                    </p>
-                  </div>
-                </div>
-              )}
+              {error && <LoginErrorAlert error={error} />}
 
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 dark:from-iu-blue via-slate-800 dark:via-iu-blue to-slate-900 dark:to-iu-blue hover:from-slate-800 dark:hover:from-iu-blue hover:via-slate-700 dark:hover:via-iu-blue hover:to-slate-800 dark:hover:to-iu-blue text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl dark:shadow-iu-blue/20 dark:hover:shadow-iu-blue/40 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 border border-slate-700 dark:border-iu-blue/30"
-              >
-                {isSubmitting ? (
-                  <>
-                    <Loader2 className="animate-spin h-6 w-6" />
-                    <span>Signing in...</span>
-                  </>
-                ) : (
-                  <>
-                    <span id="login-button-text">Sign In</span>
-                    <ArrowRight className="w-6 h-6" />
-                  </>
-                )}
-              </button>
+              <LoginSubmitButton isSubmitting={isSubmitting} />
 
-              <div className="relative mt-10">
-                <div className="absolute inset-0 flex items-center">
-                  <div className="w-full border-t border-slate-300 dark:border-slate-600" />
-                </div>
-                <div className="relative flex justify-center text-sm">
-                  <span className="px-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-base">
-                    Need Help?
-                  </span>
-                </div>
-              </div>
-
-              <div className="login-support-grid mt-10">
-                <LoginSupportLink
-                  href="https://iu.de"
-                  icon={Globe}
-                  label="IU Website"
-                  isExternal
-                />
-                <LoginSupportLink
-                  href="mailto:support@iu-study.org"
-                  icon={Mail}
-                  label="Support"
-                  isExternal
-                />
-              </div>
+              <SupportSection />
             </form>
           </div>
 
-          <div className="mt-10 text-center space-y-3">
-            <p className="text-base text-slate-700 dark:text-slate-400 font-semibold flex items-center justify-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-iu-blue" />
-              Built by IU Students • Professional Development
-            </p>
-            <p className="text-sm text-slate-500 dark:text-slate-500 flex items-center justify-center gap-2">
-              <ShieldCheck className="w-4 h-4" />
-              Enterprise-grade security • Encrypted connections • Data protected
-            </p>
-          </div>
+          <LoginFooter />
         </div>
       </div>
     </div>

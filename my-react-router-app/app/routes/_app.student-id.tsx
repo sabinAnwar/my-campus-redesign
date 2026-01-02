@@ -1,15 +1,12 @@
 import React, { useRef } from "react";
 import { Link, useLoaderData } from "react-router";
+import { useLocation } from "react-router-dom";
 import {
   IdCard,
   Download,
   Info,
   ShieldCheck,
   ExternalLink,
-  ArrowLeft,
-  GraduationCap,
-  Calendar,
-  User,
   QrCode,
   CheckCircle2,
   AlertCircle,
@@ -18,87 +15,10 @@ import { showSuccessToast, showErrorToast } from "../lib/toast";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { useLanguage } from "~/contexts/LanguageContext";
+import { TRANSLATIONS } from "~/services/translations/student-id";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
-
-// ────────────────────────────────────────────────────────────────────────────
-// TRANSLATIONS
-// ────────────────────────────────────────────────────────────────────────────
-const TRANSLATIONS = {
-  de: {
-    title: "Digitaler Studentenausweis",
-    subtitle:
-      "Dein offizieller Identitätsnachweis der IU Internationalen Hochschule.",
-    viewBenefits: "Student Benefits ansehen",
-    frontSide: "Vorderseite",
-    backSide: "Rückseite",
-    birthday: "Geburtsdatum",
-    matriculationNo: "Matrikelnummer",
-    validUntil: "Gültig bis",
-    scanToVerify: "Scannen zur Verifizierung",
-    contactInfo: "Kontakt & Information",
-    forGlobalBenefits: "Für weltweite Vorteile eine",
-    applyFor: "beantragen.",
-    signature: "Unterschrift des Inhabers",
-    downloadPdf: "Als PDF exportieren",
-    pdfCreating: "PDF wird generiert...",
-    pdfSuccess: "Ausweis erfolgreich heruntergeladen!",
-    pdfError: "Fehler beim PDF-Export",
-    errorLoading: "Benutzerdaten konnten nicht geladen werden.",
-    usageNotes: "Nutzungshinweise",
-    usageNote1:
-      "Nur in Verbindung mit einem amtlichen Lichtbildausweis gültig.",
-    usageNote2: "Der Ausweis ist nicht auf andere Personen übertragbar.",
-    usageNote3:
-      "Bei Verlust oder Namensänderung bitte das Prüfungsamt informieren.",
-    usageNote4: "Berechtigt zu studentischen Vergünstigungen weltweit.",
-    benefitsFeatures: "Vorteile & Features",
-    benefit1:
-      "Offiziell anerkanntes Dokument für Prüfungen und Campus-Zutritt.",
-    benefit2: "Direkter Zugriff auf exklusive IU Partner-Rabatte.",
-    benefit3: "Integrierter QR-Code für schnelle digitale Validierung.",
-    benefit4: "Offline verfügbar nach dem ersten Laden in der App.",
-    backToDashboard: "Zurück zum Dashboard",
-    officialDocument: "OFFIZIELLES DOKUMENT",
-    universityName: "IU Internationale Hochschule",
-    universitySub: "University of Applied Sciences",
-  },
-  en: {
-    title: "Digital Student ID",
-    subtitle: "Your official proof of identity at IU International University.",
-    viewBenefits: "View Student Benefits",
-    frontSide: "Front Side",
-    backSide: "Back Side",
-    birthday: "Date of Birth",
-    matriculationNo: "Matriculation No.",
-    validUntil: "Valid until",
-    scanToVerify: "Scan to verify",
-    contactInfo: "Contact & Information",
-    forGlobalBenefits: "For global benefits, apply for an",
-    applyFor: ".",
-    signature: "Holder's Signature",
-    downloadPdf: "Export as PDF",
-    pdfCreating: "Generating PDF...",
-    pdfSuccess: "ID card downloaded successfully!",
-    pdfError: "Error during PDF export",
-    errorLoading: "Could not load user data.",
-    usageNotes: "Usage Notes",
-    usageNote1: "Only valid in conjunction with an official photo ID.",
-    usageNote2: "The ID card is non-transferable.",
-    usageNote3:
-      "Please inform the examination office in case of loss or name change.",
-    usageNote4: "Entitles you to student discounts worldwide.",
-    benefitsFeatures: "Benefits & Features",
-    benefit1: "Officially recognized document for exams and campus access.",
-    benefit2: "Direct access to exclusive IU partner discounts.",
-    benefit3: "Integrated QR code for fast digital validation.",
-    benefit4: "Available offline after initial loading in the app.",
-    backToDashboard: "Back to Dashboard",
-    officialDocument: "OFFICIAL DOCUMENT",
-    universityName: "IU International University",
-    universitySub: "University of Applied Sciences",
-  },
-};
+import { PageHeader } from "~/components/shared/PageHeader";
 
 export const loader = async ({ request }: { request: Request }) => {
   try {
@@ -203,30 +123,22 @@ export default function StudentIdPage() {
     });
   };
 
+
   return (
     <div className="max-w-7xl mx-auto space-y-12">
-      <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
-        <div>
-          <div className="flex items-center gap-3 mb-4">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
-              <IdCard size={28} />
-            </div>
-            <h1 className="text-4xl font-black text-foreground tracking-tight">
-              {t.title}
-            </h1>
-          </div>
-          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-            {t.subtitle}
-          </p>
-        </div>
+      <PageHeader
+        icon={IdCard}
+        title={t.title}
+        subtitle={t.subtitle}
+      >
         <Link
           to="/benefits"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue hover:bg-iu-blue/20 font-bold transition-all group"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue hover:bg-iu-blue/20 font-bold transition-all group shadow-sm border border-iu-blue/10"
         >
           {t.viewBenefits}
           <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
         </Link>
-      </div>
+      </PageHeader>
 
       {/* Card Display Section */}
       <div className="grid lg:grid-cols-2 gap-12">
@@ -387,13 +299,6 @@ export default function StudentIdPage() {
           {t.downloadPdf}
         </button>
 
-        <Link
-          to="/dashboard"
-          className="flex items-center gap-2 text-muted-foreground hover:text-foreground font-bold transition-colors group"
-        >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
-          {t.backToDashboard}
-        </Link>
       </div>
 
       {/* Info Sections */}

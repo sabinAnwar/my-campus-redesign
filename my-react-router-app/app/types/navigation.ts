@@ -18,9 +18,11 @@ export type NavKey =
   | "library"
   | "lernassistent";
 
+import type { LucideIcon } from "lucide-react";
+
 export type MenuItemProps = {
   to: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
   label: string;
   danger?: boolean;
 };

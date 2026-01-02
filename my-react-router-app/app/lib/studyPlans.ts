@@ -99,13 +99,13 @@ export const STUDY_PLANS: StudyPlan[] = [
     studiengangPattern: ["Informatik", "Software", "Data Science", "IT"],
     paletteOverrides: {
       theoriephase: {
-        label: "Theoriewoche (Jan bis Mär)",
+        label: "Theoriewoche",
         bg: "bg-fuchsia-500/10",
         text: "text-fuchsia-600 dark:text-fuchsia-400",
         ring: "ring-fuchsia-500/20",
       },
       praxis: {
-        label: "Praxiswochen (Okt bis Dez)",
+        label: "Praxiswochen",
         bg: "bg-emerald-500/10",
         text: "text-emerald-600 dark:text-emerald-400",
         ring: "ring-emerald-500/20",
@@ -158,13 +158,13 @@ export const STUDY_PLANS: StudyPlan[] = [
     ],
     paletteOverrides: {
       theoriephase: {
-        label: "Theoriewoche (Dez bis Feb)",
+        label: "Theoriewoche",
         bg: "bg-indigo-300 dark:bg-indigo-500/20",
         text: "text-indigo-900 dark:text-indigo-100",
         ring: "ring-indigo-500/70 dark:ring-indigo-500/50",
       },
       praxis: {
-        label: "Praxiswochen (Okt bis Nov)",
+        label: "Praxiswochen",
         bg: "bg-teal-300 dark:bg-teal-500/20",
         text: "text-teal-900 dark:text-teal-100",
         ring: "ring-teal-500/70 dark:ring-teal-500/50",

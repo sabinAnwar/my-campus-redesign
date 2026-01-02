@@ -1,0 +1,38 @@
+export const TRANSLATIONS = {
+  de: {
+    title: "Studienplan",
+    subtitle: "Curriculum & Module",
+    description:
+      "Deine akademische Reise im Überblick. Verfolge deinen Fortschritt und plane deine kommenden Semester.",
+    totalECTS: "Gesamt ECTS",
+    completedECTS: "Erreichte ECTS",
+    currentSemester: "Aktuelles Semester",
+    progress: "Studienfortschritt",
+    semester: "Semester",
+    module: "Modul",
+    credits: "Credits",
+    status: "Status",
+    completed: "Abgeschlossen",
+    upcoming: "Bevorstehend",
+    inProgress: "In Bearbeitung",
+    searchPlaceholder: "Module suchen...",
+  },
+  en: {
+    title: "Study Plan",
+    subtitle: "Curriculum & Modules",
+    description:
+      "Your academic journey at a glance. Track your progress and plan your upcoming semesters.",
+    totalECTS: "Total ECTS",
+    completedECTS: "Earned ECTS",
+    currentSemester: "Current Semester",
+    progress: "Study Progress",
+    semester: "Semester",
+    module: "Module",
+    credits: "Credits",
+    status: "Status",
+    completed: "Completed",
+    upcoming: "Upcoming",
+    inProgress: "In Progress",
+    searchPlaceholder: "Search modules...",
+  },
+};

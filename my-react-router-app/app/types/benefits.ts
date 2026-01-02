@@ -7,3 +7,13 @@ export interface BenefitTool {
   logo: { text: string; bg: string };
   featured?: boolean;
 }
+
+export type FeaturedTool = BenefitTool & { category: string };
+
+export interface ToolCategory {
+  title: string;
+  icon: React.ComponentType<{ className?: string }>;
+  color: string;
+  gradient: string;
+  tools: BenefitTool[];
+}

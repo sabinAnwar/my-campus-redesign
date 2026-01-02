@@ -59,6 +59,7 @@ export type DashboardLoaderData = {
     slug: string;
     title: string;
     excerpt: string | null;
+    content: string | null;
     category: string | null;
     publishedAt: string;
     featured: boolean;

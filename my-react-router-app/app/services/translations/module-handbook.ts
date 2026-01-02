@@ -1,0 +1,112 @@
+export const TEXT = {
+  de: {
+    title: "Modulplan Wirtschaftsinformatik",
+    subtitle:
+      "Kurzer Ueberblick zu Modulen, Pruefungsformen und ECTS je Semester.",
+    legendMandatory:
+      "Pflicht = blau - Wahl = grau - Projektarbeiten sind markiert.",
+    legendStatus: "Status laufend - Gelb = geplant - Blau = abgeschlossen.",
+    legendFields: "ECTS, Pruefungsform und Workload stehen direkt im Modul.",
+    btnPdf: "Modulhandbuch PDF",
+    btnAdvisor: "Beratungstermin",
+    contact: "Ansprechpartner",
+    programLabel: "Studium",
+    profileLabel: "Dein Profil",
+    trackLabel: "Empfohlener Track",
+    modulesPerSemester: "Module je Semester",
+    currentSemesterTitle: (sem: number) => `Aktuell Semester ${sem}`,
+    currentSemesterDesc:
+      "Diese Module laufen jetzt und zeigen Pruefungsform und ECTS.",
+    module: "Modul",
+    semester: "Semester",
+    exam: "Pruefung",
+    workload: "Workload",
+    statusRunning: "laufend",
+    statusPlanned: "geplant",
+    statusDone: "abgeschlossen",
+    recommendationTitle: (focus: string) =>
+      `Empfohlene Reihenfolge fuer ${focus}`,
+    recommendationChip: "Kuratiert fuer Sabin",
+    downloadsTitle: "Downloads & Support",
+    downloadsSubtitle: "Alles fuer dein Modulhandbuch",
+    downloadsItems: [
+      "- Vollstaendiges Modulhandbuch (PDF)",
+      "- Pruefungsordnung und Fristen",
+      "- Kontakt Studienbuero & Beratung",
+    ],
+    downloadPdf: "PDF herunterladen",
+    askAdvisor: (advisor: string) => `Frage an ${advisor}`,
+    helpText:
+      "Fuer Rueckfragen zu Wahlpflichtfaechern melde dich jederzeit per Mail.",
+    all: "Alle",
+    businessInformatics: "Wirtschaftsinformatik",
+    programDesc: "Praxisorientiert mit Management-, Data- und Tech-Modulen.",
+    curatedFor: (name: string) => `Kuratiert für ${name}`,
+    focusAdvisor: (focus: string, advisor: string, sem: number) =>
+      `Fokus ${focus}, Advisor ${advisor}, aktuell Semester ${sem}.`,
+    trackDesc: "Process Mining, BI, ML - perfekt fuer Wirtschaftsinformatik.",
+    noDescription: "Noch keine Beschreibung im Modulhandbuch.",
+    generalCompetencies: "Allgemeine Kompetenzen",
+    klausur: "Klausur",
+  },
+  en: {
+    title: "Module Plan Business Informatics",
+    subtitle: "Quick overview of modules, exam formats and ECTS per semester.",
+    legendMandatory:
+      "Mandatory = blue - Elective = gray - Project courses are labeled.",
+    legendStatus: "Green = running - Yellow = planned - Blue = completed.",
+    legendFields: "ECTS, exam type and workload are shown inside each module.",
+    btnPdf: "Module Handbook PDF",
+    btnAdvisor: "Advising appointment",
+    contact: "Contact",
+    programLabel: "Program",
+    profileLabel: "Your profile",
+    trackLabel: "Recommended track",
+    modulesPerSemester: "Modules per semester",
+    currentSemesterTitle: (sem: number) => `Current semester ${sem}`,
+    currentSemesterDesc: "Modules currently running with exam type and ECTS.",
+    module: "Module",
+    semester: "Semester",
+    exam: "Exam",
+    workload: "Workload",
+    statusRunning: "running",
+    statusPlanned: "planned",
+    statusDone: "completed",
+    recommendationTitle: (focus: string) => `Suggested order for ${focus}`,
+    recommendationChip: "Curated for Sabin",
+    downloadsTitle: "Downloads & support",
+    downloadsSubtitle: "Everything for your handbook",
+    downloadsItems: [
+      "- Full module handbook (PDF)",
+      "- Exam regulations and deadlines",
+      "- Contact study office & advising",
+    ],
+    downloadPdf: "Download PDF",
+    askAdvisor: (advisor: string) => `Ask ${advisor}`,
+    helpText: "Reach out anytime for elective questions via email.",
+    all: "All",
+    businessInformatics: "Business Informatics",
+    programDesc: "Practice-oriented with management, data, and tech modules.",
+    curatedFor: (name: string) => `Curated for ${name}`,
+    focusAdvisor: (focus: string, advisor: string, sem: number) =>
+      `Focus ${focus}, advisor ${advisor}, current semester ${sem}.`,
+    trackDesc: "Process Mining, BI, ML - great fit for Business Informatics.",
+    noDescription: "No description available in module handbook yet.",
+    generalCompetencies: "General Competencies",
+    klausur: "Exam",
+  },
+};
+
+export const TYPE_LABELS = {
+  de: { Pflicht: "Pflicht", Wahl: "Wahl" },
+  en: { Pflicht: "Mandatory", Wahl: "Elective" },
+};
+
+export const STATUS_LABELS = {
+  de: {
+    laufend: "laufend",
+    geplant: "geplant",
+    abgeschlossen: "abgeschlossen",
+  },
+  en: { laufend: "running", geplant: "planned", abgeschlossen: "completed" },
+};

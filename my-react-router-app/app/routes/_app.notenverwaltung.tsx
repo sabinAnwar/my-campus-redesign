@@ -1,30 +1,24 @@
-import React, { useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 import { useLoaderData } from "react-router-dom";
 import { getCourseConfig } from "../data/coursesConfig";
 import {
-  GraduationCap,
   TrendingUp,
   CheckCircle2,
   AlertCircle,
   Clock,
   Search,
-  Download,
-  FileText,
   ChevronDown,
-  ChevronUp,
-  Filter,
-  ArrowUpDown,
-  Award,
   BookOpen,
-  Calendar,
-  BarChart3,
-  MoreHorizontal,
-  Printer,
-  FileSpreadsheet,
 } from "lucide-react";
+import {
+  GradesHeader,
+  GradesStatsGrid,
+  GradesFilterControls,
+  GradesLegend,
+} from "~/components/grades";
 
 export const loader = async ({ request }: { request: Request }) => {
   // 1. Try session user
@@ -61,10 +55,7 @@ export const loader = async ({ request }: { request: Request }) => {
   };
 };
 
-
-
 import {
-  TRANSLATIONS,
   STUDENT_DATA,
   SEMESTERS,
   VERTIEFUNG_DATA_ANALYTICS,
@@ -72,21 +63,12 @@ import {
   CHIP_CLASSES,
   CHIP_LABEL,
 } from "~/constants/grades";
+import { TRANSLATIONS } from "~/services/translations/grades";
 import type {
   GradeStatusKey as StatusKey,
   GradeModule,
   GradeSection as Section,
 } from "~/types/grades";
-
-
-
-
-
-
-
-
-
-
 
 // Helper function to get translated chip label
 const getChipLabel = (status: StatusKey, language: "de" | "en"): string => {
@@ -116,8 +98,8 @@ function formatCSVCell(val: unknown) {
 
 export default function GradesDashboardIU() {
   const { language } = useLanguage();
-  const { user, marks, praxisPartner } = useLoaderData<typeof loader>();
   const t = TRANSLATIONS[language];
+  const { user, marks, praxisPartner } = useLoaderData<typeof loader>();
 
   // State for expanded sections (default: current semester is open)
   const [expanded, setExpanded] = useState<number[]>(() => {
@@ -159,15 +141,7 @@ export default function GradesDashboardIU() {
             language === "de" ? "de-DE" : "en-US"
           )
         : "—";
-      let bewertung = dbMark
-        ? dbMark.value <= 4.0
-          ? language === "de"
-            ? "Bestanden"
-            : "Pass"
-          : language === "de"
-            ? "Nicht bestanden"
-            : "Fail"
-        : "—";
+      let bewertung = dbMark ? (dbMark.value <= 4.0 ? t.pass : t.fail) : "—";
 
       // Force last semester courses to be registered (CE)
       if (sem.startsWith(maxSemesterStr)) {
@@ -463,47 +437,19 @@ export default function GradesDashboardIU() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
-      {/* HEADER BANNER */}
-      <header className="mb-12">
-        <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-          <div className="space-y-4">
-            <div className="flex items-center gap-3">
-              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
-                <GraduationCap size={28} />
-              </div>
-              <h1 className="text-4xl font-black text-foreground tracking-tight">
-                {t.transcriptTitle}
-              </h1>
-            </div>
-            <div className="flex items-center gap-2 text-lg text-muted-foreground font-medium">
-              <Award size={20} className="text-iu-blue" />
-              {t.universityName}
-            </div>
-          </div>
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0">
+      <GradesHeader
+        title={t.transcriptTitle}
+        universityName={t.universityName}
+        exportPDFLabel={t.exportPDF}
+        exportCSVLabel={t.exportCSV}
+        onExportPDF={exportPDF}
+        onExportCSV={exportCSV}
+      />
 
-          <div className="flex flex-wrap gap-4">
-            <button
-              onClick={exportPDF}
-              className="group flex items-center gap-2 bg-iu-blue hover:bg-iu-blue/90 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 shadow-lg shadow-iu-blue/20"
-            >
-              <Printer className="h-4 w-4" />
-              {t.exportPDF}
-            </button>
-            <button
-              onClick={exportCSV}
-              className="group flex items-center gap-2 bg-card hover:bg-muted text-foreground font-bold py-3 px-6 rounded-xl transition-all duration-300 border border-border"
-            >
-              <FileSpreadsheet className="h-4 w-4" />
-              {t.exportCSV}
-            </button>
-          </div>
-        </div>
-      </header>
 
-      {/* STATS GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-        {[
+      <GradesStatsGrid
+        stats={[
           {
             label: t.overallAverage,
             val: studentData.gesamtDurchschnitt,
@@ -532,125 +478,41 @@ export default function GradesDashboardIU() {
             color: "iu-red",
             bg: "bg-iu-red",
           },
-        ].map((stat, idx) => (
-          <div
-            key={idx}
-            className="group relative overflow-hidden rounded-[2.5rem] bg-card/60 backdrop-blur-xl border border-border p-10 shadow-2xl hover:shadow-iu-blue/10 transition-all duration-500 hover:-translate-y-2"
-          >
-            <div className="absolute top-0 right-0 p-8 opacity-5 group-hover:scale-110 transition-transform duration-700">
-              <stat.icon className="h-24 w-24" />
-            </div>
-            <div className="relative z-10">
-              <div
-                className={`p-4 rounded-2xl ${stat.bg}/10 w-fit mb-6 group-hover:scale-110 transition-transform duration-500`}
-              >
-                <stat.icon className={`h-8 w-8 text-${stat.color}`} />
-              </div>
-              <p className="text-sm font-black text-muted-foreground uppercase tracking-[0.2em] mb-2">
-                {stat.label}
-              </p>
-              <p className="text-5xl font-black text-foreground tracking-tight">
-                {stat.val}
-              </p>
-            </div>
-          </div>
-        ))}
-      </div>
+        ]}
+      />
 
-      {/* CONTROLS & FILTER */}
-      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
-        <div className="flex items-center gap-4 mb-10">
-          <div className="p-3 bg-iu-blue/10 rounded-2xl">
-            <Filter className="h-8 w-8 text-iu-blue" />
-          </div>
-          <h2 className="text-3xl font-black text-foreground tracking-tight">
-            {t.filterAndSort}
-          </h2>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-6">
-          <div className="flex-1 relative group">
-            <Search
-              className="absolute left-6 top-1/2 -translate-y-1/2 text-muted-foreground group-focus-within:text-iu-blue transition-colors"
-              size={24}
-            />
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder={t.searchPlaceholder}
-              className="w-full pl-16 pr-6 py-5 rounded-2xl border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-4 focus:ring-iu-blue/10 focus:border-iu-blue transition-all shadow-inner text-lg font-bold"
-            />
-          </div>
-
-          <div className="flex flex-wrap items-center gap-4">
-            <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl px-6 py-4 shadow-inner group focus-within:border-iu-blue transition-colors">
-              <Filter
-                size={20}
-                className="text-muted-foreground group-focus-within:text-iu-blue"
-              />
-              <select
-                value={statusFilter}
-                onChange={(e) => setStatusFilter(e.target.value as any)}
-                className="bg-transparent text-base font-black uppercase tracking-widest text-foreground focus:outline-none cursor-pointer"
-              >
-                <option value="ALL">{t.allStatus}</option>
-                <option value="P">{t.statusPassed}</option>
-                <option value="M">{t.statusOpen}</option>
-                <option value="CE">{t.statusRegistered}</option>
-                <option value="E">{t.statusExamRegistered}</option>
-                <option value="F">{t.statusFailed}</option>
-              </select>
-            </div>
-
-            <div className="flex items-center gap-3 bg-background/50 border border-border rounded-2xl px-6 py-4 shadow-inner group focus-within:border-iu-blue transition-colors">
-              <ArrowUpDown
-                size={20}
-                className="text-muted-foreground group-focus-within:text-iu-blue"
-              />
-              <select
-                value={sortKey}
-                onChange={(e) => setSortKey(e.target.value as any)}
-                className="bg-transparent text-base font-black uppercase tracking-widest text-foreground focus:outline-none cursor-pointer"
-              >
-                <option value="none">{t.sortNone}</option>
-                <option value="datum">{t.sortDate}</option>
-                <option value="note">{t.sortGrade}</option>
-              </select>
-              <button
-                onClick={() =>
-                  setSortDir((d) => (d === "asc" ? "desc" : "asc"))
-                }
-                className="p-2 hover:bg-iu-blue/10 rounded-xl transition-colors text-iu-blue"
-              >
-                {sortDir === "asc" ? (
-                  <ChevronUp size={20} />
-                ) : (
-                  <ChevronDown size={20} />
-                )}
-              </button>
-            </div>
-
-            <div className="flex items-center gap-2 bg-muted/50 p-2 rounded-2xl border border-border">
-              <button
-                onClick={expandAll}
-                className="px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all"
-              >
-                {t.expandAll}
-              </button>
-              <div className="w-px h-6 bg-border" />
-              <button
-                onClick={collapseAll}
-                className="px-6 py-3 text-xs font-black uppercase tracking-[0.2em] text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded-xl transition-all"
-              >
-                {t.collapseAll}
-              </button>
-            </div>
-          </div>
-        </div>
-      </div>
+      <GradesFilterControls
+        search={search}
+        onSearchChange={setSearch}
+        statusFilter={statusFilter}
+        onStatusFilterChange={setStatusFilter}
+        sortKey={sortKey}
+        onSortKeyChange={setSortKey}
+        sortDir={sortDir}
+        onSortDirToggle={() =>
+          setSortDir((d) => (d === "asc" ? "desc" : "asc"))
+        }
+        onExpandAll={expandAll}
+        onCollapseAll={collapseAll}
+        labels={{
+          filterAndSort: t.filterAndSort,
+          searchPlaceholder: t.searchPlaceholder,
+          allStatus: t.allStatus,
+          statusPassed: t.statusPassed,
+          statusOpen: t.statusOpen,
+          statusRegistered: t.statusRegistered,
+          statusExamRegistered: t.statusExamRegistered,
+          statusFailed: t.statusFailed,
+          sortNone: t.sortNone,
+          sortDate: t.sortDate,
+          sortGrade: t.sortGrade,
+          expandAll: t.expandAll,
+          collapseAll: t.collapseAll,
+        }}
+      />
 
       {/* SECTIONS */}
-      <div className="space-y-8 pb-20">
+      <div className="space-y-4 pb-12">
         {filteredSections.map((section, i) => {
           const isOpen = expanded.includes(i);
           const sectionPassed = section.modules.filter(
@@ -665,41 +527,40 @@ export default function GradesDashboardIU() {
           return (
             <div
               key={section.name}
-              className={`group rounded-[2.5rem] border transition-all duration-500 overflow-hidden ${
+              className={`group rounded-xl sm:rounded-2xl border transition-all duration-500 overflow-hidden ${
                 isOpen
-                  ? "border-iu-blue/30 bg-card/80 shadow-2xl shadow-iu-blue/10"
+                  ? "border-iu-blue/30 bg-card/80 shadow-lg shadow-iu-blue/10"
                   : "border-border bg-card/40 hover:border-iu-blue/30 hover:bg-card/60"
               }`}
             >
               <button
                 onClick={() => toggle(i)}
-                className={`w-full text-left px-10 py-8 flex items-center justify-between transition-all ${
+                className={`w-full text-left px-4 sm:px-6 py-4 sm:py-5 flex items-center justify-between transition-all ${
                   isOpen ? "bg-iu-blue/5" : ""
                 }`}
               >
-                <div className="flex items-center gap-6">
+                <div className="flex items-center gap-3 sm:gap-4">
                   <div
-                    className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-500 ${
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 ${
                       isOpen
-                        ? "bg-iu-blue text-white shadow-xl shadow-iu-blue/20 scale-110"
+                        ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-105"
                         : "bg-muted text-muted-foreground"
                     }`}
                   >
-                    <BookOpen size={28} />
+                    <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
                   </div>
                   <div>
-                    <h4 className="text-2xl font-black text-foreground tracking-tight mb-2">
+                    <h4 className="text-base sm:text-lg font-bold text-foreground tracking-tight mb-0.5 sm:mb-1">
                       {section.name}
                     </h4>
-                    <div className="flex items-center gap-6">
-                      <div className="flex items-center gap-2 text-xs font-black text-muted-foreground uppercase tracking-widest">
-                        <CheckCircle2 size={14} className="text-iu-blue" />
-                        {sectionPassed} / {sectionTotal}{" "}
-                        {language === "de" ? "Abgeschlossen" : "Completed"}
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">
+                        <CheckCircle2 size={10} className="text-iu-blue" />
+                        {sectionPassed} / {sectionTotal} {t.completed}
                       </div>
-                      <div className="w-32 h-2 bg-muted rounded-full overflow-hidden shadow-inner">
+                      <div className="w-16 sm:w-24 h-1 sm:h-1.5 bg-muted rounded-full overflow-hidden">
                         <div
-                          className="h-full bg-iu-blue shadow-[0_0_10px_rgba(16,185,129,0.5)] transition-all duration-1000"
+                          className="h-full bg-iu-blue transition-all duration-1000"
                           style={{ width: `${sectionProgress}%` }}
                         />
                       </div>
@@ -707,38 +568,46 @@ export default function GradesDashboardIU() {
                   </div>
                 </div>
                 <div
-                  className={`p-4 rounded-2xl transition-all duration-500 ${
+                  className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all duration-500 ${
                     isOpen
                       ? "bg-iu-blue/10 text-iu-blue rotate-180"
                       : "bg-muted text-muted-foreground"
                   }`}
                 >
-                  <ChevronDown size={24} />
+                  <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
                 </div>
               </button>
 
               {isOpen && (
-                <div className="px-10 pb-10">
+                <div className="px-4 sm:px-6 pb-4 sm:pb-6">
                   {section.modules.length === 0 ? (
-                    <div className="flex flex-col items-center justify-center py-20 text-muted-foreground">
-                      <Search size={64} className="mb-6 opacity-10" />
-                      <p className="text-lg font-bold uppercase tracking-widest">
+                    <div className="flex flex-col items-center justify-center py-8 sm:py-12 text-muted-foreground">
+                      <Search size={32} className="mb-3 opacity-20" />
+                      <p className="text-sm sm:text-base font-bold uppercase tracking-wide">
                         {t.noEntries}
                       </p>
                     </div>
                   ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full border-separate border-spacing-y-4">
+                    <div className="overflow-x-auto -mx-2 sm:mx-0">
+                      <table className="w-full border-separate border-spacing-y-1 sm:border-spacing-y-2 min-w-[600px]">
                         <thead>
-                          <tr className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground">
-                            <th className="text-left px-6 py-4">{t.module}</th>
-                            <th className="text-left px-6 py-4">{t.status}</th>
-                            <th className="text-center px-6 py-4">{t.grade}</th>
-                            <th className="text-center px-6 py-4">
+                          <tr className="text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground">
+                            <th className="text-left px-2 sm:px-4 py-2">
+                              {t.module}
+                            </th>
+                            <th className="text-left px-2 sm:px-4 py-2">
+                              {t.status}
+                            </th>
+                            <th className="text-center px-2 sm:px-4 py-2">
+                              {t.grade}
+                            </th>
+                            <th className="text-center px-2 sm:px-4 py-2">
                               {t.credits}
                             </th>
-                            <th className="text-left px-6 py-4">{t.date}</th>
-                            <th className="text-right px-6 py-4">
+                            <th className="text-left px-2 sm:px-4 py-2">
+                              {t.date}
+                            </th>
+                            <th className="text-right px-2 sm:px-4 py-2">
                               {t.assessment}
                             </th>
                           </tr>
@@ -747,18 +616,18 @@ export default function GradesDashboardIU() {
                           {section.modules.map((m, j) => (
                             <tr
                               key={j}
-                              className="group/row bg-background/40 hover:bg-iu-blue/5 transition-all duration-300 rounded-2xl"
+                              className="group/row bg-background/40 hover:bg-iu-blue/5 transition-all duration-300 rounded-lg"
                             >
-                              <td className="px-6 py-6 rounded-l-2xl border-y border-l border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="font-black text-foreground text-base leading-tight uppercase tracking-tight group-hover/row:text-iu-blue transition-colors">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 rounded-l-lg border-y border-l border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="font-medium text-foreground text-xs sm:text-sm leading-tight group-hover/row:text-iu-blue transition-colors">
                                   {m.name}
                                 </div>
                               </td>
-                              <td className="px-6 py-6 border-y border-border/50 group-hover/row:border-iu-blue/30">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 border-y border-border/50 group-hover/row:border-iu-blue/30">
                                 <span
-                                  className={`inline-flex items-center gap-2 rounded-xl px-4 py-2 text-[10px] font-black uppercase tracking-widest shadow-sm ${
+                                  className={`inline-flex items-center gap-1 rounded px-2 py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wide shadow-sm ${
                                     m.status === "P"
-                                      ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/20"
+                                      ? "bg-iu-blue/10 text-iu-blue border border-iu-blue/20"
                                       : m.status === "F"
                                         ? "bg-iu-red/10 text-iu-red border border-iu-red/20"
                                         : m.status === "M"
@@ -767,53 +636,53 @@ export default function GradesDashboardIU() {
                                   }`}
                                 >
                                   {m.status === "P" && (
-                                    <CheckCircle2 size={12} />
+                                    <CheckCircle2 size={10} />
                                   )}
                                   {m.status === "F" && (
-                                    <AlertCircle size={12} />
+                                    <AlertCircle size={10} />
                                   )}
                                   {["M", "CE", "E"].includes(m.status) && (
-                                    <Clock size={12} />
+                                    <Clock size={10} />
                                   )}
                                   {getChipLabel(m.status, language)}
                                 </span>
                               </td>
-                              <td className="px-6 py-6 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
                                 {m.note == null ? (
-                                  <span className="text-muted-foreground/30 font-black">
+                                  <span className="text-muted-foreground/30 font-bold">
                                     —
                                   </span>
                                 ) : (
                                   <span
-                                    className={`inline-flex items-center justify-center w-12 h-12 rounded-xl font-black text-base shadow-lg transition-transform group-hover/row:scale-110 ${
+                                    className={`inline-flex items-center justify-center w-8 h-8 sm:w-9 sm:h-9 rounded font-bold text-xs sm:text-sm shadow transition-transform group-hover/row:scale-105 ${
                                       m.note <= 1.5
-                                        ? "bg-iu-blue text-white shadow-iu-blue/20"
+                                        ? "bg-iu-blue text-white"
                                         : m.note <= 2.5
-                                          ? "bg-iu-purple text-white shadow-iu-purple/20"
+                                          ? "bg-iu-purple text-white"
                                           : m.note <= 3.5
-                                            ? "bg-iu-orange text-white shadow-iu-orange/20"
-                                            : "bg-muted-foreground text-white shadow-muted/20"
+                                            ? "bg-iu-orange text-white"
+                                            : "bg-muted-foreground text-white"
                                     }`}
                                   >
                                     {m.note.toFixed(1)}
                                   </span>
                                 )}
                               </td>
-                              <td className="px-6 py-6 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="text-sm font-black text-foreground">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-xs sm:text-sm font-medium text-foreground">
                                   {m.credits}{" "}
-                                  <span className="text-[10px] text-muted-foreground uppercase tracking-widest ml-1">
+                                  <span className="text-[8px] text-muted-foreground uppercase tracking-wide">
                                     ECTS
                                   </span>
                                 </div>
                               </td>
-                              <td className="px-6 py-6 border-y border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="text-sm font-bold text-muted-foreground">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 border-y border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">
                                   {m.datum}
                                 </div>
                               </td>
-                              <td className="px-6 py-6 text-right rounded-r-2xl border-y border-r border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="text-xs font-bold text-muted-foreground italic">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-right rounded-r-lg border-y border-r border-border/50 group-hover/row:border-iu-blue/30">
+                                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground italic">
                                   {m.bewertung || "—"}
                                 </div>
                               </td>
@@ -830,66 +699,20 @@ export default function GradesDashboardIU() {
         })}
       </div>
 
-      {/* LEGEND */}
-      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
-        <div className="flex items-center gap-4 mb-10">
-          <div className="p-3 bg-iu-blue/10 text-iu-blue rounded-2xl">
-            <MoreHorizontal size={28} />
-          </div>
-          <h3 className="text-3xl font-black text-foreground tracking-tight">
-            {t.legend}
-          </h3>
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-6">
-          {[
-            { c: "bg-iu-green", label: t.statusPassed, icon: CheckCircle2 },
-            { c: "bg-iu-blue", label: t.statusRegistered, icon: Clock },
-            {
-              c: "bg-iu-purple",
-              label: t.statusExamRegistered,
-              icon: Calendar,
-            },
-            { c: "bg-iu-orange", label: t.statusOpen, icon: Clock },
-            { c: "bg-iu-red", label: t.statusFailed, icon: AlertCircle },
-          ].map((it, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-4 rounded-2xl border border-border bg-background/40 p-5 transition-all hover:bg-iu-blue/5 hover:border-iu-blue/30 group"
-            >
-              <div
-                className={`w-12 h-12 rounded-xl ${it.c} flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform`}
-              >
-                <it.icon size={20} />
-              </div>
-              <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground leading-tight">
-                {it.label}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-          {[
-            { c: "bg-iu-blue", label: t.gradeExcellent },
-            { c: "bg-iu-purple", label: t.gradeGood },
-            { c: "bg-iu-orange", label: t.gradeSatisfactory },
-            { c: "bg-muted-foreground", label: t.gradeSufficient },
-          ].map((it, idx) => (
-            <div
-              key={idx}
-              className="flex items-center gap-4 rounded-2xl border border-border bg-background/40 p-5 transition-all hover:bg-iu-blue/5 hover:border-iu-blue/30 group"
-            >
-              <div
-                className={`w-5 h-5 rounded-lg ${it.c} shadow-lg group-hover:scale-125 transition-transform`}
-              />
-              <div className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground">
-                {it.label}
-              </div>
-            </div>
-          ))}
-        </div>
-      </div>
+      <GradesLegend
+        labels={{
+          legend: t.legend,
+          statusPassed: t.statusPassed,
+          statusRegistered: t.statusRegistered,
+          statusExamRegistered: t.statusExamRegistered,
+          statusOpen: t.statusOpen,
+          statusFailed: t.statusFailed,
+          gradeExcellent: t.gradeExcellent,
+          gradeGood: t.gradeGood,
+          gradeSatisfactory: t.gradeSatisfactory,
+          gradeSufficient: t.gradeSufficient,
+        }}
+      />
     </div>
   );
 }

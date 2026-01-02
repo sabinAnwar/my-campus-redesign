@@ -1,12 +1,10 @@
-import React, { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { apiGet, apiJson } from "../lib/api";
+import { apiGet } from "../lib/api";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import {
-  CalendarRange,
-  ListChecks,
   ChevronLeft,
   ChevronRight,
   CheckCircle,
@@ -18,164 +16,19 @@ import {
   BadgeCheck,
   Smile,
   Info,
-  ArrowLeft,
   X,
   Calendar,
   Clock,
-  BarChart3,
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
-
-// Translations
-const TRANSLATIONS = {
-  de: {
-    backToDashboard: "← Zurück zum Dashboard",
-    title: "Praxisberichte",
-    subtitle: "Dokumentiere und reiche deine wöchentlichen Praxisberichte ein.",
-    reminder: "Praxisbericht Erinnerung",
-    reminderActive: "Aktiv: tägliche E-Mail um",
-    reminderDisabled:
-      "Deaktiviert: aktiviere tägliche Erinnerung in den Einstellungen",
-    openSettings: "Einstellungen öffnen",
-    submitted: "Eingereicht",
-    mustSubmit: "Muss eingereicht werden",
-    drafts: "Entwürfe",
-    reviewed: "Geprüft",
-    klausurWeeks: "Klausurwochen",
-    completion: "Fertigstellung",
-    calendar: "Kalender",
-    list: "Liste",
-    goToCurrentWeek: "Zur aktuellen Woche",
-    newDraft: "Neuer Entwurf",
-    all: "Alle",
-    due: "Fällig",
-    draft: "Entwurf",
-    klausurphase: "Klausurphase",
-    month: "Monat",
-    semester: "Semester",
-    legend: "Legende",
-    mustSubmitLegend: "Muss eingereicht werden (kein Bericht)",
-    draftLegend: "Entwurf",
-    submittedLegend: "Eingereicht (grün)",
-    reviewedLegend: "Geprüft (Prüfungsamt)",
-    klausurphaseLegend: "Klausurphase",
-    editedLegend: "Bearbeitet in letzten 48h",
-    noReports: "Noch keine Berichte vorhanden.",
-    colorsReflect: "Farben zeigen den wöchentlichen Status",
-    openReport: "Bericht öffnen",
-    totalHours: "Gesamtstunden",
-    weeklyHours: "Wochenstunden",
-    applyMonToAll: "Mo auf alle anwenden",
-    clearAll: "Alle löschen",
-    fillStandard: "09:00–17:00 füllen",
-    day: "Tag",
-    from: "Von",
-    till: "Bis",
-    hours: "Std.",
-    holiday: "Feiertag",
-    hold: "Pause",
-    rating: "Bewertung",
-    notes: "Notizen",
-    weeklySummary: "Wochenzusammenfassung",
-    describeWork:
-      "Beschreibe deine praktische Arbeit und Erfolge in dieser Woche...",
-    gradeOptional: "Note (optional)",
-    saveDraft: "Entwurf speichern",
-    submit: "Einreichen",
-    cancel: "Abbrechen",
-    saving: "Speichert...",
-    reportPrivateInfo:
-      "Berichte sind privat, bis sie eingereicht werden. Nach dem Einreichen werden sie vom Prüfungsamt geprüft.",
-    saveAsDraftInfo:
-      "Du kannst als Entwurf speichern, um später fortzufahren, oder Einreichen, wenn dein Bericht fertig ist.",
-    setMondayFirst:
-      "Setze zuerst die Zeiten für Montag, um sie auf alle anzuwenden.",
-    noTasks: "Noch keine Aufgaben dokumentiert...",
-    happy: "Glücklich",
-    satisfied: "Zufrieden",
-    sad: "Traurig",
-    angry: "Wütend",
-    mon: "Mo",
-    tue: "Di",
-    wed: "Mi",
-    thu: "Do",
-    fri: "Fr",
-    sat: "Sa",
-    sun: "So",
-  },
-  en: {
-    backToDashboard: "← Back to Dashboard",
-    title: "Practical Reports",
-    subtitle: "Document and submit your weekly practical work reports.",
-    reminder: "Practical Report Reminder",
-    reminderActive: "Active: daily email at",
-    reminderDisabled: "Disabled: enable daily reminder in settings",
-    openSettings: "Open Settings",
-    submitted: "Submitted",
-    mustSubmit: "Must be submitted",
-    drafts: "Drafts",
-    reviewed: "Reviewed",
-    klausurWeeks: "Exam Weeks",
-    completion: "Completion",
-    calendar: "Calendar",
-    list: "List",
-    goToCurrentWeek: "Go to current week",
-    newDraft: "New draft",
-    all: "All",
-    due: "Due",
-    draft: "Draft",
-    klausurphase: "Exam Phase",
-    month: "Month",
-    semester: "Semester",
-    legend: "Legend",
-    mustSubmitLegend: "Must be submitted (no report)",
-    draftLegend: "Draft",
-    submittedLegend: "Submitted (green)",
-    reviewedLegend: "Reviewed (Exam Office)",
-    klausurphaseLegend: "Exam Phase",
-    editedLegend: "Edited in last 48h",
-    noReports: "No reports to show yet.",
-    colorsReflect: "Colors reflect weekly status",
-    openReport: "Open Report",
-    totalHours: "Total Hours",
-    weeklyHours: "Weekly Hours",
-    applyMonToAll: "Apply Mon to all",
-    clearAll: "Clear all",
-    fillStandard: "Fill 09:00–17:00",
-    day: "Day",
-    from: "From",
-    till: "Till",
-    hours: "Hours",
-    holiday: "Holiday",
-    hold: "Hold",
-    rating: "Rating",
-    notes: "Notes",
-    weeklySummary: "Weekly Summary",
-    describeWork: "Describe your practical work and achievements this week...",
-    gradeOptional: "Grade (optional)",
-    saveDraft: "Save Draft",
-    submit: "Submit",
-    cancel: "Cancel",
-    saving: "Saving...",
-    reportPrivateInfo:
-      "Reports are private until submitted. Once submitted, they will be reviewed by the examination office.",
-    saveAsDraftInfo:
-      "You can save as Draft to continue later, or Submit when your report is complete.",
-    setMondayFirst: "Set Monday times first to apply to all.",
-    noTasks: "No tasks documented yet...",
-    happy: "Happy",
-    satisfied: "Satisfied",
-    sad: "Sad",
-    angry: "Angry",
-    mon: "Mon",
-    tue: "Tue",
-    wed: "Wed",
-    thu: "Thu",
-    fri: "Fri",
-    sat: "Sat",
-    sun: "Sun",
-  },
-};
+import { TRANSLATIONS } from "~/services/translations/praxisbericht";
+import {
+  PraxisberichtHeader,
+  ReminderBanner,
+  StatsGrid,
+  ViewToggle,
+  Legend,
+} from "~/components/praxisbericht";
 
 const STATUS_STYLES = {
   DUE: {
@@ -402,422 +255,292 @@ export default function Praxisbericht2() {
 
   return (
     <div className="max-w-7xl mx-auto">
-        {/* Header Section */}
-        <header className="mb-12">
-          <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3">
-                <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue">
-                  <ClipboardList size={28} />
+      <PraxisberichtHeader title={t.title} subtitle={t.subtitle} />
+
+      <ReminderBanner
+        reminderEnabled={reminderEnabled}
+        reminderHour={reminderHour}
+        onOpenSettings={() => navigate("/settings")}
+        labels={{
+          reminder: t.reminder,
+          reminderActive: t.reminderActive,
+          reminderDisabled: t.reminderDisabled,
+          openSettings: t.openSettings,
+        }}
+      />
+
+      <StatsGrid
+        stats={[
+          {
+            label: t.submitted,
+            val: stats.submitted,
+            icon: CheckCircle,
+            color: "iu-blue",
+          },
+          {
+            label: t.mustSubmit,
+            val: stats.due,
+            icon: AlertCircle,
+            color: "orange-500",
+          },
+          {
+            label: t.drafts,
+            val: stats.drafts,
+            icon: FileEdit,
+            color: "iu-blue",
+          },
+          {
+            label: t.reviewed,
+            val: stats.approved,
+            icon: BadgeCheck,
+            color: "purple-500",
+          },
+          {
+            label: t.klausurWeeks,
+            val: stats.klausur,
+            icon: CalendarClock,
+            color: "slate-400",
+          },
+          {
+            label: t.completion,
+            val: `${stats.completion}%`,
+            icon: GraduationCap,
+            color: "pink-500",
+          },
+          {
+            label: t.satisfied,
+            val: stats.satisfied,
+            icon: Smile,
+            color: "iu-blue",
+          },
+        ]}
+      />
+
+      <ViewToggle
+        view={view as "calendar" | "list"}
+        onViewChange={(v) => setView(v)}
+        onGoToCurrentWeek={() => {
+          const now = new Date();
+          setYear(now.getFullYear());
+          setMonth(now.getMonth());
+          const wk = getISOWeekKey(now);
+          const r = reports.find((x) => x && x.isoWeekKey === wk) || null;
+          setActiveReport(r);
+          setActiveWeekKey(wk);
+        }}
+        onNewDraft={() => {
+          const now = new Date();
+          const wk = getISOWeekKey(now);
+          setActiveReport(null);
+          setActiveWeekKey(wk);
+        }}
+        labels={{
+          calendar: t.calendar,
+          list: t.list,
+          goToCurrentWeek: t.goToCurrentWeek,
+          newDraft: t.newDraft,
+        }}
+      />
+
+      {loading ? (
+        <div className="grid grid-cols-1 gap-3">
+          <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
+          <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
+        </div>
+      ) : view === "calendar" ? (
+        <>
+          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+            <div className="lg:col-span-2">
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <button
+                    className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                      mode === "month"
+                        ? "bg-iu-blue text-white"
+                        : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                    }`}
+                    onClick={() => setMode("month")}
+                  >
+                    {t.month}
+                  </button>
+                  <button
+                    className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                      mode === "semester"
+                        ? "bg-iu-blue text-white"
+                        : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                    }`}
+                    onClick={() => setMode("semester")}
+                  >
+                    {t.semester}
+                  </button>
                 </div>
-                <h1 className="text-4xl font-black text-foreground tracking-tight">
-                  {t.title}
-                </h1>
-              </div>
-              <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
-                {t.subtitle}
-              </p>
-            </div>
-
-
-          </div>
-        </header>
-
-        {/* Daily reminder banner */}
-        <div className="mb-12 bg-card/50 backdrop-blur-xl border border-border rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6">
-          <div className="flex items-center gap-6">
-            <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
-              <CalendarClock className="h-8 w-8 text-iu-blue" />
-            </div>
-            <div>
-              <div className="text-xl font-black text-foreground mb-1">
-                {t.reminder}
-              </div>
-              <div className="text-muted-foreground font-medium">
-                {reminderEnabled ? (
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-iu-blue animate-pulse" />
-                    {t.reminderActive} {String(reminderHour).padStart(2, "0")}
-                    :00
-                  </span>
-                ) : (
-                  <span className="flex items-center gap-2">
-                    <span className="h-2 w-2 rounded-full bg-muted" />
-                    {t.reminderDisabled}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-          <button
-            onClick={() => navigate("/settings")}
-            className="w-full md:w-auto px-8 py-4 text-sm font-bold rounded-2xl bg-iu-blue text-white hover:bg-iu-blue transition-all"
-          >
-            {t.openSettings}
-          </button>
-        </div>
-
-        {/* Stats Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4 mb-12">
-          {[
-            {
-              label: t.submitted,
-              val: stats.submitted,
-              icon: CheckCircle,
-              color: "iu-blue",
-            },
-            {
-              label: t.mustSubmit,
-              val: stats.due,
-              icon: AlertCircle,
-              color: "orange-500",
-            },
-            {
-              label: t.drafts,
-              val: stats.drafts,
-              icon: FileEdit,
-              color: "iu-blue",
-            },
-            {
-              label: t.reviewed,
-              val: stats.approved,
-              icon: BadgeCheck,
-              color: "purple-500",
-            },
-            {
-              label: t.klausurWeeks,
-              val: stats.klausur,
-              icon: CalendarClock,
-              color: "slate-400",
-            },
-            {
-              label: t.completion,
-              val: `${stats.completion}%`,
-              icon: GraduationCap,
-              color: "pink-500",
-            },
-            {
-              label: t.satisfied,
-              val: stats.satisfied,
-              icon: Smile,
-              color: "iu-blue",
-            },
-          ].map((stat, i) => (
-            <div
-              key={i}
-              className="bg-card/50 backdrop-blur-xl rounded-3xl border border-border p-6 hover:scale-[1.02] transition-all duration-300 group"
-            >
-              <div
-                className={`h-10 w-10 rounded-2xl bg-${stat.color}/10 flex items-center justify-center border border-${stat.color}/20 mb-4 group-hover:scale-110 transition-transform`}
-              >
-                <stat.icon className={`h-5 w-5 text-${stat.color}`} />
-              </div>
-              <div className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">
-                {stat.label}
-              </div>
-              <div
-                className={`text-3xl font-bold text-foreground`}
-              >
-                {stat.val}
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex flex-col gap-6 mb-10 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-2 bg-card/50 backdrop-blur-xl rounded-2xl border border-border p-1.5">
-            <button
-              onClick={() => setView("calendar")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
-                view === "calendar"
-                  ? "bg-iu-blue text-white"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              <CalendarRange size={18} />
-              {t.calendar}
-            </button>
-            <button
-              onClick={() => setView("list")}
-              className={`flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-sm transition-all duration-300 ${
-                view === "list"
-                  ? "bg-iu-blue text-white"
-                  : "text-muted-foreground hover:text-foreground hover:bg-muted/50"
-              }`}
-            >
-              <ListChecks size={18} />
-              {t.list}
-            </button>
-          </div>
-          <div className="flex items-center gap-3">
-            <button
-              className="px-6 py-3 text-sm font-bold rounded-xl border border-border text-foreground bg-card/50 hover:bg-muted/50 transition-all"
-              onClick={() => {
-                const now = new Date();
-                setYear(now.getFullYear());
-                setMonth(now.getMonth());
-                const wk = getISOWeekKey(now);
-                const r = reports.find((x) => x && x.isoWeekKey === wk) || null;
-                setActiveReport(r);
-                setActiveWeekKey(wk);
-              }}
-            >
-              {t.goToCurrentWeek}
-            </button>
-            <button
-              className="px-6 py-3 text-sm font-bold rounded-xl bg-iu-blue text-white hover:bg-iu-blue transition-all"
-              onClick={() => {
-                const now = new Date();
-                const wk = getISOWeekKey(now);
-                setActiveReport(null);
-                setActiveWeekKey(wk);
-              }}
-            >
-              {t.newDraft}
-            </button>
-          </div>
-        </div>
-
-        {loading ? (
-          <div className="grid grid-cols-1 gap-3">
-            <div className="h-8 bg-slate-200/60 rounded animate-pulse" />
-            <div className="h-64 bg-slate-200/60 rounded animate-pulse" />
-          </div>
-        ) : view === "calendar" ? (
-          <>
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
-              <div className="lg:col-span-2">
-                <div className="flex items-center justify-between mb-3">
+                {mode === "month" ? (
                   <div className="flex items-center gap-2">
                     <button
-                      className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
-                        mode === "month"
-                          ? "bg-iu-blue text-white"
-                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
-                      }`}
-                      onClick={() => setMode("month")}
+                      className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      onClick={() => {
+                        const d = new Date(year, month - 1, 1);
+                        setYear(d.getFullYear());
+                        setMonth(d.getMonth());
+                      }}
                     >
-                      {t.month}
+                      <ChevronLeft size={14} />
                     </button>
+                    <div className="text-sm font-semibold text-foreground dark:text-slate-100">
+                      {new Date(year, month, 1).toLocaleString(undefined, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </div>
                     <button
-                      className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
-                        mode === "semester"
-                          ? "bg-iu-blue text-white"
-                          : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
-                      }`}
-                      onClick={() => setMode("semester")}
+                      className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
+                      onClick={() => {
+                        const d = new Date(year, month + 1, 1);
+                        setYear(d.getFullYear());
+                        setMonth(d.getMonth());
+                      }}
                     >
-                      {t.semester}
+                      <ChevronRight size={14} />
                     </button>
                   </div>
-                  {mode === "month" ? (
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                        onClick={() => {
-                          const d = new Date(year, month - 1, 1);
-                          setYear(d.getFullYear());
-                          setMonth(d.getMonth());
-                        }}
-                      >
-                        <ChevronLeft size={14} />
-                      </button>
-                      <div className="text-sm font-semibold text-foreground dark:text-slate-100">
-                        {new Date(year, month, 1).toLocaleString(undefined, {
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </div>
-                      <button
-                        className="px-2 py-1 text-xs rounded border flex items-center gap-1 border-slate-300 dark:border-slate-700 bg-card/50 dark:bg-slate-900 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors"
-                        onClick={() => {
-                          const d = new Date(year, month + 1, 1);
-                          setYear(d.getFullYear());
-                          setMonth(d.getMonth());
-                        }}
-                      >
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  ) : (
-                    <div className="flex items-center gap-2">
-                      <button
-                        className="px-2 py-1 text-xs rounded border flex items-center gap-1"
-                        onClick={() => {
-                          // move semester 6 months back
-                          const d = new Date(
-                            semStartYear,
-                            semStartMonth - 6,
-                            1
-                          );
-                          setSemStartYear(d.getFullYear());
-                          setSemStartMonth(d.getMonth());
-                        }}
-                      >
-                        <ChevronLeft size={14} />
-                      </button>
-                      <div className="text-sm font-semibold text-foreground">
-                        {new Date(
-                          semStartYear,
-                          semStartMonth,
-                          1
-                        ).toLocaleString(undefined, {
-                          month: "long",
-                          year: "numeric",
-                        })}
-                        {" – "}
-                        {new Date(
-                          semStartYear,
-                          semStartMonth + 5,
-                          1
-                        ).toLocaleString(undefined, {
-                          month: "long",
-                          year: "numeric",
-                        })}
-                      </div>
-                      <button
-                        className="px-2 py-1 text-xs rounded border flex items-center gap-1"
-                        onClick={() => {
-                          const d = new Date(
-                            semStartYear,
-                            semStartMonth + 6,
-                            1
-                          );
-                          setSemStartYear(d.getFullYear());
-                          setSemStartMonth(d.getMonth());
-                        }}
-                      >
-                        <ChevronRight size={14} />
-                      </button>
-                    </div>
-                  )}
-                </div>
-
-                {mode === "month" ? (
-                  <CalendarView
-                    reports={reports}
-                    year={year}
-                    month={month}
-                    filter={statusFilter}
-                    onDayClick={(weekKey: string) => {
-                      const r =
-                        reports.find((x) => x && x.isoWeekKey === weekKey) ||
-                        null;
-                      setActiveReport(r);
-                      setActiveWeekKey(weekKey);
-                    }}
-                  />
                 ) : (
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                    {Array.from({ length: 6 }).map((_, i) => {
-                      const d = new Date(semStartYear, semStartMonth + i, 1);
-                      const y = d.getFullYear();
-                      const m = d.getMonth();
-                      return (
-                        <CalendarView
-                          key={`${y}-${m}`}
-                          reports={reports}
-                          year={y}
-                          month={m}
-                          filter={statusFilter}
-                          onDayClick={(weekKey: string) => {
-                            const r =
-                              reports.find(
-                                (x) => x && x.isoWeekKey === weekKey
-                              ) || null;
-                            setActiveReport(r);
-                            setActiveWeekKey(weekKey);
-                          }}
-                        />
-                      );
-                    })}
+                  <div className="flex items-center gap-2">
+                    <button
+                      className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                      onClick={() => {
+                        // move semester 6 months back
+                        const d = new Date(semStartYear, semStartMonth - 6, 1);
+                        setSemStartYear(d.getFullYear());
+                        setSemStartMonth(d.getMonth());
+                      }}
+                    >
+                      <ChevronLeft size={14} />
+                    </button>
+                    <div className="text-sm font-semibold text-foreground">
+                      {new Date(semStartYear, semStartMonth, 1).toLocaleString(
+                        undefined,
+                        {
+                          month: "long",
+                          year: "numeric",
+                        }
+                      )}
+                      {" – "}
+                      {new Date(
+                        semStartYear,
+                        semStartMonth + 5,
+                        1
+                      ).toLocaleString(undefined, {
+                        month: "long",
+                        year: "numeric",
+                      })}
+                    </div>
+                    <button
+                      className="px-2 py-1 text-xs rounded border flex items-center gap-1"
+                      onClick={() => {
+                        const d = new Date(semStartYear, semStartMonth + 6, 1);
+                        setSemStartYear(d.getFullYear());
+                        setSemStartMonth(d.getMonth());
+                      }}
+                    >
+                      <ChevronRight size={14} />
+                    </button>
                   </div>
                 )}
               </div>
-              <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2.5rem] border border-border dark:border-white/10 p-8 h-fit">
-                <div className="flex items-center gap-3 mb-8">
-                  <div className="p-3 bg-iu-blue/10 rounded-2xl">
-                    <Info className="h-6 w-6 text-iu-blue" />
-                  </div>
-                  <h3 className="text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
-                    {t.legend}
-                  </h3>
+
+              {mode === "month" ? (
+                <CalendarView
+                  reports={reports}
+                  year={year}
+                  month={month}
+                  filter={statusFilter}
+                  onDayClick={(weekKey: string) => {
+                    const r =
+                      reports.find((x) => x && x.isoWeekKey === weekKey) ||
+                      null;
+                    setActiveReport(r);
+                    setActiveWeekKey(weekKey);
+                  }}
+                />
+              ) : (
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                  {Array.from({ length: 6 }).map((_, i) => {
+                    const d = new Date(semStartYear, semStartMonth + i, 1);
+                    const y = d.getFullYear();
+                    const m = d.getMonth();
+                    return (
+                      <CalendarView
+                        key={`${y}-${m}`}
+                        reports={reports}
+                        year={y}
+                        month={m}
+                        filter={statusFilter}
+                        onDayClick={(weekKey: string) => {
+                          const r =
+                            reports.find(
+                              (x) => x && x.isoWeekKey === weekKey
+                            ) || null;
+                          setActiveReport(r);
+                          setActiveWeekKey(weekKey);
+                        }}
+                      />
+                    );
+                  })}
                 </div>
-                <Legend />
-              </div>
+              )}
             </div>
+            <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2.5rem] border border-border dark:border-white/10 p-8 h-fit">
+              <div className="flex items-center gap-3 mb-8">
+                <div className="p-3 bg-iu-blue/10 rounded-2xl">
+                  <Info className="h-6 w-6 text-iu-blue" />
+                </div>
+                <h3 className="text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
+                  {t.legend}
+                </h3>
+              </div>
+              <Legend />
+            </div>
+          </div>
 
-            {/* WeekModal moved outside so it also works in List view */}
-          </>
-        ) : (
-          <ListView
-            reports={reports}
-            filter={statusFilter}
-            onOpen={(weekKey: string) => {
-              const r =
-                reports.find((x) => x && x.isoWeekKey === weekKey) || null;
-              setActiveReport(r);
-              setActiveWeekKey(weekKey);
-            }}
-          />
-        )}
-
-        {/* Shared Week Modal (available for both Calendar and List views) */}
-        <WeekModal
-          open={!!activeWeekKey}
-          weekKey={activeWeekKey}
-          report={activeReport}
-          onClose={() => {
-            setActiveWeekKey(null);
-            setActiveReport(null);
-          }}
-          onSaved={(saved: { isoWeekKey: any }) => {
-            if (!saved) return;
-            setReports((prev) => {
-              const idx = prev.findIndex(
-                (p) => p && p.isoWeekKey === saved.isoWeekKey
-              );
-              if (idx === -1) return [...prev, saved];
-              const next = prev.slice();
-              next[idx] = saved;
-              return next;
-            });
+          {/* WeekModal moved outside so it also works in List view */}
+        </>
+      ) : (
+        <ListView
+          reports={reports}
+          filter={statusFilter}
+          onOpen={(weekKey: string) => {
+            const r =
+              reports.find((x) => x && x.isoWeekKey === weekKey) || null;
+            setActiveReport(r);
+            setActiveWeekKey(weekKey);
           }}
         />
+      )}
 
-        {/* Global ToastContainer is defined in root.jsx */}
-      </div>
-  );
-}
+      {/* Shared Week Modal (available for both Calendar and List views) */}
+      <WeekModal
+        open={!!activeWeekKey}
+        weekKey={activeWeekKey}
+        report={activeReport}
+        onClose={() => {
+          setActiveWeekKey(null);
+          setActiveReport(null);
+        }}
+        onSaved={(saved: { isoWeekKey: any }) => {
+          if (!saved) return;
+          setReports((prev) => {
+            const idx = prev.findIndex(
+              (p) => p && p.isoWeekKey === saved.isoWeekKey
+            );
+            if (idx === -1) return [...prev, saved];
+            const next = prev.slice();
+            next[idx] = saved;
+            return next;
+          });
+        }}
+      />
 
-
-function Legend() {
-  const { language } = useLanguage();
-  const t = TRANSLATIONS[language];
-  const items = [
-    { label: t.mustSubmitLegend, cls: STATUS_STYLES.DUE },
-    { label: t.draftLegend, cls: STATUS_STYLES.DRAFT },
-    { label: t.submittedLegend, cls: STATUS_STYLES.SUBMITTED },
-    { label: t.reviewedLegend, cls: STATUS_STYLES.APPROVED },
-    { label: t.klausurphaseLegend, cls: STATUS_STYLES.KLAUSURPHASE },
-    { label: t.editedLegend, ring: true },
-  ];
-  return (
-    <div className="space-y-4">
-      {items.map((it, i) => (
-        <div key={i} className="flex items-center gap-4 group">
-          <div
-            className={`h-6 w-6 rounded-lg border transition-transform group-hover:scale-110 ${
-              it.cls
-                ? `${it.cls.bg} ${it.cls.border}`
-                : "bg-card/50 border-border"
-            } ${it.ring ? "ring-2 ring-offset-2 ring-offset-background ring-iu-blue" : ""}`}
-          ></div>
-          <span className="text-muted-foreground font-bold text-sm group-hover:text-foreground transition-colors">
-            {it.label}
-          </span>
-        </div>
-      ))}
+      {/* Global ToastContainer is defined in root.jsx */}
     </div>
   );
 }
@@ -1441,9 +1164,7 @@ function WeekModal({
                         className={`transition-colors ${daysState[k]?.holiday ? "bg-muted/20 opacity-50" : "hover:bg-muted/30"}`}
                       >
                         <td className="px-6 py-4 whitespace-nowrap">
-                          <div className="font-bold text-foreground">
-                            {k}
-                          </div>
+                          <div className="font-bold text-foreground">{k}</div>
                           <div className="text-[10px] text-muted-foreground font-bold">
                             {weekDates[idx]?.toLocaleDateString?.() || ""}
                           </div>
