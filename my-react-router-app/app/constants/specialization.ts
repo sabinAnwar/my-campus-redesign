@@ -4,56 +4,16 @@ import {
   FolderKanban,
 } from "lucide-react";
 
-export const TRANSLATIONS = {
-  de: {
-    back: "Zurück zur Studienorganisation",
-    title: "Vertiefungswahl",
-    subtitle: "Wählen Sie Ihre Vertiefungsrichtung für den Studiengang",
-    currentChoice: "Aktuelle Wahl",
-    infoTitle: "Wann muss ich wählen?",
-    infoText: "Die Vertiefungswahl erfolgt in der Regel nach dem 4. Semester. Die gewählten Vertiefungskurse werden im 5. und 6. Semester belegt. Sie können Ihre Wahl bis zum Semesterbeginn ändern.",
-    courses: "Kurse",
-    creditPoints: "Credit Points",
-    chosen: "Gewählt",
-    alreadyChosen: "Bereits gewählt",
-    chooseSpecialization: "Vertiefung wählen",
-    coursesInSpec: "Kurse in dieser Vertiefung",
-    semester: "Semester",
-    careerPaths: "Karrieremöglichkeiten",
-    confirmTitle: "Vertiefung bestätigen",
-    confirmText: "Sind Sie sicher, dass Sie",
-    confirmText2: "als Ihre Vertiefung wählen möchten? Diese Wahl kann bis zum Semesterbeginn geändert werden.",
-    cancel: "Abbrechen",
-    confirm: "Bestätigen",
-    successMsg: "Vertiefung erfolgreich gespeichert!",
-    searchCourse: "Kurs suchen...",
-  },
-  en: {
-    back: "Back to Study Organization",
-    title: "Specialization Selection",
-    subtitle: "Choose your specialization for the",
-    currentChoice: "Current Choice",
-    infoTitle: "When do I need to choose?",
-    infoText: "Specialization selection typically occurs after the 4th semester. The chosen specialization courses will be taken in the 5th and 6th semesters. You can change your selection until the semester begins.",
-    courses: "Courses",
-    creditPoints: "Credit Points",
-    chosen: "Chosen",
-    alreadyChosen: "Already chosen",
-    chooseSpecialization: "Choose Specialization",
-    coursesInSpec: "Courses in this Specialization",
-    semester: "Semester",
-    careerPaths: "Career Opportunities",
-    confirmTitle: "Confirm Specialization",
-    confirmText: "Are you sure you want to choose",
-    confirmText2: "as your specialization? This choice can be changed until the semester begins.",
-    cancel: "Cancel",
-    confirm: "Confirm",
-    successMsg: "Specialization saved successfully!",
-    searchCourse: "Search course...",
-  },
-};
+import type { Vertiefung, VertiefungId } from "~/types/specialization";
 
-export const VERTIEFUNGEN = {
+// Re-export translations from the centralized translations service
+export { TRANSLATIONS } from "~/services/translations/specialization";
+
+// ============================================================================
+// Specialization Data (Non-translatable static configuration)
+// ============================================================================
+
+export const VERTIEFUNGEN: Record<VertiefungId, Vertiefung> = {
   datenanalyse: {
     id: "datenanalyse",
     name: "Datenanalyse",
@@ -63,12 +23,12 @@ export const VERTIEFUNGEN = {
     gradient: "from-emerald-500 to-iu-blue",
     darkGradient: "from-emerald-500/80 to-iu-blue/80",
     description:
-      "Lernen Sie, aus Daten wertvolle Erkenntnisse zu gewinnen und datengetriebene Entscheidungen zu treffen.",
+      "Transformiere Daten in wertvolle Erkenntnisse. Lerne Big Data, Machine Learning und Business Intelligence.",
     highlights: [
-      "Big Data & Machine Learning",
-      "Statistische Analysen",
-      "Business Intelligence",
-      "Predictive Analytics",
+      "Big Data & Cloud Analytics",
+      "Machine Learning Algorithmen",
+      "Business Intelligence Tools",
+      "Datenvisualisierung",
     ],
     courses: [
       {
@@ -138,12 +98,12 @@ export const VERTIEFUNGEN = {
     gradient: "from-iu-blue to-iu-purple",
     darkGradient: "from-iu-blue/80 to-iu-purple/80",
     description:
-      "Entwickeln Sie professionelle Software mit modernen Methoden und Best Practices.",
+      "Entwickle professionelle Software mit modernen Methoden. Von Clean Code bis Cloud-native Architektur.",
     highlights: [
-      "Agile Entwicklung",
-      "Clean Code & Testing",
+      "Moderne Softwaremethodik",
+      "Clean Architecture & DDD",
       "DevOps & CI/CD",
-      "Softwarearchitektur",
+      "Cloud Engineering",
     ],
     courses: [
       {
@@ -213,12 +173,12 @@ export const VERTIEFUNGEN = {
     gradient: "from-iu-orange to-iu-red",
     darkGradient: "from-iu-orange/80 to-iu-red/80",
     description:
-      "Führen Sie IT-Projekte erfolgreich zum Abschluss mit modernsten PM-Methoden.",
+      "Führe IT-Projekte zum Erfolg. Agile Methoden, Risikomanagement und strategische Portfoliosteuerung.",
     highlights: [
-      "Klassisches & Agiles PM",
-      "Ressourcenplanung",
+      "Agiles & Hybrides PM",
       "Risikomanagement",
-      "Stakeholder Management",
+      "Portfolio Management",
+      "Stakeholder Analyse",
     ],
     courses: [
       {

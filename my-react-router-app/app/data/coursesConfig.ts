@@ -93,6 +93,115 @@ export const TRANSLATIONS = {
   },
 };
 
+// Course Description Translations - Maps German descriptions to English
+export const COURSE_DESCRIPTION_TRANSLATIONS: Record<string, string> = {
+  // Bachelorarbeit
+  "Die Bachelorarbeit bildet den Abschluss des Studiums. In dieser wissenschaftlichen Arbeit weist der Studierende nach, dass er in der Lage ist, ein Problem aus seinem Fachgebiet selbstständig nach wissenschaftlichen Methoden zu bearbeiten.":
+    "The Bachelor's thesis marks the completion of the degree. In this academic work, students demonstrate their ability to independently address a problem from their field of study using scientific methods.",
+  
+  // IT-Ethik / Ethik in der IT
+  "Dieses Modul beleuchtet die ethischen Implikationen der Digitalisierung. Datenschutz, Algorithmen-Ethik und Verantwortung in der IT stehen im Fokus.":
+    "This module explores the ethical implications of digitalization. Data privacy, algorithm ethics, and responsibility in IT are the main focus.",
+  
+  // E-Commerce
+  "Dieses Modul vermittelt die Grundlagen und fortgeschrittenen Konzepte des elektronischen Handels. Themen sind Geschäftsmodelle, technologische Infrastruktur, E-Marketing und rechtliche Aspekte.":
+    "This module covers the fundamentals and advanced concepts of electronic commerce. Topics include business models, technological infrastructure, e-marketing, and legal aspects.",
+  
+  // Praxisprojekt VII
+  "Das letzte Praxisprojekt vor der Bachelorarbeit. Vertiefung der fachlichen Kenntnisse im Unternehmen und Vorbereitung auf die Thesis.":
+    "The final practical project before the Bachelor's thesis. Deepening of professional knowledge in the company and preparation for the thesis.",
+  
+  // Einführung Wirtschaftsinformatik
+  "Grundlegende Konzepte der Wirtschaftsinformatik, Informationssysteme und digitale Geschäftsprozesse.":
+    "Fundamental concepts of business informatics, information systems, and digital business processes.",
+  
+  // Video Marketing
+  "Strategien und Techniken für erfolgreiches Video-Marketing. Von der Konzeption bis zur Distribution.":
+    "Strategies and techniques for successful video marketing. From conception to distribution.",
+  
+  // CRM
+  "Customer Relationship Management: Strategien zur Kundenbindung und -pflege mit digitalen Tools.":
+    "Customer Relationship Management: Strategies for customer retention and nurturing with digital tools.",
+  
+  // Generic Praxisprojekt
+  "Praktische Anwendung des erlernten Wissens im Unternehmen.":
+    "Practical application of acquired knowledge in the company.",
+  
+  // Programming
+  "Grundlagen der Programmierung und Softwareentwicklung.":
+    "Fundamentals of programming and software development.",
+  
+  // Databases
+  "Entwurf, Implementierung und Verwaltung von Datenbanksystemen.":
+    "Design, implementation, and management of database systems.",
+  
+  // Mathematics
+  "Mathematische Grundlagen für Informatik und Wirtschaft.":
+    "Mathematical foundations for computer science and business.",
+  
+  // Statistics
+  "Statistische Methoden und Datenanalyse für die Wirtschaftsinformatik.":
+    "Statistical methods and data analysis for business informatics.",
+  
+  // BWL
+  "Grundlagen der Betriebswirtschaftslehre und Unternehmensführung.":
+    "Fundamentals of business administration and corporate management.",
+  
+  // Software Engineering
+  "Methoden und Werkzeuge der professionellen Softwareentwicklung.":
+    "Methods and tools of professional software development.",
+  
+  // IT Security
+  "Grundlagen der IT-Sicherheit, Kryptographie und Datenschutz.":
+    "Fundamentals of IT security, cryptography, and data protection.",
+  
+  // Cloud Computing
+  "Cloud-Technologien, Services und deren Anwendung in Unternehmen.":
+    "Cloud technologies, services, and their application in enterprises.",
+  
+  // Web Development
+  "Entwicklung moderner Webanwendungen mit aktuellen Technologien.":
+    "Development of modern web applications using current technologies.",
+  
+  // Mobile App Development
+  "Entwicklung von mobilen Anwendungen für iOS und Android.":
+    "Development of mobile applications for iOS and Android.",
+  
+  // AI / KI
+  "Grundlagen der Künstlichen Intelligenz und maschinelles Lernen.":
+    "Fundamentals of Artificial Intelligence and machine learning.",
+  
+  // Data Science
+  "Methoden und Werkzeuge der Datenanalyse und -visualisierung.":
+    "Methods and tools for data analysis and visualization.",
+  
+  // Marketing
+  "Grundlagen des Marketings und der Marktforschung.":
+    "Fundamentals of marketing and market research.",
+  
+  // Marktforschung
+  "Methoden und Techniken der empirischen Marktforschung.":
+    "Methods and techniques of empirical market research.",
+  
+  // Brand Management
+  "Strategien zur Entwicklung und Führung von Marken.":
+    "Strategies for brand development and management.",
+  
+  // Content Marketing
+  "Erstellung und Distribution von wertvollem Content für Zielgruppen.":
+    "Creation and distribution of valuable content for target audiences.",
+  
+  // Social Media Marketing
+  "Marketing-Strategien für soziale Medien und Plattformen.":
+    "Marketing strategies for social media and platforms.",
+};
+
+// Helper function to get translated description
+export const getTranslatedDescription = (description: string, language: "de" | "en"): string => {
+  if (language === "de") return description;
+  return COURSE_DESCRIPTION_TRANSLATIONS[description] || description;
+};
+
 // ALL COURSES CONFIGURATION - Synced with prisma/seed.js
 
 export const getCourseConfig = (language: "de" | "en") => [

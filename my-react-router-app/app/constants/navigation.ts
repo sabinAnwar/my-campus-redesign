@@ -16,11 +16,12 @@ import {
   User as UserIcon,
 } from "lucide-react";
 import type { NavKey } from "~/types/navigation";
+import type { LucideIcon } from "lucide-react";
 
 export const BASE_NAV_ITEMS: Array<{
   key: NavKey;
   to: string;
-  icon: React.ComponentType<{ className?: string }>;
+  icon: LucideIcon;
 }> = [
   { to: "/dashboard", key: "dashboard", icon: Home },
   { to: "/courses/schedule", key: "courseSchedule", icon: CalendarDays },
