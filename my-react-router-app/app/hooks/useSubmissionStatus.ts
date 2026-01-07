@@ -5,6 +5,8 @@ type SubmissionStatus = "pending" | "submitted";
 interface SubmissionState {
   status: SubmissionStatus;
   similarity?: number;
+  fileName?: string;
+  fileSize?: number;
 }
 
 export function useSubmissionStatus() {

@@ -2,7 +2,7 @@ export const TRANSLATIONS = {
   de: {
     title: "KI Lernassistent",
     subtitle: "Dein intelligenter Begleiter für effektives Lernen",
-    greeting: "Hallo! 👋 Ich bin dein KI-Lernassistent. Ich helfe dir beim Lernen, erkläre Konzepte und gebe dir Tipps für effektives Studieren. Was möchtest du heute lernen?",
+    greeting: "Hallo!  Ich bin dein KI-Lernassistent. Ich helfe dir beim Lernen, erkläre Konzepte und gebe dir Tipps für effektives Studieren. Was möchtest du heute lernen?",
     placeholder: "Frag mich etwas zum Lernen...",
     pomodoroTitle: "Pomodoro Timer",
     focusTime: "Fokuszeit",
@@ -11,7 +11,7 @@ export const TRANSLATIONS = {
     pause: "Pause",
     reset: "Reset",
     minutes: "min",
-    studyTipsTitle: "Lerntipps",
+    studyTipsTitle: "Prompt-Techniken",
     quickActionsTitle: "Schnellzugriff",
     streakTitle: "Lernstreak",
     days: "Tage",
@@ -33,7 +33,7 @@ export const TRANSLATIONS = {
       { title: "Spaced Repetition", desc: "Wiederhole in Intervallen", icon: "repeat" },
       { title: "Feynman-Methode", desc: "Erkläre es einfach", icon: "lightbulb" },
     ],
-    noAnswer: "Das ist eine interessante Frage! 🤔\n\nIch bin spezialisiert auf Lernthemen. Frag mich gerne:",
+    noAnswer: "Das ist eine interessante Frage! \n\nIch bin spezialisiert auf Lernthemen. Frag mich gerne:",
     commonQuestions: [
       "Wie lerne ich effektiv?",
       "Erkläre die Pomodoro-Technik",
@@ -45,7 +45,7 @@ export const TRANSLATIONS = {
   en: {
     title: "AI Learning Assistant",
     subtitle: "Your intelligent companion for effective learning",
-    greeting: "Hello! 👋 I'm your AI learning assistant. I help you study, explain concepts, and give you tips for effective learning. What would you like to learn today?",
+    greeting: "Hello!  I'm your AI learning assistant. I help you study, explain concepts, and give you tips for effective learning. What would you like to learn today?",
     placeholder: "Ask me something about learning...",
     pomodoroTitle: "Pomodoro Timer",
     focusTime: "Focus Time",
@@ -54,7 +54,7 @@ export const TRANSLATIONS = {
     pause: "Pause",
     reset: "Reset",
     minutes: "min",
-    studyTipsTitle: "Study Tips",
+    studyTipsTitle: "Prompt Techniques",
     quickActionsTitle: "Quick Access",
     streakTitle: "Learning Streak",
     days: "days",
@@ -76,7 +76,7 @@ export const TRANSLATIONS = {
       { title: "Spaced Repetition", desc: "Review at intervals", icon: "repeat" },
       { title: "Feynman Method", desc: "Explain it simply", icon: "lightbulb" },
     ],
-    noAnswer: "That's an interesting question! 🤔\n\nI specialize in study-related topics. Feel free to ask me about:",
+    noAnswer: "That's an interesting question! \n\nI specialize in study-related topics. Feel free to ask me about:",
     commonQuestions: [
       "How do I study effectively?",
       "Explain the Pomodoro technique",
@@ -91,7 +91,7 @@ export const LEARNING_KNOWLEDGE = {
   de: [
     {
       keywords: ["pomodoro", "timer", "pause", "konzentration", "fokus"],
-      answer: `⏱️ **Die Pomodoro-Technik:**
+      answer: ` **Die Pomodoro-Technik:**
 
 Die Pomodoro-Technik ist eine bewährte Zeitmanagement-Methode:
 
@@ -103,15 +103,15 @@ Die Pomodoro-Technik ist eine bewährte Zeitmanagement-Methode:
 5. Nach 4 Pomodoros: längere Pause (15-30 Min)
 
 **Vorteile:**
-• 🎯 Bessere Konzentration
-• ⚡ Weniger Prokrastination
-• 📊 Messbare Fortschritte
+•  Bessere Konzentration
+•  Weniger Prokrastination
+•  Messbare Fortschritte
 
 Nutze den Timer rechts, um direkt loszulegen! →`
     },
     {
       keywords: ["lernen", "vorbereiten", "tipps", "effektiv", "strategie", "methode"],
-      answer: `📚 **Effektive Lernstrategien:**
+      answer: ` **Effektive Lernstrategien:**
 
 **Top 5 Lerntechniken:**
 
@@ -134,7 +134,7 @@ Nutze den Timer rechts, um direkt loszulegen! →`
     },
     {
       keywords: ["motivation", "keine lust", "prokrastination", "aufschieben", "anfangen"],
-      answer: `💪 **Motivation beim Lernen:**
+      answer: ` **Motivation beim Lernen:**
 
 **Wenn du keine Motivation hast:**
 
@@ -153,11 +153,11 @@ Nutze den Timer rechts, um direkt loszulegen! →`
 5. **Warum erinnern**
    Was ist dein großes Ziel?
 
-**Quick Win:** Starte JETZT einen 25-Min Pomodoro! 🍅`
+**Quick Win:** Starte JETZT einen 25-Min Pomodoro! `
     },
     {
       keywords: ["prüfung", "klausur", "vorbereitung", "angst", "stress"],
-      answer: `📝 **Prüfungsvorbereitung:**
+      answer: ` **Prüfungsvorbereitung:**
 
 **2 Wochen vor der Prüfung:**
 • Erstelle einen Lernplan
@@ -180,11 +180,11 @@ Nutze den Timer rechts, um direkt loszulegen! →`
 • Ruhig atmen
 
 **Bei Prüfungsangst:** 
-Atme 4 Sekunden ein, halte 4 Sek., atme 4 Sek. aus 🧘`
+Atme 4 Sekunden ein, halte 4 Sek., atme 4 Sek. aus `
     },
     {
       keywords: ["gedächtnis", "merken", "vergessen", "erinnern", "behalten"],
-      answer: `🧠 **Besser Merken:**
+      answer: ` **Besser Merken:**
 
 **Die Vergessenskurve überwinden:**
 
@@ -208,33 +208,33 @@ Nach 1 Tag vergisst du ~70% ohne Wiederholung!
    Baue eine Geschichte
 
 5. **Schlaf**
-   Im Schlaf wird gelernt! 😴
+   Im Schlaf wird gelernt! 
 
 **Tool-Tipp:** Nutze Anki für Spaced Repetition!`
     },
     {
       keywords: ["konzentration", "ablenkung", "fokus", "handy", "social media"],
-      answer: `🎯 **Konzentration verbessern:**
+      answer: ` **Konzentration verbessern:**
 
 **Ablenkungen eliminieren:**
 
-📱 **Handy:**
+ **Handy:**
 • Flugmodus aktivieren
 • In anderen Raum legen
 • App-Blocker nutzen
 
-💻 **Computer:**
+ **Computer:**
 • Unnötige Tabs schließen
 • Website-Blocker (z.B. Cold Turkey)
 • Vollbild-Modus
 
-🏠 **Umgebung:**
+ **Umgebung:**
 • Aufgeräumter Schreibtisch
 • Gute Beleuchtung
 • Bequemer Stuhl
 
 **Fokus-Booster:**
-• Wasser trinken 💧
+• Wasser trinken 
 • Kurze Bewegung
 • Tiefes Atmen
 
@@ -242,23 +242,23 @@ Starte jetzt den Fokus-Timer! →`
     },
     {
       keywords: ["hallo", "hi", "hey", "hilfe", "help"],
-      answer: `Hallo! 👋 Schön, dass du hier bist!
+      answer: `Hallo!  Schön, dass du hier bist!
 
 **Ich kann dir helfen mit:**
 
-📚 **Lernstrategien**
+ **Lernstrategien**
 "Wie lerne ich effektiv?"
 
-⏱️ **Zeitmanagement**
+ **Zeitmanagement**
 "Erkläre die Pomodoro-Technik"
 
-🎯 **Motivation**
+ **Motivation**
 "Ich habe keine Motivation"
 
-📝 **Prüfungsvorbereitung**
+ **Prüfungsvorbereitung**
 "Wie bereite ich mich auf Klausuren vor?"
 
-🧠 **Gedächtnistechniken**
+ **Gedächtnistechniken**
 "Wie merke ich mir Dinge besser?"
 
 Was möchtest du wissen?`
@@ -267,7 +267,7 @@ Was möchtest du wissen?`
   en: [
     {
       keywords: ["pomodoro", "timer", "break", "concentration", "focus"],
-      answer: `⏱️ **The Pomodoro Technique:**
+      answer: ` **The Pomodoro Technique:**
 
 The Pomodoro Technique is a proven time management method:
 
@@ -279,15 +279,15 @@ The Pomodoro Technique is a proven time management method:
 5. After 4 Pomodoros: longer break (15-30 min)
 
 **Benefits:**
-• 🎯 Better concentration
-• ⚡ Less procrastination
-• 📊 Measurable progress
+•  Better concentration
+•  Less procrastination
+•  Measurable progress
 
 Use the timer on the right to get started! →`
     },
     {
       keywords: ["study", "prepare", "tips", "effective", "strategy", "method"],
-      answer: `📚 **Effective Study Strategies:**
+      answer: ` **Effective Study Strategies:**
 
 **Top 5 Learning Techniques:**
 
@@ -310,7 +310,7 @@ Use the timer on the right to get started! →`
     },
     {
       keywords: ["motivation", "not in the mood", "procrastination", "postpone", "start"],
-      answer: `💪 **Motivation for Studying:**
+      answer: ` **Motivation for Studying:**
 
 **If you lack motivation:**
 
@@ -329,11 +329,11 @@ Use the timer on the right to get started! →`
 5. **Remember Your Why**
    What is your big goal?
 
-**Quick Win:** Start a 25-min Pomodoro NOW! 🍅`
+**Quick Win:** Start a 25-min Pomodoro NOW! `
     },
     {
       keywords: ["exam", "test", "preparation", "anxiety", "stress"],
-      answer: `📝 **Exam Preparation:**
+      answer: ` **Exam Preparation:**
 
 **2 weeks before the exam:**
 • Create a study plan
@@ -356,11 +356,11 @@ Use the timer on the right to get started! →`
 • Breathe deeply
 
 **For exam anxiety:** 
-Breathe in for 4 seconds, hold for 4, breathe out for 4 🧘`
+Breathe in for 4 seconds, hold for 4, breathe out for 4 `
     },
     {
       keywords: ["memory", "remember", "forget", "recall", "retain"],
-      answer: `🧠 **Remembering Better:**
+      answer: ` **Remembering Better:**
 
 **Overcoming the Forgetting Curve:**
 
@@ -384,33 +384,33 @@ After 1 day, you forget ~70% without review!
    Build a story
 
 5. **Sleep**
-   Your brain learns while you sleep! 😴
+   Your brain learns while you sleep! 
 
 **Tool Tip:** Use Anki for spaced repetition!`
     },
     {
       keywords: ["concentration", "distraction", "focus", "phone", "social media"],
-      answer: `🎯 **Improving Concentration:**
+      answer: ` **Improving Concentration:**
 
 **Eliminating Distractions:**
 
-📱 **Phone:**
+ **Phone:**
 • Activate airplane mode
 • Put it in another room
 • Use app blockers
 
-💻 **Computer:**
+ **Computer:**
 • Close unnecessary tabs
 • Website blockers (e.g., Cold Turkey)
 • Fullscreen mode
 
-🏠 **Environment:**
+ **Environment:**
 • Tidy desk
 • Good lighting
 • Comfortable chair
 
 **Focus Booster:**
-• Drink water 💧
+• Drink water 
 • Quick movement
 • Deep breathing
 
@@ -418,23 +418,23 @@ Start the focus timer now! →`
     },
     {
       keywords: ["hello", "hi", "hey", "help"],
-      answer: `Hello! 👋 Great to have you here!
+      answer: `Hello!  Great to have you here!
 
 **I can help you with:**
 
-📚 **Study Strategies**
+ **Study Strategies**
 "How do I study effectively?"
 
-⏱️ **Time Management**
+ **Time Management**
 "Explain the Pomodoro technique"
 
-🎯 **Motivation**
+ **Motivation**
 "I lack motivation"
 
-📝 **Exam Preparation**
+ **Exam Preparation**
 "How do I prepare for exams?"
 
-🧠 **Memory Techniques**
+ **Memory Techniques**
 "How can I remember things better?"
 
 What would you like to know?`

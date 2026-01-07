@@ -197,7 +197,7 @@ function getCurriculumForUser(program, semester) {
  * Seed 3 Main Students and 1 Admin
  */
 async function seedUsers() {
-  console.log('\n📦 Seeding 3 main students...');
+  console.log('\n Seeding 3 main students...');
 
   // Delete all existing related data first (Foreign Key constraints)
   await prisma.mark.deleteMany({});
@@ -214,7 +214,7 @@ async function seedUsers() {
   await prisma.scheduleEvent.deleteMany({});
   await prisma.studienplan.deleteMany({}); // Delete child of User
   await prisma.user.deleteMany({});
-  console.log('  🗑️ Cleared existing users and all related data');
+  console.log('   Cleared existing users and all related data');
 
   const users = [
     {
@@ -225,9 +225,9 @@ async function seedUsers() {
       role: 'ADMIN',
     },
     {
-      email: 'sabin.elanwar@iu-study.org',
-      username: 'sabin_elanwar',
-      name: 'Sabin Elanwar',
+      email: 'student.demo@iu-study.org',
+      username: 'student_demo',
+      name: 'Demo Student',
       password: await hashPassword('password123'),
       matriculationNumber: 'IU2024001',
       studyProgram: 'Wirtschaftsinformatik (Dual)',
@@ -257,7 +257,7 @@ async function seedUsers() {
     {
       email: 'leon.schmidt_dual@iu-study.org',
       username: 'leon_schmidt',
-      name: 'Leon Schmidt', // Shared pool with Sabin
+      name: 'Leon Schmidt', // Shared pool with Demo Student
       password: await hashPassword('student3'),
       matriculationNumber: 'IU2024004',
       studyProgram: 'Wirtschaftsinformatik (Dual)',
@@ -268,7 +268,7 @@ async function seedUsers() {
 
   for (const userData of users) {
     await prisma.user.create({ data: userData });
-    console.log(`  ✅ Created: ${userData.email} (${userData.studyProgram})`);
+    console.log(`   Created: ${userData.email} (${userData.studyProgram})`);
   }
 }
 
@@ -276,7 +276,7 @@ async function seedUsers() {
  * Seed courses based on CURRICULUM
  */
 async function seedCourses() {
-  console.log('\n📚 Seeding courses...');
+  console.log('\n Seeding courses...');
   await prisma.course.deleteMany({}); // Clear existing
   
   const colors = ['blue', 'purple', 'green', 'orange', 'pink'];
@@ -311,14 +311,14 @@ async function seedCourses() {
       }
     }
   }
-  console.log('  ✅ Synced all courses to DB');
+  console.log('   Synced all courses to DB');
 }
 
 /**
  * Seed marks for students based on their previous semesters
  */
 async function seedMarks() {
-  console.log('\n📊 Seeding marks for students...');
+  console.log('\n Seeding marks for students...');
   await prisma.teacher.deleteMany({});
   await prisma.mark.deleteMany({});
 
@@ -356,7 +356,7 @@ async function seedMarks() {
         });
       }
     }
-    console.log(`  ✅ Marks seeded for ${student.name} (Semesters 1 to ${student.semester - 1})`);
+    console.log(`   Marks seeded for ${student.name} (Semesters 1 to ${student.semester - 1})`);
   }
 }
 
@@ -364,7 +364,7 @@ async function seedMarks() {
  * Seed tasks (assignments)
  */
 async function seedTasks() {
-  console.log('\n📝 Seeding tasks (Deterministic by Cohort)...');
+  console.log('\n Seeding tasks (Deterministic by Cohort)...');
   await prisma.studentTask.deleteMany({});
 
   const students = await prisma.user.findMany({ where: { role: 'STUDENT' } });
@@ -420,7 +420,7 @@ async function seedTasks() {
           }
         });
       }
-      console.log(`  ✅ Shared Aufgaben seeded for ${student.name} (${student.studyProgram} Sem ${student.semester})`);
+      console.log(`   Shared Aufgaben seeded for ${student.name} (${student.studyProgram} Sem ${student.semester})`);
     }
   }
 }
@@ -429,7 +429,7 @@ async function seedTasks() {
  * Seed videos and scripts (Resources)
  */
 async function seedResources() {
-  console.log('\n🎬 Seeding videos and scripts for courses...');
+  console.log('\n Seeding videos and scripts for courses...');
   await prisma.file.deleteMany({});
 
   // Fetch students with their enrolled courses
@@ -484,7 +484,7 @@ async function seedResources() {
       }
     }
   }
-  console.log('  ✅ Resources (videos & scripts) seeded with specific metadata');
+  console.log('   Resources (videos & scripts) seeded with specific metadata');
 }
 
 async function linkUsersToStudiengang() {
@@ -501,7 +501,7 @@ async function linkUsersToStudiengang() {
 }
 
 async function seedNews() {
-    console.log('\n📰 Seeding news...');
+    console.log('\n Seeding news...');
     await prisma.news.deleteMany({});
     
     const newsItems = [
@@ -544,11 +544,11 @@ async function seedNews() {
         data: item
       });
     }
-    console.log('  ✅ Seeded 4 news items');
+    console.log('   Seeded 4 news items');
 }
 
 async function seedSchedule() {
-  console.log('\n📅 Seeding schedule events (Shared by Cohort)...');
+  console.log('\n Seeding schedule events (Shared by Cohort)...');
   await prisma.scheduleEvent.deleteMany({});
 
   const students = await prisma.user.findMany({ 
@@ -617,13 +617,13 @@ async function seedSchedule() {
           });
         }
       }
-      console.log(`  ✅ Shared Stundenplan seeded for ${student.name} (${student.studyProgram} Sem ${student.semester})`);
+      console.log(`   Shared Stundenplan seeded for ${student.name} (${student.studyProgram} Sem ${student.semester})`);
     }
   }
 }
 
 async function main() {
-  console.log('🚀 CLEAN SEEDING: 3 Students, 3 Programs (No Kolloquium, Added metadata)');
+  console.log(' CLEAN SEEDING: 3 Students, 3 Programs (No Kolloquium, Added metadata)');
   
   await seedUsers();
   await seedCourses();
@@ -634,7 +634,7 @@ async function main() {
   await seedNews();
   await seedSchedule();
 
-  console.log('\n✨ Seeding successful!');
+  console.log('\n Seeding successful!');
 }
 
 main()

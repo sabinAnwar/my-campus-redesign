@@ -31,7 +31,7 @@ export default function Klausuranmeldung() {
 
 
   return (
-    <main className="max-w-7xl mx-auto relative z-10 space-y-4 sm:space-y-6 px-2 sm:px-0">
+    <main className="max-w-7xl mx-auto relative z-10 space-y-4 sm:space-y-6">
       <KlausuranmeldungHeader
         t={t}
         searchQuery={searchQuery}

@@ -7,7 +7,7 @@
  * research project on educational content accessibility.
  * 
  * @module readability
- * @author Sabin Elanwar
+ * @author Demo Student
  * @version 1.0.0
  * @date 2025-01-28
  * 

@@ -40,7 +40,7 @@ export async function action({
 
     return Response.json({ success: true, valid: true });
   } catch (error) {
-    console.error("❌ Error verifying reset token:", error);
+    console.error(" Error verifying reset token:", error);
     return Response.json(
       { error: "Failed to verify token" },
       { status: 500 }

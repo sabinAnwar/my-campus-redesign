@@ -18,10 +18,10 @@ export const loader = async ({ request }: { request: Request }) => {
   try {
     let user = await getUserFromRequest(request);
 
-    // FALLBACK: If no user from session, use Sabin Elanwar
+    // FALLBACK: If no user from session, use Demo Student
     if (!user) {
       const fallbackUser = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+        where: { email: "student.demo@iu-study.org" },
       });
       if (fallbackUser) {
         user = fallbackUser;
@@ -84,7 +84,7 @@ export const loader = async ({ request }: { request: Request }) => {
       dbCourses,
     };
   } catch (error) {
-    console.error("❌ [Courses Loader] Error:", error);
+    console.error(" [Courses Loader] Error:", error);
     return {
       userStudiengang: null,
       marks: [],
@@ -133,7 +133,7 @@ function CoursesList() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+    <div className="max-w-7xl mx-auto">
       <CoursesHeader
         t={t}
         language={language}

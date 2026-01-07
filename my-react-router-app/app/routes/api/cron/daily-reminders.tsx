@@ -55,7 +55,7 @@ export const loader = async ({ request }: { request: Request }) => {
 
     const overrideHour = url.searchParams.get("hour");
     const overrideMinute = url.searchParams.get("minute");
-    console.log("🚦 daily-reminders (RR) hit", {
+    console.log(" daily-reminders (RR) hit", {
       hour: overrideHour,
       minute: overrideMinute,
       userId: url.searchParams.get("userId"),
@@ -125,14 +125,14 @@ export const loader = async ({ request }: { request: Request }) => {
       });
     }
 
-    console.log("👥 daily-reminders (RR) users loaded", users.length);
+    console.log(" daily-reminders (RR) users loaded", users.length);
 
     const now = new Date();
     const currentWeekKey = getIsoWeekKey(now);
 
     let sent = 0;
     const emailService = process.env.EMAIL_SERVICE || "test";
-    console.log(`📧 Email service: ${emailService}`);
+    console.log(` Email service: ${emailService}`);
 
     const previewUrls: string[] = [];
     let transporter;
@@ -185,7 +185,7 @@ export const loader = async ({ request }: { request: Request }) => {
         continue;
       }
 
-      console.log(`🔔 Sending reminder to ${u.email} (Target: ${targetHour}:${targetMinute}, Now: ${currentHour}:${currentMinute})`);
+      console.log(` Sending reminder to ${u.email} (Target: ${targetHour}:${targetMinute}, Now: ${currentHour}:${currentMinute})`);
 
       const submitted = await prisma.praxisReport.findFirst({
         where: {
@@ -204,7 +204,7 @@ export const loader = async ({ request }: { request: Request }) => {
       const mailOptions = {
         from: process.env.EMAIL_FROM || process.env.EMAIL_USER || "noreply@iu-portal.com",
         to: u.email,
-        subject: "🔔 Erinnerung: Praxisbericht heute noch ausfüllen",
+        subject: " Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
@@ -231,7 +231,7 @@ export const loader = async ({ request }: { request: Request }) => {
       }
     }
 
-    console.log("✅ daily-reminders (RR) complete", {
+    console.log(" daily-reminders (RR) complete", {
       sent,
       usersChecked: users.length,
       previews: previewUrls.length,

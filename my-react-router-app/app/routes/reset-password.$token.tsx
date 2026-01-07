@@ -38,7 +38,7 @@ function InvalidTokenView() {
         <p className="text-gray-600 mb-6">{INVALID_TOKEN_MESSAGE}</p>
         <Link
           to="/reset-password"
-          className="text-blue-600 font-medium hover:text-blue-700"
+          className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition-colors"
         >
           Request a new password reset
         </Link>

@@ -18,7 +18,7 @@ async function handleRequest({
     
     // First try to get from cookies
     const cookieHeader = request.headers.get("Cookie") || "";
-    console.log("🍪 Cookie header:", cookieHeader);
+    console.log(" Cookie header:", cookieHeader);
     
     sessionToken = cookieHeader
       .split("; ")
@@ -29,22 +29,22 @@ async function handleRequest({
     if (!sessionToken) {
       sessionToken = request.headers.get("X-Session-Token");
       if (sessionToken) {
-        console.log("📤 Got session token from header");
+        console.log(" Got session token from header");
       }
     }
 
-    console.log("🔑 Session token:", sessionToken);
+    console.log(" Session token:", sessionToken);
 
-    // If no session token, try to find Sabin as default user for testing
+    // If no session token, try to find Demo Student as default user for testing
     if (!sessionToken) {
       const defaultUser = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+        where: { email: "student.demo@iu-study.org" },
       });
       if (defaultUser) {
         return Response.json({
           user: {
             id: defaultUser.id,
-            name: defaultUser.name || "Sabin",
+            name: defaultUser.name || "Demo Student",
             email: defaultUser.email,
             studyProgram: defaultUser.studyProgram,
             matriculationNumber: defaultUser.matriculationNumber,
@@ -66,13 +66,13 @@ async function handleRequest({
     if (!session) {
       // Fallback if session token provided but not found
       const defaultUser = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+        where: { email: "student.demo@iu-study.org" },
       });
       if (defaultUser) {
         return Response.json({
           user: {
             id: defaultUser.id,
-            name: defaultUser.name || "Sabin",
+            name: defaultUser.name || "Demo Student",
             email: defaultUser.email,
             studyProgram: defaultUser.studyProgram,
             matriculationNumber: defaultUser.matriculationNumber,
@@ -87,7 +87,7 @@ async function handleRequest({
 
     // Check if session is expired
     if (new Date() > session.expiresAt) {
-      console.log("❌ Session expired");
+      console.log(" Session expired");
       // Delete expired session
       await prisma.session.delete({ where: { id: session.id } });
       return Response.json(
@@ -114,7 +114,7 @@ async function handleRequest({
       { status: 200 }
     );
   } catch (error) {
-    console.error("❌ Error fetching user:", error);
+    console.error(" Error fetching user:", error);
     return Response.json(
       { error: "An error occurred fetching user data" },
       { status: 500 }

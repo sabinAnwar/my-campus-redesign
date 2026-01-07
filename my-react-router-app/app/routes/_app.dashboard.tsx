@@ -46,7 +46,6 @@ import { NewsSlider } from "~/components/dashboard/NewsSlider";
 import { QuickActions } from "~/components/dashboard/QuickActions";
 import { StudyProgressWidget } from "~/components/dashboard/StudyProgressWidget";
 import { WeekOverview } from "~/components/dashboard/WeekOverview";
-import { TodaySchedule } from "~/components/dashboard/TodaySchedule";
 import { UpcomingTasks } from "~/components/dashboard/UpcomingTasks";
 import { RecentCourses } from "~/components/dashboard/RecentCourses";
 import { NewsModal } from "~/components/news/NewsModal";
@@ -110,10 +109,10 @@ export const loader = async ({ request }: { request: Request }) => {
       }
     }
 
-    // 2. Fallback to Sabin ONLY if no session found (Dev mode / Fallback)
+    // 2. Fallback to Demo Student ONLY if no session found (Dev mode / Fallback)
     if (!loggedInUser) {
-      const sabinUser = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+      const demoUser = await prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
         select: {
           id: true,
           semester: true,
@@ -124,9 +123,9 @@ export const loader = async ({ request }: { request: Request }) => {
           },
         },
       });
-      if (sabinUser) {
-        loggedInUser = sabinUser;
-        userId = sabinUser.id;
+      if (demoUser) {
+        loggedInUser = demoUser;
+        userId = demoUser.id;
       }
     }
 
@@ -458,27 +457,6 @@ export default function Dashboard() {
       ? Math.round((praxisHours.logged / praxisHours.required) * 100)
       : 0;
 
-  // Today's classes from database schedule events
-  const todayStart = new Date();
-  todayStart.setHours(0, 0, 0, 0);
-  const todayEnd = new Date();
-  todayEnd.setHours(23, 59, 59, 999);
-
-  const todayClasses = scheduleEvents
-    .filter((e) => {
-      const eventDate = new Date(e.date);
-      return eventDate >= todayStart && eventDate <= todayEnd;
-    })
-    .map((e, idx) => ({
-      id: e.id,
-      title: `${e.title}${e.courseCode ? ` - ${e.courseCode}` : ""}`,
-      time: `${e.startTime} - ${e.endTime}`,
-      location: e.location || "Nicht angegeben",
-      type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
-      professor: e.professor || "",
-      color: idx % 3 === 0 ? "blue" : idx % 3 === 1 ? "purple" : "green",
-    }));
-
   // Weekly Schedule Mini-View - generates days for mobile scroll view
   const getWeekDays = () => {
     const days = [];
@@ -577,7 +555,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+    <div className="max-w-7xl mx-auto">
       <DashboardHeader userName={userName} t={t} getGreeting={getGreeting} />
 
       <NewsSlider
@@ -610,7 +588,6 @@ export default function Dashboard() {
       <div className="dashboard-grid-container">
         {/* Row 1: Today's Schedule and Upcoming Tasks (2 columns) */}
         <div className="dashboard-row-top">
-          <TodaySchedule todayClasses={todayClasses} t={t} />
           <UpcomingTasks
             upcomingAssignments={upcomingAssignments}
             language={language}
@@ -630,7 +607,7 @@ export default function Dashboard() {
       <FirstSemesterOnboarding
         isFirstSemester={isFirstSemester}
         onComplete={() => {
-          console.log("✅ Onboarding abgeschlossen!");
+          console.log(" Onboarding abgeschlossen!");
         }}
       />
 

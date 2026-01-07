@@ -1,7 +1,7 @@
 import type { Module } from "~/types/module-handbook";
 
 export const userProfile = {
-  name: "Sabin",
+  name: "Demo Student",
   program: "B.Sc. Wirtschaftsinformatik",
   campus: "Campus Hamburg",
   cohort: "WiSe 23/24",

@@ -42,10 +42,10 @@ export const BrandAmbassador = ({
   interestedText,
 }: BrandAmbassadorProps) => {
   return (
-    <div className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 flex flex-col hover:border-violet-500/30 transition-all duration-500 group">
-      <div className="mb-12">
-        <h3 className="text-2xl font-bold mb-4 flex items-center gap-3 text-foreground">
-          <Presentation size={24} className="text-violet-500" />
+    <div className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 flex flex-col hover:border-iu-purple/30 transition-all duration-500 group">
+      <div className="mb-6 sm:mb-8 md:mb-12">
+        <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-foreground">
+          <Presentation size={20} className="text-iu-purple dark:text-white sm:w-6 sm:h-6" />
           {title}
         </h3>
         <p className="text-muted-foreground font-medium text-base leading-relaxed">
@@ -53,13 +53,13 @@ export const BrandAmbassador = ({
         </p>
       </div>
 
-      <div className="space-y-10 flex-1">
-        <div className="flex gap-6">
-          <div className="p-4 rounded-2xl bg-violet-500/10 text-violet-500 h-fit">
-            <Users size={24} />
+      <div className="space-y-6 sm:space-y-8 md:space-y-10 flex-1">
+        <div className="flex gap-4 sm:gap-6">
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white h-fit shrink-0">
+            <Users size={20} className="sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-lg text-foreground">
+            <h4 className="font-bold text-base sm:text-lg text-foreground">
               {whatAwaitsTitle}
             </h4>
             <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
@@ -68,12 +68,12 @@ export const BrandAmbassador = ({
           </div>
         </div>
 
-        <div className="flex gap-6">
-          <div className="p-4 rounded-2xl bg-violet-500/10 text-violet-500 h-fit">
-            <Globe size={24} />
+        <div className="flex gap-4 sm:gap-6">
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white h-fit shrink-0">
+            <Globe size={20} className="sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-lg text-foreground">
+            <h4 className="font-bold text-base sm:text-lg text-foreground">
               {yourProfileTitle}
             </h4>
             <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
@@ -83,13 +83,13 @@ export const BrandAmbassador = ({
         </div>
       </div>
 
-      <div className="mt-12 pt-10 border-t border-border">
-        <p className="text-xs font-black text-muted-foreground uppercase tracking-[0.2em] mb-6">
+      <div className="mt-8 sm:mt-10 md:mt-12 pt-6 sm:pt-8 md:pt-10 border-t border-border">
+        <p className="text-[10px] sm:text-xs font-black text-muted-foreground uppercase tracking-widest sm:tracking-[0.2em] mb-4 sm:mb-6">
           {interestedText}
         </p>
         <a
           href="mailto:micro-affiliate@iu.org"
-          className="block w-full text-center py-5 bg-foreground text-background hover:bg-violet-500 hover:text-white font-bold rounded-2xl transition-all duration-300 uppercase tracking-widest text-sm shadow-xl"
+          className="block w-full text-center py-5 bg-foreground text-background hover:bg-iu-purple hover:text-white font-bold rounded-2xl transition-all duration-300 uppercase tracking-widest text-sm shadow-xl"
         >
           micro-affiliate@iu.org
         </a>
@@ -125,11 +125,13 @@ export const AlumniDiscounts = ({
   trainingDiscountNote,
 }: AlumniDiscountsProps) => {
   return (
-    <div className="bg-iu-blue/5 border border-iu-blue/20 rounded-[2.5rem] p-10 relative overflow-hidden group">
+    <div className="bg-iu-blue/5 dark:bg-iu-blue/10 border border-iu-blue/20 dark:border-iu-blue/30 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group">
       <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-iu-blue/10 blur-[40px] rounded-full" />
 
-      <h3 className="text-2xl font-bold mb-8 flex items-center gap-3 text-iu-blue dark:text-iu-blue relative z-10">
-        <Trophy size={24} />
+      <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 flex items-center gap-2 sm:gap-3 text-iu-blue dark:text-white relative z-10">
+        <div className="p-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue">
+          <Trophy size={20} className="sm:w-6 sm:h-6" />
+        </div>
         {title}
       </h3>
 
@@ -154,7 +156,7 @@ export const DiscountCard = ({ title, code, note }: DiscountCardProps) => {
     <div className="bg-background/50 backdrop-blur-xl border border-iu-blue/20 rounded-3xl p-6 shadow-xl group-hover:border-iu-blue transition-colors duration-500">
       <div className="flex justify-between items-start mb-2">
         <span className="font-bold text-lg text-foreground">{title}</span>
-        <span className="bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/30 text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">
+        <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/30 dark:border-iu-blue text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">
           {code}
         </span>
       </div>
@@ -169,25 +171,25 @@ export const FacultyCard = ({ channel, toChannelText }: FacultyCardProps) => {
       href={channel.url}
       target={channel.url.startsWith("http") ? "_blank" : undefined}
       rel={channel.url.startsWith("http") ? "noopener noreferrer" : undefined}
-      className="bg-background/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 hover:border-violet-500/30 transition-all duration-500 group block"
+      className="bg-background/50 backdrop-blur-xl border border-border rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-5 sm:p-6 md:p-8 hover:border-iu-purple/30 transition-all duration-500 group block"
     >
-      <div className="flex justify-between items-start mb-8">
+      <div className="flex justify-between items-start mb-4 sm:mb-6 md:mb-8">
         <div
-          className={`w-14 h-14 rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} flex items-center justify-center`}
+          className={`w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl sm:rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} flex items-center justify-center`}
         >
-          <channel.icon size={28} />
+          <channel.icon size={20} className="sm:w-6 sm:h-6 md:w-7 md:h-7" />
         </div>
-        <span className="px-4 py-1.5 rounded-full bg-muted/50 text-[10px] font-black text-muted-foreground uppercase tracking-widest border border-border">
+        <span className="px-2 sm:px-3 md:px-4 py-1 sm:py-1.5 rounded-full bg-muted/50 text-[8px] sm:text-[9px] md:text-[10px] font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest border border-border shrink-0">
           {channel.tag}
         </span>
       </div>
-      <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-violet-500 transition-colors">
+      <h3 className="text-sm sm:text-base md:text-lg lg:text-xl font-bold text-foreground mb-2 sm:mb-3 group-hover:text-iu-purple dark:group-hover:text-white transition-colors break-words hyphens-auto">
         {channel.title}
       </h3>
-      <p className="text-sm text-muted-foreground font-medium mb-8 leading-relaxed">
+      <p className="text-xs sm:text-sm text-muted-foreground font-medium mb-4 sm:mb-6 md:mb-8 leading-relaxed line-clamp-3">
         {channel.description}
       </p>
-      <div className="flex items-center text-sm font-bold text-violet-500 uppercase tracking-widest group-hover:translate-x-2 transition-transform">
+      <div className="flex items-center text-xs sm:text-sm font-bold text-iu-purple dark:text-white uppercase tracking-wider sm:tracking-widest group-hover:translate-x-2 transition-transform">
         {toChannelText} <span className="ml-2">→</span>
       </div>
     </a>
@@ -199,22 +201,22 @@ export const ChannelCard = ({ channel }: ChannelCardProps) => {
       href={channel.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group p-8 rounded-[2.5rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 transition-all duration-500 flex flex-col"
+      className="group p-5 sm:p-6 md:p-8 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 transition-all duration-500 flex flex-col"
     >
-      <div className="flex items-start justify-between mb-8">
+      <div className="flex items-start justify-between mb-4 sm:mb-6 md:mb-8">
         <div
-          className={`p-4 rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} group-hover:scale-110 transition-transform duration-500`}
+          className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl border ${channel.borderColor} ${channel.bgColor} ${channel.color} group-hover:scale-110 transition-transform duration-500`}
         >
-          <channel.icon className="w-8 h-8" />
+          <channel.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
         </div>
         <div className="p-2 rounded-full bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white transition-all duration-500">
           <Globe size={16} />
         </div>
       </div>
-      <h3 className="text-lg font-bold text-foreground mb-3 leading-tight group-hover:text-iu-blue transition-colors">
+      <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 sm:mb-3 leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors line-clamp-2">
         {channel.name}
       </h3>
-      <p className="text-sm text-muted-foreground font-medium leading-relaxed flex-1">
+      <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed flex-1 line-clamp-3">
         {channel.description}
       </p>
     </a>
@@ -225,8 +227,8 @@ export const SocialMediaHeader = ({
   icon: Icon,
   title,
   subtitle,
-  iconBg = "bg-iu-blue/10",
-  iconColor = "text-iu-blue",
+  iconBg = "bg-iu-blue/10 dark:bg-iu-blue",
+  iconColor = "text-iu-blue dark:text-white",
 }: SocialMediaHeaderProps) => {
   return (
     <div className="flex items-center gap-4 mb-12">
@@ -247,20 +249,20 @@ export function AlumniConnect({
   linkedinText,
 }: AlumniConnectProps) {
   return (
-    <div className="bg-card/50 backdrop-blur-xl border border-border rounded-[2.5rem] p-10 hover:border-blue-500/30 transition-all duration-500 group">
-      <h3 className="text-2xl font-bold mb-6 flex items-center gap-3 text-foreground">
-        <Globe size={24} className="text-blue-500" />
+    <div className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:border-iu-blue/30 transition-all duration-500 group">
+      <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 text-foreground">
+        <Globe size={20} className="text-iu-blue dark:text-white sm:w-6 sm:h-6" />
         {title}
       </h3>
-      <p className="text-muted-foreground font-medium text-base mb-10 leading-relaxed">
+      <p className="text-muted-foreground font-medium text-sm sm:text-base mb-6 sm:mb-8 md:mb-10 leading-relaxed">
         {description}
       </p>
-      <div className="flex flex-wrap gap-4">
+      <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
         <a
           href="https://connect.iu.de/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-3 px-8 py-4 bg-blue-600 hover:bg-blue-700 text-white rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-blue-600/20"
+          className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-iu-blue hover:bg-iu-blue/90 text-white rounded-xl sm:rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-iu-blue/20"
         >
           {registerText}
         </a>
@@ -268,7 +270,7 @@ export function AlumniConnect({
           href="https://www.linkedin.com/groups/152020/"
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-3 px-8 py-4 bg-[#0077b5] hover:bg-[#0077b5]/90 text-white rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-[#0077b5]/20"
+          className="inline-flex items-center justify-center gap-2 sm:gap-3 px-6 sm:px-8 py-3 sm:py-4 bg-[#0077b5] hover:bg-[#0077b5]/90 text-white rounded-xl sm:rounded-2xl text-sm font-bold transition-all duration-300 shadow-lg shadow-[#0077b5]/20"
         >
           <Linkedin size={20} />
           {linkedinText}

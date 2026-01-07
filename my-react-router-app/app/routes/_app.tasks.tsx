@@ -1,4 +1,4 @@
-import type { Route } from ".react-router/types/app/routes/+types/_app.tasks";
+
 import { useLoaderData } from "react-router";
 
 import { prisma } from "~/lib/prisma";
@@ -18,12 +18,13 @@ import {
 } from "~/components/tasks";
 
 import type { TaskLoaderSubmission } from "~/types/tasks";
+import { Route } from "~/+types/root";
 
 // ============================================================================
 // LOADER
 // ============================================================================
 
-export const loader = async ({ request }: Route.LoaderArgs) => {
+export const loader = async ({ request }: { request: Request }) => {
   try {
     const formatGermanDate = (date: Date) =>
       date.toLocaleDateString("de-DE", {
@@ -38,15 +39,15 @@ export const loader = async ({ request }: Route.LoaderArgs) => {
     let currentSemester = user?.semester || 1;
     let studiengangName = user?.studiengang?.name || "IU Studium";
 
-    // 2. Fallback to Sabin if no session (Dev/Fallback)
+    // 2. Fallback to Demo Student if no session (Dev/Fallback)
     if (!userId) {
-      const sabin = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+      const demo = await prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
         include: { studiengang: true },
       });
-      userId = sabin?.id;
-      currentSemester = sabin?.semester || 1;
-      studiengangName = sabin?.studiengang?.name || "IU Studium";
+      userId = demo?.id;
+      currentSemester = demo?.semester || 1;
+      studiengangName = demo?.studiengang?.name || "IU Studium";
     }
 
     if (userId) {
@@ -152,7 +153,7 @@ export default function Tasks() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div className="w-full">
       <TasksHeader title={t.title} subtitle={t.subtitle} language={language} />
 
       {/* Submissions Section */}

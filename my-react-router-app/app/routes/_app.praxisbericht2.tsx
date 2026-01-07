@@ -32,29 +32,29 @@ import {
 
 const STATUS_STYLES = {
   DUE: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-500",
-    border: "border-orange-500/20",
+    bg: "bg-amber-100 dark:bg-amber-600",
+    text: "text-amber-700 dark:text-white",
+    border: "border-amber-300 dark:border-amber-500",
   },
   DRAFT: {
-    bg: "bg-iu-blue/10",
-    text: "text-iu-blue",
-    border: "border-iu-blue/20",
+    bg: "bg-sky-100 dark:bg-sky-600",
+    text: "text-sky-700 dark:text-white",
+    border: "border-sky-300 dark:border-sky-500",
   },
   SUBMITTED: {
-    bg: "bg-iu-blue/20",
-    text: "text-iu-blue dark:text-iu-blue",
-    border: "border-iu-blue/30",
+    bg: "bg-emerald-100 dark:bg-emerald-600",
+    text: "text-emerald-700 dark:text-white",
+    border: "border-emerald-300 dark:border-emerald-500",
   },
   APPROVED: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-500",
-    border: "border-purple-500/20",
+    bg: "bg-violet-100 dark:bg-violet-600",
+    text: "text-violet-700 dark:text-white",
+    border: "border-violet-300 dark:border-violet-500",
   },
   KLAUSURPHASE: {
-    bg: "bg-muted/50",
-    text: "text-muted-foreground",
-    border: "border-border",
+    bg: "bg-slate-100 dark:bg-slate-700",
+    text: "text-slate-600 dark:text-slate-300",
+    border: "border-slate-300 dark:border-slate-600",
   },
   ALL: {
     bg: "bg-card/50",
@@ -491,8 +491,8 @@ export default function Praxisbericht2() {
             </div>
             <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2.5rem] border border-border dark:border-white/10 p-8 h-fit">
               <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-iu-blue/10 rounded-2xl">
-                  <Info className="h-6 w-6 text-iu-blue" />
+                <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
+                  <Info className="h-6 w-6 text-iu-blue dark:text-white" />
                 </div>
                 <h3 className="text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
                   {t.legend}
@@ -640,9 +640,9 @@ function CalendarView({
             W{weekNumber}
           </span>
         )}
-        <span className="text-lg">{date.getDate()}</span>
+        <span className="text-lg text-foreground dark:text-white font-black">{date.getDate()}</span>
         {hoursLabel && (
-          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-muted/80 backdrop-blur-md border border-border text-iu-blue font-bold uppercase tracking-widest">
+          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-iu-blue/10 dark:bg-iu-blue backdrop-blur-md border border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white font-bold uppercase tracking-widest">
             {hoursLabel}
           </span>
         )}
@@ -691,17 +691,17 @@ function ListView({
     return trimmed.length > n ? trimmed.slice(0, n - 1) + "…" : trimmed;
   };
   const statusPill = (s: string) => {
-    if (!s) return "bg-orange-500/10 text-orange-500 border-orange-500/20";
+    if (!s) return "bg-iu-orange text-iu-orange border-iu-orange";
     if (s === "KLAUSUR") s = "KLAUSURPHASE";
     return s === "DRAFT"
-      ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+      ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
       : s === "SUBMITTED"
-        ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border-iu-blue/20"
+        ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
         : s === "APPROVED"
-          ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+          ? "bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white border-iu-purple/20 dark:border-iu-purple"
           : s === "KLAUSURPHASE"
             ? "bg-muted text-muted-foreground border-border"
-            : "bg-orange-500/10 text-orange-500 border-orange-500/20";
+            : "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border-iu-orange/20 dark:border-iu-orange";
   };
   const toMinutes = (t: string | null | undefined) => {
     if (typeof t !== "string" || !t.includes(":")) return null;
@@ -751,8 +751,8 @@ function ListView({
   if (!sorted.length) {
     return (
       <div className="bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border p-16 text-center">
-        <div className="p-6 bg-iu-blue/10 rounded-3xl w-fit mx-auto mb-6">
-          <ClipboardList className="h-12 w-12 text-iu-blue" />
+        <div className="p-6 bg-iu-blue/10 dark:bg-iu-blue rounded-3xl w-fit mx-auto mb-6">
+          <ClipboardList className="h-12 w-12 text-iu-blue dark:text-white" />
         </div>
         <p className="text-xl text-muted-foreground font-medium">
           {t.noReports}
@@ -781,7 +781,7 @@ function ListView({
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-4 flex-wrap mb-3">
-                <div className="text-3xl font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+                <div className="text-3xl font-bold text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                   {r.isoWeekKey}
                 </div>
                 <span
@@ -793,7 +793,7 @@ function ListView({
                   <Calendar className="h-3 w-3" />
                   {dates}
                 </div>
-                <div className="flex items-center gap-2 text-xs text-iu-blue font-bold uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-xs text-iu-blue dark:text-white font-bold uppercase tracking-widest bg-iu-blue/10 dark:bg-iu-blue px-2 py-1 rounded-lg border border-iu-blue/20 dark:border-iu-blue">
                   <Clock className="h-3 w-3" />
                   {hours}
                 </div>
@@ -998,8 +998,8 @@ function WeekModal({
         {/* Modal Header */}
         <div className="px-8 py-8 border-b border-border bg-muted/50 flex items-center justify-between">
           <div className="flex items-center gap-6">
-            <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
-              <ClipboardList className="h-8 w-8 text-iu-blue" />
+            <div className="p-4 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl border border-iu-blue/20 dark:border-iu-blue">
+              <ClipboardList className="h-8 w-8 text-iu-blue dark:text-white" />
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
@@ -1010,15 +1010,15 @@ function WeekModal({
                   <span
                     className={`inline-flex items-center rounded-xl px-3 py-1 text-[10px] border font-bold uppercase tracking-widest ${
                       report.status === "DRAFT"
-                        ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+                        ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
                         : report.status === "SUBMITTED"
-                          ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue border-iu-blue/20"
+                          ? "bg-iu-green/10 dark:bg-iu-green text-iu-green dark:text-white border-iu-green/20 dark:border-iu-green"
                           : report.status === "APPROVED"
-                            ? "bg-purple-500/10 text-purple-500 border-purple-500/20"
+                            ? "bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white border-iu-purple/20 dark:border-iu-purple"
                             : report.status === "KLAUSURPHASE" ||
                                 report.status === "KLAUSUR"
                               ? "bg-muted text-muted-foreground border-border"
-                              : "bg-orange-500/10 text-orange-500 border-orange-500/20"
+                              : "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border-iu-orange/20 dark:border-iu-orange"
                     }`}
                   >
                     {report.status === "APPROVED" ? t.reviewed : report.status}
@@ -1039,7 +1039,7 @@ function WeekModal({
               <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                 {t.totalHours}
               </div>
-              <div className="text-2xl font-bold text-iu-blue">
+              <div className="text-2xl font-bold text-iu-blue dark:text-white">
                 {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
               </div>
             </div>
@@ -1103,7 +1103,7 @@ function WeekModal({
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 hover:bg-iu-blue/20 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue hover:bg-iu-blue/20 dark:hover:bg-iu-blue/80 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
                   onClick={() => {
                     setDaysState((prev) => {
                       const next = { ...prev };
@@ -1172,7 +1172,7 @@ function WeekModal({
                         <td className="px-6 py-4">
                           <input
                             type="time"
-                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            className="w-full rounded-xl border border-border bg-background text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:dark:invert"
                             value={daysState[k]?.from || ""}
                             disabled={!!daysState[k]?.holiday}
                             onChange={(e) =>
@@ -1186,7 +1186,7 @@ function WeekModal({
                         <td className="px-6 py-4">
                           <input
                             type="time"
-                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            className="w-full rounded-xl border border-border bg-background text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:dark:invert"
                             value={daysState[k]?.till || ""}
                             disabled={!!daysState[k]?.holiday}
                             onChange={(e) =>
@@ -1197,7 +1197,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-6 py-4 text-iu-blue font-bold">
+                        <td className="px-6 py-4 text-iu-blue dark:text-white font-bold">
                           {(() => {
                             const d = daysState[k];
                             if (!d || d.holiday) return "–";
@@ -1256,10 +1256,10 @@ function WeekModal({
                             }
                           >
                             <option value="">–</option>
-                            <option value="happy">😃 {t.happy}</option>
-                            <option value="satisfied">🙂 {t.satisfied}</option>
-                            <option value="sad">😞 {t.sad}</option>
-                            <option value="angry">😡 {t.angry}</option>
+                            <option value="happy"> {t.happy}</option>
+                            <option value="satisfied"> {t.satisfied}</option>
+                            <option value="sad"> {t.sad}</option>
+                            <option value="angry"> {t.angry}</option>
                           </select>
                         </td>
                         <td className="px-6 py-4">
@@ -1287,15 +1287,15 @@ function WeekModal({
             <div className="space-y-6">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-iu-blue/10 rounded-2xl">
-                    <FileEdit className="h-6 w-6 text-iu-blue" />
+                  <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
+                    <FileEdit className="h-6 w-6 text-iu-blue dark:text-white" />
                   </div>
                   <h3 className="text-xl font-black text-foreground tracking-tight">
                     Weekly Summary
                   </h3>
                 </div>
                 <span
-                  className={`text-xs font-bold uppercase tracking-widest ${taskLen >= 10 ? "text-iu-blue dark:text-iu-blue" : "text-muted-foreground"}`}
+                  className={`text-xs font-bold uppercase tracking-widest ${taskLen >= 10 ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
                 >
                   {taskLen} / 10 chars
                 </span>
@@ -1350,7 +1350,7 @@ function WeekModal({
             <button
               disabled={saving}
               onClick={() => handleSave("DRAFT")}
-              className="px-8 py-4 text-sm font-bold rounded-2xl border border-iu-blue/30 text-iu-blue bg-iu-blue/5 hover:bg-iu-blue/10 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all duration-300 uppercase tracking-widest"
+              className="px-8 py-4 text-sm font-bold rounded-2xl border border-iu-blue/50 dark:border-iu-blue text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue hover:bg-iu-blue/20 dark:hover:bg-iu-blue/80 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all duration-300 uppercase tracking-widest"
             >
               {saving && saveMode === "DRAFT" ? t.saving : t.saveDraft}
             </button>

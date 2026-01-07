@@ -16,7 +16,7 @@ async function main() {
   const now = new Date();
   sessions.forEach(s => {
     const expired = now > s.expiresAt;
-    console.log(`${s.user.email} - expires: ${s.expiresAt.toISOString()} - ${expired ? '❌ EXPIRED' : '✅ ACTIVE'}`);
+    console.log(`${s.user.email} - expires: ${s.expiresAt.toISOString()} - ${expired ? ' EXPIRED' : ' ACTIVE'}`);
   });
   
   // Count active vs expired

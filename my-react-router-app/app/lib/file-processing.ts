@@ -8,7 +8,7 @@ export async function extractTextFromFile(file: File): Promise<string> {
 
   if (fileType === "application/pdf" || fileName.endsWith(".pdf")) {
     // For PDFs, return a helpful message
-    return `📄 PDF-Datei erkannt: ${file.name}\n\nGröße: ${(file.size / 1024).toFixed(2)} KB\n\nℹ️ PDF-Textextraktion ist derzeit eingeschränkt.\n\nFür beste Ergebnisse:\n1. Öffne das PDF\n2. Kopiere den Text (Strg+A, Strg+C)\n3. Füge ihn in eine .txt Datei ein\n4. Lade die .txt Datei hoch\n\nOder nutze die Dokumentensuche im Chat für IU-Dokumente!`;
+    return ` PDF-Datei erkannt: ${file.name}\n\nGröße: ${(file.size / 1024).toFixed(2)} KB\n\nℹ PDF-Textextraktion ist derzeit eingeschränkt.\n\nFür beste Ergebnisse:\n1. Öffne das PDF\n2. Kopiere den Text (Strg+A, Strg+C)\n3. Füge ihn in eine .txt Datei ein\n4. Lade die .txt Datei hoch\n\nOder nutze die Dokumentensuche im Chat für IU-Dokumente!`;
   } else if (
     fileType.startsWith("text/") || 
     fileName.endsWith(".md") || 

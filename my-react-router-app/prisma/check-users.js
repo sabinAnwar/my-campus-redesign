@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("👥 Checking Users in database...\n");
+  console.log(" Checking Users in database...\n");
 
   const users = await prisma.user.findMany({
     select: {
@@ -18,7 +18,7 @@ async function main() {
   });
 
   if (users.length === 0) {
-    console.log("⚠️  No users found in database");
+    console.log("  No users found in database");
   } else {
     console.log(`Found ${users.length} user(s):\n`);
     users.forEach((user, index) => {
@@ -34,7 +34,7 @@ async function main() {
     });
   }
 
-  console.log("\n📊 Database Summary:");
+  console.log("\n Database Summary:");
   console.log(`   Total Users: ${users.length}`);
   console.log(`   Students: ${users.filter(u => u.role === 'STUDENT').length}`);
   console.log(`   Others: ${users.filter(u => u.role !== 'STUDENT').length}`);
@@ -42,7 +42,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("❌ Error:", e);
+    console.error(" Error:", e);
     process.exit(1);
   })
   .finally(async () => {

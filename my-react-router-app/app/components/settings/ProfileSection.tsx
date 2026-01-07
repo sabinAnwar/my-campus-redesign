@@ -19,14 +19,14 @@ export function ProfileSection({ userName, userEmail, labels }: ProfileSectionPr
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+            <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
               <User className="w-6 h-6" />
             </div>
             <h2 className="text-xl font-black text-foreground tracking-tight">
               {labels.personalData}
             </h2>
           </div>
-          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-xs font-bold">
+          <div className="hidden sm:flex items-center gap-2 px-4 py-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white text-xs font-bold">
             <Shield className="w-3.5 h-3.5" />
             {labels.securelyStored}
           </div>

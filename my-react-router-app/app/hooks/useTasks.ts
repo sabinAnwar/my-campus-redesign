@@ -1,5 +1,6 @@
 import { useState, useMemo, useCallback } from "react";
 import { calculateDaysLeft } from "~/lib/tasksSample";
+import { showErrorToast, showSuccessToast } from "~/lib/toast";
 import type {
   TaskLoaderSubmission,
   TaskUISubmission,
@@ -17,9 +18,12 @@ interface AcceptedState {
 interface SavedStatus {
   status: "pending" | "submitted";
   similarity?: number;
+  fileName?: string;
+  fileSize?: number;
 }
 
 type SavedStatusMap = Record<number, SavedStatus>;
+type SavedStatusByCourseMap = Record<string, SavedStatus>;
 
 // ============================================================================
 // STORAGE HELPERS
@@ -34,9 +38,23 @@ function loadSavedStatus(): SavedStatusMap {
   }
 }
 
+function loadSavedStatusByCourse(): SavedStatusByCourseMap {
+  if (typeof window === "undefined") return {};
+  try {
+    return JSON.parse(localStorage.getItem("submissionStatusByCourse") || "{}");
+  } catch {
+    return {};
+  }
+}
+
 function persistStatus(next: SavedStatusMap): void {
   if (typeof window === "undefined") return;
   localStorage.setItem("submissionStatus", JSON.stringify(next));
+}
+
+function persistStatusByCourse(next: SavedStatusByCourseMap): void {
+  if (typeof window === "undefined") return;
+  localStorage.setItem("submissionStatusByCourse", JSON.stringify(next));
 }
 
 // ============================================================================
@@ -58,11 +76,23 @@ export function useTasks({
 }: UseTasksOptions) {
   // Initialize submissions with saved status
   const saved = loadSavedStatus();
+  const savedByCourse = loadSavedStatusByCourse();
   const [submissions, setSubmissions] = useState<TaskUISubmission[]>(
     initialSubmissions.map((s) => ({
       ...s,
-      status: saved[s.id]?.status ?? "pending",
-      similarity: saved[s.id]?.similarity,
+      status:
+        saved[s.id]?.status ??
+        savedByCourse[`${s.course}::${s.title}`]?.status ??
+        "pending",
+      similarity:
+        saved[s.id]?.similarity ??
+        savedByCourse[`${s.course}::${s.title}`]?.similarity,
+      submittedFileName:
+        saved[s.id]?.fileName ??
+        savedByCourse[`${s.course}::${s.title}`]?.fileName,
+      submittedFileSize:
+        saved[s.id]?.fileSize ??
+        savedByCourse[`${s.course}::${s.title}`]?.fileSize,
       daysUntilDue: calculateDaysLeft(s.dueDateIso || s.dueDate),
     }))
   );
@@ -89,12 +119,20 @@ export function useTasks({
   );
 
   // Modal handlers
-  const openModal = useCallback((submission: TaskLoaderSubmission) => {
-    setSelectedSubmission(submission);
-    setShowModal(true);
-    setAccepted({ honor: false, privacy: false });
-    setUploadedFile(null);
-  }, []);
+  const openModal = useCallback(
+    (submission: TaskLoaderSubmission) => {
+      const isSubmitted =
+        saved[submission.id]?.status === "submitted" ||
+        savedByCourse[`${submission.course}::${submission.title}`]?.status ===
+          "submitted";
+      if (isSubmitted) return;
+      setSelectedSubmission(submission);
+      setShowModal(true);
+      setAccepted({ honor: false, privacy: false });
+      setUploadedFile(null);
+    },
+    [saved, savedByCourse]
+  );
 
   const closeModal = useCallback(() => {
     setShowModal(false);
@@ -111,15 +149,15 @@ export function useTasks({
 
   const handleSubmit = useCallback(async () => {
     if (!accepted.honor || !accepted.privacy) {
-      alert(t.alertAccept);
+      showErrorToast(t.alertAccept);
       return;
     }
     if (!uploadedFile) {
-      alert(t.alertUpload);
+      showErrorToast(t.alertUpload);
       return;
     }
     if (!selectedSubmission) {
-      alert(t.alertSelect);
+      showErrorToast(t.alertSelect);
       return;
     }
 
@@ -144,25 +182,40 @@ export function useTasks({
                 ...s,
                 status: "submitted" as const,
                 similarity: Math.floor(Math.random() * 10 + 5),
+                submittedFileName: uploadedFile.name,
+                submittedFileSize: uploadedFile.size,
               }
             : s
         );
 
         const persisted: SavedStatusMap = {};
+        const persistedByCourse: SavedStatusByCourseMap = {};
         next.forEach((s) => {
           if (s.status === "submitted") {
-            persisted[s.id] = { status: s.status, similarity: s.similarity };
+            persisted[s.id] = {
+              status: s.status,
+              similarity: s.similarity,
+              fileName: s.submittedFileName,
+              fileSize: s.submittedFileSize,
+            };
+            persistedByCourse[`${s.course}::${s.title}`] = {
+              status: s.status,
+              similarity: s.similarity,
+              fileName: s.submittedFileName,
+              fileSize: s.submittedFileSize,
+            };
           }
         });
         persistStatus(persisted);
+        persistStatusByCourse(persistedByCourse);
         return next;
       });
 
       setShowModal(false);
-      alert(t.toastSuccess);
+      showSuccessToast(t.toastSuccess);
     } catch (error) {
       console.error("Upload error:", error);
-      alert(language === "de" ? "Fehler beim Upload" : "Upload failed");
+      showErrorToast(language === "de" ? "Fehler beim Upload" : "Upload failed");
     }
   }, [accepted, uploadedFile, selectedSubmission, t, language]);
 

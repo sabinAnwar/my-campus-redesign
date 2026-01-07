@@ -60,22 +60,22 @@ export function RoomCard({
 
   return (
     <div
-      className={`group relative rounded-2xl sm:rounded-[2rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 hover:-translate-y-2 transition-all duration-500 p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-5 md:gap-6 overflow-hidden`}
+      className={`group relative rounded-2xl sm:rounded-[2rem] bg-card/50 backdrop-blur-xl border border-border hover:border-iu-blue/30 dark:hover:border-iu-blue/40 hover:-translate-y-2 transition-all duration-500 p-4 sm:p-6 md:p-8 flex flex-col gap-4 sm:gap-5 md:gap-6 overflow-hidden`}
     >
       <div className="relative z-10 flex items-start justify-between gap-3 sm:gap-4">
         <div className="flex-1">
           <div className="flex items-center gap-2 mb-3">
-            <MapPin className="h-3 w-3 text-iu-blue" />
+            <MapPin className="h-3 w-3 text-iu-blue dark:text-white" />
             <p className="text-[10px] uppercase tracking-[0.3em] text-muted-foreground font-bold">
               {selectedLocation}
             </p>
           </div>
-          <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-2 sm:mb-3 md:mb-4 tracking-tight leading-none group-hover:text-iu-blue transition-colors">
+          <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-2 sm:mb-3 md:mb-4 tracking-tight leading-none group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
             {room.name}
           </h3>
           <div className="flex items-center gap-2">
             <div className="flex items-center gap-1.5 sm:gap-2 bg-muted/50 px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl border border-border">
-              <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-iu-blue" />
+              <Users className="h-3 w-3 sm:h-3.5 sm:w-3.5 text-iu-blue dark:text-white" />
               <span className="font-bold text-[9px] sm:text-[10px] text-foreground uppercase tracking-widest">
                 {room.capacity} {labels.seats}
               </span>
@@ -86,7 +86,7 @@ export function RoomCard({
           className={`px-2 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-[0.15em] sm:tracking-[0.2em] border flex items-center gap-1.5 sm:gap-2 ${
             occupied
               ? "bg-orange-500/10 text-orange-500 border-orange-500/20"
-              : "bg-iu-blue/10 text-iu-blue border-iu-blue/20"
+              : "bg-iu-blue/10 text-iu-blue border-iu-blue/20 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40"
           }`}
         >
           {occupied ? labels.occupied : labels.available}
@@ -97,7 +97,7 @@ export function RoomCard({
       <div className="relative z-10">
         {lecture ? (
           <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-orange-500/10">
-            <p className="text-[8px] sm:text-[9px] text-orange-500 font-bold uppercase tracking-widest mb-1">
+            <p className="text-[8px] sm:text-[9px] text-orange-500 dark:text-white font-bold uppercase tracking-widest mb-1">
               {labels.lecture}
             </p>
             <p className="text-xs sm:text-sm text-foreground font-bold truncate">
@@ -108,8 +108,8 @@ export function RoomCard({
             </p>
           </div>
         ) : booking ? (
-          <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10">
-            <p className="text-[8px] sm:text-[9px] text-iu-blue font-bold uppercase tracking-widest mb-1">
+          <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10 dark:border-iu-blue/30">
+            <p className="text-[8px] sm:text-[9px] text-iu-blue dark:text-white font-bold uppercase tracking-widest mb-1">
               {booking.userId === currentUserId ? labels.bookedBy : labels.booked}
             </p>
             <p className="text-xs sm:text-sm text-foreground font-bold truncate">
@@ -120,8 +120,8 @@ export function RoomCard({
             </p>
           </div>
         ) : (
-          <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10">
-            <p className="text-[8px] sm:text-[9px] text-iu-blue font-bold uppercase tracking-widest mb-1">
+          <div className="bg-muted/50 rounded-xl sm:rounded-2xl p-3 sm:p-4 border border-iu-blue/10 dark:border-iu-blue/30">
+            <p className="text-[8px] sm:text-[9px] text-iu-blue dark:text-white font-bold uppercase tracking-widest mb-1">
               {labels.available}
             </p>
             <p className="text-xs sm:text-sm text-foreground font-bold">
@@ -152,7 +152,7 @@ export function RoomCard({
             className={`w-full inline-flex justify-center items-center gap-1.5 sm:gap-2 rounded-lg sm:rounded-xl font-bold px-4 sm:px-6 py-3 sm:py-4 transition-all uppercase tracking-widest text-[9px] sm:text-[10px] ${
               occupied
                 ? "bg-muted text-muted-foreground cursor-not-allowed"
-                : "bg-iu-blue hover:bg-iu-blue text-white"
+                : "bg-iu-blue hover:bg-iu-blue text-white dark:bg-iu-blue dark:text-white dark:hover:bg-iu-blue"
             }`}
           >
             {occupied ? (

@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import { saveRecentFile } from "../lib/recentFiles";
 import { saveRecentCourse } from "../lib/recentCourses";
+import { showErrorToast, showSuccessToast } from "../lib/toast";
 import { prisma } from "~/lib/prisma";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import {
@@ -62,10 +63,10 @@ export const loader = async ({
     })
     .then((s: any) => s?.user);
 
-  // FALLBACK: If no user found, use Sabin Elanwar
+  // FALLBACK: If no user found, use Demo Student
   if (!user) {
     user = await prisma.user.findUnique({
-      where: { email: "sabin.elanwar@iu-study.org" },
+      where: { email: "student.demo@iu-study.org" },
     });
   }
 
@@ -218,6 +219,8 @@ export default function CourseDetail() {
       ...s,
       status: savedStatus[s.id]?.status ?? "pending",
       similarity: savedStatus[s.id]?.similarity,
+      submittedFileName: savedStatus[s.id]?.fileName,
+      submittedFileSize: savedStatus[s.id]?.fileSize,
     }))
   );
   
@@ -241,6 +244,8 @@ export default function CourseDetail() {
         ...s,
         status: savedStatus[s.id]?.status ?? "pending",
         similarity: savedStatus[s.id]?.similarity,
+        submittedFileName: savedStatus[s.id]?.fileName,
+        submittedFileSize: savedStatus[s.id]?.fileSize,
       }))
     );
   }, [courseSubmissions, savedStatus]);
@@ -263,7 +268,7 @@ export default function CourseDetail() {
 
   const handleSubmit = () => {
     if (!accepted.honor || !accepted.privacy) {
-      alert(
+      showErrorToast(
         language === "de"
           ? "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz."
           : "Please accept the honor and privacy statements."
@@ -271,7 +276,7 @@ export default function CourseDetail() {
       return;
     }
     if (!uploadedFile) {
-      alert(
+      showErrorToast(
         language === "de"
           ? "Bitte lade deine Datei hoch."
           : "Please upload your file."
@@ -284,23 +289,64 @@ export default function CourseDetail() {
     setSubmissions((prev) => {
       const updated = prev.map((s) =>
         s.id === selectedSubmission.id
-          ? { ...s, status: "submitted" as const, similarity }
+          ? {
+              ...s,
+              status: "submitted" as const,
+              similarity,
+              submittedFileName: uploadedFile.name,
+              submittedFileSize: uploadedFile.size,
+            }
           : s
       );
       const persisted: Record<
         number,
-        { status: "pending" | "submitted"; similarity?: number }
+        {
+          status: "pending" | "submitted";
+          similarity?: number;
+          fileName?: string;
+          fileSize?: number;
+        }
       > = {};
+      const persistedByCourse: Record<
+        string,
+        {
+          status: "pending" | "submitted";
+          similarity?: number;
+          fileName?: string;
+          fileSize?: number;
+        }
+      > = {};
+      const courseKeyBase =
+        selectedSubmission.course || course.title || course.name || "Course";
       updated.forEach((s) => {
         if (s.status === "submitted") {
-          persisted[s.id] = { status: s.status, similarity: s.similarity };
+          persisted[s.id] = {
+            status: s.status,
+            similarity: s.similarity,
+            fileName: s.submittedFileName,
+            fileSize: s.submittedFileSize,
+          };
+          persistedByCourse[`${courseKeyBase}::${s.title}`] = {
+            status: s.status,
+            similarity: s.similarity,
+            fileName: s.submittedFileName,
+            fileSize: s.submittedFileSize,
+          };
         }
       });
       persistStatus(persisted);
+      if (typeof window !== "undefined") {
+        localStorage.setItem(
+          "submissionStatusByCourse",
+          JSON.stringify(persistedByCourse)
+        );
+      }
       return updated;
     });
     setShowModal(false);
-    alert(language === "de" ? "Abgabe gespeichert." : "Submission saved.");
+    showSuccessToast(
+      language === "de" ? "Abgabe gespeichert." : "Submission saved."
+    );
   };
 
   const [activeTab, setActiveTab] = useState("overview");
@@ -491,7 +537,7 @@ export default function CourseDetail() {
   const handleCreateTopicSubmit = async (e: React.FormEvent) => {
       e.preventDefault();
       if (!newTopicTitle.trim() || !newTopicContent.trim()) {
-        alert(
+        showErrorToast(
           language === "de"
             ? "Bitte fülle alle Felder aus"
             : "Please fill in all fields"
@@ -518,11 +564,11 @@ export default function CourseDetail() {
           setNewTopicContent("");
         } else {
           const error = await res.json();
-          alert(error.error || "Failed to create topic");
+          showErrorToast(error.error || "Failed to create topic");
         }
       } catch (e) {
         console.error("Failed to create topic", e);
-        alert(
+        showErrorToast(
           language === "de"
             ? "Fehler beim Erstellen der Diskussion"
             : "Error creating discussion"
@@ -562,7 +608,7 @@ export default function CourseDetail() {
         onTabChange={setActiveTab}
       />
 
-      <main className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6 lg:px-8 py-4 sm:py-6 md:py-10">
+      <main className="max-w-7xl mx-auto py-4 sm:py-6 md:py-10">
         {activeTab === "overview" && (
             <CourseOverviewTab 
                 course={course} 

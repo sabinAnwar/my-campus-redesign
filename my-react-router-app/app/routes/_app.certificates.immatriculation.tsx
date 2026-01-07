@@ -23,7 +23,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     if (!user) {
       user = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+        where: { email: "student.demo@iu-study.org" },
         include: { studiengang: true },
       });
     } else {
@@ -72,7 +72,7 @@ export default function ImmatriculationCertificatePage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8 px-2 sm:px-0">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
       <ImmatriculationHeader t={t} />
 
 

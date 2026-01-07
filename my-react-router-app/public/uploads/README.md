@@ -1,6 +1,6 @@
 # PDF Storage Structure
 
-## 📁 Folder Organization
+##  Folder Organization
 
 Place your PDF files and documents in the following folders:
 
@@ -30,7 +30,7 @@ public/uploads/eigene-dateien/
 └── your-personal-file-2.pdf
 ```
 
-## 📝 How to Add Files
+##  How to Add Files
 
 1. **For Course Files:**
    - Place PDFs in: `public/uploads/studiengaenge/[STUDIENGANG]/[COURSE]/`
@@ -42,7 +42,7 @@ public/uploads/eigene-dateien/
    - Or place files in: `public/uploads/eigene-dateien/`
    - These will appear in "Meine Dateien" section
 
-## 🔍 File Tracking
+##  File Tracking
 
 Once a PDF is:
 - **Downloaded** from a course
@@ -55,7 +55,7 @@ It will automatically appear in the "Zuletzt geöffnete Dokumente" list and trac
 - Bookmarks
 - Timestamp
 
-## 📌 Important Notes
+##  Important Notes
 
 - File names should match the names used in the course configuration
 - Supported formats: PDF, DOC, DOCX, XLS, XLSX, ZIP, PPT, PPTX

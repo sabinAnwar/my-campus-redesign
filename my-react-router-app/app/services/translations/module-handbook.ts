@@ -26,7 +26,7 @@ export const TEXT = {
     statusDone: "abgeschlossen",
     recommendationTitle: (focus: string) =>
       `Empfohlene Reihenfolge fuer ${focus}`,
-    recommendationChip: "Kuratiert fuer Sabin",
+    recommendationChip: "Kuratiert fuer Demo Student",
     downloadsTitle: "Downloads & Support",
     downloadsSubtitle: "Alles fuer dein Modulhandbuch",
     downloadsItems: [
@@ -73,7 +73,7 @@ export const TEXT = {
     statusPlanned: "planned",
     statusDone: "completed",
     recommendationTitle: (focus: string) => `Suggested order for ${focus}`,
-    recommendationChip: "Curated for Sabin",
+    recommendationChip: "Curated for Demo Student",
     downloadsTitle: "Downloads & support",
     downloadsSubtitle: "Everything for your handbook",
     downloadsItems: [

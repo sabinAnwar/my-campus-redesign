@@ -13,8 +13,8 @@ const API_ENDPOINTS = {
 } as const;
 
 const MESSAGES = {
-  SUCCESS_EMAIL_SENT: "✅ Password reset email sent! Check your inbox.",
-  SUCCESS_RESET: "✅ Password reset successfully! Redirecting to login...",
+  SUCCESS_EMAIL_SENT: " Password reset email sent! Check your inbox.",
+  SUCCESS_RESET: " Password reset successfully! Redirecting to login...",
   ERROR_ENTER_PASSWORD: "Please enter a new password",
   ERROR_PASSWORD_LENGTH: "Password must be at least 8 characters long",
   ERROR_PASSWORD_MISMATCH: "Passwords do not match",

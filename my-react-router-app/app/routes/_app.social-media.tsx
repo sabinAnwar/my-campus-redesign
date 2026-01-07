@@ -21,7 +21,7 @@ export default function SocialMedia() {
   const facultyChannels = getFacultyChannels(t);
 
   return (
-    <main className="max-w-7xl mx-auto relative z-10 space-y-12">
+    <main className="max-w-7xl mx-auto relative z-10 space-y-8 sm:space-y-12">
       {/* Header Section */}
       <div className="animate-in fade-in slide-in-from-top-4 duration-700">
         <PageHeader 
@@ -39,7 +39,7 @@ export default function SocialMedia() {
           subtitle={t.officialSubtitle}
         />
 
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+        <div className="grid gap-4 sm:gap-6 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
           {officialChannels.map((channel) => (
             <ChannelCard key={channel.name} channel={channel} />
           ))}
@@ -48,18 +48,18 @@ export default function SocialMedia() {
 
       {/* Faculty Channels Section */}
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-        <div className="rounded-[3rem] bg-card/30 backdrop-blur-xl p-10 md:p-16 border border-border relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-violet-500/10 blur-[80px] rounded-full" />
+        <div className="rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-card/30 backdrop-blur-xl p-6 sm:p-10 md:p-16 border border-border relative overflow-hidden">
+          <div className="absolute -top-24 -right-24 w-64 h-64 bg-iu-purple blur-[80px] rounded-full" />
 
           <SectionHeader
             icon={GraduationCap}
             title={t.facultyChannels}
             subtitle={t.facultySubtitle}
-            iconBg="bg-violet-500/10"
-            iconColor="text-violet-500"
+            iconBg="bg-iu-purple/10 dark:bg-iu-purple"
+            iconColor="text-iu-purple dark:text-white"
           />
 
-          <div className="grid gap-8 md:grid-cols-3 relative z-10">
+          <div className="grid gap-4 sm:gap-6 md:gap-8 grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 relative z-10">
             {facultyChannels.map((channel) => (
               <FacultyCard
                 key={channel.title}
@@ -77,11 +77,11 @@ export default function SocialMedia() {
           icon={Users}
           title={t.alumniCommunity}
           subtitle={t.alumniSubtitle}
-          iconBg="bg-blue-500/10"
-          iconColor="text-blue-500"
+          iconBg="bg-iu-blue/10 dark:bg-iu-blue"
+          iconColor="text-iu-blue dark:text-white"
         />
 
-        <div className="grid gap-8 lg:grid-cols-2">
+        <div className="grid gap-6 sm:gap-8 grid-cols-1 lg:grid-cols-2">
           {/* Left Column: Connect & Discounts */}
           <div className="space-y-8">
             <AlumniConnect

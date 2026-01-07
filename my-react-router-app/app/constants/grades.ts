@@ -6,7 +6,7 @@ import type {
 
 
 export const STUDENT_DATA = {
-  vorname: "Sabin",
+  vorname: "Demo Student",
   name: "El Anwar",
   matrikelnummer: "102203036",
   studiengang: "Wirtschaftsinformatik (HH-BA-WINFO-WiSe-22-GTW)",

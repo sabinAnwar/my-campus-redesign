@@ -16,11 +16,11 @@ export const loader = async ({ request }: { request: Request }) => {
   let userId = user?.id;
 
   if (!userId) {
-    const sabin = await prisma.user.findUnique({
-      where: { email: "sabin.elanwar@iu-study.org" },
+    const demo = await prisma.user.findUnique({
+      where: { email: "student.demo@iu-study.org" },
       select: { id: true },
     });
-    userId = sabin?.id;
+    userId = demo?.id;
   }
 
   const dbUser = await prisma.user.findUnique({

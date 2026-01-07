@@ -10,6 +10,8 @@ export type CourseSubmission = {
   correctionDate: string;
   status: "pending" | "submitted";
   similarity?: number;
+  submittedFileName?: string;
+  submittedFileSize?: number;
   daysUntilDue: number;
   submissions: any[];
 };

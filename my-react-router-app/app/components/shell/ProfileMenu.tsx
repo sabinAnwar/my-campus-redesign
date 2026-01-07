@@ -115,7 +115,7 @@ export function ProfileMenu({
                 <div className="font-black text-foreground uppercase tracking-tight">
                   {getDisplayName()}
                 </div>
-                <div className="text-[10px] font-black text-iu-blue dark:text-iu-blue uppercase tracking-[0.2em]">
+                <div className="text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-[0.2em]">
                   {translations.online}
                 </div>
               </div>

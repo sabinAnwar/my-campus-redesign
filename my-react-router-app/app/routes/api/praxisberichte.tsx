@@ -35,7 +35,7 @@ export async function loader({ request }: { request: Request }) {
 
     return Response.json({ reports });
   } catch (error) {
-    console.error("❌ Error fetching praxisberichte:", error);
+    console.error(" Error fetching praxisberichte:", error);
     return Response.json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 }

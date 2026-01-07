@@ -1,5 +1,5 @@
 import React from "react";
-import { Info } from "lucide-react";
+import { Info, Flag } from "lucide-react";
 import { EVENT_COLORS } from "~/constants/schedule";
 import { EventIcon } from "~/components/schedule/EventIcon";
 
@@ -12,10 +12,10 @@ export function ScheduleLegend({ t }: ScheduleLegendProps) {
     <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8">
       <div className="flex items-center justify-between mb-8">
         <h3 className="text-xl font-black text-foreground flex items-center gap-3">
-          <Info size={24} className="text-iu-blue" />
+          <Info size={24} className="text-iu-blue dark:text-white" />
           {t.courseTypes}
         </h3>
-        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+        <div className="text-[10px] font-black uppercase tracking-[0.2em] text-foreground dark:text-white">
           {t.courseTypesDesc}
         </div>
       </div>
@@ -47,6 +47,22 @@ export function ScheduleLegend({ t }: ScheduleLegendProps) {
             </div>
           </div>
         ))}
+        <div className="flex items-center gap-4 p-5 rounded-2xl bg-card border border-border">
+          <div className="p-3 rounded-xl bg-iu-gold text-white shadow-sm">
+            <Flag className="h-5 w-5" />
+          </div>
+          <div>
+            <div className="text-sm font-bold text-foreground">
+              {t.holidaysTitle || "Feiertag"}
+            </div>
+            <div className="flex items-center gap-2 mt-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-iu-gold" />
+              <div className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground">
+                {t.ferien || "Feiertag"}
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );

@@ -153,7 +153,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
       {/* Status Badge */}
       {isEnabled && (
         <div className="text-xs font-medium text-violet-600 dark:text-violet-400 bg-violet-100 dark:bg-violet-900/30 px-2 py-1 rounded-full">
-          {isSpeaking ? '🔊 Spricht...' : '✓ Aktiv'}
+          {isSpeaking ? ' Spricht...' : ' Aktiv'}
         </div>
       )}
     </div>

@@ -31,19 +31,21 @@ interface StudentUser {
 }
 
 interface PageHeaderProps {
-  t: TranslationType;
+  title: string;
+  subtitle: string;
+  viewBenefitsLabel: string;
 }
 
 interface IdCardFrontProps {
   user: StudentUser;
   language: "de" | "en";
   frontRef: React.RefObject<HTMLDivElement | null>;
-  t: TranslationType;
+  translations: TranslationType;
 }
 
 interface IdCardBackProps {
   backRef: React.RefObject<HTMLDivElement | null>;
-  t: TranslationType;
+  translations: TranslationType;
 }
 
 interface DownloadButtonProps {
@@ -70,7 +72,7 @@ export function PageHeader({ title, subtitle, viewBenefitsLabel }: PageHeaderPro
     <div className="mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
       <div>
         <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm">
             <IdCard size={28} />
           </div>
           <h1 className="text-4xl font-black text-foreground tracking-tight">
@@ -83,7 +85,7 @@ export function PageHeader({ title, subtitle, viewBenefitsLabel }: PageHeaderPro
       </div>
       <Link
         to="/benefits"
-        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue hover:bg-iu-blue/20 font-bold transition-all group"
+        className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white hover:bg-iu-blue/20 dark:hover:bg-iu-blue/80 font-bold transition-all group"
       >
         {viewBenefitsLabel}
         <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -155,7 +157,7 @@ export function IdCardFront({ user, language, frontRef, translations: t }: IdCar
             <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
               {t.validUntil}
             </p>
-            <p className="font-black text-base text-iu-blue">
+            <p className="font-black text-base text-white">
               {formatDate(user.validUntil, language)}
             </p>
           </div>
@@ -209,7 +211,7 @@ export function IdCardBack({ backRef, translations: t }: IdCardBackProps) {
               {t.forGlobalBenefits}{" "}
               <a
                 href="https://www.isic.de"
-                className="text-iu-blue font-black hover:underline uppercase tracking-widest"
+                className="text-white font-black hover:underline uppercase tracking-widest"
                 target="_blank"
                 rel="noreferrer"
               >
@@ -257,7 +259,7 @@ export function InfoSection({ icon, title, items }: InfoSectionProps) {
 
       <div className="relative z-10">
         <div className="flex items-center gap-3 mb-6">
-          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
             {icon}
           </div>
           <h3 className="text-xl font-black text-foreground tracking-tight">{title}</h3>
@@ -267,7 +269,7 @@ export function InfoSection({ icon, title, items }: InfoSectionProps) {
           {items.map((item, i) => (
             <li key={i} className="flex items-start gap-4 group/item">
               <div className="mt-1.5">
-                <CheckCircle2 className="w-5 h-5 text-iu-blue opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white opacity-50 group-hover/item:opacity-100 transition-opacity" />
               </div>
               <span className="text-muted-foreground font-medium leading-relaxed group-hover/item:text-foreground transition-colors">
                 {item}

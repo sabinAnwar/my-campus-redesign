@@ -61,20 +61,10 @@ export function ScheduleHeader({
         icon={CalendarDays}
         title={t.title}
         subtitle={subtitle}
+        iconBg="bg-iu-blue/10 dark:bg-iu-blue"
+        iconColor="text-iu-blue dark:text-white"
       >
         <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-          {/* Current Phase Badge */}
-          <div
-            className={`inline-flex items-center gap-2 px-4 py-2 rounded-full border ${statusConfig.bg} ${statusConfig.text} border-current/10 text-sm font-bold w-fit`}
-          >
-            {currentStatus === "praxis" ? (
-              <Briefcase size={16} />
-            ) : (
-              <GraduationCap size={16} />
-            )}
-            <span>{statusConfig.label}</span>
-          </div>
-
           <div className="flex flex-wrap items-center gap-4 lg:flex-row">
             {/* View Toggle */}
             <div className="flex p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm">
@@ -160,7 +150,7 @@ export function ScheduleHeader({
           onClick={() => setShowOptional(!showOptional)}
           className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border transition-all ${
             showOptional
-              ? "bg-iu-blue/10 border-iu-blue/30 text-iu-blue"
+              ? "bg-iu-blue/10 border-iu-blue/30 text-iu-blue dark:bg-iu-blue dark:text-white dark:border-iu-blue/40"
               : "bg-background/50 border-border text-muted-foreground hover:border-iu-blue/30"
           }`}
         >
@@ -171,4 +161,3 @@ export function ScheduleHeader({
     </>
   );
 }
-

@@ -30,12 +30,12 @@ export function NewsCard({
       <div className="p-8 flex flex-col h-full">
         {/* Category & Featured */}
         <div className="flex items-center justify-between mb-6">
-          <span className="text-[10px] px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-slate-400 border border-slate-200 dark:border-white/10 font-black uppercase tracking-[0.2em]">
+          <span className="text-[10px] px-3 py-1.5 rounded-xl bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-200 dark:border-white/20 font-black uppercase tracking-[0.2em]">
             {item.category || labels.categoryFallback}
           </span>
 
           {item.featured && (
-            <span className="flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/20 font-black uppercase tracking-[0.2em]">
+            <span className="flex items-center gap-1.5 text-[10px] px-3 py-1.5 rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue font-black uppercase tracking-[0.2em]">
               <Star className="h-3 w-3 fill-current" />
               {labels.featured}
             </span>
@@ -48,7 +48,7 @@ export function NewsCard({
           onClick={() => onOpen(item.slug, index)}
           className="text-left w-full mb-4"
         >
-          <h2 className="text-lg font-bold text-foreground line-clamp-2 group-hover:text-iu-blue transition-colors uppercase leading-tight">
+          <h2 className="text-lg font-bold text-foreground line-clamp-2 group-hover:text-iu-blue dark:group-hover:text-white transition-colors uppercase leading-tight">
             {item.title}
           </h2>
         </button>
@@ -78,7 +78,7 @@ export function NewsCard({
         <div className="mt-auto">
           <button
             onClick={() => onOpen(item.slug, index)}
-            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 text-xs font-black hover:bg-iu-blue hover:text-white transition-all duration-300 uppercase tracking-widest group/btn"
+            className="inline-flex items-center gap-2 px-6 py-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue text-xs font-black hover:bg-iu-blue hover:text-white transition-all duration-300 uppercase tracking-widest group/btn"
           >
             {labels.readMore}
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

@@ -85,7 +85,7 @@ export function Sidebar({
         {/* Close button - mobile only */}
         <button
           onClick={onClose}
-          className="md:hidden p-2 rounded-lg hover:bg-iu-blue/10 hover:text-iu-blue transition-colors"
+          className="md:hidden p-2 rounded-lg hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors"
           aria-label="Close sidebar"
         >
           <X className="h-5 w-5" />
@@ -105,7 +105,7 @@ export function Sidebar({
               className={`group relative flex items-center gap-3 px-5 py-4 text-sm font-bold transition-all duration-200 rounded-r-3xl mr-2 ${
                 active
                   ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
-                  : "text-neutral-500 dark:text-neutral-400 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
+                  : "text-slate-600 dark:text-white/70 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
               }`}
             >
               {/* Active Indicator Bar */}

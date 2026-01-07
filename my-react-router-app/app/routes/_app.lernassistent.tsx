@@ -1,11 +1,10 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/lernassistent";
 
 // Hooks
 import { useChat } from "~/hooks/useChat";
 import { usePomodoro } from "~/hooks/usePomodoro";
-import { useSpeechSynthesis } from "~/hooks/useSpeechSynthesis";
 
 // Components
 import { LernassistentHeader } from "~/components/lernassistent/LernassistentHeader";
@@ -21,10 +20,9 @@ export default function AILernassistent() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
 
-  // Streak data (mock)
-  const streak = 5;
-  const todayMinutes = 45;
   const goalMinutes = 120;
+  const [streak, setStreak] = useState(1);
+  const [todayMinutes, setTodayMinutes] = useState(0);
 
   // Chat hook
   const {
@@ -53,16 +51,28 @@ export default function AILernassistent() {
     resetPomodoro,
   } = usePomodoro();
 
-  // Speech synthesis hook
-  const {
-    isSpeaking,
-    screenReaderEnabled,
-    speechRate,
-    setSpeechRate,
-    speakText,
-    stopSpeaking,
-    toggleScreenReader,
-  } = useSpeechSynthesis({ language, messages });
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const storedStreak = parseInt(localStorage.getItem("mycampus:streak") || "1", 10);
+    const storedMinutes = parseInt(localStorage.getItem("mycampus:todayMinutes") || "0", 10);
+    setStreak(Number.isNaN(storedStreak) ? 1 : storedStreak);
+    setTodayMinutes(Number.isNaN(storedMinutes) ? 0 : storedMinutes);
+  }, []);
+
+  useEffect(() => {
+    if (!isRunning || isBreak) return;
+    const interval = setInterval(() => {
+      setTodayMinutes((prev) => {
+        const next = prev + 1;
+        if (typeof window !== "undefined") {
+          localStorage.setItem("mycampus:todayMinutes", String(next));
+        }
+        return next;
+      });
+    }, 60_000);
+
+    return () => clearInterval(interval);
+  }, [isRunning, isBreak]);
 
   return (
     <main className="max-w-7xl mx-auto">
@@ -70,26 +80,22 @@ export default function AILernassistent() {
 
       <div className="grid lg:grid-cols-3 gap-6">
         {/* Left: Chat */}
-        <div className="lg:col-span-2">
+        <div className="lg:col-span-2 space-y-6">
           <ChatPanel
             messages={messages}
             input={input}
             setInput={setInput}
             isTyping={isTyping}
             onSend={handleSend}
-            screenReaderEnabled={screenReaderEnabled}
-            isSpeaking={isSpeaking}
-            speechRate={speechRate}
-            setSpeechRate={setSpeechRate}
-            onToggleScreenReader={toggleScreenReader}
-            onStopSpeaking={stopSpeaking}
-            onSpeakText={speakText}
             t={t}
           />
+          <QuickAccessLinks t={t} />
         </div>
 
         {/* Right: Sidebar */}
         <div className="space-y-6">
+          <StudyTips t={t} onTipClick={sendMessage} />
+
           <PomodoroTimer
             t={t}
             pomodoroTime={pomodoroTime}
@@ -107,10 +113,6 @@ export default function AILernassistent() {
             todayMinutes={todayMinutes}
             goalMinutes={goalMinutes}
           />
-
-          <QuickAccessLinks t={t} />
-
-          <StudyTips t={t} onTipClick={sendMessage} />
         </div>
       </div>
     </main>

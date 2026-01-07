@@ -79,7 +79,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
 
     return Response.json(report);
   } catch (error) {
-    console.error("❌ Error updating praxisbericht:", error);
+    console.error(" Error updating praxisbericht:", error);
     // Surface more context to help diagnose 500s in dev
     const message =
       error instanceof Error

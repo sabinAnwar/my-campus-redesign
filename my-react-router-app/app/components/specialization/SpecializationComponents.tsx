@@ -117,22 +117,22 @@ interface ConfirmationModalProps {
 export function getColorClasses(color: string): ColorClasses {
   const colors: Record<string, ColorClasses> = {
     emerald: {
-      bg: "bg-iu-blue/10",
-      text: "text-iu-blue dark:text-iu-blue",
-      border: "border-iu-blue/30",
-      ring: "ring-iu-blue/30",
+      bg: "bg-iu-blue/10 dark:bg-iu-blue",
+      text: "text-iu-blue dark:text-white",
+      border: "border-iu-blue/30 dark:border-iu-blue",
+      ring: "ring-iu-blue/30 dark:ring-iu-blue",
     },
     "iu-blue": {
-      bg: "bg-iu-blue/10",
-      text: "text-iu-blue",
-      border: "border-iu-blue/30",
-      ring: "ring-iu-blue/30",
+      bg: "bg-iu-blue/10 dark:bg-iu-blue",
+      text: "text-iu-blue dark:text-white",
+      border: "border-iu-blue/30 dark:border-iu-blue",
+      ring: "ring-iu-blue/30 dark:ring-iu-blue",
     },
     "iu-orange": {
-      bg: "bg-iu-orange/10",
-      text: "text-iu-orange",
-      border: "border-iu-orange/30",
-      ring: "ring-iu-orange/30",
+      bg: "bg-iu-orange/10 dark:bg-iu-orange",
+      text: "text-iu-orange dark:text-white",
+      border: "border-iu-orange/30 dark:border-iu-orange",
+      ring: "ring-iu-orange/30 dark:ring-iu-orange",
     },
   };
   return colors[color] || colors["iu-blue"];
@@ -168,15 +168,15 @@ export function PageHeader({
       subtitle={
         <>
           {subtitle}{" "}
-          <span className="font-black text-iu-blue">Wirtschaftsinformatik (B.Sc.)</span>
+          <span className="font-black text-iu-blue dark:text-white">Wirtschaftsinformatik (B.Sc.)</span>
         </>
       }
     >
       {savedChoice && (
-        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-iu-blue/10 border border-iu-blue/30 shadow-sm">
-          <CheckCircle2 className="w-5 h-5 text-iu-blue" />
+        <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/30 dark:border-iu-blue shadow-sm">
+          <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
           <div>
-            <p className="text-[10px] text-iu-blue font-bold uppercase tracking-wider">
+            <p className="text-[10px] text-iu-blue dark:text-white/60 font-bold uppercase tracking-wider">
               {currentChoiceLabel}
             </p>
             <p className="text-sm font-black text-foreground">
@@ -192,9 +192,9 @@ export function PageHeader({
 
 export function InfoBanner({ title, text }: InfoBannerProps) {
   return (
-    <div className="mb-10 p-5 rounded-none bg-iu-blue/5 border border-iu-blue/20 flex items-start gap-4">
-      <div className="p-2 rounded-none bg-iu-blue/10">
-        <Info className="w-5 h-5 text-iu-blue" />
+    <div className="mb-10 p-5 rounded-none bg-iu-blue/5 dark:bg-iu-blue/10 border border-iu-blue/20 dark:border-iu-blue/30 flex items-start gap-4">
+      <div className="p-2 rounded-none bg-iu-blue/10 dark:bg-iu-blue">
+        <Info className="w-5 h-5 text-iu-blue dark:text-white" />
       </div>
       <div>
         <h3 className="font-black text-foreground mb-1">{title}</h3>
@@ -332,7 +332,7 @@ export function SpecializationDetails({
         {/* Courses Grid */}
         <div className="p-8">
           <h3 className="text-lg font-black text-foreground mb-6 flex items-center gap-2">
-            <BookOpen className="w-5 h-5 text-iu-blue" />
+            <BookOpen className="w-5 h-5 text-iu-blue dark:text-white" />
             {labels.coursesInSpec}
           </h3>
 
@@ -347,7 +347,7 @@ export function SpecializationDetails({
                     <p className="text-xs font-mono text-muted-foreground mb-1 font-bold">
                       {course.code}
                     </p>
-                    <h4 className="font-black text-foreground group-hover:text-iu-blue transition-colors">
+                    <h4 className="font-black text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                       {course.name}
                     </h4>
                   </div>
@@ -384,7 +384,7 @@ export function SpecializationDetails({
           {/* Career Paths */}
           <div className="mt-8 p-6 rounded-none bg-muted/50 border border-border">
             <h4 className="font-black text-foreground mb-4 flex items-center gap-2">
-              <TrendingUp className="w-5 h-5 text-iu-blue" />
+              <TrendingUp className="w-5 h-5 text-iu-blue dark:text-white" />
               {labels.careerPaths}
             </h4>
             <div className="flex flex-wrap gap-3">
@@ -425,9 +425,9 @@ export function ConfirmationModal({
           </div>
         </div>
 
-        <div className="mb-6 p-4 rounded-none bg-iu-orange/10 border border-iu-orange/30 text-iu-orange text-sm">
+        <div className="mb-6 p-4 rounded-none bg-iu-orange/10 dark:bg-iu-orange border border-iu-orange/30 dark:border-iu-orange text-iu-orange dark:text-white text-sm">
           <div className="flex items-start gap-3">
-            <AlertCircle className="w-5 h-5 mt-0.5 shrink-0" />
+            <AlertCircle className="w-5 h-5 mt-0.5 shrink-0 text-iu-orange dark:text-white" />
             <p className="font-medium">
               {labels.confirmText} <strong className="font-black">{vertiefung.name}</strong>{" "}
               {labels.confirmText2}

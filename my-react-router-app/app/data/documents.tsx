@@ -7,8 +7,8 @@ export const guidelines = [
     title: "Richtlinien zur Gestaltung wissenschaftlicher Arbeiten",
     subtitle: "Gültig für Erstversuche ab 01.10.2025",
     icon: BookOpen,
-    color: "text-blue-600",
-    bgColor: "bg-blue-100 dark:bg-blue-900/20",
+    color: "text-blue-600 dark:text-white",
+    bgColor: "bg-blue-100 dark:bg-iu-blue",
     content: (
       <div className="space-y-6">
         <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
@@ -31,7 +31,7 @@ export const guidelines = [
     title: "Richtlinien zur Gestaltung wissenschaftlicher Arbeiten",
     subtitle: "Gültig für Erstversuche vor 01.10.2025",
     icon: BookOpen,
-    color: "text-slate-600",
+    color: "text-slate-600 dark:text-white",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     content: (
       <div className="space-y-6">
@@ -56,8 +56,8 @@ export const guidelines = [
     title: "IU-weiter Zitierleitfaden",
     subtitle: "Gültig für Erstversuche ab 01.10.2025",
     icon: PenTool,
-    color: "text-purple-600",
-    bgColor: "bg-purple-100 dark:bg-purple-900/20",
+    color: "text-purple-600 dark:text-white",
+    bgColor: "bg-purple-100 dark:bg-iu-purple",
     content: (
       <div className="space-y-6">
         <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
@@ -89,8 +89,8 @@ export const guidelines = [
     id: "gender",
     title: "Leitfaden zur gendersensiblen und inklusiven Sprache",
     icon: Users,
-    color: "text-pink-600",
-    bgColor: "bg-pink-100 dark:bg-pink-900/20",
+    color: "text-pink-600 dark:text-white",
+    bgColor: "bg-pink-100 dark:bg-iu-pink",
     content: (
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
@@ -111,8 +111,8 @@ export const guidelines = [
     id: "plagiat",
     title: "Leitfaden zur Vermeidung eines Plagiats",
     icon: Shield,
-    color: "text-red-600",
-    bgColor: "bg-red-100 dark:bg-red-900/20",
+    color: "text-red-600 dark:text-white",
+    bgColor: "bg-red-100 dark:bg-iu-red",
     content: (
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
@@ -138,8 +138,8 @@ export const guidelines = [
     id: "vertraulichkeit",
     title: "Vertraulichkeitsvereinbarung für schriftliche Arbeiten",
     icon: Lock,
-    color: "text-emerald-600",
-    bgColor: "bg-emerald-100 dark:bg-emerald-900/20",
+    color: "text-emerald-600 dark:text-white",
+    bgColor: "bg-emerald-100 dark:bg-emerald-600",
     content: (
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
@@ -162,8 +162,8 @@ export const guidelines = [
     id: "ki",
     title: "Richtlinie für die Nutzung von KI im Studium",
     icon: Cpu,
-    color: "text-indigo-600",
-    bgColor: "bg-indigo-100 dark:bg-indigo-900/20",
+    color: "text-indigo-600 dark:text-white",
+    bgColor: "bg-indigo-100 dark:bg-indigo-600",
     content: (
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">

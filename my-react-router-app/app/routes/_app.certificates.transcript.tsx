@@ -52,7 +52,7 @@ export const loader = async ({ request }: { request: Request }) => {
 
 export default function TranscriptPage() {
   const { language } = useLanguage();
-  const { user, marks } = useLoaderData<typeof loader>() as { user: any; marks: MarkWithTeacher[] };
+  const { user, marks } = useLoaderData<typeof loader>() as { user: any; marks: any[] };
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
   const [showPassedOnly, setShowPassedOnly] = useState(false);
 
@@ -113,7 +113,7 @@ export default function TranscriptPage() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8 px-2 sm:px-0">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
       <TranscriptHeader t={t} />
 
 

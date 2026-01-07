@@ -5,6 +5,7 @@ import {
   ChevronRight,
   MapPin,
   User,
+  Flag,
 } from "lucide-react";
 import { toISODate, DEFAULT_PALETTE, type StudyPlan } from "~/lib/studyPlans";
 import { EVENT_COLORS } from "~/constants/schedule";
@@ -70,25 +71,30 @@ export function ScheduleListView({
               >
                 <span
                   className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
-                    isToday ? "text-iu-blue" : "text-muted-foreground"
+                    isToday
+                      ? "text-iu-blue dark:text-white"
+                      : "text-muted-foreground dark:text-white/70"
                   }`}
                 >
                   {dayNames[idx]}
                 </span>
                 <span
                   className={`text-4xl font-black mb-1 ${
-                    isToday ? "text-iu-blue" : "text-foreground"
+                    isToday ? "text-iu-blue dark:text-white" : "text-foreground"
                   }`}
                 >
                   {date.getDate()}
                 </span>
-                <span className="text-xs font-medium text-muted-foreground">
+                <span className="text-xs font-medium text-muted-foreground dark:text-white/70">
                   {date.toLocaleDateString(locale, { month: "short" })}
                 </span>
                 {phaseConfig && (
                   <div
-                    className={`mt-4 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
+                    className={`mt-4 inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
                   >
+                    {dayBlock?.status === "feiertag" && (
+                      <Flag className="h-3 w-3" />
+                    )}
                     {phaseConfig.label}
                   </div>
                 )}
@@ -127,7 +133,7 @@ export function ScheduleListView({
                           {/* Time */}
                           <div className="flex items-center gap-3 sm:w-32 shrink-0">
                             <div
-                              className={`p-2.5 rounded-xl ${isLive ? "bg-iu-blue text-white" : "bg-iu-blue/10 text-iu-blue"}`}
+                              className={`p-2.5 rounded-xl ${isLive ? "bg-iu-blue text-white" : "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue/20 dark:text-white"}`}
                             >
                               <Clock size={18} />
                             </div>
@@ -144,11 +150,11 @@ export function ScheduleListView({
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-bold text-lg text-foreground truncate group-hover:text-iu-blue transition-colors">
+                              <h3 className="font-bold text-lg text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                                 {event.title}
                               </h3>
                               {event.isOptional && (
-                                <span className="px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-500 text-[10px] font-bold uppercase tracking-wider border border-amber-500/20">
+                                <span className="px-2 py-0.5 rounded-md bg-iu-orange text-white text-[10px] font-bold uppercase tracking-wider border border-iu-orange/30">
                                   Optional
                                 </span>
                               )}
@@ -157,7 +163,7 @@ export function ScheduleListView({
                               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
                                 <MapPin
                                   size={14}
-                                  className="text-iu-blue/70"
+                                  className="text-iu-blue/70 dark:text-white/70"
                                 />
                                 <span className="font-medium">
                                   {event.location}
@@ -166,7 +172,7 @@ export function ScheduleListView({
                               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
                                 <User
                                   size={14}
-                                  className="text-iu-blue/70"
+                                  className="text-iu-blue/70 dark:text-white/70"
                                 />
                                 <span className="font-medium">
                                   {event.professor}

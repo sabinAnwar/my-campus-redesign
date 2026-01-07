@@ -34,7 +34,7 @@ async function handleLoginRequest(request: Request) {
 
     // Be permissive with content types in production
     const contentType = request.headers.get("content-type") || "";
-    console.log("📝 /api/login content-type:", contentType);
+    console.log(" /api/login content-type:", contentType);
 
     // Try URL-encoded first (browser form default)
     try {
@@ -54,7 +54,7 @@ async function handleLoginRequest(request: Request) {
           ? (formErr as Error).message
           : String(formErr);
       console.warn(
-        "⚠️ formData parse failed, will try JSON:",
+        " formData parse failed, will try JSON:",
         message
       );
     }
@@ -119,7 +119,7 @@ async function handleLoginRequest(request: Request) {
       },
     });
 
-    console.log("✅ Login successful for:", user.email);
+    console.log(" Login successful for:", user.email);
 
     // Build cookie header
     const isProduction =
@@ -152,7 +152,7 @@ async function handleLoginRequest(request: Request) {
     if (domain) parts.push(`Domain=${domain}`);
     const cookieHeader = parts.join("; ");
 
-    console.log("🍪 Set-Cookie header:", cookieHeader);
+    console.log(" Set-Cookie header:", cookieHeader);
 
     // Return success response with Set-Cookie header
     // Client will handle navigation
@@ -171,9 +171,9 @@ async function handleLoginRequest(request: Request) {
     response.headers.set("Set-Cookie", cookieHeader);
     return response;
   } catch (error) {
-    console.error("❌ Login error:", error);
+    console.error(" Login error:", error);
     if (error instanceof Error) {
-      console.error("❌ Stack:", error.stack);
+      console.error(" Stack:", error.stack);
     }
     return Response.json(
       { error: "An error occurred during login", details: error instanceof Error ? error.message : String(error) },

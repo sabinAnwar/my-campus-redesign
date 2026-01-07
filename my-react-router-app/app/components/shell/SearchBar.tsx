@@ -59,14 +59,14 @@ export function SearchBar({
 
         {/* Search Icon */}
         <div className="absolute inset-y-0 left-0 pl-2.5 sm:pl-3 flex items-center pointer-events-none">
-          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-focus-within:text-iu-blue transition-colors" />
+          <Search className="h-3.5 w-3.5 sm:h-4 sm:w-4 text-muted-foreground group-focus-within:text-iu-blue dark:group-focus-within:text-white transition-colors" />
         </div>
 
         {/* Results Dropdown */}
         {query.trim() && (
           <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-0 top-[4.5rem] sm:top-full mt-0 sm:mt-2 bg-card text-card-foreground border border-border rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden z-[200] animate-in fade-in zoom-in-95 duration-200">
             {/* Results Header */}
-            <div className="p-2 sm:p-3 border-b border-border bg-muted/30 flex justify-between items-center text-[10px] sm:text-xs font-bold text-iu-blue">
+            <div className="p-2 sm:p-3 border-b border-border bg-muted/30 flex justify-between items-center text-[10px] sm:text-xs font-bold text-iu-blue dark:text-white">
               <span>
                 {results.length} {translations.results}
               </span>
@@ -83,7 +83,7 @@ export function SearchBar({
                     className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-iu-blue/10 group/item transition-all border border-transparent hover:border-iu-blue/20"
                   >
                     {/* Icon */}
-                    <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border border-border text-muted-foreground group-hover/item:text-iu-blue group-hover/item:border-iu-blue/30 transition-colors">
+                    <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border border-border text-muted-foreground group-hover/item:text-iu-blue dark:group-hover/item:text-white group-hover/item:border-iu-blue/30 transition-colors">
                       <result.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
                     </div>
 
@@ -98,7 +98,7 @@ export function SearchBar({
                     </div>
 
                     {/* Arrow Icon */}
-                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all text-iu-blue hidden sm:block" />
+                    <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all text-iu-blue dark:text-white hidden sm:block" />
                   </Link>
                 ))
               ) : (

@@ -8,6 +8,7 @@ import {
   MapPin,
   FileCheck,
   MessageSquare,
+  Flag,
 } from "lucide-react";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { useLoaderData } from "react-router-dom";
@@ -51,7 +52,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     // FALLBACK for development if no session
     if (!user) {
       user = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+        where: { email: "student.demo@iu-study.org" },
       });
     }
 
@@ -249,6 +250,33 @@ export default function CourseSchedule() {
   const locale = language === "de" ? "de-DE" : "en-US";
   const t = TRANSLATIONS[language];
   const dayNames = t.dayNames;
+  const toSoftPhaseBg = (bg?: string | null) => {
+    if (!bg) return "";
+    if (bg.includes("bg-iu-") && !bg.includes("/")) {
+      return `${bg}/10`;
+    }
+    return bg;
+  };
+  const getPhaseLabelClass = (status?: string | null) => {
+    switch (status) {
+      case "theoriephase":
+        return "text-iu-purple dark:text-white";
+      case "praxis":
+        return "text-iu-green dark:text-white";
+      case "klausurphase":
+        return "text-iu-red dark:text-white";
+      case "nachpruefung":
+        return "text-foreground dark:text-white";
+      case "feiertag":
+        return "text-iu-orange dark:text-white";
+      case "vorlesung":
+        return "text-iu-blue dark:text-white";
+      case "wochenende":
+        return "text-iu-orange dark:text-white";
+      default:
+        return "text-muted-foreground dark:text-white";
+    }
+  };
 
   // Handle ICS download
   const handleDownloadICS = () => {
@@ -372,7 +400,7 @@ export default function CourseSchedule() {
                     className={`p-6 text-center border-l border-border ${isToday ? "bg-iu-blue/5" : ""}`}
                   >
                     <div
-                      className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${isToday ? "text-iu-blue" : "text-muted-foreground"}`}
+                      className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
                     >
                       {dayNames[idx]}
                     </div>
@@ -387,8 +415,11 @@ export default function CourseSchedule() {
                     </div>
                     {phaseConfig && (
                       <div
-                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest ${phaseConfig.text} opacity-70`}
+                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest ${getPhaseLabelClass(dayBlock?.status)} inline-flex items-center gap-1`}
                       >
+                        {dayBlock?.status === "feiertag" && (
+                          <Flag className="h-3 w-3" />
+                        )}
                         {phaseConfig.label.split(" ")[0]}
                       </div>
                     )}
@@ -446,8 +477,8 @@ export default function CourseSchedule() {
                           className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
                           style={{ top: `${timeLineTop}px` }}
                         >
-                          <div className="w-2 h-2 rounded-full bg-rose-500 -ml-1 shadow-lg shadow-rose-500/50" />
-                          <div className="flex-1 h-0.5 bg-rose-500/50" />
+                          <div className="w-2 h-2 rounded-full bg-iu-red -ml-1 shadow-lg shadow-rose-500/50" />
+                          <div className="flex-1 h-0.5 bg-iu-red" />
                         </div>
                       )}
 
@@ -466,7 +497,7 @@ export default function CourseSchedule() {
                         <div
                           key={event.id}
                           onClick={() => setSelectedEvent(event)}
-                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group ${
+                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group text-white ${
                             isLive
                               ? "ring-2 ring-iu-blue ring-offset-2 ring-offset-background z-10"
                               : ""
@@ -490,7 +521,7 @@ export default function CourseSchedule() {
                                 />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className="text-[10px] font-black uppercase tracking-wider opacity-70 leading-none mb-1">
+                                <div className="text-[10px] font-black uppercase tracking-wider text-white/80 leading-none mb-1">
                                   {event.startTime} – {event.endTime}
                                 </div>
                                 <div
@@ -501,8 +532,8 @@ export default function CourseSchedule() {
                               </div>
                             </div>
 
-                            <div className="mt-auto flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
-                              <div className="flex items-center gap-1 text-[9px] font-bold text-muted-foreground">
+                            <div className="mt-auto flex items-center gap-2 opacity-100 transition-opacity">
+                              <div className="flex items-center gap-1 text-[9px] font-bold text-white/80">
                                 {event.isOnline ? (
                                   <Video size={10} />
                                 ) : (
@@ -565,7 +596,7 @@ export default function CourseSchedule() {
                 return (
                   <div
                     key={dateStr}
-                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all hover:bg-iu-blue/5 group ${isToday ? "bg-iu-blue/[0.02]" : ""} ${phaseConfig ? phaseConfig.bg : ""}`}
+                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all hover:bg-iu-blue/5 group ${isToday ? "bg-iu-blue/[0.02]" : ""} ${phaseConfig ? toSoftPhaseBg(phaseConfig.bg) : ""}`}
                   >
                     <div className="flex items-center justify-between mb-4">
                       <span
@@ -577,6 +608,12 @@ export default function CourseSchedule() {
                       >
                         {date.getDate()}
                       </span>
+                      {dayBlock?.status === "feiertag" && (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold text-white">
+                          <Flag className="h-3 w-3" />
+                          {language === "de" ? "Feiertag" : "Holiday"}
+                        </span>
+                      )}
                     </div>
 
                     <div className="space-y-2">
@@ -587,12 +624,12 @@ export default function CourseSchedule() {
                           <div
                             key={event.id}
                             onClick={() => setSelectedEvent(event)}
-                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2`}
+                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2 text-white`}
                           >
-                            <span className="opacity-70 shrink-0">
+                            <span className="opacity-80 shrink-0 text-white">
                               {event.startTime}
                             </span>
-                            <span className="truncate">{event.title}</span>
+                            <span className="truncate text-white">{event.title}</span>
                           </div>
                         );
                       })}
@@ -616,7 +653,7 @@ export default function CourseSchedule() {
           {/* Semester Plan Section */}
           <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8">
             <h3 className="text-xl font-black text-foreground mb-8 flex items-center gap-3">
-              <CalendarDays size={24} className="text-iu-blue" />
+              <CalendarDays size={24} className="text-iu-blue dark:text-white" />
               {t.semesterPlan}
             </h3>
 
@@ -653,20 +690,20 @@ export default function CourseSchedule() {
                           <div
                             className={`p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 ${
                               block.isActive
-                                ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
-                                : "bg-muted/50 text-muted-foreground"
+                                ? `${block.config.bg} ${block.config.text} shadow-lg`
+                                : `${block.config.bg} ${block.config.text}`
                             }`}
                           >
                             <Icon size={24} />
                           </div>
                           <div>
-                            <div className="text-sm font-black text-foreground mb-1 group-hover:text-iu-blue transition-colors">
+                            <div className="text-sm font-black text-foreground mb-1 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                               {block.config.label}
                             </div>
                             <div className="flex items-center gap-2">
                               <Calendar
                                 size={12}
-                                className="text-iu-blue/50"
+                                className="text-iu-blue/50 dark:text-white"
                               />
                               <div className="text-[10px] font-bold uppercase tracking-[0.1em] text-muted-foreground">
                                 {block.startDate} – {block.endDate}
@@ -690,14 +727,14 @@ export default function CourseSchedule() {
               <div className="pt-12 border-t border-border/50">
                 <div className="flex items-center justify-between mb-8">
                   <div className="flex items-center gap-3">
-                    <div className="w-1.5 h-6 bg-amber-500 rounded-full" />
+                    <div className="w-1.5 h-6 bg-iu-gold rounded-full" />
                     <h4 className="text-lg font-bold text-foreground">
                       {language === "de"
                         ? "Nationale Feiertage"
                         : "National Holidays"}
                     </h4>
                   </div>
-                  <div className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground/60">
+                  <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-black/90 text-white dark:bg-white/90 dark:text-black">
                     {language === "de" ? "VORLESUNGSFREI" : "NO LECTURES"}
                   </div>
                 </div>
@@ -707,13 +744,13 @@ export default function CourseSchedule() {
                     .map((block, idx) => (
                       <div
                         key={idx}
-                        className="p-5 rounded-2xl bg-card border border-border flex items-center gap-4 group hover:border-amber-500/30 hover:shadow-lg hover:shadow-amber-500/5 transition-all"
+                        className="p-5 rounded-2xl bg-card border border-border flex items-center gap-4 group hover:border-iu-gold hover:shadow-lg hover:shadow-amber-500/5 transition-all"
                       >
-                        <div className="p-3 rounded-xl bg-amber-500/10 text-amber-500 group-hover:scale-110 transition-transform">
-                          <Calendar size={20} />
-                        </div>
+                      <div className="p-3 rounded-xl bg-iu-gold text-white group-hover:scale-110 transition-transform">
+                        <Flag size={20} />
+                      </div>
                         <div className="min-w-0">
-                          <div className="text-sm font-bold text-foreground truncate group-hover:text-amber-500 transition-colors">
+                          <div className="text-sm font-bold text-foreground truncate group-hover:text-iu-gold transition-colors">
                             {block.config.label}
                           </div>
                           <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">

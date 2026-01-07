@@ -11,7 +11,7 @@ function fallbackNotification(message: any, type = 'success') {
 }
 
 export function showSuccessToast(message: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | ((props: ToastContentProps<unknown>) => ReactNode) | null | undefined) {
-  console.log('✅ Showing success toast:', message);
+  console.log(' Showing success toast:', message);
   try {
     const id = toast.success(message, {
       position: 'top-right',
@@ -21,16 +21,16 @@ export function showSuccessToast(message: string | number | bigint | boolean | R
       pauseOnHover: true,
       draggable: true,
     });
-    console.log('✅ Toast ID:', id);
+    console.log(' Toast ID:', id);
     return id;
   } catch (err) {
-    console.error('❌ Error showing toast:', err);
+    console.error(' Error showing toast:', err);
     fallbackNotification(message, 'success');
   }
 }
 
 export function showErrorToast(message: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | ((props: ToastContentProps<unknown>) => ReactNode) | null | undefined) {
-  console.log('❌ Showing error toast:', message);
+  console.log(' Showing error toast:', message);
   try {
     const id = toast.error(message, {
       position: 'top-right',
@@ -40,16 +40,16 @@ export function showErrorToast(message: string | number | bigint | boolean | Rea
       pauseOnHover: true,
       draggable: true,
     });
-    console.log('❌ Toast ID:', id);
+    console.log(' Toast ID:', id);
     return id;
   } catch (err) {
-    console.error('❌ Error showing toast:', err);
+    console.error(' Error showing toast:', err);
     fallbackNotification(message, 'error');
   }
 }
 
 export function showInfoToast(message: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | ((props: ToastContentProps<unknown>) => ReactNode) | null | undefined) {
-  console.log('ℹ️ Showing info toast:', message);
+  console.log('ℹ Showing info toast:', message);
   try {
     const id = toast.info(message, {
       position: 'top-right',
@@ -59,16 +59,16 @@ export function showInfoToast(message: string | number | bigint | boolean | Reac
       pauseOnHover: true,
       draggable: true,
     });
-    console.log('ℹ️ Toast ID:', id);
+    console.log('ℹ Toast ID:', id);
     return id;
   } catch (err) {
-    console.error('❌ Error showing toast:', err);
+    console.error(' Error showing toast:', err);
     fallbackNotification(message, 'info');
   }
 }
 
 export function showWarningToast(message: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | ReactPortal | Promise<string | number | bigint | boolean | ReactPortal | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | null | undefined> | ((props: ToastContentProps<unknown>) => ReactNode) | null | undefined) {
-  console.log('⚠️ Showing warning toast:', message);
+  console.log(' Showing warning toast:', message);
   try {
     const id = toast.warning(message, {
       position: 'top-right',
@@ -78,17 +78,17 @@ export function showWarningToast(message: string | number | bigint | boolean | R
       pauseOnHover: true,
       draggable: true,
     });
-    console.log('⚠️ Toast ID:', id);
+    console.log(' Toast ID:', id);
     return id;
   } catch (err) {
-    console.error('❌ Error showing toast:', err);
+    console.error(' Error showing toast:', err);
     fallbackNotification(message, 'warning');
   }
 }
 
 // Generic showToast function that accepts type parameter
 export function showToast(message: string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | Iterable<ReactNode> | Promise<string | number | bigint | boolean | ReactElement<unknown, string | JSXElementConstructor<any>> | ReactPortal | Iterable<ReactNode> | null | undefined> | ((props: ToastContentProps<unknown>) => ReactNode) | null | undefined, type = 'success') {
-  console.log(`📢 Showing ${type} toast:`, message);
+  console.log(` Showing ${type} toast:`, message);
   
   switch (type) {
     case 'success':

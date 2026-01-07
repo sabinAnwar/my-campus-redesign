@@ -51,10 +51,10 @@ async function sendEmail(to: string, subject: string, html: string) {
       html,
     });
 
-    console.log('✅ Email sent successfully:', info.messageId);
+    console.log(' Email sent successfully:', info.messageId);
     return true;
   } catch (error) {
-    console.error('❌ Error sending email:', error);
+    console.error(' Error sending email:', error);
     // Don't throw error - we still want to save the submission even if email fails
     return false;
   }
@@ -113,7 +113,7 @@ export async function action({ request }: ActionFunctionArgs) {
         <body>
           <div class="container">
             <div class="header">
-              <h1 style="margin: 0;">📧 Neue Support-Anfrage</h1>
+              <h1 style="margin: 0;"> Neue Support-Anfrage</h1>
               <p style="margin: 10px 0 0 0; opacity: 0.9;">IU Student Portal</p>
             </div>
             <div class="content">
@@ -152,7 +152,7 @@ export async function action({ request }: ActionFunctionArgs) {
     `;
 
     // Send email to your address
-    await sendEmail("sabinanwar2@gmail.com", emailSubject, emailHtml);
+    await sendEmail("demoanwar2@gmail.com", emailSubject, emailHtml);
 
     // Also send confirmation email to the user
     const userConfirmationHtml = `
@@ -171,7 +171,7 @@ export async function action({ request }: ActionFunctionArgs) {
         <body>
           <div class="container">
             <div class="header">
-              <div class="success-icon">✅</div>
+              <div class="success-icon"></div>
               <h1 style="margin: 0;">Nachricht erhalten!</h1>
             </div>
             <div class="content">

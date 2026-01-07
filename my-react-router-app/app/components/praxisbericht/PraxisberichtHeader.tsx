@@ -14,7 +14,7 @@ export function PraxisberichtHeader({
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue">
+            <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white">
               <ClipboardList size={28} />
             </div>
             <h1 className="text-4xl font-black text-foreground tracking-tight">

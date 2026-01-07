@@ -1,6 +1,5 @@
 import React, { useRef } from "react";
 import { Link, useLoaderData } from "react-router";
-import { useLocation } from "react-router-dom";
 import {
   IdCard,
   Download,
@@ -13,7 +12,6 @@ import {
 } from "lucide-react";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 import jsPDF from "jspdf";
-import html2canvas from "html2canvas";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/student-id";
 import { prisma } from "~/lib/prisma";
@@ -26,10 +24,10 @@ export const loader = async ({ request }: { request: Request }) => {
     let userId = user?.id;
 
     if (!userId) {
-      const sabin = await prisma.user.findUnique({
-        where: { email: "sabin.elanwar@iu-study.org" },
+      const demo = await prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
       });
-      userId = sabin?.id;
+      userId = demo?.id;
     }
 
     if (!userId) return { user: null };
@@ -65,8 +63,8 @@ export default function StudentIdPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
-        <div className="bg-card/60 backdrop-blur-xl border border-destructive/30 text-destructive p-10 rounded-[2.5rem] max-w-md shadow-2xl text-center">
-          <AlertCircle className="w-16 h-16 mx-auto mb-6 opacity-50" />
+        <div className="bg-iu-red/10 dark:bg-iu-red backdrop-blur-xl border border-iu-red/30 dark:border-iu-red text-iu-red dark:text-white p-10 rounded-[2.5rem] max-w-md shadow-2xl text-center">
+          <AlertCircle className="w-16 h-16 mx-auto mb-6" />
           <p className="font-black uppercase tracking-widest">
             {t.errorLoading}
           </p>
@@ -78,32 +76,136 @@ export default function StudentIdPage() {
   const handleDownloadPDF = async () => {
     try {
       showSuccessToast(t.pdfCreating);
+      
+      // Use jsPDF directly to draw the card without html2canvas (avoids oklch/oklab issues)
       const pdf = new jsPDF({
         orientation: "landscape",
         unit: "mm",
         format: [85.6, 53.98],
       });
 
-      const renderCard = async (
-        ref: React.RefObject<HTMLDivElement | null>
-      ) => {
-        if (!ref.current) {
-          throw new Error("Ref element is not available");
-        }
-        const canvas = await html2canvas(ref.current as HTMLElement, {
-          scale: 4,
-          useCORS: true,
-          backgroundColor: null,
-        });
-        return canvas.toDataURL("image/png");
-      };
+      // Card dimensions in mm (standard credit card size)
+      const cardWidth = 85.6;
+      const cardHeight = 53.98;
+      const padding = 4;
 
-      const front = await renderCard(frontRef);
-      const back = await renderCard(backRef);
+      // Draw front card
+      // Background
+      pdf.setFillColor(15, 23, 42); // Slate-900
+      pdf.rect(0, 0, cardWidth, cardHeight, 'F');
+      
+      // IU Logo box
+      pdf.setFillColor(255, 255, 255);
+      pdf.roundedRect(padding, padding, 14, 6, 1, 1, 'F');
+      pdf.setTextColor(15, 23, 42);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(12);
+      pdf.text('iu', padding + 2, padding + 4.5);
+      
+      // University name (top right)
+      pdf.setTextColor(100, 116, 139); // Slate-500
+      pdf.setFontSize(4);
+      pdf.text(t.universityName, cardWidth - padding, padding + 2, { align: 'right' });
+      pdf.text(t.universitySub, cardWidth - padding, padding + 4.5, { align: 'right' });
+      
+      // Student name
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(11);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text((user.name || 'Student Name').toUpperCase(), padding, 22);
+      
+      // Study program
+      pdf.setTextColor(37, 99, 235); // IU Blue
+      pdf.setFontSize(5);
+      pdf.text((user.studyProgram || 'Study Program').toUpperCase(), padding, 26);
+      
+      // Birthday label
+      pdf.setTextColor(100, 116, 139);
+      pdf.setFontSize(3.5);
+      pdf.text(t.birthday.toUpperCase(), padding, 32);
+      
+      // Birthday value
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(5);
+      pdf.text(formatDate(user.birthday), padding, 35);
+      
+      // Matriculation label
+      pdf.setTextColor(100, 116, 139);
+      pdf.setFontSize(3.5);
+      pdf.text(t.matriculationNo.toUpperCase(), 35, 32);
+      
+      // Matriculation value
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFontSize(5);
+      pdf.text(user.matriculationNumber || '---', 35, 35);
+      
+      // Valid until label
+      pdf.setTextColor(100, 116, 139);
+      pdf.setFontSize(3.5);
+      pdf.text(t.validUntil.toUpperCase(), padding, cardHeight - 10);
+      
+      // Valid until value
+      pdf.setTextColor(37, 99, 235);
+      pdf.setFontSize(6);
+      pdf.setFont('helvetica', 'bold');
+      pdf.text(formatDate(user.validUntil), padding, cardHeight - 6);
+      
+      // QR Code placeholder
+      pdf.setFillColor(255, 255, 255);
+      pdf.roundedRect(cardWidth - padding - 12, cardHeight - 18, 12, 12, 1, 1, 'F');
+      pdf.setTextColor(15, 23, 42);
+      pdf.setFontSize(6);
+      pdf.text('QR', cardWidth - padding - 6, cardHeight - 11, { align: 'center' });
+      
+      // Scan to verify
+      pdf.setTextColor(100, 116, 139);
+      pdf.setFontSize(2.5);
+      pdf.text(t.scanToVerify.toUpperCase(), cardWidth - padding - 6, cardHeight - 4, { align: 'center' });
 
-      pdf.addImage(front, "PNG", 0, 0, 85.6, 53.98);
-      pdf.addPage();
-      pdf.addImage(back, "PNG", 0, 0, 85.6, 53.98);
+      // BACK CARD
+      pdf.addPage([85.6, 53.98], 'landscape');
+      
+      // Background
+      pdf.setFillColor(15, 23, 42);
+      pdf.rect(0, 0, cardWidth, cardHeight, 'F');
+      
+      // Blue accent line
+      pdf.setFillColor(37, 99, 235);
+      pdf.rect(padding, padding + 2, 1, 4, 'F');
+      
+      // Contact info title
+      pdf.setTextColor(255, 255, 255);
+      pdf.setFont('helvetica', 'bold');
+      pdf.setFontSize(6);
+      pdf.text(t.contactInfo.toUpperCase(), padding + 3, padding + 5);
+      
+      // Address
+      pdf.setTextColor(148, 163, 184); // Slate-400
+      pdf.setFont('helvetica', 'normal');
+      pdf.setFontSize(5);
+      pdf.text('IU Internationale Hochschule GmbH', padding, padding + 12);
+      pdf.text('Juri-Gagarin-Ring 152', padding, padding + 16);
+      pdf.text('99084 Erfurt', padding, padding + 20);
+      pdf.text('Germany', padding, padding + 24);
+      
+      // Border line
+      pdf.setDrawColor(100, 116, 139);
+      pdf.line(padding, 34, cardWidth - padding, 34);
+      
+      // ISIC info
+      pdf.setTextColor(100, 116, 139);
+      pdf.setFontSize(4);
+      pdf.text(t.forGlobalBenefits + ' ISIC Card ' + t.applyFor, padding, 38);
+      
+      // Signature line
+      pdf.setFontSize(3);
+      pdf.text(t.signature.toUpperCase(), padding, cardHeight - 6);
+      pdf.setDrawColor(100, 116, 139);
+      pdf.line(padding, cardHeight - 4, 40, cardHeight - 4);
+      
+      // Copyright
+      pdf.setFontSize(3);
+      pdf.text(`© ${new Date().getFullYear()} IU UNIVERSITY`, cardWidth - padding, cardHeight - 4, { align: 'right' });
 
       pdf.save(`IU_Student_ID_${user.matriculationNumber || "ID"}.pdf`);
       showSuccessToast(t.pdfSuccess);
@@ -133,7 +235,7 @@ export default function StudentIdPage() {
       >
         <Link
           to="/benefits"
-          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue hover:bg-iu-blue/20 font-bold transition-all group shadow-sm border border-iu-blue/10"
+          className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white hover:bg-iu-blue/20 dark:hover:bg-iu-blue transition-all group shadow-sm border border-iu-blue/10 dark:border-iu-blue"
         >
           {t.viewBenefits}
           <ExternalLink className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
@@ -168,7 +270,7 @@ export default function StudentIdPage() {
                   iu
                 </span>
               </div>
-              <div className="text-[9px] font-black text-white/40 text-right leading-tight uppercase tracking-widest">
+              <div className="text-[9px] font-black text-white/70 text-right leading-tight uppercase tracking-widest">
                 {t.universityName}
                 <br />
                 {t.universitySub}
@@ -180,13 +282,13 @@ export default function StudentIdPage() {
               <h2 className="text-3xl font-black tracking-tight mb-1 uppercase">
                 {user.name || "Student Name"}
               </h2>
-              <p className="text-sm text-iu-blue font-bold uppercase tracking-widest mb-6">
+              <p className="text-sm text-white/70 font-bold uppercase tracking-widest mb-6">
                 {user.studyProgram || "Study Program"}
               </p>
 
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                  <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
                     {t.birthday}
                   </p>
                   <p className="font-bold text-sm">
@@ -194,7 +296,7 @@ export default function StudentIdPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                  <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
                     {t.matriculationNo}
                   </p>
                   <p className="font-bold text-sm">
@@ -207,10 +309,10 @@ export default function StudentIdPage() {
             {/* Card Footer */}
             <div className="flex justify-between items-end relative z-10">
               <div>
-                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+                <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
                   {t.validUntil}
                 </p>
-                <p className="font-black text-base text-iu-blue">
+                <p className="font-black text-base text-white">
                   {formatDate(user.validUntil)}
                 </p>
               </div>
@@ -218,7 +320,7 @@ export default function StudentIdPage() {
                 <div className="bg-white p-1.5 rounded-lg shadow-xl">
                   <QrCode className="w-10 h-10 text-slate-900" />
                 </div>
-                <span className="text-[7px] font-black text-white/30 uppercase tracking-widest">
+                <span className="text-[7px] font-black text-white/70 uppercase tracking-widest">
                   {t.scanToVerify}
                 </span>
               </div>
@@ -239,7 +341,7 @@ export default function StudentIdPage() {
             ref={backRef}
             className="relative w-full aspect-[85.6/53.98] rounded-[1.5rem] overflow-hidden shadow-2xl border border-white/10 bg-slate-900 text-white p-8 flex flex-col justify-between group transition-all duration-500 hover:shadow-purple-500/20"
           >
-            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-purple-500/10 blur-[80px] rounded-full group-hover:bg-purple-500/20 transition-colors" />
+            <div className="absolute -bottom-24 -left-24 w-64 h-64 bg-iu-purple blur-[80px] rounded-full group-hover:bg-iu-purple transition-colors" />
 
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-6">
@@ -248,7 +350,7 @@ export default function StudentIdPage() {
                   {t.contactInfo}
                 </h3>
               </div>
-              <p className="text-sm font-medium leading-relaxed text-white/60">
+              <p className="text-sm font-medium leading-relaxed text-white/80">
                 IU Internationale Hochschule GmbH
                 <br />
                 Juri-Gagarin-Ring 152
@@ -258,12 +360,12 @@ export default function StudentIdPage() {
                 Germany
               </p>
 
-              <div className="mt-8 pt-6 border-t border-white/10">
-                <p className="text-xs text-white/40 font-medium">
+              <div className="mt-8 pt-6 border-t border-white/30">
+                <p className="text-xs text-white/70 font-medium">
                   {t.forGlobalBenefits}{" "}
-                  <a
+                   <a
                     href="https://www.isic.de"
-                    className="text-iu-blue font-black hover:underline uppercase tracking-widest"
+                    className="text-white font-black hover:underline uppercase tracking-widest"
                     target="_blank"
                     rel="noreferrer"
                   >
@@ -276,12 +378,12 @@ export default function StudentIdPage() {
 
             <div className="flex justify-between items-end relative z-10">
               <div className="flex-1 max-w-[200px]">
-                <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-2">
+                <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-2">
                   {t.signature}
                 </p>
-                <div className="h-10 w-full border-b border-white/20 bg-white/5 rounded-t-lg" />
+                <div className="h-10 w-full border-b border-white/40 bg-white/10 rounded-t-lg" />
               </div>
-              <div className="text-right text-[8px] font-black text-white/20 uppercase tracking-widest">
+              <div className="text-right text-[8px] font-black text-white/70 uppercase tracking-widest">
                 © {new Date().getFullYear()} IU UNIVERSITY
               </div>
             </div>
@@ -308,7 +410,7 @@ export default function StudentIdPage() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
                 <Info className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-black text-foreground tracking-tight">
@@ -321,9 +423,9 @@ export default function StudentIdPage() {
                 (note, i) => (
                   <li key={i} className="flex items-start gap-4 group/item">
                     <div className="mt-1.5">
-                      <CheckCircle2 className="w-5 h-5 text-iu-blue opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                      <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
                     </div>
-                    <span className="text-muted-foreground font-medium leading-relaxed group-hover/item:text-foreground transition-colors">
+                    <span className="text-foreground font-medium leading-relaxed">
                       {note}
                     </span>
                   </li>
@@ -338,7 +440,7 @@ export default function StudentIdPage() {
 
           <div className="relative z-10">
             <div className="flex items-center gap-3 mb-6">
-              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+              <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
                 <ShieldCheck className="w-6 h-6" />
               </div>
               <h3 className="text-xl font-black text-foreground tracking-tight">
@@ -351,9 +453,9 @@ export default function StudentIdPage() {
                 (benefit, i) => (
                   <li key={i} className="flex items-start gap-4 group/item">
                     <div className="mt-1.5">
-                      <CheckCircle2 className="w-5 h-5 text-iu-blue opacity-50 group-hover/item:opacity-100 transition-opacity" />
+                      <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
                     </div>
-                    <span className="text-muted-foreground font-medium leading-relaxed group-hover/item:text-foreground transition-colors">
+                    <span className="text-foreground font-medium leading-relaxed">
                       {benefit}
                     </span>
                   </li>

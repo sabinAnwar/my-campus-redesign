@@ -49,11 +49,11 @@ export function NewsModal({
         {/* Header */}
         <div className="px-8 py-8 border-b border-slate-200 dark:border-white/5 bg-slate-50 dark:bg-white/5 flex items-center justify-between">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
-              <Newspaper className="h-6 w-6 text-iu-blue" />
+            <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl border border-iu-blue/20 dark:border-iu-blue">
+              <Newspaper className="h-6 w-6 text-iu-blue dark:text-white" />
             </div>
             <div>
-              <span className="text-[10px] px-3 py-1 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-600 dark:text-slate-400 border border-slate-300 dark:border-white/10 font-black uppercase tracking-[0.2em]">
+              <span className="text-[10px] px-3 py-1 rounded-xl bg-slate-200 dark:bg-white/10 text-slate-900 dark:text-white border border-slate-300 dark:border-white/20 font-black uppercase tracking-[0.2em]">
                 {article?.category || labels.categoryFallback}
               </span>
             </div>
@@ -67,7 +67,7 @@ export function NewsModal({
                 className={`p-2.5 rounded-xl transition-all ${
                   atStart
                     ? "opacity-20 cursor-not-allowed"
-                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white"
                 }`}
               >
                 <ChevronLeft className="h-5 w-5" />
@@ -78,7 +78,7 @@ export function NewsModal({
                 className={`p-2.5 rounded-xl transition-all ${
                   atEnd
                     ? "opacity-20 cursor-not-allowed"
-                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white"
                 }`}
               >
                 <ChevronRight className="h-5 w-5" />
@@ -90,7 +90,7 @@ export function NewsModal({
               className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all"
             >
               {copied ? (
-                <Check className="h-5 w-5 text-iu-blue" />
+                <Check className="h-5 w-5 text-iu-blue dark:text-white" />
               ) : (
                 <Copy className="h-5 w-5" />
               )}
@@ -127,13 +127,13 @@ export function NewsModal({
             <div className="max-w-3xl mx-auto">
               <div className="flex flex-wrap items-center gap-6 mb-8">
                 <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
-                  <Calendar className="h-4 w-4 text-iu-blue" />
+                  <Calendar className="h-4 w-4 text-iu-blue dark:text-white" />
                   {labels.published}:{" "}
                   {new Date(article.publishedAt).toLocaleDateString(locale)}
                 </div>
                 {article.author && (
                   <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
-                    <User className="h-4 w-4 text-iu-blue" />
+                    <User className="h-4 w-4 text-iu-blue dark:text-white" />
                     {labels.author}: {article.author}
                   </div>
                 )}

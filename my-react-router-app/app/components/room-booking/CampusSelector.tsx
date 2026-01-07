@@ -19,12 +19,12 @@ export function CampusSelector({
           onClick={() => onSelectCampus(campus)}
           className={`inline-flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-8 py-2 sm:py-3 rounded-xl sm:rounded-2xl border text-[9px] sm:text-[10px] font-bold uppercase tracking-widest transition-all duration-500 ${
             selectedCampus === campus
-              ? "bg-iu-blue text-white border-iu-blue scale-105"
-              : "bg-card/50 border-border text-muted-foreground hover:border-iu-blue/50 hover:text-foreground hover:bg-muted/50"
+              ? "bg-iu-blue text-white border-iu-blue scale-105 dark:bg-iu-blue dark:border-iu-blue/60 dark:text-white"
+              : "bg-card/50 border-border text-muted-foreground hover:border-iu-blue/50 hover:text-foreground hover:bg-muted/50 dark:hover:border-iu-blue/40 dark:hover:text-white"
           }`}
         >
           <MapPin
-            className={`h-3 w-3 ${selectedCampus === campus ? "text-white" : "text-iu-blue"}`}
+            className={`h-3 w-3 ${selectedCampus === campus ? "text-white" : "text-iu-blue dark:text-white/80"}`}
           />
           {campus}
         </button>

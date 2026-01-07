@@ -24,7 +24,7 @@ const ONBOARDING_DATA = {
     steps: [
       {
         id: "welcome",
-        title: "Willkommen an der IU! 🎓",
+        title: "Willkommen an der IU! ",
         description: "Herzlich willkommen im IU Student Portal. Wir zeigen dir, wie du dich hier zurechtfindest.",
         icon: BookOpen,
         features: [
@@ -73,7 +73,7 @@ const ONBOARDING_DATA = {
     steps: [
       {
         id: "welcome",
-        title: "Welcome to IU! 🎓",
+        title: "Welcome to IU! ",
         description: "Welcome to the IU Student Portal. We'll show you how to navigate your studies.",
         icon: BookOpen,
         features: [

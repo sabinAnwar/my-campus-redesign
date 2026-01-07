@@ -19,4 +19,6 @@ export type TaskUISubmission = TaskLoaderSubmission & {
   status: "pending" | "submitted";
   daysUntilDue: number;
   similarity?: number;
+  submittedFileName?: string;
+  submittedFileSize?: number;
 };

@@ -36,9 +36,9 @@ export default function LibraryPage() {
 
   const quickAccessItems = [
     { icon: Database, label: t.databases, color: "iu-blue", count: DATABASES.length },
-    { icon: BookOpen, label: t.ebooks, color: "iu-green", count: "50k+" },
+    { icon: BookOpen, label: t.ebooks, color: "success", count: "50k+" },
     { icon: Newspaper, label: t.journals, color: "iu-purple", count: "10k+" },
-    { icon: Play, label: t.tutorials, color: "iu-orange", count: TUTORIALS.length },
+    { icon: Play, label: t.tutorials, color: "warning", count: TUTORIALS.length },
   ];
 
   const openingHours = [

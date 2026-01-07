@@ -1,10 +1,10 @@
 import { useState, useEffect, useCallback } from "react";
 
-// Clean text for speech (remove markdown and emojis)
+// Clean text for speech (remove markdown and symbols)
 const cleanTextForSpeech = (text: string): string => {
   return text
     .replace(/\*\*(.+?)\*\*/g, '$1') // Remove bold markers
-    .replace(/[📅📝🔄📊🏥📆🎯📄📚📧📖🏫🪪💰🌍📞🧠👋✅❌⚠️💡🎥🗂️💪💵⏱️🍅🤔→•]/g, '') // Remove emojis
+    .replace(/[→•]/g, '') // Remove symbols
     .replace(/[#*_~`]/g, '') // Remove markdown
     .replace(/\n+/g, '. ') // Replace newlines with pauses
     .trim();

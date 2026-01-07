@@ -29,7 +29,7 @@ export function OccupancyTable({
   return (
     <div className="bg-card/50 backdrop-blur-2xl border border-border rounded-2xl sm:rounded-[2.5rem] overflow-hidden">
       <div className="flex items-center gap-2 sm:gap-3 px-4 sm:px-6 md:px-10 py-4 sm:py-6 md:py-8 border-b border-border">
-        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <Users className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground tracking-tight">
@@ -70,12 +70,12 @@ export function OccupancyTable({
                   key={row.key}
                   className="hover:bg-muted/30 transition-all duration-300 group"
                 >
-                  <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 font-bold text-foreground text-sm sm:text-base md:text-lg group-hover:text-iu-blue transition-colors">
+                  <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 font-bold text-foreground text-sm sm:text-base md:text-lg group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                     {row.room}
                   </td>
                   <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 hidden sm:table-cell">
                     <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-lg bg-muted/50 border border-border text-muted-foreground font-bold text-[10px] sm:text-xs">
-                      <MapPin className="h-3 w-3 text-iu-blue" />
+                      <MapPin className="h-3 w-3 text-iu-blue dark:text-white" />
                       {selectedLocation}
                     </div>
                   </td>
@@ -88,7 +88,7 @@ export function OccupancyTable({
                     </div>
                   </td>
                   <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6">
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-iu-blue font-bold text-sm sm:text-base">
+                    <div className="inline-flex items-center gap-1.5 sm:gap-2 text-iu-blue dark:text-white font-bold text-sm sm:text-base">
                       <Clock className="h-3 w-3 sm:h-3.5 sm:w-3.5" />
                       {row.until}
                     </div>

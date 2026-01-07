@@ -28,7 +28,7 @@ export const loader = async ({ request }: { request: Request }) => {
   // 2. Fallback to Sabin
   if (!userId) {
     const sabin = await prisma.user.findUnique({
-      where: { email: "sabin.elanwar@iu-study.org" },
+      where: { email: "student.demo@iu-study.org" },
       select: { id: true },
     });
     userId = sabin?.id;
@@ -437,7 +437,7 @@ export default function GradesDashboardIU() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6 px-2 sm:px-0">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
       <GradesHeader
         title={t.transcriptTitle}
         universityName={t.universityName}
@@ -544,7 +544,7 @@ export default function GradesDashboardIU() {
                     className={`w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl flex items-center justify-center transition-all duration-500 ${
                       isOpen
                         ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-105"
-                        : "bg-muted text-muted-foreground"
+                        : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white"
                     }`}
                   >
                     <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
@@ -555,7 +555,7 @@ export default function GradesDashboardIU() {
                     </h4>
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="flex items-center gap-1.5 text-[10px] sm:text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                        <CheckCircle2 size={10} className="text-iu-blue" />
+                        <CheckCircle2 size={10} className="text-iu-blue dark:text-white" />
                         {sectionPassed} / {sectionTotal} {t.completed}
                       </div>
                       <div className="w-16 sm:w-24 h-1 sm:h-1.5 bg-muted rounded-full overflow-hidden">
@@ -570,8 +570,8 @@ export default function GradesDashboardIU() {
                 <div
                   className={`p-2 sm:p-2.5 rounded-lg sm:rounded-xl transition-all duration-500 ${
                     isOpen
-                      ? "bg-iu-blue/10 text-iu-blue rotate-180"
-                      : "bg-muted text-muted-foreground"
+                      ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white rotate-180"
+                      : "bg-muted dark:bg-muted/20 text-muted-foreground"
                   }`}
                 >
                   <ChevronDown className="w-4 h-4 sm:w-5 sm:h-5" />
@@ -619,7 +619,7 @@ export default function GradesDashboardIU() {
                               className="group/row bg-background/40 hover:bg-iu-blue/5 transition-all duration-300 rounded-lg"
                             >
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 rounded-l-lg border-y border-l border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="font-medium text-foreground text-xs sm:text-sm leading-tight group-hover/row:text-iu-blue transition-colors">
+                                <div className="font-medium text-foreground text-xs sm:text-sm leading-tight group-hover/row:text-iu-blue dark:group-hover/row:text-white transition-colors">
                                   {m.name}
                                 </div>
                               </td>
@@ -627,12 +627,12 @@ export default function GradesDashboardIU() {
                                 <span
                                   className={`inline-flex items-center gap-1 rounded px-2 py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wide shadow-sm ${
                                     m.status === "P"
-                                      ? "bg-iu-blue/10 text-iu-blue border border-iu-blue/20"
+                                      ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue"
                                       : m.status === "F"
-                                        ? "bg-iu-red/10 text-iu-red border border-iu-red/20"
+                                        ? "bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white border border-iu-red/20 dark:border-iu-red"
                                         : m.status === "M"
-                                          ? "bg-iu-orange/10 text-iu-orange border border-iu-orange/20"
-                                          : "bg-iu-blue/10 text-iu-blue border border-iu-blue/20"
+                                          ? "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border border-iu-orange/20 dark:border-iu-orange"
+                                          : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue"
                                   }`}
                                 >
                                   {m.status === "P" && (

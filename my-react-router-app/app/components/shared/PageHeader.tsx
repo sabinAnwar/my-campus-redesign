@@ -38,8 +38,8 @@ export function PageHeader({
   backTo,
   onBack,
   backLabel = "Back",
-  iconBg = "bg-iu-blue/10",
-  iconColor = "text-iu-blue",
+  iconBg = "bg-iu-blue/10 dark:bg-iu-blue",
+  iconColor = "text-iu-blue dark:text-white",
   children,
   className = "",
 }: PageHeaderProps) {
@@ -48,7 +48,7 @@ export function PageHeader({
       return (
         <Link
           to={backTo}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-iu-blue transition-colors mb-4 group font-bold"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           {backLabel}
@@ -59,7 +59,7 @@ export function PageHeader({
       return (
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-iu-blue transition-colors mb-4 group font-bold"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold"
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
           {backLabel}
@@ -117,8 +117,8 @@ export function SectionHeader({
   icon: Icon,
   title,
   subtitle,
-  iconBg = "bg-iu-blue/10",
-  iconColor = "text-iu-blue",
+  iconBg = "bg-iu-blue/10 dark:bg-iu-blue",
+  iconColor = "text-iu-blue dark:text-white",
   children,
   className = "",
 }: SectionHeaderProps) {

@@ -29,7 +29,7 @@ export async function action({ request }: { request: Request }) {
       await prisma.session.deleteMany({
         where: { token: sessionToken },
       });
-      console.log("✅ Session deleted:", sessionToken);
+      console.log(" Session deleted:", sessionToken);
     }
 
     return Response.json(
@@ -42,7 +42,7 @@ export async function action({ request }: { request: Request }) {
       }
     );
   } catch (error) {
-    console.error("❌ Logout error:", error);
+    console.error(" Logout error:", error);
     return Response.json(
       { error: "An error occurred during logout" },
       { status: 500 }

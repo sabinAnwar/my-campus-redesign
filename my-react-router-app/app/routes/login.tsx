@@ -50,10 +50,10 @@ export const loader = async ({ request }: { request: Request }) => {
 
 function LoginErrorAlert({ error }: { error: string }) {
   return (
-    <div className="rounded-lg bg-red-50 dark:bg-red-950/40 border-2 border-red-200 dark:border-red-900/50 p-5 backdrop-blur-sm">
+    <div className="rounded-lg bg-iu-red border-2 border-iu-red p-5 backdrop-blur-sm">
       <div className="flex gap-4">
-        <AlertCircle className="w-6 h-6 text-red-600 dark:text-red-500 flex-shrink-0 mt-0.5" />
-        <p className="text-base font-semibold text-red-700 dark:text-red-400">
+        <AlertCircle className="w-6 h-6 text-white flex-shrink-0 mt-0.5" />
+        <p className="text-base font-semibold text-white">
           {error}
         </p>
       </div>
@@ -91,7 +91,7 @@ function RememberMeSection() {
           id="remember"
           name="remember"
           type="checkbox"
-          className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-slate-900 dark:text-iu-blue focus:ring-2 focus:ring-slate-900 dark:focus:ring-iu-blue cursor-pointer transition-all"
+          className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-iu-blue dark:text-iu-blue focus:ring-2 focus:ring-iu-blue cursor-pointer transition-all"
         />
         <label
           htmlFor="remember"
@@ -103,7 +103,7 @@ function RememberMeSection() {
       <Link
         to="/reset-password"
         title="Forgot password link"
-        className="text-base font-bold text-slate-900 dark:text-iu-blue hover:text-slate-700 dark:hover:text-iu-blue transition duration-200 underline-offset-2 hover:underline"
+        className="text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition duration-200 underline-offset-4 hover:underline"
       >
         Forgot password?
       </Link>
@@ -147,7 +147,7 @@ function LoginFooter() {
   return (
     <div className="mt-10 text-center space-y-3">
       <p className="text-base text-slate-700 dark:text-slate-400 font-semibold flex items-center justify-center gap-2">
-        <CheckCircle2 className="w-5 h-5 text-iu-blue" />
+        <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
         Built by IU Students • Professional Development
       </p>
       <p className="text-sm text-slate-500 dark:text-slate-500 flex items-center justify-center gap-2">

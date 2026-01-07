@@ -118,7 +118,7 @@ export async function action({ request }: { request: Request }) {
   }
 
   try {
-    console.log("📝 Password reset action called");
+    console.log(" Password reset action called");
     console.log("   Content-Type:", request.headers.get("content-type"));
 
     let email: string | null = null;
@@ -128,13 +128,13 @@ export async function action({ request }: { request: Request }) {
       const formData = await request.formData();
       const emailEntry = formData.get("email");
       email = typeof emailEntry === "string" ? emailEntry : null;
-      console.log("✅ Parsed as formData");
+      console.log(" Parsed as formData");
     } catch (formError) {
       const errorMsg =
         formError instanceof Error
           ? formError.message
           : String(formError);
-      console.log("⚠️  formData() failed:", errorMsg);
+      console.log("  formData() failed:", errorMsg);
       
       // Fallback: try to parse as JSON
       try {
@@ -145,17 +145,17 @@ export async function action({ request }: { request: Request }) {
             email = obj.email;
           }
         }
-        console.log("✅ Parsed as JSON");
+        console.log(" Parsed as JSON");
       } catch (jsonError) {
-        console.log("❌ Both formData and JSON parsing failed");
+        console.log(" Both formData and JSON parsing failed");
         throw new Error("Could not parse request body");
       }
     }
 
-    console.log("📧 Email:", email, "Type:", typeof email);
+    console.log(" Email:", email, "Type:", typeof email);
 
     if (!email || typeof email !== "string") {
-      console.log("❌ Invalid email");
+      console.log(" Invalid email");
       return Response.json(
         {
           id: `${Date.now()}`,
@@ -166,12 +166,12 @@ export async function action({ request }: { request: Request }) {
     }
 
     // Find user by email (case-insensitive)
-    console.log("🔍 Looking up user with email:", email.toLowerCase());
+    console.log(" Looking up user with email:", email.toLowerCase());
     const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
     
     // Always return success even if user doesn't exist (security best practice)
     if (!user) {
-      console.log("⚠️  No user found for email:", email);
+      console.log("  No user found for email:", email);
       return Response.json({ 
         id: `${Date.now()}`,
         success: true, 
@@ -179,13 +179,13 @@ export async function action({ request }: { request: Request }) {
       });
     }
 
-    console.log("👤 User found:", user.email);
+    console.log(" User found:", user.email);
 
     // Generate reset token
     const resetToken = crypto.randomUUID();
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
-    console.log("🔐 Generated reset token");
+    console.log(" Generated reset token");
 
     // Update user with reset token
     await prisma.user.update({
@@ -193,14 +193,14 @@ export async function action({ request }: { request: Request }) {
       data: { resetToken, resetTokenExpiry },
     });
 
-    console.log("📧 Sending password reset email...");
+    console.log(" Sending password reset email...");
 
     // Send email
     const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
 
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
     
-    console.log("✅ Password reset email sent");
+    console.log(" Password reset email sent");
 
     return Response.json({
       id: `${Date.now()}`,
@@ -231,7 +231,7 @@ export async function action({ request }: { request: Request }) {
       }
     }
 
-    console.error('❌ Error requesting password reset:', errMessage);
+    console.error(' Error requesting password reset:', errMessage);
     if (errStack) {
       console.error('   Stack:', errStack);
     }

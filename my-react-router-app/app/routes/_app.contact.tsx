@@ -15,7 +15,7 @@ export default function Contact() {
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 pb-20 px-4 sm:px-6 lg:px-8">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-12 pb-20">
       <ContactHeader t={t} />
 
       <div className="flex flex-col lg:grid lg:grid-cols-3 gap-8 sm:gap-12">

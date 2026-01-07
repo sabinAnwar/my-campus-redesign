@@ -22,7 +22,7 @@ export function RoomBookingHeader({
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 lg:gap-8">
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-2 sm:gap-3">
-            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm dark:bg-iu-blue dark:text-white">
               <MapPin className="w-5 h-5 sm:w-7 sm:h-7" />
             </div>
             <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight">
@@ -34,13 +34,13 @@ export function RoomBookingHeader({
           </p>
 
           <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border bg-card/50 text-xs sm:text-sm font-medium w-fit">
-            <Clock size={16} className="text-iu-blue" />
+            <Clock size={16} className="text-iu-blue dark:text-white" />
             <span>{dateLabel}</span>
           </div>
         </div>
 
         <div className="flex p-4 sm:p-6 rounded-xl sm:rounded-2xl bg-card/50 backdrop-blur-xl border border-border gap-3 sm:gap-4 items-center shadow-sm">
-          <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue">
+          <div className="p-2 sm:p-3 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white">
             <Users className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>

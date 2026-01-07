@@ -69,8 +69,10 @@ export default function RecentFiles() {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {/* Main Timeline Column */}
         <div className="lg:col-span-3 space-y-6">
-          <h2 className="text-xl font-black text-neutral-900 dark:text-white flex items-center gap-2">
-            <Clock className="h-5 w-5 text-blue-500" />
+          <h2 className="text-xl font-black text-foreground flex items-center gap-3">
+            <div className="p-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white">
+              <Clock className="h-5 w-5" />
+            </div>
             {t.recentlyOpened}
           </h2>
 

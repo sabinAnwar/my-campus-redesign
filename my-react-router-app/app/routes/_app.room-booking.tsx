@@ -120,7 +120,7 @@ export async function loader({ request }: { request: Request }) {
   try {
     // Get session token from cookies
     const token = getSessionToken(request);
-    console.log("🍪 Cookie header:", request.headers.get("Cookie"));
+    console.log(" Cookie header:", request.headers.get("Cookie"));
     console.log("� Session token:", token);
 
     let userId = 1; // Default fallback
@@ -134,7 +134,7 @@ export async function loader({ request }: { request: Request }) {
 
       if (session?.user) {
         userId = session.user.id;
-        console.log("✅ Found user from session:", userId);
+        console.log(" Found user from session:", userId);
       }
     }
 
@@ -154,7 +154,7 @@ export async function loader({ request }: { request: Request }) {
       },
     });
 
-    console.log("📚 Loading all bookings - Found:", bookings.length);
+    console.log(" Loading all bookings - Found:", bookings.length);
 
     // Convert date objects to ISO strings for JSON serialization
     const serializedBookings = bookings.map(
@@ -181,7 +181,7 @@ export async function action({ request }: { request: Request }) {
   const formData = await request.formData();
   const actionType = formData.get("_action");
 
-  console.log("🎬 Action type:", actionType);
+  console.log(" Action type:", actionType);
 
   try {
     // Get session token from cookies
@@ -197,7 +197,7 @@ export async function action({ request }: { request: Request }) {
 
       if (session?.user) {
         userId = session.user.id;
-        console.log("✅ Found user from session for action:", userId);
+        console.log(" Found user from session for action:", userId);
       }
     }
 
@@ -225,7 +225,7 @@ export async function action({ request }: { request: Request }) {
       let booking;
       if (existingBooking) {
         // Update existing booking
-        console.log("🔄 Updating existing booking for", roomName);
+        console.log(" Updating existing booking for", roomName);
         booking = await prisma.roomBooking.update({
           where: { id: existingBooking.id },
           data: {
@@ -235,7 +235,7 @@ export async function action({ request }: { request: Request }) {
         });
       } else {
         // Create new booking
-        console.log("➕ Creating new booking for", roomName);
+        console.log(" Creating new booking for", roomName);
         booking = await prisma.roomBooking.create({
           data: {
             userId,
@@ -249,7 +249,7 @@ export async function action({ request }: { request: Request }) {
         });
       }
 
-      console.log("✅ Booking created/updated:", booking);
+      console.log(" Booking created/updated:", booking);
 
       return {
         success: true,
@@ -265,20 +265,20 @@ export async function action({ request }: { request: Request }) {
     if (actionType === "delete") {
       const bookingId = parseInt(String(formData.get("bookingId") ?? "0"), 10);
 
-      console.log("🗑️ Deleting booking:", bookingId);
+      console.log(" Deleting booking:", bookingId);
 
       await prisma.roomBooking.delete({
         where: { id: bookingId },
       });
 
-      console.log("✅ Booking deleted successfully");
+      console.log(" Booking deleted successfully");
 
       return { success: true };
     }
 
     return { success: false, error: "Invalid action" };
   } catch (error) {
-    console.error("❌ Action error:", error);
+    console.error(" Action error:", error);
     const message = error instanceof Error ? error.message : String(error);
     return { success: false, error: message };
   }
@@ -364,7 +364,7 @@ export default function RoomBooking() {
   // Handle action completion
   useEffect(() => {
     if (actionData?.success) {
-      console.log("✅ Action completed successfully");
+      console.log(" Action completed successfully");
       setIsLoading(false);
       // Revalidate to get fresh data from database
       revalidator.revalidate();
@@ -385,14 +385,14 @@ export default function RoomBooking() {
     }
 
     if (isLoading) {
-      console.log("⏳ Already processing a request");
+      console.log(" Already processing a request");
       return;
     }
 
     setIsLoading(true);
     const today = new Date().toISOString().split("T")[0];
 
-    console.log("📤 Booking room:", {
+    console.log(" Booking room:", {
       userId,
       roomId: String(room.id),
       roomName: String(room.name),
@@ -446,7 +446,7 @@ export default function RoomBooking() {
       return;
     }
 
-    console.log("🔍 Checking availability:", {
+    console.log(" Checking availability:", {
       startTime,
       endTime,
       campus: selectedLocation,
@@ -476,12 +476,12 @@ export default function RoomBooking() {
     }
 
     if (isLoading) {
-      console.log("⏳ Already processing a request");
+      console.log(" Already processing a request");
       return;
     }
 
     setIsLoading(true);
-    console.log("🗑️ Cancelling booking:", booking);
+    console.log(" Cancelling booking:", booking);
 
     // Create form and submit to server action
     const form = document.createElement("form");
@@ -638,7 +638,7 @@ export default function RoomBooking() {
       : "Manage your room bookings and find available study spots on campus.";
 
   return (
-    <div className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8 md:space-y-12 px-1 sm:px-0">
+    <div className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8 md:space-y-12">
       <RoomBookingHeader
         title={t.roomBooking}
         subtitle={subtitle}

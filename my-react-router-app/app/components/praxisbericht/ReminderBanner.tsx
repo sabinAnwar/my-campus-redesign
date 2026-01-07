@@ -21,8 +21,8 @@ export function ReminderBanner({
   return (
     <div className="mb-12 bg-card/50 backdrop-blur-xl border border-border rounded-[2rem] p-8 flex flex-col md:flex-row items-center justify-between gap-6">
       <div className="flex items-center gap-6">
-        <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20">
-          <CalendarClock className="h-8 w-8 text-iu-blue" />
+        <div className="p-4 bg-iu-blue/10 rounded-2xl border border-iu-blue/20 dark:bg-iu-blue dark:border-iu-blue">
+          <CalendarClock className="h-8 w-8 text-iu-blue dark:text-white" />
         </div>
         <div>
           <div className="text-xl font-black text-foreground mb-1">

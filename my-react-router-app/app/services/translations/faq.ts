@@ -8,9 +8,9 @@ export const TRANSLATIONS = {
       "Der intelligente Begleiter für deinen Studienerfolg. Stelle Fragen zu Organisation, Prüfungen und Campusleben.",
     chatCta: "Chat starten",
     greeting:
-      "Hallo! 👋 Ich bin dein IU Assistant. Ich kann dir bei Fragen zu Prüfungen, Studienorganisation, Campus-Services und vielem mehr helfen. Was möchtest du wissen?",
+      "Hallo!  Ich bin dein IU Assistant. Ich kann dir bei Fragen zu Prüfungen, Studienorganisation, Campus-Services und vielem mehr helfen. Was möchtest du wissen?",
     noAnswer:
-      "Hmm, dazu habe ich leider keine spezifischen Informationen gefunden. 🤔\n\n**Versuche es mit:**\n- Prüfungstermine\n- E-Mail einrichten\n- Bibliothek nutzen\n- Support kontaktieren\n\nOder wende dich an: studienberatung@iu.org",
+      "Hmm, dazu habe ich leider keine spezifischen Informationen gefunden. \n\n**Versuche es mit:**\n- Prüfungstermine\n- E-Mail einrichten\n- Bibliothek nutzen\n- Support kontaktieren\n\nOder wende dich an: studienberatung@iu.org",
     placeholder: "Frag mich etwas z.B. 'Wann sind die Prüfungen?'",
     suggestions: getQuickSuggestions(4),
     features: [
@@ -51,9 +51,9 @@ export const TRANSLATIONS = {
       "The intelligent companion for your academic success. Ask about organization, exams, and campus life.",
     chatCta: "Start chat",
     greeting:
-      "Hi! 👋 I'm your IU Assistant. I can help you with questions about exams, study organization, campus services, and much more. What would you like to know?",
+      "Hi!  I'm your IU Assistant. I can help you with questions about exams, study organization, campus services, and much more. What would you like to know?",
     noAnswer:
-      "Hmm, I couldn't find specific information on that. 🤔\n\n**Try asking about:**\n- Exam dates\n- Email setup\n- Library access\n- Contact support\n\nOr reach out to: studienberatung@iu.org",
+      "Hmm, I couldn't find specific information on that. \n\n**Try asking about:**\n- Exam dates\n- Email setup\n- Library access\n- Contact support\n\nOr reach out to: studienberatung@iu.org",
     placeholder: "Ask me something e.g. 'When are the exams?'",
     suggestions: [
       { text: "Exam dates", question: "Wann sind die Prüfungen?" },

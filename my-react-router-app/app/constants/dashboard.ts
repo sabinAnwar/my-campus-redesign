@@ -10,34 +10,34 @@ export const DEFAULT_TARGET_HOURS_PER_WEEK = 40;
 // Quick Action color classes
 export const QUICK_ACTION_COLORS = {
   blue: {
-    border: "hover:border-iu-blue/40 hover:bg-iu-blue/5",
-    bg: "bg-iu-blue/10",
-    text: "text-iu-blue",
+    border: "hover:border-iu-blue/40 hover:bg-iu-blue/5 dark:hover:bg-iu-blue/20",
+    bg: "bg-iu-blue/10 dark:bg-iu-blue",
+    text: "text-iu-blue dark:text-white",
   },
   purple: {
-    border: "hover:border-iu-purple/40 hover:bg-iu-purple/5",
-    bg: "bg-iu-purple/10",
-    text: "text-iu-purple",
+    border: "hover:border-iu-purple/40 hover:bg-iu-purple/5 dark:hover:bg-iu-purple/20",
+    bg: "bg-iu-purple/10 dark:bg-iu-purple",
+    text: "text-iu-purple dark:text-white",
   },
   orange: {
-    border: "hover:border-iu-orange/40 hover:bg-iu-orange/5",
-    bg: "bg-iu-orange/10",
-    text: "text-iu-orange",
+    border: "hover:border-iu-orange/40 hover:bg-iu-orange/5 dark:hover:bg-iu-orange/20",
+    bg: "bg-iu-orange/10 dark:bg-iu-orange",
+    text: "text-iu-orange dark:text-white",
   },
   green: {
-    border: "hover:border-iu-blue/40 hover:bg-iu-blue/5",
-    bg: "bg-iu-blue/10",
-    text: "text-iu-blue dark:text-iu-blue",
+    border: "hover:border-iu-green/40 hover:bg-iu-green/5 dark:hover:bg-iu-green/20",
+    bg: "bg-iu-green/10 dark:bg-iu-green",
+    text: "text-iu-green dark:text-white",
   },
   indigo: {
-    border: "hover:border-iu-blue/40 hover:bg-iu-blue/5",
-    bg: "bg-iu-blue/10",
-    text: "text-iu-blue",
+    border: "hover:border-iu-blue/40 hover:bg-iu-blue/5 dark:hover:bg-iu-blue/20",
+    bg: "bg-iu-blue/10 dark:bg-iu-blue",
+    text: "text-iu-blue dark:text-white",
   },
   pink: {
-    border: "hover:border-iu-pink/40 hover:bg-iu-pink/5",
-    bg: "bg-iu-pink/10",
-    text: "text-iu-pink",
+    border: "hover:border-iu-pink/40 hover:bg-iu-pink/5 dark:hover:bg-iu-pink/20",
+    bg: "bg-iu-pink/10 dark:bg-iu-pink",
+    text: "text-iu-pink dark:text-white",
   },
 };
 
@@ -52,10 +52,10 @@ export const RECENT_COURSE_COLORS = {
 };
 
 export const RECENT_COURSE_ICON_COLORS = {
-  blue: "bg-iu-blue/10 text-iu-blue",
-  purple: "bg-iu-purple/10 text-iu-purple",
-  green: "bg-iu-green/10 text-iu-green",
-  orange: "bg-iu-orange/10 text-iu-orange",
-  pink: "bg-iu-pink/10 text-iu-pink",
-  indigo: "bg-iu-blue/10 text-iu-blue",
+  blue: "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white",
+  purple: "bg-iu-purple/10 text-iu-purple dark:bg-iu-purple dark:text-white",
+  green: "bg-iu-green/10 text-iu-green dark:bg-iu-green dark:text-white",
+  orange: "bg-iu-orange/10 text-iu-orange dark:bg-iu-orange dark:text-white",
+  pink: "bg-iu-pink/10 text-iu-pink dark:bg-iu-pink dark:text-white",
+  indigo: "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white",
 };

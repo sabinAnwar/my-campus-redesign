@@ -2,7 +2,7 @@ import { PrismaClient } from "@prisma/client";
 const prisma = new PrismaClient();
 
 async function main() {
-  console.log("🔍 Checking courses and their relationships...\n");
+  console.log(" Checking courses and their relationships...\n");
 
   // Get all Studiengänge with their courses
   const studiengaenge = await prisma.studiengang.findMany({
@@ -12,7 +12,7 @@ async function main() {
   });
 
   for (const studiengang of studiengaenge) {
-    console.log(`📚 Studiengang: ${studiengang.name} (ID: ${studiengang.id})`);
+    console.log(`Studiengang: ${studiengang.name} (ID: ${studiengang.id})`);
     console.log(`   Beschreibung: ${studiengang.description}`);
     console.log(`   Anzahl Kurse: ${studiengang.courses.length}\n`);
     
@@ -23,13 +23,13 @@ async function main() {
         console.log(`      → ${course.description}`);
       });
     } else {
-      console.log(`   ⚠️  Keine Kurse zugeordnet`);
+      console.log(`     Keine Kurse zugeordnet`);
     }
     console.log('\n' + '─'.repeat(80) + '\n');
   }
 
   // Alternative: Get courses with their Studiengang
-  console.log("\n📖 Alternative Ansicht - Kurse mit ihrem Studiengang:\n");
+  console.log("\n Alternative Ansicht - Kurse mit ihrem Studiengang:\n");
   
   const courses = await prisma.course.findMany({
     include: {
@@ -46,7 +46,7 @@ async function main() {
 
 main()
   .catch((e) => {
-    console.error("❌ Error:", e);
+    console.error(" Error:", e);
     process.exit(1);
   })
   .finally(async () => {

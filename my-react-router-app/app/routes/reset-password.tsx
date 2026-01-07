@@ -53,10 +53,10 @@ export default function RequestReset() {
             {/* Development only - remove in production */}
             {resetLink && (
               <div className="mt-2">
-                <p className="text-sm text-green-700 mb-2">Development link:</p>
+                <p className="text-sm text-iu-green mb-2">Development link:</p>
                 <Link
                   to={resetLink}
-                  className="inline-block text-sm font-medium text-green-700 bg-green-100 px-3 py-2 rounded hover:bg-green-200 transition-colors"
+                  className="inline-block text-sm font-bold text-white bg-iu-green px-4 py-2 rounded-xl hover:bg-iu-green/90 transition-all shadow-lg active:scale-95"
                 >
                   Click here to reset password
                 </Link>
@@ -72,7 +72,7 @@ export default function RequestReset() {
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm font-medium text-blue-600 hover:text-blue-500"
+            className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition-colors"
           >
             Back to login
           </Link>

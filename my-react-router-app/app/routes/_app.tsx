@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link, Outlet, useLocation } from "react-router-dom";
 import { DoorOpen, Menu, X, Headphones } from "lucide-react";
 
@@ -19,12 +19,15 @@ const MOBILE_BREAKPOINT = 768;
 export default function AppShell() {
   // ─── State Management ────────────────────────────────────────────────────────
   const [menuOpen, setMenuOpen] = useState(false);
-  const [sidebarOpen, setSidebarOpen] = useState(() => {
-    if (typeof window !== "undefined") {
-      return window.innerWidth >= MOBILE_BREAKPOINT;
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+    if (typeof window !== "undefined" && window.innerWidth >= MOBILE_BREAKPOINT) {
+      setSidebarOpen(true);
     }
-    return true; // SSR fallback
-  });
+  }, []);
   const [searchQuery, setSearchQuery] = useState("");
 
   // ─── Hooks ───────────────────────────────────────────────────────────────────
@@ -35,6 +38,68 @@ export default function AppShell() {
   // Custom hooks for data and search
   const { name: userName, campusArea, roomBookingEnabled } = useUserData();
   const { filteredResults } = useAppShellSearch(searchQuery);
+
+  // Keep a simple visit-based learning streak in localStorage.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const today = new Date();
+    const todayISO = today.toISOString().split("T")[0];
+    const yesterday = new Date(today);
+    yesterday.setDate(today.getDate() - 1);
+    const yesterdayISO = yesterday.toISOString().split("T")[0];
+
+    const lastVisit = localStorage.getItem("mycampus:lastVisit");
+    const storedStreak = parseInt(localStorage.getItem("mycampus:streak") || "0", 10);
+
+    if (lastVisit !== todayISO) {
+      const nextStreak = lastVisit === yesterdayISO ? Math.max(storedStreak, 1) + 1 : 1;
+      localStorage.setItem("mycampus:streak", String(nextStreak));
+      localStorage.setItem("mycampus:lastVisit", todayISO);
+      localStorage.setItem("mycampus:todayMinutes", "0");
+    }
+  }, [location.pathname]);
+
+  // Keep Pomodoro running across routes when not on the assistant page.
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (location.pathname.startsWith("/lernassistent")) return;
+
+    const interval = setInterval(() => {
+      const running = localStorage.getItem("pomodoro:running") === "true";
+      if (!running) return;
+
+      const storedTime = parseInt(localStorage.getItem("pomodoro:time") || "", 10);
+      const storedBreak = localStorage.getItem("pomodoro:break") === "true";
+      const storedCompleted = parseInt(localStorage.getItem("pomodoro:completed") || "0", 10);
+      const storedLastTick = parseInt(localStorage.getItem("pomodoro:lastTick") || "", 10);
+      const focusDuration = parseInt(localStorage.getItem("pomodoro:focusDuration") || "10", 10);
+      const breakDuration = parseInt(localStorage.getItem("pomodoro:breakDuration") || "10", 10);
+
+      if (Number.isNaN(storedTime) || Number.isNaN(storedLastTick)) return;
+
+      const now = Date.now();
+      const elapsed = Math.max(1, Math.floor((now - storedLastTick) / 1000));
+      let remaining = storedTime - elapsed;
+      let breakMode = storedBreak;
+      let completed = Number.isNaN(storedCompleted) ? 0 : storedCompleted;
+
+      while (remaining <= 0) {
+        if (!breakMode) {
+          completed += 1;
+        }
+        breakMode = !breakMode;
+        remaining += breakMode ? breakDuration : focusDuration;
+      }
+
+      localStorage.setItem("pomodoro:time", String(remaining));
+      localStorage.setItem("pomodoro:break", String(breakMode));
+      localStorage.setItem("pomodoro:completed", String(completed));
+      localStorage.setItem("pomodoro:lastTick", String(now));
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [location.pathname]);
 
   // ─── Navigation Helpers ──────────────────────────────────────────────────────
 
@@ -113,7 +178,7 @@ export default function AppShell() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleSidebarToggle}
-                  className="md:hidden p-2.5 rounded-none hover:bg-iu-blue/10 hover:text-iu-blue transition-colors"
+                  className="md:hidden p-2.5 rounded-none hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors"
                   aria-label={sidebarOpen ? "Close menu" : "Open menu"}
                 >
                   {sidebarOpen ? (
@@ -125,8 +190,8 @@ export default function AppShell() {
 
                 {/* Campus Indicator */}
                 <div className="hidden sm:flex flex-col justify-center h-full">
-                  <div className="text-xs font-black text-muted-foreground/60 flex items-center gap-1.5 leading-none uppercase tracking-widest">
-                    <span className="w-1.5 h-1.5 rounded-full bg-iu-blue shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <div className="text-xs font-black text-foreground/90 dark:text-white/90 flex items-center gap-1.5 leading-none uppercase tracking-widest">
+                    <span className="w-1.5 h-1.5 rounded-full bg-iu-blue dark:bg-iu-blue shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     {shellText.campus}
                   </div>
                 </div>
@@ -149,11 +214,11 @@ export default function AppShell() {
                 {/* Support Link */}
                 <Link
                   to="/contact"
-                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 hover:text-iu-blue hover:border-iu-blue/30 transition-all font-bold"
+                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold"
                   aria-label="Contact support"
                 >
                   <Headphones className="h-5 w-5" />
-                  <span className="absolute top-1 right-1 h-3 w-3 bg-iu-red rounded-full border-2 border-background" />
+                  <span className="absolute top-1 right-1 h-3 w-3 bg-destructive rounded-full border-2 border-background" />
                 </Link>
 
                 {/* Profile Menu */}
@@ -167,8 +232,8 @@ export default function AppShell() {
               </div>
             </header>
 
-            {/* Page Content - Outlet renders nested routes */}
-            <div className="px-3 sm:px-4 md:px-6 lg:px-10 py-4 sm:py-6 md:py-8">
+            
+            <div className="sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
               <Outlet />
             </div>
           </section>

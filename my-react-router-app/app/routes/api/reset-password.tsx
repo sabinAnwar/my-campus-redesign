@@ -19,7 +19,7 @@ export async function action({
     const { token, password } = await request.json();
 
     console.log(
-      "📝 Password reset attempt with token:",
+      " Password reset attempt with token:",
       token?.substring(0, 8) + "..."
     );
 
@@ -71,14 +71,14 @@ export async function action({
       },
     });
 
-    console.log("✅ Password reset successfully for user:", user.email);
+    console.log(" Password reset successfully for user:", user.email);
 
     return Response.json({
       success: true,
       message: "Password reset successfully!",
     });
   } catch (error) {
-    console.error("❌ Error resetting password:", error);
+    console.error(" Error resetting password:", error);
     return Response.json(
       { error: "Failed to reset password" },
       { status: 500 }

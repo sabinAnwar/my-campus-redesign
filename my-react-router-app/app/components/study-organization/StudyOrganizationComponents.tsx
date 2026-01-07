@@ -26,9 +26,6 @@ interface QuickLinksProps {
   translations: Record<string, string>;
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
 
 export function PageHeader({ title, subtitle, badge }: PageHeaderProps) {
   return (
@@ -36,19 +33,19 @@ export function PageHeader({ title, subtitle, badge }: PageHeaderProps) {
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
-              <Wrench size={28} />
+            <div className="p-3 rounded-2xl bg-iu-blue/20 dark:bg-iu-blue text-iu-blue dark:text-white shadow-md">
+              <Wrench size={28} strokeWidth={2.5} />
             </div>
             <h1 className="text-4xl font-black text-foreground tracking-tight">
               {title}
             </h1>
           </div>
-          <p className="text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-lg text-foreground/80 dark:text-foreground/85 max-w-2xl leading-relaxed">
             {subtitle}
           </p>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue dark:text-iu-blue text-sm font-bold w-fit">
-            <Wrench size={16} />
+          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/40 dark:border-iu-blue bg-iu-blue/15 dark:bg-iu-blue text-iu-blue dark:text-white text-sm font-bold w-fit shadow-sm">
+            <Wrench size={16} strokeWidth={2.5} />
             <span>{badge}</span>
           </div>
         </div>
@@ -81,12 +78,12 @@ export function NavigationCardComponent({
         {/* Icon and Arrow */}
         <div className="flex items-center justify-between mb-10">
           <div
-            className={`p-5 ${card.iconBg} rounded-3xl transition-all duration-500 group-hover:scale-110`}
+            className={`p-5 ${card.iconBg} rounded-3xl transition-all duration-500 group-hover:scale-110 shadow-md`}
           >
-            <Icon className={`w-10 h-10 ${card.iconColor}`} />
+            <Icon className={`w-10 h-10 ${card.iconColor}`} strokeWidth={2} />
           </div>
-          <div className="w-12 h-12 rounded-full border border-border flex items-center justify-center group-hover:bg-foreground group-hover:border-foreground transition-all duration-500">
-            <ChevronRight className="w-6 h-6 text-muted-foreground group-hover:text-background transition-colors" />
+          <div className="w-12 h-12 rounded-full border-2 border-border/80 flex items-center justify-center group-hover:bg-foreground group-hover:border-foreground transition-all duration-500">
+            <ChevronRight className="w-6 h-6 text-foreground/70 dark:text-foreground/80 group-hover:text-background transition-colors" strokeWidth={2.5} />
           </div>
         </div>
 
@@ -95,14 +92,14 @@ export function NavigationCardComponent({
           <h3 className="text-xl font-black text-foreground mb-4 tracking-tight">
             {title}
           </h3>
-          <p className="text-lg text-muted-foreground font-medium leading-relaxed group-hover:text-foreground transition-colors">
+          <p className="text-lg text-foreground/75 dark:text-foreground/80 font-medium leading-relaxed group-hover:text-foreground transition-colors">
             {description}
           </p>
         </div>
 
         {/* Bottom Decorative Bar */}
         <div
-          className={`mt-10 h-1.5 w-20 rounded-full bg-gradient-to-r ${card.gradient} opacity-50 group-hover:w-full group-hover:opacity-100 transition-all duration-700`}
+          className={`mt-10 h-1.5 w-20 rounded-full bg-gradient-to-r ${card.gradient} opacity-70 group-hover:w-full group-hover:opacity-100 transition-all duration-700`}
         />
       </div>
     </Link>
@@ -111,7 +108,7 @@ export function NavigationCardComponent({
 
 export function QuickLinksSection({ links, translations }: QuickLinksProps) {
   return (
-    <div className="mt-20 p-10 rounded-[3rem] bg-iu-blue/5 border border-iu-blue/10 animate-in fade-in duration-1000">
+    <div className="mt-20 p-10 rounded-[3rem] bg-iu-blue/10 dark:bg-iu-blue/15 border border-iu-blue/20 dark:border-iu-blue/30 animate-in fade-in duration-1000">
       <div className="grid md:grid-cols-3 gap-12">
         {links.map((link) => (
           <QuickLinkItem
@@ -144,15 +141,15 @@ function QuickLinkItem({
   return (
     <div className="space-y-4">
       <h4 className="text-lg font-bold text-foreground">{title}</h4>
-      <p className="text-muted-foreground text-sm leading-relaxed">
+      <p className="text-foreground/75 dark:text-foreground/80 text-sm leading-relaxed">
         {description}
       </p>
       <Link
         to={to}
-        className={`inline-flex items-center gap-2 ${color} font-bold text-sm hover:underline`}
+        className={`inline-flex items-center gap-2 ${color} font-bold text-sm hover:underline underline-offset-2`}
       >
         {linkText}
-        <ChevronRight size={14} />
+        <ChevronRight size={14} strokeWidth={2.5} />
       </Link>
     </div>
   );

@@ -35,7 +35,7 @@ export function ScheduleEventModal({
               <div
                 className={`text-xs font-bold uppercase tracking-[0.3em] mb-2 ${EVENT_COLORS[selectedEvent.type]?.text}`}
               >
-                {selectedEvent.type}
+                {selectedEvent.type.toUpperCase()}
               </div>
               <h3 className="text-3xl font-bold tracking-tight text-foreground">
                 {selectedEvent.title}
@@ -49,13 +49,13 @@ export function ScheduleEventModal({
             onClick={onClose}
             className="p-3 hover:bg-muted rounded-2xl transition-all"
           >
-            <X size={32} className="text-muted-foreground" />
+            <X size={32} className="text-muted-foreground dark:text-white/80" />
           </button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-10">
           <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
-            <div className="flex items-center gap-3 mb-4 text-iu-blue">
+            <div className="flex items-center gap-3 mb-4 text-iu-blue dark:text-white">
               <Clock size={20} />
               <span className="text-xs font-bold uppercase tracking-widest">
                 Zeit & Datum
@@ -74,7 +74,7 @@ export function ScheduleEventModal({
           </div>
 
           <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50">
-            <div className="flex items-center gap-3 mb-4 text-iu-blue">
+            <div className="flex items-center gap-3 mb-4 text-iu-blue dark:text-white">
               <MapPin size={20} />
               <span className="text-xs font-bold uppercase tracking-widest">
                 Ort
@@ -91,7 +91,7 @@ export function ScheduleEventModal({
           </div>
 
           <div className="p-6 bg-muted/30 rounded-[2rem] border border-border/50 md:col-span-2">
-            <div className="flex items-center gap-3 mb-4 text-iu-blue">
+            <div className="flex items-center gap-3 mb-4 text-iu-blue dark:text-white">
               <User size={20} />
               <span className="text-xs font-bold uppercase tracking-widest">
                 Dozent

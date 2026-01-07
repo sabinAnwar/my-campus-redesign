@@ -73,13 +73,13 @@ export default function StudentBenefits() {
   );
 
   return (
-    <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6">
+    <div className="max-w-7xl mx-auto">
       <PageHeader
         icon={Star}
         title={t.title}
         subtitle={t.subtitle(totalTools)}
       >
-        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-xs sm:text-sm font-bold w-fit">
+        <div className="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 md:px-4 py-1.5 sm:py-2 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-xs sm:text-sm font-bold w-fit">
           <Star className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           <span>{t.exclusiveFor}</span>
         </div>

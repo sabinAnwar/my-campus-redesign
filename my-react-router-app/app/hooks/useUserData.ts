@@ -52,7 +52,7 @@ export function useUserData(): UserData {
             name:
               user?.name && user.name !== "Student"
                 ? user.name
-                : "Sabin Elanwar", // Development fallback
+                : "Demo Student", // Development fallback
             studyProgram: user?.studyProgram ?? "",
             campusArea: user?.campusArea ?? "",
             roomBookingEnabled: user?.roomBookingEnabled ?? true,

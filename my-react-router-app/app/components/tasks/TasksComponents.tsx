@@ -70,7 +70,7 @@ export function TasksHeader({
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm shrink-0">
+            <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm shrink-0">
               <Upload size={language === "de" ? 24 : 28} className="sm:size-[28px]" />
             </div>
             <h1 className="text-2xl sm:text-4xl font-black text-foreground tracking-tight break-words [hyphens:auto]">
@@ -83,8 +83,8 @@ export function TasksHeader({
         </div>
 
         <div className="bg-card/50 backdrop-blur-xl border border-border px-5 sm:px-6 py-3 sm:py-4 rounded-2xl sm:rounded-3xl flex items-center gap-3 sm:gap-4 shadow-xl w-fit">
-          <div className="p-1.5 sm:p-2 bg-iu-blue/20 rounded-lg sm:rounded-xl shrink-0">
-            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue" />
+          <div className="p-1.5 sm:p-2 bg-iu-blue/20 dark:bg-iu-blue rounded-lg sm:rounded-xl shrink-0">
+            <Calendar className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
           </div>
           <span className="text-[10px] sm:text-sm font-bold text-foreground uppercase tracking-widest leading-none">
             {new Date().toLocaleDateString(
@@ -107,42 +107,64 @@ export function SubmissionCard({
   return (
     <div className="group bg-card/60 border border-border sm:rounded-[2.5rem] rounded-2xl p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 hover:border-iu-orange/30 hover:bg-card transition-all shadow-xl">
       <div className="flex items-start gap-4 sm:gap-6 min-w-0">
-        <div className="mt-1 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-orange/10 border border-iu-orange/20 text-iu-orange shadow-lg shrink-0">
+        <div className="mt-1 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-orange/10 dark:bg-iu-orange border border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white shadow-lg shrink-0">
           <Clock className="h-5 w-5 sm:h-7 sm:w-7" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap sm:flex-nowrap">
-            <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-iu-orange transition-colors break-words [hyphens:auto] min-w-0">
+            <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-iu-orange dark:group-hover:text-white transition-colors break-words [hyphens:auto] min-w-0">
               {translateValue(submission.title, "titles", t)}
             </h3>
             <div className="flex items-center gap-1.5 shrink-0">
               <span className="sm:hidden px-3 py-1 rounded-full bg-iu-orange/10 border border-iu-orange/20 text-iu-orange text-[9px] font-bold uppercase tracking-widest">
                 {submission.status === "pending" ? t.pending : t.submitted}
               </span>
-              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-iu-orange/40 cursor-pointer hover:text-iu-orange transition-colors" />
+              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-iu-orange/40 dark:text-white/40 cursor-pointer hover:text-iu-orange dark:hover:text-white transition-colors" />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6">
-            <span className="hidden sm:inline-block px-5 py-2 rounded-full bg-iu-orange/10 border border-iu-orange/20 text-iu-orange text-xs font-bold uppercase tracking-widest">
+            <span className="hidden sm:inline-block px-5 py-2 rounded-full bg-iu-orange/10 dark:bg-iu-orange border border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white text-xs font-bold uppercase tracking-widest">
               {submission.status === "pending" ? t.pending : t.submitted}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground text-xs sm:text-sm font-semibold shrink-0">
-              <Calendar className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60" />
+              <Calendar className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white/60" />
               <span>{formatDate(submission.dueDateIso, language)}</span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground text-xs sm:text-sm font-semibold min-w-0">
-              <BookOpen className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 shrink-0" />
+              <BookOpen className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white/60 shrink-0" />
               <span className="truncate">{submission.professor || "Prüfungsamt"}</span>
             </div>
           </div>
+          {submission.status === "submitted" && submission.submittedFileName && (
+            <div className="mt-3 flex items-center gap-3 rounded-xl bg-muted/40 border border-border/50 px-3 py-2 w-fit">
+              <div className="p-2 rounded-lg bg-iu-blue text-white">
+                <FileCheck className="w-4 h-4" />
+              </div>
+              <div className="text-xs font-bold text-foreground">
+                <div className="truncate max-w-[220px]">
+                  {submission.submittedFileName}
+                </div>
+                {typeof submission.submittedFileSize === "number" && (
+                  <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                    {(submission.submittedFileSize / 1024 / 1024).toFixed(2)} MB
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <button
-        onClick={onManage}
-        className="bg-foreground text-background px-6 sm:px-10 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:opacity-90 transition-all flex items-center justify-center gap-2 sm:gap-3 group/btn shadow-xl active:scale-95 w-full lg:w-auto"
+        onClick={submission.status === "submitted" ? undefined : onManage}
+        disabled={submission.status === "submitted"}
+        className={`px-6 sm:px-10 py-3.5 sm:py-4 rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base transition-all flex items-center justify-center gap-2 sm:gap-3 group/btn shadow-xl active:scale-95 w-full lg:w-auto ${
+          submission.status === "submitted"
+            ? "bg-muted/50 text-muted-foreground border border-border/50 cursor-not-allowed"
+            : "bg-foreground text-background hover:opacity-90"
+        }`}
       >
-        {t.manageSubmission}
+        {submission.status === "submitted" ? t.submitted : t.manageSubmission}
         <ChevronRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover/btn:translate-x-1 transition-transform" />
       </button>
     </div>
@@ -154,27 +176,27 @@ export function ExamCard({ exam, translations: t }: ExamCardProps) {
     <div className="group bg-card/60 border border-border sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 hover:border-iu-blue/30 hover:bg-card transition-all shadow-xl flex flex-col justify-between gap-6">
       <div>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
-          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 shadow-lg shrink-0">
+          <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue shadow-lg shrink-0">
             <BookOpen className="h-5 w-5 sm:h-7 sm:w-7" />
           </div>
-          <span className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
+          <span className="px-3 sm:px-4 py-1 sm:py-1.5 rounded-full bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
             {exam.type}
           </span>
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-foreground mb-4 sm:mb-6 group-hover:text-iu-blue transition-colors break-words [hyphens:auto]">
+        <h3 className="text-base sm:text-lg font-bold text-foreground mb-4 sm:mb-6 group-hover:text-iu-blue dark:group-hover:text-white transition-colors break-words [hyphens:auto]">
           {exam.title}
         </h3>
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold">
-            <Calendar className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 shrink-0" />
+            <Calendar className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
             <span>{exam.date}</span>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold">
-            <Clock className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 shrink-0" />
+            <Clock className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
             <span>{exam.duration}</span>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold min-w-0">
-            <MapPin className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 shrink-0" />
+            <MapPin className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
             <span className="truncate">{exam.location}</span>
           </div>
         </div>
@@ -187,7 +209,7 @@ export function ExamCard({ exam, translations: t }: ExamCardProps) {
         >
           {t.daysUntilExam(exam.daysUntilExam)}
         </span>
-        <button className="bg-iu-blue/10 text-iu-blue px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs hover:bg-iu-blue hover:text-white transition-all flex items-center gap-1.5 sm:gap-2 uppercase tracking-widest shrink-0">
+        <button className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white px-4 sm:px-6 py-2 sm:py-2.5 rounded-lg sm:rounded-xl font-bold text-[10px] sm:text-xs hover:bg-iu-blue hover:text-white transition-all flex items-center gap-1.5 sm:gap-2 uppercase tracking-widest shrink-0">
           Details <ChevronRight className="h-3.5 w-3.5 sm:h-4 sm:w-4" />
         </button>
       </div>
@@ -324,7 +346,7 @@ function UploadArea({
     >
       {!uploadedFile ? (
         <div className="flex flex-col items-center">
-          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue mb-3 sm:mb-4">
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white mb-3 sm:mb-4">
             <Upload className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>
           <p className="text-base sm:text-lg font-bold text-foreground mb-1.5 sm:mb-2">
@@ -349,7 +371,7 @@ function UploadArea({
         </div>
       ) : (
         <div className="flex flex-col items-center animate-in fade-in slide-in-from-bottom-2">
-          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue dark:text-iu-blue mb-3 sm:mb-4 shadow-lg">
+          <div className="p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white mb-3 sm:mb-4 shadow-lg">
             <FileCheck className="h-6 w-6 sm:h-8 sm:w-8" />
           </div>
           <p className="text-base sm:text-lg font-bold text-foreground mb-1 break-all">

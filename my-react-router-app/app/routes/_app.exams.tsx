@@ -2,7 +2,11 @@ import { useState } from "react";
 import { useLoaderData } from "react-router";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { prisma } from "~/lib/prisma";
-import { TaskKind } from "@prisma/client";
+// TaskKind is imported from @prisma/client, but we use string literals to avoid client generation issues
+const TaskKind = {
+  ABGABE: "ABGABE" as any,
+  KLAUSUR: "KLAUSUR" as any,
+};
 import { TRANSLATIONS } from "~/services/translations/exams";
 
 // Components
@@ -15,11 +19,11 @@ import { DocumentPreviewModal } from "~/components/exams/DocumentPreviewModal";
 
 export const loader = async () => {
   try {
-    const sabin = await prisma.user.findUnique({
-      where: { email: "sabin.elanwar@iu-study.org" },
+    const demo = await prisma.user.findUnique({
+      where: { email: "student.demo@iu-study.org" },
       select: { id: true },
     });
-    const userId = sabin?.id;
+    const userId = demo?.id;
 
     if (!userId) return { exams: [] };
 
@@ -55,8 +59,8 @@ export default function ExamsPage() {
   const [selectedDocument, setSelectedDocument] = useState<any>(null);
 
   return (
-    <div className="min-h-screen bg-transparent p-4 sm:p-6">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-12 px-2 sm:px-0">
+    <div className="min-h-screen bg-transparent">
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-12 py-4 sm:py-6">
         <ExamsHeader t={t} />
 
         <ExamsList exams={exams} language={language} t={t} />

@@ -3,29 +3,29 @@ import { TRANSLATIONS } from "~/services/translations/praxisbericht";
 
 const STATUS_STYLES = {
   DUE: {
-    bg: "bg-orange-500/10",
-    text: "text-orange-500",
-    border: "border-orange-500/20",
+    bg: "bg-amber-500 dark:bg-amber-600",
+    text: "text-amber-700 dark:text-white",
+    border: "border-amber-600 dark:border-amber-500",
   },
   DRAFT: {
-    bg: "bg-iu-blue/10",
-    text: "text-iu-blue",
-    border: "border-iu-blue/20",
+    bg: "bg-sky-500 dark:bg-sky-600",
+    text: "text-sky-700 dark:text-white",
+    border: "border-sky-600 dark:border-sky-500",
   },
   SUBMITTED: {
-    bg: "bg-iu-blue/20",
-    text: "text-iu-blue dark:text-iu-blue",
-    border: "border-iu-blue/30",
+    bg: "bg-emerald-500 dark:bg-emerald-600",
+    text: "text-emerald-700 dark:text-white",
+    border: "border-emerald-600 dark:border-emerald-500",
   },
   APPROVED: {
-    bg: "bg-purple-500/10",
-    text: "text-purple-500",
-    border: "border-purple-500/20",
+    bg: "bg-violet-500 dark:bg-violet-600",
+    text: "text-violet-700 dark:text-white",
+    border: "border-violet-600 dark:border-violet-500",
   },
   KLAUSURPHASE: {
-    bg: "bg-muted/50",
-    text: "text-muted-foreground",
-    border: "border-border",
+    bg: "bg-slate-400 dark:bg-slate-600",
+    text: "text-slate-600 dark:text-slate-300",
+    border: "border-slate-500 dark:border-slate-500",
   },
 };
 

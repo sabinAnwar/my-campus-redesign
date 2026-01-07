@@ -19,7 +19,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
     id: "exam-when",
     category: "Prüfungen",
     question: "Wann sind die Prüfungen?",
-    answer: `📅 **Prüfungszeiträume bei IU:**
+    answer: ` **Prüfungszeiträume bei IU:**
 
 **Klausurtermine:**
 - Klausuren können jederzeit online über das Prüfungssystem gebucht werden
@@ -56,7 +56,7 @@ Besuche MyCampus für deine individuellen Termine!`,
     id: "exam-register",
     category: "Prüfungen",
     question: "Wie melde ich mich zu einer Prüfung an?",
-    answer: `📝 **Prüfungsanmeldung bei IU:**
+    answer: ` **Prüfungsanmeldung bei IU:**
 
 **Schritt für Schritt:**
 1. Logge dich in MyCampus ein
@@ -89,7 +89,7 @@ Bei Fragen wende dich an: pruefungsamt@iu.org`,
     id: "exam-repeat",
     category: "Prüfungen",
     question: "Wie oft kann ich eine Prüfung wiederholen?",
-    answer: `🔄 **Prüfungswiederholungen bei IU:**
+    answer: ` **Prüfungswiederholungen bei IU:**
 
 **Anzahl der Versuche:**
 - Du hast insgesamt **3 Versuche** pro Prüfung
@@ -123,7 +123,7 @@ Mehr Infos im Prüfungsamt!`,
     id: "exam-results",
     category: "Prüfungen",
     question: "Wann bekomme ich meine Prüfungsergebnisse?",
-    answer: `📊 **Prüfungsergebnisse bei IU:**
+    answer: ` **Prüfungsergebnisse bei IU:**
 
 **Bearbeitungszeiten:**
 - **Online-Klausuren:** 2-4 Wochen nach Abgabe
@@ -157,7 +157,7 @@ Die Noten werden in der Notenverwaltung gespeichert!`,
     id: "exam-sick",
     category: "Prüfungen",
     question: "Was mache ich wenn ich zur Prüfung krank bin?",
-    answer: `🏥 **Prüfungsunfähigkeit bei Krankheit:**
+    answer: ` **Prüfungsunfähigkeit bei Krankheit:**
 
 **Sofort handeln:**
 1. Melde dich **vor** der Prüfung krank (E-Mail an Prüfungsamt)
@@ -190,13 +190,13 @@ Kontakt: pruefungsamt@iu.org`,
     id: "exam-tips",
     category: "Prüfungen",
     question: "Wie bereite ich mich auf Prüfungen vor?",
-    answer: `📚 **Prüfungsvorbereitung - Tipps:**
+    answer: ` **Prüfungsvorbereitung - Tipps:**
 
 **Lernmaterialien:**
-- 📖 **IU Skripte:** Alle Inhalte in MyCampus unter "Meine Kurse"
-- 🎥 **IU Learn App:** Video-Tutorials und interaktive Inhalte
-- 📝 **Übungsklausuren:** In der Online-Bibliothek verfügbar
-- 🗂️ **Lernkarten:** Erstelle eigene oder nutze Anki
+-  **IU Skripte:** Alle Inhalte in MyCampus unter "Meine Kurse"
+-  **IU Learn App:** Video-Tutorials und interaktive Inhalte
+-  **Übungsklausuren:** In der Online-Bibliothek verfügbar
+-  **Lernkarten:** Erstelle eigene oder nutze Anki
 
 **Strategie:**
 1. Lies zuerst die Modulbeschreibung und Lernziele
@@ -212,7 +212,7 @@ Kontakt: pruefungsamt@iu.org`,
 - Technischen Check bei Online-Klausuren
 - Frühzeitig anmelden (7 Tage vorher)
 
-Viel Erfolg! 💪`,
+Viel Erfolg! `,
     keywords: [
       "lernen",
       "vorbereiten",
@@ -231,21 +231,21 @@ Viel Erfolg! 💪`,
     id: "dual-study-info",
     category: "Studienorganisation",
     question: "Ich bin dualer Student - was muss ich wissen?",
-    answer: `🎓 **Duales Studium bei IU - Überblick:**
+    answer: ` **Duales Studium bei IU - Überblick:**
 
 **Theorie- und Praxisphasen:**
 - Wechseln alle 2-3 Monate
 - Genaue Termine in deinem studiengangsspezifischen Plan
 
 **Deine Pflichten:**
-- ✅ Prüfungen am Ende der Theoriephase
-- ✅ Praxisberichte nach jeder Praxisphase (4 Wochen Frist)
-- ✅ Anwesenheit bei Präsenzveranstaltungen (falls vorgesehen)
+-  Prüfungen am Ende der Theoriephase
+-  Praxisberichte nach jeder Praxisphase (4 Wochen Frist)
+-  Anwesenheit bei Präsenzveranstaltungen (falls vorgesehen)
 
 **Vorteile:**
-- 💰 Studiengebühren zahlt dein Praxispartner
-- 💵 Du erhältst ein monatliches Gehalt
-- 📚 Alle Lernmaterialien inklusive
+-  Studiengebühren zahlt dein Praxispartner
+-  Du erhältst ein monatliches Gehalt
+-  Alle Lernmaterialien inklusive
 
 **Wichtige Anlaufstellen:**
 - Studienberatung: studienberatung@iu.org
@@ -269,7 +269,7 @@ Was möchtest du genauer wissen?`,
     id: "additional-courses",
     category: "Studienorganisation",
     question: "Kann ich zusätzliche Kurse belegen?",
-    answer: `📚 **Zusätzliche Weiterbildungskurse:**
+    answer: ` **Zusätzliche Weiterbildungskurse:**
 
 **Kostenlose Kurse ab dem 3. Semester:**
 - Du kannst zusätzlich zu deinem Studienplan Weiterbildungskurse belegen
@@ -312,7 +312,7 @@ Mehr Info in der Studienorganisation!`,
     id: "semester-dates",
     category: "Studienorganisation",
     question: "Wann beginnt und endet das Semester?",
-    answer: `📆 **Semesterzeiten bei IU Dual:**
+    answer: ` **Semesterzeiten bei IU Dual:**
 
 **Wintersemester:**
 - Start: 1. Oktober
@@ -348,7 +348,7 @@ Aktuelle Termine findest du in deinem MyCampus-Kalender!`,
     id: "specialization",
     category: "Studienorganisation",
     question: "Wie wähle ich meine Vertiefung?",
-    answer: `🎯 **Vertiefungswahl bei IU:**
+    answer: ` **Vertiefungswahl bei IU:**
 
 **Wann wählen?**
 - Nach dem 4. Semester (vor Beginn des 5. Semesters)
@@ -385,7 +385,7 @@ Besuche die Vertiefungswahl-Seite für Details!`,
     id: "practical-report",
     category: "Studienorganisation",
     question: "Wie reiche ich meinen Praxisbericht ein?",
-    answer: `📄 **Praxisbericht einreichen:**
+    answer: ` **Praxisbericht einreichen:**
 
 **Anforderungen:**
 - Umfang: 8-12 Seiten (je nach Semester)
@@ -425,7 +425,7 @@ Bei Fragen: studienberatung@iu.org`,
     id: "thesis-registration",
     category: "Studienorganisation",
     question: "Wie melde ich meine Bachelorarbeit an?",
-    answer: `📚 **Bachelorarbeit Anmeldung:**
+    answer: ` **Bachelorarbeit Anmeldung:**
 
 **Voraussetzungen:**
 - Mindestens 150 ECTS erreicht
@@ -465,7 +465,7 @@ abschlussarbeiten@iu.org`,
     id: "email-setup",
     category: "IT & Services",
     question: "Wie nutze ich meine IU E-Mail-Adresse?",
-    answer: `📧 **IU E-Mail einrichten:**
+    answer: ` **IU E-Mail einrichten:**
 
 **Deine E-Mail-Adresse:**
 - Format: vorname.nachname@iu-study.org
@@ -503,17 +503,17 @@ IT-Support: it-support@iu.org`,
     id: "library",
     category: "IT & Services",
     question: "Wie nutze ich die Online-Bibliothek?",
-    answer: `📖 **IU Online-Bibliothek:**
+    answer: ` **IU Online-Bibliothek:**
 
 **Zugang:**
 1. MyCampus → "Bibliothek"
 2. Oder direkt: bibliothek.iu.org
 
 **Verfügbare Ressourcen:**
-- 📚 E-Books (über 80.000 Titel)
-- 📰 Wissenschaftliche Journals
-- 🎓 Springer, Statista, EBSCO
-- 📝 Hausarbeiten-Datenbank
+-  E-Books (über 80.000 Titel)
+-  Wissenschaftliche Journals
+-  Springer, Statista, EBSCO
+-  Hausarbeiten-Datenbank
 
 **Springer Campus:** 
 - Alle IU-Skripte als PDF
@@ -544,7 +544,7 @@ IT-Support: it-support@iu.org`,
     id: "room-booking",
     category: "Campus",
     question: "Wie buche ich einen Raum am Campus?",
-    answer: `🏫 **Raumbuchung am Campus:**
+    answer: ` **Raumbuchung am Campus:**
 
 **Online buchen:**
 1. MyCampus → "Raumbuchung"
@@ -553,10 +553,10 @@ IT-Support: it-support@iu.org`,
 4. Timeslot auswählen und buchen
 
 **Verfügbare Räume:**
-- 📚 Lernräume (1-4 Personen)
-- 👥 Gruppenräume (5-10 Personen)
-- 💻 PC-Räume
-- 🎤 Präsentationsräume
+-  Lernräume (1-4 Personen)
+-  Gruppenräume (5-10 Personen)
+-  PC-Räume
+-  Präsentationsräume
 
 **Buchungsregeln:**
 - Max. 4 Stunden pro Tag
@@ -585,7 +585,7 @@ Fragen: campusservice@iu.org`,
     id: "student-id",
     category: "Campus",
     question: "Wie bekomme ich meinen Studentenausweis?",
-    answer: `🪪 **Studentenausweis bei IU:**
+    answer: ` **Studentenausweis bei IU:**
 
 **Digitaler Ausweis:**
 - In der MyCampus App verfügbar
@@ -598,10 +598,10 @@ Fragen: campusservice@iu.org`,
 - Gültig für das gesamte Studium
 
 **Funktionen:**
-- 🚌 Semesterticket (je nach Campus)
-- 🍽️ Mensa-Bezahlung
-- 📚 Bibliotheksausweis
-- 🔓 Campus-Zugang
+-  Semesterticket (je nach Campus)
+-  Mensa-Bezahlung
+-  Bibliotheksausweis
+-  Campus-Zugang
 
 **Verloren?**
 - Digitaler Ausweis: Immer verfügbar
@@ -627,7 +627,7 @@ Fragen: studierendensekretariat@iu.org`,
     id: "tuition-fees",
     category: "Finanzen",
     question: "Wie hoch sind die Studiengebühren?",
-    answer: `💰 **Studiengebühren IU Dual:**
+    answer: ` **Studiengebühren IU Dual:**
 
 **Duales Studium:**
 - Studiengebühren werden vom Praxispartner übernommen!
@@ -669,14 +669,14 @@ Bei Fragen: studienfinanzierung@iu.org`,
     id: "erasmus",
     category: "International",
     question: "Ist die IU Teil des Erasmus-Programms?",
-    answer: `🌍 **Erasmus+ an der IU:**
+    answer: ` **Erasmus+ an der IU:**
 
 **Ja, die IU nimmt am Erasmus+ Programm teil!**
 
 **Möglichkeiten:**
-- 📚 Auslandssemester (3-12 Monate)
-- 💼 Auslandspraktikum (2-12 Monate)
-- 🏫 Partnerhochschulen in 30+ Ländern
+-  Auslandssemester (3-12 Monate)
+-  Auslandspraktikum (2-12 Monate)
+-  Partnerhochschulen in 30+ Ländern
 
 **Voraussetzungen:**
 - Mindestens 2 Semester abgeschlossen
@@ -712,27 +712,27 @@ Kontakt: international@iu.org`,
     id: "contact-support",
     category: "Support",
     question: "Wie erreiche ich den Support?",
-    answer: `📞 **IU Support Kontakte:**
+    answer: ` **IU Support Kontakte:**
 
 **Studienberatung:**
-- 📧 studienberatung@iu.org
-- ☎️ +49 30 31198810
+-  studienberatung@iu.org
+-  +49 30 31198810
 - Mo-Fr: 8:00-20:00 Uhr
 
 **Prüfungsamt:**
-- 📧 pruefungsamt@iu.org
+-  pruefungsamt@iu.org
 - Für Prüfungsfragen und Anträge
 
 **IT-Support:**
-- 📧 it-support@iu.org
+-  it-support@iu.org
 - Technische Probleme mit MyCampus
 
 **Career Service:**
-- 📧 career@iu.org
+-  career@iu.org
 - Bewerbungen und Karriereberatung
 
 **Studierendensekretariat:**
-- 📧 studierendensekretariat@iu.org
+-  studierendensekretariat@iu.org
 - Bescheinigungen und Dokumente
 
 **Live-Chat:**
@@ -755,7 +755,7 @@ Kontakt: international@iu.org`,
     id: "mental-health",
     category: "Support",
     question: "Gibt es psychologische Beratung?",
-    answer: `🧠 **Psychologische Unterstützung bei IU:**
+    answer: ` **Psychologische Unterstützung bei IU:**
 
 **Kostenlose Beratung:**
 - Vertrauliche Gespräche
@@ -763,10 +763,10 @@ Kontakt: international@iu.org`,
 - Online und auf dem Campus
 
 **Themen:**
-- 😰 Prüfungsangst
-- 💪 Stressmanagement
-- 🎯 Motivationsprobleme
-- 🤝 Work-Life-Balance
+-  Prüfungsangst
+-  Stressmanagement
+-  Motivationsprobleme
+-  Work-Life-Balance
 
 **Termin buchen:**
 1. MyCampus → "Student Wellbeing"
@@ -776,7 +776,7 @@ Kontakt: international@iu.org`,
 - Telefonseelsorge: 0800 111 0 111 (kostenlos, 24/7)
 - Studierendenwerk: Psychologische Beratungsstelle
 
-Du bist nicht allein! 💙`,
+Du bist nicht allein! `,
     keywords: [
       "psychologisch",
       "mental",
@@ -798,13 +798,13 @@ Du bist nicht allein! 💙`,
     id: "greeting-hi",
     category: "Allgemein",
     question: "Hallo",
-    answer: `👋 Hallo! Ich bin der IU Assistant und helfe dir gerne bei Fragen rund ums Studium.
+    answer: ` Hallo! Ich bin der IU Assistant und helfe dir gerne bei Fragen rund ums Studium.
 
 **Beliebte Themen:**
-- 📅 Prüfungen & Termine
-- 📚 Studienorganisation
-- 🏫 Campus & Services
-- 💬 Support & Hilfe
+-  Prüfungen & Termine
+-  Studienorganisation
+-  Campus & Services
+-  Support & Hilfe
 
 Was möchtest du wissen?`,
     keywords: ["hallo", "hi", "hey", "moin", "guten tag", "hello", "servus"],
@@ -815,15 +815,15 @@ Was möchtest du wissen?`,
     id: "greeting-thanks",
     category: "Allgemein",
     question: "Danke",
-    answer: `Gerne geschehen! 😊
+    answer: `Gerne geschehen! 
 
 Kann ich dir noch bei etwas anderem helfen?
 
 **Weitere Themen:**
-- 📅 Prüfungstermine
-- 📧 E-Mail einrichten
-- 🏫 Campus-Services
-- 📚 Bibliothek nutzen`,
+-  Prüfungstermine
+-  E-Mail einrichten
+-  Campus-Services
+-  Bibliothek nutzen`,
     keywords: ["danke", "thanks", "vielen dank", "dankeschön", "thank you"],
     synonyms: ["thx", "merci"],
     priority: 1,
