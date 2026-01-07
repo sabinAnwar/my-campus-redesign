@@ -23,7 +23,7 @@ export function CurriculumHeader({ t, userProgram, stats }: CurriculumHeaderProp
       backLabel="Dashboard"
     >
       <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-sm font-bold w-fit">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-sm font-bold w-fit">
           <GraduationCap size={16} />
           <span>{userProgram}</span>
         </div>

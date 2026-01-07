@@ -43,11 +43,11 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
         {sections.map((section) => {
           const isExpanded = expandedSections[section.id] ?? section.defaultExpanded;
           const colorClass = {
-            cyan: "text-iu-blue bg-iu-blue/10",
-            amber: "text-iu-orange bg-iu-orange/10",
-            purple: "text-iu-purple bg-iu-purple/10",
-            red: "text-iu-red bg-iu-red/10",
-            rose: "text-iu-red bg-iu-red/10", // Fallback for rose to red if not defined in Tailwind
+            cyan: "text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue",
+            amber: "text-iu-orange dark:text-white bg-iu-orange/10 dark:bg-iu-orange",
+            purple: "text-iu-purple dark:text-white bg-iu-purple/10 dark:bg-iu-purple",
+            red: "text-iu-red dark:text-white bg-iu-red/10 dark:bg-iu-red",
+            rose: "text-iu-red dark:text-white bg-iu-red/10 dark:bg-iu-red", // Fallback for rose to red if not defined in Tailwind
           }[section.color];
 
           return (
@@ -64,7 +64,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                     <section.icon size={24} />
                   </div>
                   <div>
-                    <span className="text-lg sm:text-xl font-black text-foreground block group-hover:text-iu-blue transition-colors">
+                    <span className="text-lg sm:text-xl font-black text-foreground block group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                       {section.label}
                     </span>
                     <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1 block">
@@ -72,7 +72,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                     </span>
                   </div>
                 </div>
-                <div className={`p-2 rounded-xl bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:text-iu-blue ${isExpanded ? "rotate-180 bg-iu-blue/10" : ""}`}>
+                <div className={`p-2 rounded-xl bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:text-iu-blue dark:group-hover:text-white ${isExpanded ? "rotate-180 bg-iu-blue/10 dark:bg-iu-blue" : ""}`}>
                   <ChevronDown size={20} />
                 </div>
               </button>
@@ -89,7 +89,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                         onClick={() => onFileClick(item, section.id)}
                         className="flex items-center gap-4 p-4 sm:p-5 rounded-2xl bg-muted/20 border border-border/30 hover:border-iu-blue/30 hover:bg-iu-blue/5 transition-all cursor-pointer group/item shadow-sm hover:shadow-iu-blue/5"
                       >
-                        <div className="p-2 sm:p-3 rounded-xl bg-card border border-border/50 text-iu-blue group-hover/item:scale-110 transition-transform">
+                        <div className="p-2 sm:p-3 rounded-xl bg-card border border-border/50 text-iu-blue dark:text-white dark:bg-iu-blue dark:border-iu-blue group-hover/item:scale-110 transition-transform">
                           {item.type === "podcast" ? (
                             <Play size={20} className="fill-current" />
                           ) : (
@@ -97,7 +97,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                           )}
                         </div>
                         <div className="min-w-0 flex-1">
-                          <div className="text-sm font-black text-foreground truncate group-hover/item:text-iu-blue transition-colors">
+                          <div className="text-sm font-black text-foreground truncate group-hover/item:text-iu-blue dark:group-hover/item:text-white transition-colors">
                             {item.title}
                           </div>
                           <div className="flex items-center gap-3 mt-2">
@@ -107,7 +107,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                               </span>
                             )}
                             {item.duration && (
-                              <span className="text-[9px] font-black text-iu-blue/60 uppercase tracking-widest px-2 py-0.5 rounded bg-iu-blue/5 border border-iu-blue/10">
+                             <span className="text-[9px] font-black text-iu-blue dark:text-white/80 uppercase tracking-widest px-2 py-0.5 rounded bg-iu-blue/5 dark:bg-iu-blue/20 border border-iu-blue/10 dark:border-iu-blue/40">
                                 {item.duration}
                               </span>
                             )}

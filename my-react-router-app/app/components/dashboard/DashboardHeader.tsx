@@ -12,15 +12,15 @@ export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderPro
   return (
     <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 md:gap-8 pb-4 sm:pb-6 border-b border-border/10 mb-4 sm:mb-6 md:mb-8">
       <div className="flex-1 space-y-3 sm:space-y-4">
-        <div className="space-y-2 sm:space-y-3">
-          <h1 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight mb-1 sm:mb-2">
+        <div className="space-y-3 sm:space-y-4">
+          <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight mb-1 sm:mb-2">
             {getGreeting()},{" "}
-            <span className="text-iu-blue">{userName.split(" ")[0]}</span>{" "}
+            <span className="text-iu-blue dark:text-white">{userName.split(" ")[0]}</span>{" "}
             <span className="inline-block animate-wave origin-[70%_70%]">
-              👋
+              
             </span>
           </h1>
-          <p className="text-muted-foreground text-xs sm:text-sm font-medium max-w-2xl leading-relaxed">
+          <p className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm font-medium max-w-2xl leading-relaxed">
             {t.overview}
           </p>
         </div>
@@ -35,19 +35,18 @@ export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderPro
         </div>
       </div>
 
-      {/* Greeting Animation - Stylish Icon for better LCP */}
-      <div className="hidden sm:flex justify-center md:justify-end w-full md:w-auto">
-        <div className="relative w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[160px] md:h-[160px] flex items-center justify-center">
+      <div className="hidden md:flex justify-center md:justify-end w-full md:w-auto shrink-0">
+        <div className="relative w-[80px] h-[80px] lg:w-[160px] lg:h-[160px] flex items-center justify-center">
           {/* Animated gradient ring */}
-          <div className="absolute inset-0 bg-gradient-to-br from-iu-blue/30 via-iu-purple/30 to-iu-pink/30 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] animate-pulse blur-2xl" />
-          <div className="absolute inset-0 bg-gradient-to-br from-iu-blue/20 via-iu-purple/20 to-iu-pink/20 rounded-[1.5rem] sm:rounded-[2rem] md:rounded-[2.5rem] animate-spin-slow animate-duration-15s" />
-          <div className="absolute inset-2 sm:inset-3 md:inset-4 bg-card rounded-[1.2rem] sm:rounded-[1.5rem] md:rounded-[2rem] shadow-2xl border border-border flex items-center justify-center backdrop-blur-3xl">
-            {/* Sparkles Icon with glow effect */}
-            <div className="relative">
-              <div className="absolute inset-0 blur-2xl opacity-40 bg-iu-blue rounded-full"></div>
-              <Sparkles className="relative w-10 h-10 sm:w-12 sm:h-12 md:w-16 md:h-16 text-iu-blue drop-shadow-[0_0_20px_rgba(36,94,235,0.5)] animate-bounce-slow" />
+          <div className="absolute inset-0 bg-gradient-to-br from-iu-blue/30 via-iu-purple/30 to-iu-pink/30 rounded-[1.2rem] lg:rounded-[2.5rem] animate-pulse blur-xl lg:blur-2xl" />
+          <div className="absolute inset-0 bg-gradient-to-br from-iu-blue/20 via-iu-purple/20 to-iu-pink/20 rounded-[1.2rem] lg:rounded-[2.5rem] animate-spin-slow animate-duration-15s" />
+            <div className="absolute inset-2 bg-card rounded-[1rem] lg:rounded-[2rem] shadow-2xl border border-border flex items-center justify-center backdrop-blur-3xl dark:border-slate-700">
+              {/* Sparkles Icon with glow effect */}
+              <div className="relative">
+                <div className="absolute inset-0 blur-xl opacity-40 bg-iu-blue rounded-full"></div>
+                <Sparkles className="relative w-6 h-6 lg:w-16 lg:h-16 text-iu-blue dark:text-white drop-shadow-[0_0_20px_rgba(36,94,235,0.5)] animate-bounce-slow" />
+              </div>
             </div>
-          </div>
         </div>
       </div>
     </div>

@@ -58,7 +58,7 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-iu-blue/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
             <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-4 sm:mb-6 md:mb-8 flex items-center gap-3 sm:gap-4">
-              <div className="p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 group-hover:rotate-3 transition-transform">
+              <div className="p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue group-hover:rotate-3 transition-transform">
                 <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
               {t.courseDescription}
@@ -66,7 +66,7 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
               <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed font-medium mb-6 sm:mb-8 md:mb-10">
-                {getTranslatedDescription(course.description || "", language)}
+                {getTranslatedDescription(course.description || "", language as "de" | "en")}
               </p>
             </div>
 
@@ -86,7 +86,8 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
 
         {/* Right Column (Instructor & Tools) */}
         <div className="lg:col-span-4 space-y-4 sm:space-y-6 md:space-y-8">
-          <InstructorCard course={course} language={language} />
+          {/* Instructor Card removed as requested */}
+          {/* <InstructorCard course={course} language={language} /> */}
           <QuickLinksCard language={language} />
         </div>
       </div>
@@ -97,9 +98,9 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
 function StatItem({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
   return (
     <div className="p-2 sm:p-3 md:p-4 rounded-xl sm:rounded-2xl bg-card border border-border/50 shadow-sm hover:border-iu-blue/30 transition-all group/stat">
-      <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 text-iu-blue">
+      <div className="flex items-center gap-1 sm:gap-2 mb-1 sm:mb-2 text-iu-blue dark:text-white">
         <Icon className="w-2.5 h-2.5 sm:w-3 sm:h-3 group-hover/stat:scale-110 transition-transform" />
-        <span className="text-[7px] sm:text-[8px] md:text-[9px] font-black uppercase tracking-wider sm:tracking-widest opacity-70">
+        <span className="text-[7px] sm:text-[8px] md:text-[9px] font-black uppercase tracking-wider sm:tracking-widest">
           {label}
         </span>
       </div>
@@ -113,11 +114,11 @@ function StatItem({ icon: Icon, label, value }: { icon: any, label: string, valu
 function DateCard({ icon: Icon, label, value }: { icon: any, label: string, value: string }) {
   return (
     <div className="relative p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl md:rounded-3xl bg-muted/20 border border-border/30 group/item transition-all hover:bg-iu-blue/5 hover:border-iu-blue/20">
-      <div className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-iu-blue/60 uppercase tracking-wider sm:tracking-[0.2em] mb-1 sm:mb-2 md:mb-3">
+      <div className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-wider sm:tracking-[0.2em] mb-1 sm:mb-2 md:mb-3">
         {label}
       </div>
       <div className="text-sm sm:text-lg md:text-2xl font-black text-foreground flex items-center gap-2 sm:gap-3">
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue/40" />
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue/40 dark:text-white/40" />
         {value}
       </div>
     </div>
@@ -128,14 +129,14 @@ function AdvancedStatCard({ icon: Icon, label, value, subLabel }: { icon: any, l
   return (
     <div className="group p-3 sm:p-5 md:p-8 rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl hover:border-iu-blue/30 transition-all shadow-sm">
       <div className="flex items-center justify-between mb-3 sm:mb-5 md:mb-8">
-        <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 text-iu-blue group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+        <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </div>
         <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground/40 uppercase tracking-wider sm:tracking-widest">
           {label}
         </div>
       </div>
-      <div className="text-base sm:text-xl md:text-3xl lg:text-5xl font-black text-foreground tracking-tighter truncate">
+      <div className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tighter truncate">
         {value}
       </div>
       <p className="text-[8px] sm:text-[10px] md:text-xs text-muted-foreground mt-1 sm:mt-2 md:mt-3 font-bold uppercase tracking-wide sm:tracking-wider opacity-60 hidden sm:block">
@@ -149,14 +150,14 @@ function ProgressStatCard({ icon: Icon, label, value, progress, subLabel }: { ic
   return (
     <div className="group p-3 sm:p-5 md:p-8 rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl hover:border-iu-blue/30 transition-all shadow-sm">
       <div className="flex items-center justify-between mb-3 sm:mb-5 md:mb-8">
-        <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 text-iu-blue group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
+        <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </div>
         <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground/40 uppercase tracking-wider sm:tracking-widest">
           {label}
         </div>
       </div>
-      <div className="text-2xl sm:text-3xl md:text-5xl font-black text-foreground tracking-tighter">
+      <div className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tighter">
         {value}
       </div>
       <div className="mt-2 sm:mt-3 md:mt-5 space-y-1 sm:space-y-2">
@@ -193,16 +194,16 @@ function InstructorCard({ course, language }: { course: Course, language: string
         <h4 className="text-lg sm:text-xl md:text-2xl font-black text-foreground tracking-tight mb-0.5 sm:mb-1">
           {course.instructor}
         </h4>
-        <p className="text-[8px] sm:text-[9px] md:text-[10px] text-iu-blue font-black uppercase tracking-widest sm:tracking-[0.2em] mb-4 sm:mb-6 md:mb-10">
+        <p className="text-[8px] sm:text-[9px] md:text-[10px] text-iu-blue dark:text-white font-black uppercase tracking-widest sm:tracking-[0.2em] mb-4 sm:mb-6 md:mb-10">
           {language === "de" ? "Modulverantwortlicher" : "Module Coordinator"}
         </p>
 
         <div className="w-full space-y-2 sm:space-y-3">
           <a
             href={`mailto:${course.instructor?.toLowerCase().replace(" ", ".")}@iu-fernstudium.de`}
-            className="w-full p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-muted/20 border border-border/30 flex items-center justify-center gap-2 sm:gap-3 hover:bg-iu-blue/10 hover:border-iu-blue/20 transition-all group/mail"
+            className="w-full p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-muted/20 border border-border/30 flex items-center justify-center gap-2 sm:gap-3 hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/20 dark:hover:border-iu-blue transition-all group/mail"
           >
-            <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue group-hover/mail:scale-110 transition-transform" />
+            <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue dark:text-white group-hover/mail:scale-110 transition-transform" />
             <span className="text-xs sm:text-sm font-black text-foreground">
               Email
             </span>
@@ -225,26 +226,58 @@ function QuickLinksCard({ language }: { language: string }) {
         {language === "de" ? "Wichtige Dokumente" : "Critical Documents"}
       </h3>
       <div className="space-y-1 sm:space-y-2">
-        <LinkItem label="Modulhandbuch" icon={FileText} color="text-iu-blue" />
-        <LinkItem label="Prüfungsordnung" icon={ClipboardList} color="text-iu-purple" />
-        <LinkItem label="Literaturliste" icon={Book} color="text-iu-orange" />
+        <LinkItem 
+          label="Modulhandbuch" 
+          icon={FileText} 
+          color="text-iu-blue" 
+          href="/uploads/modulhandbuch-winfo.pdf"
+          download="Modulhandbuch_Wirtschaftsinformatik.pdf"
+        />
+        <LinkItem 
+          label="Prüfungsordnung" 
+          icon={ClipboardList} 
+          color="text-iu-purple" 
+          href="/uploads/pruefungsordnung.pdf"
+          download="Prüfungsordnung.pdf"
+        />
+        <LinkItem 
+          label="Literaturliste" 
+          icon={Book} 
+          color="text-iu-orange" 
+          href="/uploads/literaturliste.pdf"
+          download="Literaturliste.pdf"
+        />
       </div>
     </div>
   );
 }
 
-function LinkItem({ label, icon: Icon, color }: { label: string, icon: any, color: string }) {
-  return (
-    <button className="w-full flex items-center justify-between p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl hover:bg-muted/40 transition-all group">
+function LinkItem({ label, icon: Icon, color, href, download }: { label: string, icon: any, color: string, href?: string, download?: string }) {
+  const content = (
+    <div className="w-full flex items-center justify-between p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl hover:bg-muted/40 transition-all group">
       <div className="flex items-center gap-2 sm:gap-3 md:gap-4">
         <div className={`p-1.5 sm:p-2 rounded-md sm:rounded-lg bg-card border border-border group-hover:scale-110 transition-transform ${color}`}>
           <Icon className="w-3.5 h-3.5 sm:w-4 sm:h-4 md:w-5 md:h-5" />
         </div>
-        <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-iu-blue transition-colors">
+        <span className="text-xs sm:text-sm font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
           {label}
         </span>
       </div>
-      <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/30 group-hover:text-iu-blue group-hover:translate-x-1 transition-all" />
+      <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/30 group-hover:text-iu-blue dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
+    </div>
+  );
+
+  if (href) {
+    return (
+      <a href={href} download={download} className="block w-full">
+        {content}
+      </a>
+    );
+  }
+
+  return (
+    <button className="w-full text-left">
+      {content}
     </button>
   );
 }

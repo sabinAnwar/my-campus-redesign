@@ -25,7 +25,7 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
               : "Study at your own pace with our video lectures and interactive content."}
           </p>
         </div>
-        <div className="flex items-center gap-2 text-[10px] sm:text-xs font-black text-iu-blue uppercase tracking-wider sm:tracking-widest bg-iu-blue/5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-iu-blue/10">
+        <div className="flex items-center gap-2 text-[10px] sm:text-xs font-black text-iu-blue dark:text-white uppercase tracking-wider sm:tracking-widest bg-iu-blue/5 dark:bg-iu-blue px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-iu-blue/10 dark:border-iu-blue">
           <Video className="w-3 h-3 sm:w-3.5 sm:h-3.5" />
           {videos.length} {language === "de" ? "Vorlesungen" : "Lectures"}
         </div>
@@ -46,8 +46,8 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
                   className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-110"
                 />
               ) : (
-                <div className="w-full h-full flex items-center justify-center bg-iu-blue/5">
-                  <Video size={48} className="text-iu-blue/30" />
+                <div className="w-full h-full flex items-center justify-center bg-iu-blue/5 dark:bg-iu-blue/20">
+                  <Video size={48} className="text-iu-blue/30 dark:text-white/30" />
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -64,17 +64,17 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
             </div>
             <div className="p-7">
               <div className="flex items-start justify-between gap-4 mb-4">
-                <h4 className="text-xl font-black text-foreground leading-tight line-clamp-2 group-hover:text-iu-blue transition-colors">
+                <h4 className="text-xl font-black text-foreground leading-tight line-clamp-2 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                   {video.title}
                 </h4>
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-border/10">
                 <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
-                  <Users size={12} className="text-iu-blue/50" />
+                  <Users size={12} className="text-iu-blue/50 dark:text-white/50" />
                   <span>IU Study Content</span>
                 </div>
-                <button className="text-[10px] font-black text-iu-blue uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">
-                  Starten &rarr;
+                <button className="text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">
+                  {language === "de" ? "Abspielen" : "Play"} &rarr;
                 </button>
               </div>
             </div>

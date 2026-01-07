@@ -40,7 +40,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
   return (
     <div className="space-y-3 sm:space-y-4">
       <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
-        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <History className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground flex items-center gap-2 sm:gap-3">
@@ -51,23 +51,23 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
         <div className="absolute top-0 right-0 w-96 h-96 bg-iu-blue/5 blur-[100px] rounded-full -mr-48 -mt-48 transition-transform group-hover:scale-125 duration-1000" />
         <div className="relative z-10 flex items-center justify-between mb-4 sm:mb-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 shadow-inner">
+            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 shadow-inner dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
               <History className="h-6 w-6" />
             </div>
           </div>
           <Link
             to="/courses"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all group/btn"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all group/btn dark:bg-iu-blue dark:text-white"
           >
             {t.viewAllCourses}
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
           </Link>
         </div>
 
-        <div className="relative z-10 flex gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-3 sm:gap-6 sm:pb-0 scrollbar-hide">
+        <div className="relative z-10 flex gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-6 sm:pb-0 scrollbar-hide">
           {recentCourses.length === 0 ? (
             <div className="col-span-full w-full text-center py-20 bg-muted/20 rounded-[2rem] border border-dashed border-border px-8">
-              <BookOpen className="h-16 w-16 text-muted-foreground/20 mx-auto mb-6" />
+              <BookOpen className="h-16 w-16 text-muted-foreground/40 mx-auto mb-6" />
               <p className="text-lg text-muted-foreground font-bold mb-8 leading-relaxed">
                 {language === "de"
                   ? "Noch keine Kurse besucht"
@@ -106,7 +106,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
                       <BookOpen className="h-6 w-6" />
                     </div>
                     <div className="flex-1 min-w-0 space-y-1">
-                      <h3 className="text-sm font-bold text-foreground truncate group-hover/card:text-amber-500 transition-colors">
+                      <h3 className="text-sm font-bold text-foreground truncate group-hover/card:text-amber-500 dark:group-hover/card:text-white transition-colors">
                         {course.name}
                       </h3>
                       <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5 flex items-center gap-3 leading-none">
@@ -114,7 +114,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
                         <span>{timeText}</span>
                       </div>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground/20 group-hover/card:text-iu-blue group-hover/card:translate-x-1 transition-all" />
+                    <ArrowRight className="h-5 w-5 text-muted-foreground/40 group-hover/card:text-iu-blue group-hover/card:translate-x-1 transition-all dark:text-white/70 dark:group-hover/card:text-white" />
                   </div>
                 </Link>
               );

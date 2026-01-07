@@ -54,7 +54,7 @@ export function NewsSlider({
   return (
     <div className="mb-4 sm:mb-6 md:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10">
+        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <Newspaper className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground flex items-center gap-2 sm:gap-3">
@@ -71,38 +71,38 @@ export function NewsSlider({
           className={`h-1 w-full bg-gradient-to-r ${getCategoryColor(newsItems[currentNewsIndex]?.category)}`}
         />
 
-        <div className="p-3 sm:p-4 md:p-5 flex items-center gap-2 sm:gap-4 md:gap-6">
+        <div className="p-2.5 sm:p-4 md:p-4 lg:p-5 flex items-center gap-2 sm:gap-4 md:gap-4 lg:gap-6">
           {/* News Icon */}
           <div
-            className={`flex-shrink-0 p-2 sm:p-2.5 md:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${getCategoryColor(newsItems[currentNewsIndex]?.category)} shadow-xl`}
+            className={`flex-shrink-0 p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg sm:rounded-xl bg-gradient-to-br ${getCategoryColor(newsItems[currentNewsIndex]?.category)} shadow-lg`}
           >
-            <Newspaper className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6 text-white" />
+            <Newspaper className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5 lg:w-6 lg:h-6 text-white" />
           </div>
 
           {/* Content */}
           <div className="flex-1 min-w-0">
-            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-3 mb-0.5 sm:mb-1">
+            <div className="flex items-center gap-1.5 sm:gap-2 md:gap-2 lg:gap-3 mb-0.5">
               <span
-                className={`px-1.5 sm:px-2.5 md:px-3 py-0.5 sm:py-1 rounded-full text-[8px] sm:text-[9px] md:text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r ${getCategoryColor(newsItems[currentNewsIndex]?.category)} text-white shadow-sm`}
+                className={`px-1.5 sm:px-2 md:px-2.5 lg:px-3 py-0.5 rounded-full text-[7px] sm:text-[8px] md:text-[9px] lg:text-[10px] font-bold uppercase tracking-wider bg-gradient-to-r ${getCategoryColor(newsItems[currentNewsIndex]?.category)} text-white shadow-sm shrink-0`}
               >
                 {newsItems[currentNewsIndex]?.category || "News"}
               </span>
-              <span className="hidden sm:block text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">
+              <span className="hidden xs:block text-[8px] sm:text-[9px] md:text-[9px] lg:text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">
                 {new Date(
                   newsItems[currentNewsIndex]?.publishedAt
                 ).toLocaleDateString("de-DE", {
                   day: "2-digit",
-                  month: "long",
+                  month: "short",
                 })}
               </span>
             </div>
-            <h3 className="text-xs sm:text-sm font-bold text-foreground truncate group-hover:text-amber-500 transition-colors">
+            <h3 className="text-[10px] sm:text-xs md:text-sm font-bold text-foreground leading-tight truncate group-hover:text-amber-500 dark:group-hover:text-white transition-colors">
               {newsItems[currentNewsIndex]?.title}
             </h3>
           </div>
 
           {/* Navigation & Link */}
-          <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
+          <div className="flex items-center gap-2 sm:gap-3 md:gap-4 flex-shrink-0">
             {/* Dots */}
             <div className="hidden lg:flex items-center gap-1.5">
               {newsItems.slice(0, 5).map((_, idx) => (
@@ -114,32 +114,32 @@ export function NewsSlider({
                   }}
                   className={`rounded-full transition-all duration-300 ${
                     idx === currentNewsIndex
-                      ? "w-8 h-2 bg-iu-blue"
-                      : "w-2 h-2 bg-muted hover:bg-muted-foreground/50"
+                      ? "w-8 h-2 bg-iu-blue dark:bg-white"
+                      : "w-2 h-2 bg-muted hover:bg-muted-foreground/50 dark:bg-slate-700 dark:hover:bg-slate-500"
                   }`}
                 />
               ))}
             </div>
 
             {/* Arrows */}
-            <div className="flex gap-1 sm:gap-1.5">
+            <div className="flex gap-1 md:gap-1.5">
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   prevNews();
                 }}
-                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-muted border border-border hover:bg-iu-blue hover:text-white hover:border-iu-blue transition-all active:scale-95"
+                className="p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl bg-muted border border-border hover:bg-iu-blue hover:text-white hover:border-iu-blue transition-all active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700"
               >
-                <ChevronLeft className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronLeft className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5" />
               </button>
               <button
                 onClick={(e) => {
                   e.stopPropagation();
                   nextNews();
                 }}
-                className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-muted border border-border hover:bg-iu-blue hover:text-white hover:border-iu-blue transition-all active:scale-95"
+                className="p-1.5 sm:p-2 md:p-2.5 lg:p-3 rounded-lg sm:rounded-xl lg:rounded-2xl bg-muted border border-border hover:bg-iu-blue hover:text-white hover:border-iu-blue transition-all active:scale-95 dark:bg-slate-800 dark:text-white dark:border-slate-700"
               >
-                <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                <ChevronRight className="w-3.5 h-3.5 sm:w-4.5 sm:h-4.5 md:w-5 md:h-5" />
               </button>
             </div>
 
@@ -147,9 +147,9 @@ export function NewsSlider({
             <Link
               to="/news"
               onClick={(e) => e.stopPropagation()}
-              className="hidden sm:flex items-center gap-2 text-xs text-iu-blue font-black uppercase tracking-widest hover:translate-x-1 transition-transform"
+              className="hidden md:flex lg:flex items-center gap-2 text-[10px] lg:text-xs text-iu-blue font-black uppercase tracking-widest hover:translate-x-1 transition-transform dark:text-white"
             >
-              LESEN <ArrowRight className="w-4 h-4" />
+              LESEN <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </Link>
           </div>
         </div>

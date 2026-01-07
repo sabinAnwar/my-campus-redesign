@@ -13,7 +13,7 @@ export function ExamsHeader({ t }: ExamsHeaderProps) {
       title={t.title}
       subtitle={t.subtitle}
     >
-      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-[10px] font-black uppercase tracking-widest w-fit">
+      <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-[10px] font-black uppercase tracking-widest w-fit">
         <Info size={12} />
         <span>{t.examCenterBadge || "EXAM CENTER"}</span>
       </div>

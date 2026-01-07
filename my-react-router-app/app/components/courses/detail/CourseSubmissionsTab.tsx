@@ -62,7 +62,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
                   <div className="flex items-start sm:items-center gap-3 sm:gap-5 md:gap-8 flex-1 min-w-0">
                     <div
-                      className={`p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl md:rounded-[2rem] shadow-inner transition-transform duration-500 group-hover:scale-110 flex-shrink-0 ${isExam ? "bg-iu-red/10 text-iu-red" : "bg-iu-blue/10 text-iu-blue"}`}
+                      className={`p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl md:rounded-[2rem] shadow-inner transition-transform duration-500 group-hover:scale-110 flex-shrink-0 ${isExam ? "bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white" : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white"}`}
                     >
                       {isExam ? (
                         <GraduationCap className="w-5 h-5 sm:w-6 sm:h-6 md:w-10 md:h-10" />
@@ -73,11 +73,11 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
                     <div className="space-y-1 sm:space-y-2 md:space-y-3 flex-1 min-w-0">
                       <div className="flex flex-wrap items-center gap-2 sm:gap-3">
-                        <h4 className="text-base sm:text-lg md:text-2xl font-black text-foreground group-hover:text-iu-blue transition-colors tracking-tight min-w-0 break-words [hyphens:auto]">
+                        <h4 className="text-base sm:text-lg md:text-2xl font-black text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight min-w-0 break-words [hyphens:auto]">
                           {assignment.title}
                         </h4>
                         {isSubmitted && (
-                          <div className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-iu-blue/10 text-iu-blue text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest border border-iu-blue/20 flex items-center gap-1 shrink-0">
+                          <div className="px-2 sm:px-3 py-0.5 sm:py-1 rounded-full bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-[8px] sm:text-[9px] font-black uppercase tracking-wider sm:tracking-widest border border-iu-blue/20 dark:border-iu-blue flex items-center gap-1 shrink-0">
                             <CheckCircle className="w-2 h-2 sm:w-2.5 sm:h-2.5" />
                             ERFOLGREICH
                           </div>
@@ -86,18 +86,18 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
                       <div className="flex flex-wrap items-center gap-y-2 gap-x-4 sm:gap-6">
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                          <Calendar className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white/60 shrink-0" />
                           <span className="text-muted-foreground font-bold hidden sm:inline">
                             Deadline:
                           </span>
                           <span
-                            className={`font-black tracking-tight ${assignment.daysUntilDue < 7 ? "text-iu-red" : "text-foreground"}`}
+                            className={`font-black tracking-tight ${assignment.daysUntilDue < 7 ? "text-iu-red dark:text-white" : "text-foreground"}`}
                           >
                             {assignment.dueDate}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                          <Clock className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 shrink-0" />
+                          <Clock className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white/60 shrink-0" />
                           <span className="text-muted-foreground font-bold hidden sm:inline">
                             Typ:
                           </span>
@@ -106,6 +106,23 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                           </span>
                         </div>
                       </div>
+                      {isSubmitted && assignment.submittedFileName && (
+                        <div className="flex items-center gap-3 rounded-xl bg-muted/40 border border-border/50 px-3 py-2 w-fit">
+                          <div className="p-2 rounded-lg bg-iu-blue text-white">
+                            <FileText className="w-4 h-4" />
+                          </div>
+                          <div className="text-xs font-bold text-foreground">
+                            <div className="truncate max-w-[220px]">
+                              {assignment.submittedFileName}
+                            </div>
+                            {typeof assignment.submittedFileSize === "number" && (
+                              <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
+                                {(assignment.submittedFileSize / 1024 / 1024).toFixed(2)} MB
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
                     </div>
                   </div>
 
@@ -115,7 +132,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                         <span className="text-[8px] sm:text-[9px] md:text-[10px] font-black text-muted-foreground uppercase tracking-widest mb-0.5 sm:mb-1">
                           KI
                         </span>
-                        <span className="text-base sm:text-lg md:text-xl font-black text-iu-blue">
+                        <span className="text-base sm:text-lg md:text-xl font-black text-iu-blue dark:text-white">
                           {assignment.similarity}%
                         </span>
                       </div>
@@ -123,17 +140,20 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
                     {!assignment.title.toLowerCase().includes("klausur") && (
                       <button
-                        onClick={() => openModal(assignment)}
+                        onClick={
+                          isSubmitted ? undefined : () => openModal(assignment)
+                        }
+                        disabled={isSubmitted}
                         className={`flex-1 sm:flex-initial px-4 sm:px-6 md:px-10 py-3 sm:py-4 md:py-5 rounded-xl md:rounded-2xl font-bold sm:font-black transition-all active:scale-95 text-xs sm:text-sm sm:min-w-[160px] md:min-w-[200px] ${
                           isSubmitted
-                            ? "bg-muted/50 text-foreground hover:bg-muted border border-border/50"
+                            ? "bg-muted/50 text-muted-foreground border border-border/50 cursor-not-allowed"
                             : "bg-iu-blue text-white hover:bg-iu-blue shadow-xl shadow-iu-blue/30"
                         }`}
                       >
                         {isSubmitted
                           ? language === "de"
-                            ? "Abgabe ansehen"
-                            : "View Submission"
+                            ? "Abgegeben"
+                            : "Submitted"
                           : language === "de"
                             ? "Jetzt abgeben"
                             : "Submit Now"}
@@ -141,7 +161,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                     )}
 
                     {isExam && (
-                      <div className="px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-iu-red/5 border border-iu-red/10 text-iu-red font-black text-[10px] sm:text-sm uppercase tracking-widest text-center">
+                      <div className="px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-iu-red/5 dark:bg-iu-red border border-iu-red/10 dark:border-iu-red text-iu-red dark:text-white font-black text-[10px] sm:text-sm uppercase tracking-widest text-center">
                         Externes Portal
                       </div>
                     )}

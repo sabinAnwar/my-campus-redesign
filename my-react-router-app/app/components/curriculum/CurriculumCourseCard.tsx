@@ -35,19 +35,19 @@ export function CurriculumCourseCard({
           <div
             className={`p-3 rounded-xl ${
               isCompleted
-                ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue"
-                : "bg-iu-blue/10 text-iu-blue"
+                ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white"
+                : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white"
             }`}
           >
             <BookOpen size={24} />
           </div>
           {isCompleted ? (
-            <div className="flex items-center gap-2 bg-iu-blue/10 text-iu-blue dark:text-iu-blue px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+            <div className="flex items-center gap-2 bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
               <CheckCircle2 size={12} />
               {t.completed}
             </div>
           ) : isCurrent ? (
-            <div className="flex items-center gap-2 bg-iu-blue/10 text-iu-blue px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
+            <div className="flex items-center gap-2 bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest">
               <Clock size={12} />
               {t.inProgress}
             </div>
@@ -59,7 +59,7 @@ export function CurriculumCourseCard({
           )}
         </div>
 
-        <h3 className="text-xl font-black text-foreground mb-2 leading-tight group-hover:text-iu-blue transition-colors">
+        <h3 className="text-xl font-black text-foreground mb-2 leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
           {course.title}
         </h3>
         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest mb-6">
@@ -68,12 +68,12 @@ export function CurriculumCourseCard({
 
         <div className="flex items-center justify-between pt-6 border-t border-border/50">
           <div className="flex items-center gap-2">
-            <Award size={14} className="text-iu-blue" />
+            <Award size={14} className="text-iu-blue dark:text-white" />
             <span className="text-sm font-black text-foreground">
               {course.credits} ECTS
             </span>
           </div>
-          <button className="p-2 hover:bg-iu-blue/10 rounded-lg transition-colors text-iu-blue">
+          <button className="p-2 hover:bg-iu-blue/10 dark:hover:bg-iu-blue rounded-lg transition-colors text-iu-blue dark:text-white">
             <ChevronRight size={20} />
           </button>
         </div>

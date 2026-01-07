@@ -87,7 +87,7 @@ export function UploadModal({
             <>
               <div className="flex flex-col items-center justify-center space-y-4">
                 <div className="p-5 rounded-[1.5rem] bg-muted group-hover/drop:bg-iu-blue/10 transition-colors">
-                  <Upload className="h-10 w-10 text-muted-foreground group-hover/drop:text-iu-blue transition-colors" />
+                  <Upload className="h-10 w-10 text-muted-foreground group-hover/drop:text-iu-blue dark:group-hover/drop:text-white transition-colors" />
                 </div>
                 <p className="text-lg font-black text-muted-foreground group-hover/drop:text-foreground transition-all">
                   {language === "de"
@@ -115,7 +115,7 @@ export function UploadModal({
             <div className="space-y-6 animate-in fade-in zoom-in-95 duration-300">
               <div className="flex items-center justify-center gap-4">
                 <div className="flex items-center gap-5 bg-card border border-iu-blue/30 p-5 rounded-[2rem] shadow-2xl">
-                  <div className="p-3 bg-iu-blue/10 text-iu-blue rounded-xl">
+                  <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white rounded-xl">
                     <FileText size={24} />
                   </div>
                   <div className="text-left">
@@ -132,7 +132,7 @@ export function UploadModal({
               <div className="w-full bg-muted rounded-full h-2.5 max-w-sm mx-auto overflow-hidden border border-border/30">
                 <div className="h-full bg-iu-blue shadow-[0_0_15px_rgba(36,94,235,0.5)] progress-bar w-full"></div>
               </div>
-              <p className="text-xs font-black text-iu-blue uppercase tracking-[0.2em] flex items-center justify-center gap-2">
+              <p className="text-xs font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] flex items-center justify-center gap-2">
                 <CheckCircle size={14} />
                 {language === "de"
                   ? "Scannt auf Plagiate..."

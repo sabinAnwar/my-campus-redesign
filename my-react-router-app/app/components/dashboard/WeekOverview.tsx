@@ -19,7 +19,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
   return (
     <div className="mb-4 sm:mb-6 md:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue dark:text-iu-blue shadow-sm border border-iu-blue/10">
+        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <Calendar className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground flex items-center gap-2 sm:gap-3">
@@ -30,7 +30,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
         <div className="flex items-center justify-end mb-6">
           <Link
             to="/courses/schedule"
-            className="px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all flex items-center gap-2 group/btn"
+            className="px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all flex items-center gap-2 group/btn dark:bg-iu-blue dark:text-white"
           >
             {t.showFullSchedule}
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -49,12 +49,12 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
             >
               <div className="text-center mb-2 sm:mb-4 space-y-0.5 sm:space-y-1">
                 <p
-                  className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${day.isToday ? "text-iu-blue" : "text-muted-foreground"}`}
+                  className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${day.isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
                 >
                   {day.dayName}
                 </p>
                 <p
-                  className={`text-xl sm:text-2xl md:text-3xl font-black ${day.isToday ? "text-iu-blue" : "text-foreground"}`}
+                  className={`text-xl sm:text-2xl md:text-3xl font-black ${day.isToday ? "text-iu-blue dark:text-white" : "text-foreground"}`}
                 >
                   {day.dayNum}
                 </p>
@@ -66,7 +66,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
               </div>
               <div className="space-y-1 sm:space-y-1.5 min-h-[50px] sm:min-h-[60px]">
                 {day.events.length === 0 ? (
-                  <p className="text-[10px] text-muted-foreground/60 text-center italic">
+                  <p className="text-[10px] text-muted-foreground text-center italic">
                     Keine Termine
                   </p>
                 ) : (
@@ -75,14 +75,14 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
                       key={eIdx}
                       className={`p-1.5 rounded-lg text-[10px] ${
                         event.type === "Vorlesung"
-                          ? "bg-iu-blue/10 text-iu-blue"
+                          ? "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white"
                           : event.type === "Workshop"
-                            ? "bg-iu-blue/10 text-iu-blue dark:text-iu-blue"
-                            : "bg-iu-orange/10 text-iu-orange"
+                            ? "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white"
+                            : "bg-iu-orange/10 text-iu-orange dark:bg-iu-orange dark:text-white"
                       }`}
                     >
                       <p className="font-medium truncate">{event.time}</p>
-                      <p className="truncate opacity-80">
+                      <p className="truncate">
                         {event.title.split(" - ")[0]}
                       </p>
                     </div>

@@ -24,7 +24,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
   return (
     <div className="space-y-3 sm:space-y-4">
       <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-4">
-        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-orange/10 text-iu-orange shadow-sm border border-iu-orange/10">
+        <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-orange/10 text-iu-orange shadow-sm border border-iu-orange/10 dark:bg-iu-orange dark:text-white dark:border-iu-orange/40">
           <CheckSquare className="h-5 w-5 sm:h-6 sm:w-6" />
         </div>
         <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground flex items-center gap-2 sm:gap-3">
@@ -41,7 +41,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
           </div>
           <Link
             to="/tasks"
-            className="p-2.5 rounded-full bg-muted/50 text-iu-orange hover:bg-iu-orange hover:text-white transition-all shadow-sm border border-border"
+            className="p-2.5 rounded-full bg-muted/50 text-iu-orange hover:bg-iu-orange hover:text-white transition-all shadow-sm border border-border dark:bg-iu-orange dark:text-white dark:border-iu-orange/40"
           >
             <ArrowRight className="h-5 w-5" />
           </Link>
@@ -51,49 +51,53 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
             upcomingAssignments.slice(0, 3).map((assignment) => (
               <div
                 key={assignment.id}
-                className={`flex items-start gap-3 sm:gap-4 p-3 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border transition-all duration-500 group/item ${
+                className={`flex items-start gap-3 sm:gap-4 p-3.5 sm:p-4 md:p-5 rounded-xl sm:rounded-2xl border transition-all duration-500 group/item ${
                   assignment.color === "blue"
-                    ? "bg-iu-blue/5 border-iu-blue/20 hover:border-iu-blue/40 shadow-md"
-                    : "bg-iu-orange/5 border-iu-orange/20 hover:border-iu-orange/40 shadow-md"
+                    ? "bg-iu-blue/5 border-iu-blue/20 hover:border-iu-blue/40 shadow-md dark:bg-iu-blue/20"
+                    : "bg-iu-orange/5 border-iu-orange/20 hover:border-iu-orange/40 shadow-md dark:bg-iu-orange/20"
                 }`}
               >
                 <button className="mt-1 flex-shrink-0 group-hover/item:scale-110 transition-transform">
                   {assignment.completed ? (
-                    <CheckCircle2 className="h-6 w-6 text-iu-green" />
+                    <CheckCircle2 className="h-5 w-5 sm:h-6 sm:w-6 text-iu-green dark:text-white" />
                   ) : (
                     <Circle
-                      className={`h-6 w-6 transition-colors ${
+                      className={`h-5 w-5 sm:h-6 sm:w-6 transition-colors ${
                         assignment.color === "blue"
-                          ? "text-iu-blue/30 hover:text-iu-blue"
-                          : "text-iu-orange/30 hover:text-iu-orange"
+                          ? "text-iu-blue/30 hover:text-iu-blue dark:text-white"
+                          : "text-iu-orange/30 hover:text-iu-orange dark:text-white"
                       }`}
                     />
                   )}
                 </button>
-                <div className="flex-1 min-w-0 space-y-1 sm:space-y-2">
-                  <div className="flex items-center justify-between gap-2">
-                    <h3 className="text-sm font-bold text-foreground truncate group-hover/item:text-amber-500 transition-colors">
+                <div className="flex-1 min-w-0 space-y-1.5 sm:space-y-2">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-1.5 sm:gap-2">
+                    <h3 className={`text-xs sm:text-sm font-bold transition-colors leading-tight break-words [hyphens:auto] ${
+                      assignment.color === "blue"
+                        ? "text-foreground group-hover/item:text-iu-blue"
+                        : "text-foreground group-hover/item:text-iu-orange"
+                    }`}>
                       {assignment.title}
                     </h3>
                     <span
-                      className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest border ${
+                      className={`w-fit px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-widest border leading-none ${
                         assignment.color === "blue"
-                          ? "bg-iu-blue/10 border-iu-blue/20 text-iu-blue"
-                          : "bg-iu-orange/10 border-iu-orange/20 text-iu-orange"
+                          ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20 dark:bg-iu-blue dark:text-white"
+                          : "bg-iu-orange/10 text-iu-orange border-iu-orange/20 dark:bg-iu-orange dark:text-white"
                       }`}
                     >
                       {assignment.kind}
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5 truncate">
+                    <p className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1.5 truncate">
                       {assignment.course}
-                    </span>
+                    </p>
                     <span
-                      className={`text-[10px] font-black uppercase tracking-widest mt-0.5 ${
+                      className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 shrink-0 ${
                         assignment.daysLeft <= 3
                           ? "text-iu-red"
-                          : "text-muted-foreground/30"
+                          : "text-muted-foreground"
                       }`}
                     >
                       {assignment.dueDate}
