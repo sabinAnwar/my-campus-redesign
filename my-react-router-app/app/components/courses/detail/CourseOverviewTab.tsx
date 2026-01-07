@@ -52,12 +52,12 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-4 sm:gap-6 md:gap-8 lg:items-start">
         {/* Left Column (Description & Stats) */}
-        <div className="lg:col-span-8 space-y-8">
+        <div className="lg:col-span-8 space-y-6 sm:space-y-8">
           {/* Course Description Card */}
           <div className="group relative rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-4 sm:p-6 md:p-10 lg:p-12 shadow-sm transition-all hover:shadow-2xl hover:shadow-iu-blue/5 hover:border-iu-blue/20 overflow-hidden">
             <div className="absolute -top-10 -right-10 w-40 h-40 bg-iu-blue/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
 
-            <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-4 sm:mb-6 md:mb-8 flex items-center gap-3 sm:gap-4">
+            <h3 className="text-lg sm:text-xl md:text-2xl font-black text-foreground mb-3 sm:mb-6 md:mb-8 flex items-center gap-3 sm:gap-4">
               <div className="p-2.5 sm:p-3 md:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue group-hover:rotate-3 transition-transform">
                 <BookOpen className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
@@ -65,19 +65,19 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
             </h3>
 
             <div className="prose prose-neutral dark:prose-invert max-w-none">
-              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed font-medium mb-6 sm:mb-8 md:mb-10">
+              <p className="text-sm sm:text-base md:text-lg lg:text-xl text-muted-foreground leading-relaxed font-medium mb-5 sm:mb-8 md:mb-10">
                 {getTranslatedDescription(course.description || "", language as "de" | "en")}
               </p>
             </div>
 
-            <div className="grid grid-cols-2 gap-2 sm:gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
               <DateCard icon={Calendar} label={t.startDate} value={course.startDate} />
               <DateCard icon={CalendarCheck} label={t.endDate} value={course.endDate} />
             </div>
           </div>
 
           {/* Advanced Stats Grid */}
-          <div className="grid grid-cols-3 gap-2 sm:gap-4 md:gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 sm:gap-4 md:gap-6">
             <AdvancedStatCard icon={GraduationCap} label="ECTS" value={`${course.credits} CP`} subLabel="Studienaufwand" />
             <ProgressStatCard icon={BarChart3} label="Stats" value={`${course.progress}%`} progress={course.progress} subLabel="Fortschritt" />
             <AdvancedStatCard icon={Clock} label="Time" value="Winter 24" subLabel="Aktuelles Semester" />

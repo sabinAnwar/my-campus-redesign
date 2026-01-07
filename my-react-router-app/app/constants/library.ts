@@ -154,4 +154,4 @@ export const TUTORIALS = [
     duration: "5 min",
     type: "guide",
   },
-];
+] as const;

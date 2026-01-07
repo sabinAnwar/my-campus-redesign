@@ -63,8 +63,8 @@ export default function StudentIdPage() {
   if (!user) {
     return (
       <div className="min-h-screen bg-transparent flex items-center justify-center p-6">
-        <div className="bg-iu-red/10 dark:bg-iu-red backdrop-blur-xl border border-iu-red/30 dark:border-iu-red text-iu-red dark:text-white p-10 rounded-[2.5rem] max-w-md shadow-2xl text-center">
-          <AlertCircle className="w-16 h-16 mx-auto mb-6" />
+        <div className="bg-iu-red/10 dark:bg-iu-red backdrop-blur-xl border border-iu-red/30 dark:border-iu-red text-iu-red dark:text-white p-6 sm:p-10 rounded-[2.5rem] max-w-md shadow-2xl text-center">
+          <AlertCircle className="w-12 h-12 sm:w-16 sm:h-16 mx-auto mb-4 sm:mb-6" />
           <p className="font-black uppercase tracking-widest">
             {t.errorLoading}
           </p>
@@ -227,7 +227,7 @@ export default function StudentIdPage() {
 
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12">
+    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10">
       <PageHeader
         icon={IdCard}
         title={t.title}
@@ -243,7 +243,7 @@ export default function StudentIdPage() {
       </PageHeader>
 
       {/* Card Display Section */}
-      <div className="grid lg:grid-cols-2 gap-12">
+      <div className="grid lg:grid-cols-2 gap-8 sm:gap-12">
         {/* FRONT SIDE */}
         <div className="space-y-6">
           <div className="flex items-center justify-between px-4">

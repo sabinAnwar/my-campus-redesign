@@ -5,6 +5,8 @@ import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 import { getCourseConfig } from "../data/coursesConfig";
 import { TRANSLATIONS } from "~/services/translations/transcript";
+import { showSuccessToast, showErrorToast, showInfoToast } from "~/lib/toast";
+import { FEEDBACK_TRANSLATIONS } from "~/services/translations/feedback";
 
 // Components
 import { TranscriptHeader } from "~/components/certificates/transcript/TranscriptHeader";
@@ -108,12 +110,25 @@ export default function TranscriptPage() {
   });
 
   const handleDownload = (passedOnly: boolean) => {
-    const marksToExport = passedOnly ? passedMarks : marks;
-    generateTranscriptPDF(t, studentData, marksToExport, stats, today, language, passedOnly, courseConfigData);
+    const f = FEEDBACK_TRANSLATIONS[language as keyof typeof FEEDBACK_TRANSLATIONS];
+    
+    try {
+      showInfoToast(f.transcriptDownloading);
+      const marksToExport = passedOnly ? passedMarks : marks;
+      generateTranscriptPDF(t, studentData, marksToExport, stats, today, language, passedOnly, courseConfigData);
+      
+      // Show success after a short delay to let the PDF generate
+      setTimeout(() => {
+        showSuccessToast(f.transcriptDownloadSuccess);
+      }, 500);
+    } catch (error) {
+      console.error("PDF generation error:", error);
+      showErrorToast(f.transcriptDownloadError);
+    }
   };
 
   return (
-    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-8">
+    <div className="max-w-7xl mx-auto space-y-4 sm:space-y-6">
       <TranscriptHeader t={t} />
 
 

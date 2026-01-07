@@ -31,6 +31,7 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
         <PageHeader
           icon={BookOpen}
+          aria-hidden="true"
           title={course?.title || course?.name || "Course"}
           subtitle=""
           onBack={onBack}
@@ -48,7 +49,14 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
                 {language === "de" ? "Abgeschlossen" : "Completed"}
               </span>
             </div>
-            <div className="flex-1 w-24 sm:w-32 h-1.5 bg-muted/30 rounded-full overflow-hidden">
+            <div 
+              className="flex-1 w-24 sm:w-32 h-1.5 bg-muted/30 rounded-full overflow-hidden"
+              role="progressbar"
+              aria-valuenow={course.progress || 0}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={language === "de" ? "Kursfortschritt" : "Course progress"}
+            >
               <div
                 className="h-full bg-iu-blue progress-bar transition-all duration-1000 ease-out"
                 style={{ width: `${course.progress || 0}%` }}

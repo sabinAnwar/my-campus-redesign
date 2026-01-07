@@ -1,4 +1,4 @@
-import { ArrowLeft, Clock, Flag, MessageCircle, MessageSquare, Plus, Send, Share2, ThumbsUp, User } from "lucide-react";
+import { ArrowLeft, Clock, Copy, Flag, MessageCircle, MessageSquare, Plus, Send, ThumbsUp, User } from "lucide-react";
 import React, { useRef, useEffect } from "react";
 import type { ForumTopic, ForumPost, TranslationType } from "~/types/courseDetail";
 
@@ -15,6 +15,7 @@ interface CourseForumTabProps {
   onTopicClick: (topic: ForumTopic) => void;
   onBackToTopics: () => void;
   onPostReply: (e: React.FormEvent) => void;
+  onCopyMessage: (content: string) => void;
 }
 
 export function CourseForumTab({
@@ -30,25 +31,29 @@ export function CourseForumTab({
   onTopicClick,
   onBackToTopics,
   onPostReply,
+  onCopyMessage,
 }: CourseForumTabProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
+  // Auto-scroll removed as requested
+  /*
   useEffect(() => {
     if (forumView === "thread" && messagesEndRef.current) {
       messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
   }, [forumView, selectedTopic?.posts]);
+  */
 
   return (
-    <div className="space-y-10 animate-in fade-in duration-600">
+    <div className="space-y-6 sm:space-y-10 animate-in fade-in duration-600">
       {forumView === "list" && (
         <>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-8 mb-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-4">
             <div>
-              <h3 className="text-3xl lg:text-4xl font-black text-foreground tracking-tighter mb-3">
+              <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tighter mb-2 sm:mb-3">
                 {t.forum}
               </h3>
-              <p className="text-lg text-muted-foreground font-medium max-w-2xl">
+              <p className="text-sm sm:text-lg text-muted-foreground font-medium max-w-2xl">
                 {language === "de"
                   ? "Vernetze dich mit deinen Kommilitonen, diskutiere Kursinhalte und teile dein Wissen."
                   : "Connect with your fellow students, discuss course content and share your knowledge."}
@@ -56,11 +61,13 @@ export function CourseForumTab({
             </div>
             <button
               onClick={onCreateTopicClick}
-              className="px-8 py-5 bg-iu-blue text-white font-black rounded-2xl hover:bg-iu-blue transition-all shadow-xl shadow-iu-blue/25 active:scale-95 flex items-center gap-3 group"
+              className="px-6 sm:px-8 py-4 sm:py-5 bg-iu-blue text-white font-black rounded-2xl hover:bg-iu-blue transition-all shadow-xl shadow-iu-blue/25 active:scale-95 flex items-center gap-3 group focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
+              aria-label={t.createTopic}
             >
               <Plus
                 size={20}
                 className="group-hover:rotate-90 transition-transform duration-300"
+                aria-hidden="true"
               />
               {t.createTopic}
             </button>
@@ -68,10 +75,14 @@ export function CourseForumTab({
 
           <div className="grid gap-5">
             {forumTopics.length === 0 ? (
-              <div className="rounded-[3rem] border-2 border-dashed border-border/40 p-20 text-center bg-muted/5">
+              <div className="rounded-[2rem] sm:rounded-[3rem] border-2 border-dashed border-border/40 p-6 sm:p-10 text-center bg-muted/5">
                 <MessageSquare
-                  size={48}
-                  className="mx-auto text-muted-foreground opacity-20 mb-6"
+                  size={32}
+                  className="mx-auto text-muted-foreground opacity-20 mb-4 sm:mb-6 sm:hidden"
+                />
+                <MessageSquare
+                  size={40}
+                  className="mx-auto text-muted-foreground opacity-20 mb-4 sm:mb-6 hidden sm:block"
                 />
                 <p className="text-muted-foreground font-bold">
                   Noch keine Diskussionen gestartet. Sei der Erste!
@@ -79,28 +90,34 @@ export function CourseForumTab({
               </div>
             ) : (
               forumTopics.map((topic) => (
-                <div
+                <button
                   key={topic.id}
                   onClick={() => onTopicClick(topic)}
-                  className={`group relative rounded-[2.5rem] p-10 border transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl ${
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter" || e.key === " ") {
+                      onTopicClick(topic);
+                    }
+                  }}
+                  className={`group relative text-left w-full rounded-[2.5rem] p-6 sm:p-10 border transition-all duration-500 cursor-pointer shadow-sm hover:shadow-2xl focus:outline-none focus:ring-4 focus:ring-iu-blue/20 focus:z-10 ${
                     topic.status === "pinned"
                       ? "bg-iu-orange/5 border-iu-orange/20 hover:border-iu-orange/40"
                       : "bg-card/40 backdrop-blur-xl border-border/40 hover:border-iu-blue/30"
                   }`}
+                  aria-label={`${topic.status === "pinned" ? "Pinned topic: " : ""} ${topic.title} by ${topic.author}`}
                 >
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-10">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-4 mb-5">
+                      <div className="flex items-center gap-3 sm:gap-4 mb-4 sm:mb-5">
                         {topic.status === "pinned" && (
                           <div className="p-2 rounded-xl bg-iu-orange text-white shadow-lg animate-bounce duration-1000">
                             <Flag size={14} className="fill-current" />
                           </div>
                         )}
-                        <h4 className="text-2xl font-black text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight">
+                        <h4 className="text-lg sm:text-2xl font-black text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight">
                           {topic.title}
                         </h4>
                       </div>
-                      <div className="flex flex-wrap items-center gap-6 text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">
+                      <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">
                         <div className="flex items-center gap-3 py-1.5 px-3 rounded-xl bg-muted/40 border border-border/30">
                           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-iu-blue to-iu-blue text-white flex items-center justify-center font-black">
                             {topic.author.charAt(0)}
@@ -110,23 +127,24 @@ export function CourseForumTab({
                           </span>
                         </div>
                         <span className="flex items-center gap-2">
-                          <Clock size={12} className="text-iu-blue/40 dark:text-white/40" />
+                          <Clock size={12} className="text-iu-blue/40 dark:text-white/40" aria-hidden="true" />
                           {topic.lastPost}
                         </span>
                         <span className="flex items-center gap-2 px-3 py-1 bg-iu-blue/5 dark:bg-iu-blue rounded-lg text-iu-blue dark:text-white">
-                          <MessageCircle size={12} />
+                          <MessageCircle size={12} aria-hidden="true" />
                           {topic.replies} Replies
                         </span>
                       </div>
                     </div>
-                    <div className="p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow-inner">
+                    <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow-inner">
                       <ArrowLeft
-                        size={24}
+                        size={22}
                         className="rotate-180 group-hover:translate-x-1 transition-transform"
+                        aria-hidden="true"
                       />
                     </div>
                   </div>
-                </div>
+                </button>
               ))
             )}
           </div>
@@ -136,13 +154,13 @@ export function CourseForumTab({
       {forumView === "thread" && selectedTopic && (
         <div className="animate-in slide-in-from-right-8 duration-500 flex flex-col h-[calc(100vh-12rem)]">
           {/* Thread Header */}
-          <div className="flex items-center gap-6 mb-8 pb-8 border-b border-border/40 flex-shrink-0">
+          <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border/40 flex-shrink-0">
             <button
                onClick={onBackToTopics}
-               className="p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-white dark:hover:text-white transition-all group shadow-sm active:scale-95"
+               className="p-3 sm:p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-white dark:hover:text-white transition-all group shadow-sm active:scale-95"
              >
                <ArrowLeft
-                 size={20}
+                 size={18}
                  className="group-hover:-translate-x-1 transition-transform"
                />
              </button>
@@ -157,29 +175,27 @@ export function CourseForumTab({
                   Discussion
                 </span>
               </div>
-              <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight truncate">
+              <h3 className="text-xl sm:text-3xl font-black text-foreground tracking-tight truncate">
                 {selectedTopic.title}
               </h3>
             </div>
-            <button className="p-4 rounded-2xl bg-muted/30 hover:bg-card border border-transparent hover:border-border/50 text-muted-foreground hover:text-foreground transition-all">
-              <Share2 size={20} />
-            </button>
+            <div className="w-10 h-10" />
           </div>
 
           {/* Messages Area - Scrollable */}
-          <div className="flex-1 overflow-y-auto pr-4 space-y-8 -mr-4 pb-4 scroll-smooth">
+          <div className="flex-1 overflow-y-auto pr-4 space-y-6 sm:space-y-8 -mr-4 pb-4 scroll-smooth">
             {/* Original Post */}
-            <div className="bg-card/40 backdrop-blur-md rounded-[2.5rem] border border-border/40 p-8 sm:p-10 shadow-sm">
-              <div className="flex items-center justify-between mb-8 pb-8 border-b border-border/30">
+            <div className="bg-card/40 backdrop-blur-md rounded-[2.5rem] border border-border/40 p-6 sm:p-10 shadow-sm">
+              <div className="flex items-center justify-between mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border/30">
                 <div className="flex items-center gap-5">
-                  <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-iu-blue to-iu-blue text-white flex items-center justify-center text-xl font-black shadow-lg shadow-iu-blue/20">
+                  <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-br from-iu-blue to-iu-blue text-white flex items-center justify-center text-lg sm:text-xl font-black shadow-lg shadow-iu-blue/20">
                     {selectedTopic.author.charAt(0)}
                   </div>
                   <div>
-                    <div className="text-lg font-black text-foreground">
+                    <div className="text-base sm:text-lg font-black text-foreground">
                       {selectedTopic.author}
                     </div>
-                    <div className="text-xs font-bold text-muted-foreground flex items-center gap-2">
+                    <div className="text-[10px] sm:text-xs font-bold text-muted-foreground flex items-center gap-2">
                       <span>Student</span>
                       <span className="w-1 h-1 rounded-full bg-border" />
                       <span>{selectedTopic.lastPost}</span>
@@ -187,14 +203,18 @@ export function CourseForumTab({
                   </div>
                 </div>
               </div>
-              <div className="prose prose-lg dark:prose-invert max-w-none mb-8">
+              <div className="prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-6 sm:mb-8">
                 <p className="text-foreground/90 leading-relaxed font-medium">
                   {selectedTopic.content}
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors text-xs font-black uppercase tracking-wider text-muted-foreground dark:text-white/60">
-                  <ThumbsUp size={14} /> Like
+                <button 
+                  onClick={() => onCopyMessage(selectedTopic.content)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-wider text-muted-foreground dark:text-white/60 active:scale-95 cursor-pointer"
+                >
+                  <Copy size={12} />
+                  {language === "de" ? "Kopieren" : "Copy"}
                 </button>
               </div>
             </div>
@@ -203,11 +223,11 @@ export function CourseForumTab({
             {selectedTopic.posts.map((post: ForumPost) => (
               <div
                 key={post.id}
-                className={`flex gap-6 ${post.author === currentUser ? "flex-row-reverse" : ""}`}
+                className={`flex gap-4 sm:gap-6 ${post.author === currentUser ? "flex-row-reverse" : ""}`}
               >
                 <div className="flex-shrink-0">
                   <div
-                    className={`w-12 h-12 rounded-2xl flex items-center justify-center text-lg font-black shadow-lg ${
+                    className={`w-10 h-10 sm:w-12 sm:h-12 rounded-2xl flex items-center justify-center text-base sm:text-lg font-black shadow-lg ${
                       post.author === currentUser
                         ? "bg-iu-blue text-white shadow-iu-blue/20"
                         : "bg-card border border-border text-foreground"
@@ -217,23 +237,32 @@ export function CourseForumTab({
                   </div>
                 </div>
                 <div
-                  className={`max-w-[80%] rounded-3xl p-8 border shadow-sm ${
+                  className={`max-w-[85%] sm:max-w-[80%] rounded-3xl p-4 sm:p-8 border shadow-sm ${
                     post.author === currentUser
                       ? "bg-iu-blue/5 border-iu-blue/10 rounded-tr-none"
                       : "bg-card border-border/40 rounded-tl-none"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-8 mb-4">
-                    <span className="font-black text-foreground text-sm">
+                    <span className="font-black text-foreground text-xs sm:text-sm">
                       {post.author}
                     </span>
-                    <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-60">
+                    <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider opacity-60">
                       {post.date}
                     </span>
                   </div>
-                  <p className="text-foreground/90 font-medium leading-relaxed">
-                    {post.content}
-                  </p>
+                  <div className="flex items-center justify-between">
+                    <p className="text-foreground/90 font-medium leading-relaxed text-sm sm:text-base">
+                      {post.content}
+                    </p>
+                    <button 
+                      onClick={() => onCopyMessage(post.content)}
+                      className="ml-4 p-2 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white/60 active:scale-95 cursor-pointer shrink-0"
+                      title={language === "de" ? "Kopieren" : "Copy"}
+                    >
+                      <Copy size={12} />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))}
@@ -241,10 +270,10 @@ export function CourseForumTab({
           </div>
 
           {/* Reply Input - Fixed at bottom of container */}
-          <div className="mt-8 pt-6 border-t border-border/40 flex-shrink-0">
+          <div className="mt-6 sm:mt-8 pt-6 border-t border-border/40 flex-shrink-0">
             <form onSubmit={onPostReply} className="relative">
-              <div className="absolute left-6 top-6 p-2 rounded-xl bg-muted/50 text-muted-foreground">
-                <User size={20} />
+              <div className="absolute left-4 sm:left-6 top-4 sm:top-6 p-2 rounded-xl bg-muted/50 text-muted-foreground">
+                <User size={18} />
               </div>
               <textarea
                 value={replyContent}
@@ -254,14 +283,14 @@ export function CourseForumTab({
                     ? "Schreibe eine Antwort..."
                     : "Write a reply..."
                 }
-                className="w-full bg-card/60 backdrop-blur-xl border border-border/50 rounded-[2rem] pl-20 pr-20 py-6 min-h-[100px] focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all resize-none shadow-lg text-lg font-medium placeholder:text-muted-foreground/40"
+                className="w-full bg-card/60 backdrop-blur-xl border border-border/50 rounded-[2rem] pl-14 sm:pl-20 pr-16 sm:pr-20 py-4 sm:py-6 min-h-[90px] sm:min-h-[100px] focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all resize-none shadow-lg text-sm sm:text-lg font-medium placeholder:text-muted-foreground/40"
               />
               <button
                 type="submit"
                 disabled={!replyContent.trim()}
-                className="absolute right-4 top-4 p-4 rounded-2xl bg-iu-blue text-white shadow-xl shadow-iu-blue/20 hover:bg-iu-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
+                className="absolute right-3 sm:right-4 top-3 sm:top-4 p-3 sm:p-4 rounded-2xl bg-iu-blue text-white shadow-xl shadow-iu-blue/20 hover:bg-iu-blue-dark disabled:opacity-50 disabled:cursor-not-allowed transition-all hover:scale-105 active:scale-95"
               >
-                <Send size={20} className="fill-current" />
+                <Send size={18} className="fill-current" />
               </button>
             </form>
           </div>

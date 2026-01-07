@@ -152,7 +152,15 @@ export default function AppShell() {
   // ─── Render ──────────────────────────────────────────────────────────────────
   return (
     <ScreenReaderProvider>
-      <div className="min-h-screen w-full flex relative bg-background text-foreground">
+      <div className="min-h-screen w-full flex flex-col relative bg-background text-foreground transition-colors duration-300">
+        {/* Accessibility Skip Link */}
+        <a 
+          href="#main-content" 
+          className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-6 focus:py-3 focus:bg-iu-blue focus:text-white focus:rounded-xl focus:font-bold focus:shadow-2xl transition-all"
+        >
+          {language === "de" ? "Zum Inhalt springen" : "Skip to content"}
+        </a>
+
         <div className="relative z-10 flex flex-1 w-full">
           {/* Mobile Overlay - darkens background when sidebar is open */}
           {sidebarOpen && (
@@ -214,7 +222,7 @@ export default function AppShell() {
                 {/* Support Link */}
                 <Link
                   to="/contact"
-                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold"
+                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold cursor-pointer"
                   aria-label="Contact support"
                 >
                   <Headphones className="h-5 w-5" />
@@ -232,12 +240,14 @@ export default function AppShell() {
               </div>
             </header>
 
-            
-            <div className="sm:px-6 lg:px-8 py-4 sm:py-6 md:py-8">
-              <Outlet />
-            </div>
+            <main id="main-content" className="flex-1 overflow-y-auto" tabIndex={-1}>
+              <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
+                <Outlet />
+              </div>
+            </main>
           </section>
-        </div>
+        </div>      
+      
       </div>
     </ScreenReaderProvider>
   );

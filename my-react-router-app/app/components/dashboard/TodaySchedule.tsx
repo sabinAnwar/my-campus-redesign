@@ -30,7 +30,7 @@ export function TodaySchedule({ todayClasses, t }: TodayScheduleProps) {
           </div>
           <Link
             to="/courses/schedule"
-            className="p-2.5 rounded-full bg-muted/50 text-iu-blue hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border dark:bg-iu-blue dark:text-white dark:border-iu-blue/40"
+            className="p-2.5 rounded-full bg-muted/50 text-iu-blue hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border dark:bg-iu-blue dark:text-white dark:border-iu-blue/40 cursor-pointer"
           >
             <ArrowRight className="h-5 w-5" />
           </Link>

@@ -48,23 +48,22 @@ export interface VideoResource extends CourseResource {
 }
 
 export interface ForumPost {
-  id: string;
+  id: number;
   author: string;
   date: string;
   content: string;
   timestamp?: string;
-  likes?: number;
 }
 
 export interface ForumTopic {
-  id: string;
+  id: number;
   title: string;
   author: string;
   lastPost: string;
   replies: number;
   views: number;
-  status: "active" | "pinned" | "closed";
-  content?: string;
+  status: "active" | "pinned" | "closed" | "normal";
+  content: string;
   posts: ForumPost[];
 }
 

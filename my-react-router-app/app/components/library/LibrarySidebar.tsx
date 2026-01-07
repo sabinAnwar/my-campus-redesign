@@ -24,19 +24,19 @@ interface LibrarySidebarProps {
 
 export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Opening Hours */}
-      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 shadow-2xl">
-        <div className="flex items-center gap-4 mb-8">
+      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center gap-4 mb-6 sm:mb-8">
           <div className="p-3 rounded-2xl bg-iu-blue/10">
-            <Clock className="h-6 w-6 text-iu-blue" />
+            <Clock className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue" />
           </div>
-          <h3 className="text-2xl font-black text-foreground tracking-tight">
+          <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
             {t.openingHours}
           </h3>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3 sm:space-y-4">
           {openingHours.map((item, idx) => (
             <div
               key={idx}
@@ -56,12 +56,12 @@ export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProp
       </div>
 
       {/* Contact */}
-      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 shadow-2xl">
-        <div className="flex items-center gap-4 mb-8">
+      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center gap-4 mb-6 sm:mb-8">
           <div className="p-3 rounded-2xl bg-iu-green/10">
-            <HelpCircle className="h-6 w-6 text-iu-green" />
+            <HelpCircle className="h-5 w-5 sm:h-6 sm:w-6 text-iu-green" />
           </div>
-          <h3 className="text-2xl font-black text-foreground tracking-tight">
+          <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
             {t.askLibrarian}
           </h3>
         </div>
@@ -103,12 +103,12 @@ export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProp
       </div>
 
       {/* Location */}
-      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 shadow-2xl">
-        <div className="flex items-center gap-4 mb-8">
+      <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-8 shadow-2xl">
+        <div className="flex items-center gap-4 mb-6 sm:mb-8">
           <div className="p-3 rounded-2xl bg-iu-blue/10">
-            <MapPin className="h-6 w-6 text-iu-blue" />
+            <MapPin className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue" />
           </div>
-          <h3 className="text-2xl font-black text-foreground tracking-tight">
+          <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
             {t.location}
           </h3>
         </div>
@@ -129,17 +129,17 @@ export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProp
       </div>
 
       {/* My Library */}
-      <div className="bg-gradient-to-br from-iu-blue to-iu-purple rounded-[2.5rem] p-10 shadow-2xl text-white relative overflow-hidden group">
-        <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
-          <Bookmark className="h-32 w-32" />
+      <div className="bg-gradient-to-br from-iu-blue to-iu-purple rounded-[2.5rem] p-6 sm:p-10 shadow-2xl text-white relative overflow-hidden group">
+        <div className="absolute top-0 right-0 p-6 sm:p-8 opacity-10 group-hover:scale-110 transition-transform duration-500">
+          <Bookmark className="h-24 w-24 sm:h-32 sm:w-32" />
         </div>
 
         <div className="relative z-10">
-          <div className="flex items-center gap-4 mb-8">
+          <div className="flex items-center gap-4 mb-6 sm:mb-8">
             <div className="p-3 bg-white/20 rounded-2xl backdrop-blur-md">
-              <Bookmark className="h-8 w-8" />
+              <Bookmark className="h-6 w-6 sm:h-8 sm:w-8" />
             </div>
-            <h3 className="text-2xl font-black tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-black tracking-tight">
               {t.myLibrary}
             </h3>
           </div>

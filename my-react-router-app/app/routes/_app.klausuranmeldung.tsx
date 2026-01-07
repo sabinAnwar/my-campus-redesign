@@ -38,9 +38,9 @@ export default function Klausuranmeldung() {
         setSearchQuery={setSearchQuery}
       />
 
-      <div className="grid lg:grid-cols-3 gap-12">
+      <div className="grid lg:grid-cols-3 gap-6 sm:gap-8 lg:gap-12">
         {/* Left Column: Course Catalog */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           <HowItWorksSection t={t} />
 
           <CourseCategoryList
@@ -54,8 +54,8 @@ export default function Klausuranmeldung() {
         </div>
 
         {/* Right Column: Selection Summary */}
-        <div className="space-y-8">
-          <div className="sticky top-32 space-y-8">
+        <div className="space-y-6 sm:space-y-8">
+          <div className="sticky top-24 sm:top-32 space-y-6 sm:space-y-8">
             <StudentInfoPanel t={t} />
 
             <SelectionSummary

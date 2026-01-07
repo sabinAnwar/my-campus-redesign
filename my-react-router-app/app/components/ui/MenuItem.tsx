@@ -9,7 +9,8 @@ export function MenuItem({ to, icon: Icon, label, danger }: MenuItemProps) {
   return (
     <Link
       to={to}
-      className={`group flex items-center gap-3 px-5 py-3 text-sm transition-all border-l-4 border-transparent ${
+      role="menuitem"
+      className={`group flex items-center gap-3 px-5 py-3 text-sm transition-all border-l-4 border-transparent cursor-pointer focus:outline-none focus:bg-iu-blue/5 focus:border-iu-blue/30 ${
         danger
           ? "text-rose-600 hover:bg-rose-50 hover:text-rose-700 hover:border-rose-500 font-bold"
           : "hover:bg-neutral-50 hover:text-neutral-900 hover:border-neutral-300 text-muted-foreground font-medium"
@@ -21,6 +22,7 @@ export function MenuItem({ to, icon: Icon, label, danger }: MenuItemProps) {
             ? "text-rose-500 group-hover:text-rose-600"
             : "text-muted-foreground group-hover:text-neutral-900"
         }`}
+        aria-hidden="true"
       />
       <span className="font-bold">{label}</span>
     </Link>

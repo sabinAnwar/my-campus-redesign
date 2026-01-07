@@ -92,11 +92,12 @@ export function ProfileMenu({
       {/* Profile Button */}
       <button
         onClick={onToggle}
-        className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-iu-blue text-white shadow-xl shadow-iu-blue/30 hover:shadow-iu-blue/50 transition-all active:scale-95 flex items-center justify-center font-bold"
+        className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-iu-blue text-white shadow-xl shadow-iu-blue/30 hover:shadow-iu-blue/50 transition-all active:scale-95 flex items-center justify-center font-bold focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
         aria-label="Open profile menu"
+        aria-haspopup="true"
         aria-expanded={isOpen}
       >
-        <UserIcon className="h-4 w-4 sm:h-5 sm:w-5" />
+        <UserIcon className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
       </button>
 
       {/* Dropdown Menu */}
@@ -123,53 +124,67 @@ export function ProfileMenu({
           </div>
 
           {/* Menu Links */}
-          <div onClick={onClose} className="py-1">
-            <MenuItem
-              to="/settings"
-              icon={SettingsIcon}
-              label={translations.settings}
-            />
-            <MenuItem
-              to="/curriculum"
-              icon={BookOpenCheck}
-              label={translations.curriculum}
-            />
-            <MenuItem
-              to="/module-handbook"
-              icon={FileText}
-              label={translations.moduleHandbook}
-            />
-            <MenuItem
-              to="/student-id"
-              icon={BadgeCheck}
-              label={translations.studentId}
-            />
+          <ul onClick={onClose} className="py-1" role="menu">
+            <li role="none">
+              <MenuItem
+                to="/settings"
+                icon={SettingsIcon}
+                label={translations.settings}
+              />
+            </li>
+            <li role="none">
+              <MenuItem
+                to="/curriculum"
+                icon={BookOpenCheck}
+                label={translations.curriculum}
+              />
+            </li>
+            <li role="none">
+              <MenuItem
+                to="/module-handbook"
+                icon={FileText}
+                label={translations.moduleHandbook}
+              />
+            </li>
+            <li role="none">
+              <MenuItem
+                to="/student-id"
+                icon={BadgeCheck}
+                label={translations.studentId}
+              />
+            </li>
 
             {/* Certificates Section Header */}
-            <div className="px-5 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-muted/30">
+            <li role="presentation" className="px-5 py-2 text-[10px] font-bold text-muted-foreground uppercase tracking-widest bg-muted/30">
               {translations.certificates}
-            </div>
+            </li>
 
-            <MenuItem
-              to="/certificates/transcript"
-              icon={FileText}
-              label={translations.transcript}
-            />
-            <MenuItem
-              to="/certificates/immatriculation"
-              icon={FileText}
-              label={translations.immatriculation}
-            />
+            <li role="none">
+              <MenuItem
+                to="/certificates/transcript"
+                icon={FileText}
+                label={translations.transcript}
+              />
+            </li>
+            <li role="none">
+              <MenuItem
+                to="/certificates/immatriculation"
+                icon={FileText}
+                label={translations.immatriculation}
+              />
+            </li>
 
-            <div className="border-t border-border my-1" />
+            <li role="separator" className="border-t border-border my-1" />
 
-            <MenuItem
-              to="/logout"
-              icon={LogOut}
-              label={translations.logout}
-              danger
-            />
-          </div>
+            <li role="none">
+              <MenuItem
+                to="/logout"
+                icon={LogOut}
+                label={translations.logout}
+                danger
+              />
+            </li>
+          </ul>
         </div>
       )}
     </>

@@ -170,10 +170,11 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
     return (
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 group"
+        className="fixed bottom-6 right-6 z-50 p-4 bg-gradient-to-r from-iu-blue to-iu-purple text-white rounded-full shadow-2xl hover:scale-110 transition-transform duration-300 group focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
         title={t.floatingTitle}
+        aria-label={t.floatingTitle}
       >
-        <Play className="h-6 w-6 group-hover:animate-pulse" />
+        <Play className="h-6 w-6 group-hover:animate-pulse" aria-hidden="true" />
       </button>
     );
   }
@@ -182,33 +183,46 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
   const Icon = step.icon;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
-      <div className="relative w-full max-w-3xl bg-white dark:bg-slate-900 rounded-3xl shadow-2xl overflow-hidden">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 animate-in fade-in duration-300">
+      <div 
+        role="dialog" 
+        aria-modal="true" 
+        aria-labelledby="onboarding-title" 
+        className="relative w-full max-w-3xl bg-card text-card-foreground rounded-2xl sm:rounded-3xl shadow-2xl overflow-hidden border border-border"
+      >
         {/* Close Button */}
         <button
           onClick={handleSkip}
-          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 transition-colors"
+          className="absolute top-4 right-4 z-10 p-2 rounded-full bg-muted hover:bg-muted-foreground/10 transition-colors focus:outline-none focus:ring-2 focus:ring-iu-blue"
+          aria-label={language === "de" ? "Schließen" : "Close"}
         >
-          <X className="h-5 w-5 text-slate-600 dark:text-slate-300" />
+          <X className="h-5 w-5 text-muted-foreground" aria-hidden="true" />
         </button>
 
         {/* Progress Bar */}
-        <div className="absolute top-0 left-0 right-0 h-1 bg-slate-200 dark:bg-slate-800">
+        <div 
+          className="absolute top-0 left-0 right-0 h-1 bg-muted"
+          role="progressbar"
+          aria-valuenow={((currentStep + 1) / steps.length) * 100}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-label={t.step}
+        >
           <div
-            className="h-full bg-gradient-to-r from-indigo-600 to-purple-600 transition-all duration-300"
+            className="h-full bg-iu-blue transition-all duration-300"
             style={{ width: `${((currentStep + 1) / steps.length) * 100}%` }}
           />
         </div>
 
         {/* Content */}
-        <div className="p-8 pt-12">
+        <div className="p-5 sm:p-8 pt-10 sm:pt-12">
           {/* Icon & Title */}
-          <div className="flex items-center gap-4 mb-6">
-            <div className="p-4 bg-gradient-to-br from-indigo-100 to-purple-100 dark:from-indigo-950 dark:to-purple-950 rounded-2xl">
-              <Icon className="h-8 w-8 text-indigo-600 dark:text-indigo-400" />
+          <div className="flex items-center gap-4 mb-5 sm:mb-6">
+            <div className="p-3 sm:p-4 bg-iu-blue/10 dark:bg-iu-blue/20 rounded-2xl">
+              <Icon className="h-6 w-6 sm:h-8 sm:w-8 text-iu-blue" aria-hidden="true" />
             </div>
             <div>
-              <h2 className="text-3xl font-black text-slate-900 dark:text-white">
+              <h2 id="onboarding-title" className="text-2xl sm:text-3xl font-black text-foreground">
                 {step.title}
               </h2>
               <p className="text-sm text-slate-500 dark:text-slate-400">
@@ -218,7 +232,7 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
           </div>
 
           {/* Description */}
-          <p className="text-lg text-slate-700 dark:text-slate-300 mb-6">
+          <p className="text-sm sm:text-lg text-slate-700 dark:text-slate-300 mb-6">
             {step.description}
           </p>
 
@@ -239,40 +253,40 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
           )}
 
           {/* Features List */}
-          <div className="mb-8">
+          <div className="mb-6 sm:mb-8">
             <h3 className="text-sm font-bold text-slate-900 dark:text-white mb-3 uppercase tracking-wider">
               {t.whatYouFind}
             </h3>
             <ul className="space-y-2">
               {step.features.map((feature: string, index: number) => (
                 <li key={index} className="flex items-start gap-3">
-                  <CheckCircle className="h-5 w-5 text-iu-blue dark:text-iu-blue flex-shrink-0 mt-0.5" />
-                  <span className="text-slate-700 dark:text-slate-300">{feature}</span>
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5 text-iu-green flex-shrink-0 mt-0.5" aria-hidden="true" />
+                  <span className="text-foreground/80">{feature}</span>
                 </li>
               ))}
             </ul>
           </div>
 
           {/* Navigation Buttons */}
-          <div className="flex items-center justify-between gap-4">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
             <button
               onClick={prevStep}
               disabled={currentStep === 0}
-              className="px-6 py-3 rounded-xl font-bold text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold text-muted-foreground hover:bg-muted/50 transition-colors disabled:opacity-30 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-iu-blue"
             >
               {t.back}
             </button>
 
-            <div className="flex gap-2">
+            <div className="flex gap-2 justify-center" aria-hidden="true">
               {steps.map((_: OnboardingStep, index: number) => (
                 <div
                   key={index}
                   className={`h-2 w-2 rounded-full transition-all ${
                     index === currentStep
-                      ? "bg-indigo-600 dark:bg-indigo-400 w-8"
+                      ? "bg-iu-blue w-8"
                       : index < currentStep
-                      ? "bg-indigo-400 dark:bg-indigo-600"
-                      : "bg-slate-300 dark:bg-slate-700"
+                      ? "bg-iu-blue/60"
+                      : "bg-muted"
                   }`}
                 />
               ))}
@@ -280,17 +294,17 @@ export default function FirstSemesterOnboarding({ isFirstSemester, onComplete }:
 
             <button
               onClick={nextStep}
-              className="px-6 py-3 rounded-xl font-bold bg-gradient-to-r from-indigo-600 to-purple-600 text-white hover:from-indigo-700 hover:to-purple-700 transition-all shadow-lg hover:shadow-xl flex items-center gap-2"
+              className="px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl font-bold bg-iu-blue text-white hover:bg-iu-blue/90 transition-all shadow-lg active:scale-95 flex items-center gap-2 focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
             >
               {currentStep === steps.length - 1 ? (
                 <>
                   {t.finish}
-                  <CheckCircle className="h-5 w-5" />
+                  <CheckCircle className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                 </>
               ) : (
                 <>
                   {t.next}
-                  <ArrowRight className="h-5 w-5" />
+                  <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5" aria-hidden="true" />
                 </>
               )}
             </button>

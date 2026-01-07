@@ -60,8 +60,8 @@ export default function ExamsPage() {
 
   return (
     <div className="min-h-screen bg-transparent">
-      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-12 py-4 sm:py-6">
-        <ExamsHeader t={t} />
+      <div className="max-w-7xl mx-auto space-y-6 sm:space-y-10 py-2">
+        <ExamsHeader t={t} language={language} />
 
         <ExamsList exams={exams} language={language} t={t} />
 

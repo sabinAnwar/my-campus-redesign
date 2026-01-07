@@ -30,7 +30,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
         <div className="flex items-center justify-end mb-6">
           <Link
             to="/courses/schedule"
-            className="px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all flex items-center gap-2 group/btn dark:bg-iu-blue dark:text-white"
+            className="px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all flex items-center gap-2 group/btn dark:bg-iu-blue dark:text-white cursor-pointer"
           >
             {t.showFullSchedule}
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />

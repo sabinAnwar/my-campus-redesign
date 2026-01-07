@@ -9,9 +9,9 @@ const STYLES = {
   container: `flex items-center justify-center min-h-screen bg-gradient-to-br 
               from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 
               dark:via-slate-900 dark:to-slate-950 relative overflow-hidden`,
-  card: `relative backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-3xl 
+  card: `relative backdrop-blur-xl bg-white/80 dark:bg-slate-900/80 rounded-2xl sm:rounded-3xl 
          shadow-2xl dark:shadow-iu-blue/5 border border-white/20 
-         dark:border-slate-700/50 p-12 overflow-hidden`,
+         dark:border-slate-700/50 p-6 sm:p-10 lg:p-12 overflow-hidden`,
   title: `bg-gradient-to-r from-slate-900 via-slate-700 to-slate-900 
           dark:from-white dark:via-iu-blue dark:to-white bg-clip-text text-transparent`,
 } as const;
@@ -99,10 +99,10 @@ export function LogoutIcon() {
 export function LogoutHeader() {
   return (
     <div className="text-center mb-8 space-y-3">
-      <h1 className="text-4xl font-black tracking-tight">
+      <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
         <span className={STYLES.title}>{TEXT.title}</span>
       </h1>
-      <p className="text-lg text-slate-600 dark:text-slate-400 font-medium">
+      <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium">
         {TEXT.subtitle}
       </p>
       <p className="text-sm text-slate-500 dark:text-slate-500">{TEXT.thanks}</p>

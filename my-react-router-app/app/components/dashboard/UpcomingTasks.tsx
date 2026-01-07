@@ -41,7 +41,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
           </div>
           <Link
             to="/tasks"
-            className="p-2.5 rounded-full bg-muted/50 text-iu-orange hover:bg-iu-orange hover:text-white transition-all shadow-sm border border-border dark:bg-iu-orange dark:text-white dark:border-iu-orange/40"
+            className="p-2.5 rounded-full bg-muted/50 text-iu-orange hover:bg-iu-orange hover:text-white transition-all shadow-sm border border-border dark:bg-iu-orange dark:text-white dark:border-iu-orange/40 cursor-pointer"
           >
             <ArrowRight className="h-5 w-5" />
           </Link>

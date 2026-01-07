@@ -13,16 +13,16 @@ interface ProfileSectionProps {
 
 export function ProfileSection({ userName, userEmail, labels }: ProfileSectionProps) {
   return (
-    <section className="lg:col-span-2 bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+    <section className="lg:col-span-2 bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
       <div className="absolute -top-12 -right-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
-              <User className="w-6 h-6" />
+              <User className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h2 className="text-xl font-black text-foreground tracking-tight">
+            <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
               {labels.personalData}
             </h2>
           </div>
@@ -32,7 +32,7 @@ export function ProfileSection({ userName, userEmail, labels }: ProfileSectionPr
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 sm:gap-8">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
               {labels.name}

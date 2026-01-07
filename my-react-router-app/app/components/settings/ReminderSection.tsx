@@ -34,17 +34,17 @@ export function ReminderSection({
   labels,
 }: ReminderSectionProps) {
   return (
-    <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+    <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
       <div className="absolute -top-12 -right-12 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full group-hover:bg-iu-blue/10 transition-colors" />
 
       <div className="relative z-10">
-        <div className="flex flex-col md:flex-row md:items-center justify-between gap-8 mb-6">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 sm:gap-8 mb-6">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
-              <Clock className="w-6 h-6" />
+              <Clock className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
-              <h2 className="text-xl font-black text-foreground tracking-tight">
+              <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
                 {labels.reminderTitle}
               </h2>
               <p className="text-sm text-muted-foreground font-medium">
@@ -53,7 +53,7 @@ export function ReminderSection({
             </div>
           </div>
 
-          <label className="inline-flex items-center gap-3 px-6 py-3 rounded-2xl bg-background/50 border border-border hover:border-iu-blue/30 transition-all cursor-pointer group/toggle">
+          <label className="inline-flex items-center gap-3 px-4 sm:px-6 py-3 rounded-2xl bg-background/50 border border-border hover:border-iu-blue/30 transition-all cursor-pointer group/toggle">
             <div
               className={`w-10 h-6 rounded-full p-1 transition-colors ${reminderEnabled ? "bg-iu-blue" : "bg-muted"}`}
             >
@@ -73,7 +73,7 @@ export function ReminderSection({
           </label>
         </div>
 
-        <div className="flex flex-col md:flex-row items-end gap-8">
+        <div className="flex flex-col md:flex-row items-end gap-6 sm:gap-8">
           <div className="space-y-2">
             <label className="text-[10px] font-black text-muted-foreground uppercase tracking-widest ml-1">
               {labels.time}

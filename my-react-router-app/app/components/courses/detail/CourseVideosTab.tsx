@@ -19,7 +19,7 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
           <h3 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-black text-foreground tracking-tighter mb-1 sm:mb-2">
             {t.videos}
           </h3>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium max-w-2xl">
+          <p className="text-xs sm:text-base md:text-lg text-muted-foreground font-medium max-w-2xl">
             {language === "de"
               ? "Studiere in deinem eigenen Tempo mit unseren Video-Vorlesungen und interaktiven Inhalten."
               : "Study at your own pace with our video lectures and interactive content."}
@@ -62,18 +62,18 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
                 </span>
               </div>
             </div>
-            <div className="p-7">
+            <div className="p-5 sm:p-7">
               <div className="flex items-start justify-between gap-4 mb-4">
-                <h4 className="text-xl font-black text-foreground leading-tight line-clamp-2 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                <h4 className="text-lg sm:text-xl font-black text-foreground leading-tight line-clamp-2 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                   {video.title}
                 </h4>
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-border/10">
-                <div className="flex items-center gap-2 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
                   <Users size={12} className="text-iu-blue/50 dark:text-white/50" />
                   <span>IU Study Content</span>
                 </div>
-                <button className="text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">
+                <button className="text-[9px] sm:text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">
                   {language === "de" ? "Abspielen" : "Play"} &rarr;
                 </button>
               </div>

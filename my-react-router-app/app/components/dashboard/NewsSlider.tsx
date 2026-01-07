@@ -52,7 +52,7 @@ export function NewsSlider({
   if (newsItems.length === 0) return null;
 
   return (
-    <div className="mb-4 sm:mb-6 md:mb-8">
+    <div className="mb-6 sm:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <Newspaper className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -147,7 +147,7 @@ export function NewsSlider({
             <Link
               to="/news"
               onClick={(e) => e.stopPropagation()}
-              className="hidden md:flex lg:flex items-center gap-2 text-[10px] lg:text-xs text-iu-blue font-black uppercase tracking-widest hover:translate-x-1 transition-transform dark:text-white"
+              className="hidden md:flex lg:flex items-center gap-2 text-[10px] lg:text-xs text-iu-blue font-black uppercase tracking-widest hover:translate-x-1 transition-transform dark:text-white cursor-pointer"
             >
               LESEN <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </Link>

@@ -68,9 +68,9 @@ export default function LibraryPage() {
         availableLabel={language === "de" ? "verfügbar" : "available"}
       />
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 sm:gap-12">
         {/* Main Content */}
-        <div className="lg:col-span-2 space-y-12">
+        <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           <DatabasesSection
             databases={DATABASES}
             language={language}
@@ -86,7 +86,7 @@ export default function LibraryPage() {
           />
 
           <TutorialsSection
-            tutorials={TUTORIALS}
+            tutorials={TUTORIALS as any}
             language={language}
             title={t.helpGuides}
             subtitle={language === "de" ? "Lerne, unsere Ressourcen optimal zu nutzen" : "Learn to make the most of our resources"}

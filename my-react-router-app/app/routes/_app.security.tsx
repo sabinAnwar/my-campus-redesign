@@ -32,10 +32,11 @@ export default function SecurityGuidelines() {
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
 
   return (
-    <div className="max-w-7xl mx-auto space-y-12">
+    <div className="max-w-7xl mx-auto space-y-8 sm:space-y-10">
       <SecurityHeader
         title={t.title}
         subtitle={t.subtitle}
+        language={language}
       />
 
       {/* Grid */}
@@ -57,4 +58,3 @@ export default function SecurityGuidelines() {
     </div>
   );
 }
-

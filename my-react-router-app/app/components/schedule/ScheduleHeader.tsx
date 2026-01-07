@@ -64,13 +64,13 @@ export function ScheduleHeader({
         iconBg="bg-iu-blue/10 dark:bg-iu-blue"
         iconColor="text-iu-blue dark:text-white"
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 w-full lg:w-auto">
-          <div className="flex flex-wrap items-center gap-4 lg:flex-row">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
+          <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 lg:flex-row w-full">
             {/* View Toggle */}
-            <div className="flex p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm">
+            <div className="flex w-full sm:w-auto p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm overflow-x-auto">
               <button
                 onClick={() => setViewMode("list")}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
                   viewMode === "list"
                     ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
                     : "text-muted-foreground hover:text-foreground"
@@ -81,7 +81,7 @@ export function ScheduleHeader({
               </button>
               <button
                 onClick={() => setViewMode("week")}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
                   viewMode === "week"
                     ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
                     : "text-muted-foreground hover:text-foreground"
@@ -92,7 +92,7 @@ export function ScheduleHeader({
               </button>
               <button
                 onClick={() => setViewMode("month")}
-                className={`flex items-center gap-2 px-6 py-2.5 rounded-xl font-bold text-sm transition-all ${
+                className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
                   viewMode === "month"
                     ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20"
                     : "text-muted-foreground hover:text-foreground"
@@ -105,7 +105,7 @@ export function ScheduleHeader({
 
             <button
               onClick={handleDownloadICS}
-              className="flex items-center gap-2 px-6 py-3.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border text-foreground font-bold text-sm hover:border-iu-blue/50 transition-all shadow-sm"
+              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-2xl bg-card/50 backdrop-blur-xl border border-border text-foreground font-bold text-xs sm:text-sm hover:border-iu-blue/50 transition-all shadow-sm w-full sm:w-auto"
             >
               <Download size={18} className="text-iu-blue" />
               {t.downloadCalendar}
@@ -115,8 +115,8 @@ export function ScheduleHeader({
       </PageHeader>
 
       {/* Controls & Filters */}
-      <div className="flex flex-wrap items-center justify-between gap-6 mb-8 p-6 rounded-[2rem] bg-card/30 backdrop-blur-xl border border-border">
-        <div className="flex items-center gap-4">
+      <div className="flex flex-col lg:flex-row items-start lg:items-center justify-between gap-4 sm:gap-6 mb-6 sm:mb-8 p-4 sm:p-6 rounded-[2rem] bg-card/30 backdrop-blur-xl border border-border">
+        <div className="flex flex-wrap items-center gap-3 sm:gap-4 w-full">
           <div className="flex items-center gap-2 bg-background/50 rounded-xl p-1 border border-border">
             <button
               onClick={viewMode === "month" ? goToPrevMonth : goToPrevWeek}
@@ -126,7 +126,7 @@ export function ScheduleHeader({
             </button>
             <button
               onClick={goToToday}
-              className="px-4 py-1.5 text-sm font-bold text-foreground hover:text-iu-blue transition-colors"
+              className="px-3 sm:px-4 py-1.5 text-xs sm:text-sm font-bold text-foreground hover:text-iu-blue transition-colors"
             >
               {t.today}
             </button>
@@ -138,7 +138,7 @@ export function ScheduleHeader({
             </button>
           </div>
 
-          <h2 className="text-xl font-black text-foreground ml-2">
+          <h2 className="text-lg sm:text-xl font-black text-foreground ml-0 sm:ml-2">
             {currentDate.toLocaleDateString(locale, {
               month: "long",
               year: "numeric",
@@ -148,7 +148,7 @@ export function ScheduleHeader({
 
         <button
           onClick={() => setShowOptional(!showOptional)}
-          className={`flex items-center gap-2 px-5 py-2.5 rounded-xl font-bold text-sm border transition-all ${
+          className={`flex items-center gap-2 px-4 sm:px-5 py-2.5 rounded-xl font-bold text-xs sm:text-sm border transition-all w-full sm:w-auto justify-center ${
             showOptional
               ? "bg-iu-blue/10 border-iu-blue/30 text-iu-blue dark:bg-iu-blue dark:text-white dark:border-iu-blue/40"
               : "bg-background/50 border-border text-muted-foreground hover:border-iu-blue/30"

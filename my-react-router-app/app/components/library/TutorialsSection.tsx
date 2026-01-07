@@ -10,7 +10,7 @@ interface TutorialItem {
 }
 
 interface TutorialsSectionProps {
-  tutorials: TutorialItem[];
+  tutorials: readonly TutorialItem[];
   language: "de" | "en";
   title: string;
   subtitle: string;

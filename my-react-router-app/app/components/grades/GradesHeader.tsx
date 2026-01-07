@@ -8,6 +8,7 @@ interface GradesHeaderProps {
   exportCSVLabel: string;
   onExportPDF: () => void;
   onExportCSV: () => void;
+  language: string;
 }
 
 export function GradesHeader({
@@ -17,12 +18,15 @@ export function GradesHeader({
   exportCSVLabel,
   onExportPDF,
   onExportCSV,
+  language,
 }: GradesHeaderProps) {
   return (
     <PageHeader
       icon={GraduationCap}
       title={title}
       subtitle={universityName}
+      backTo="/study-organization"
+      backLabel={language === "de" ? "Zurück zu Studienorganisation" : "Back to Study Organization"}
     >
       <div className="flex flex-wrap gap-2 sm:gap-3">
         <button

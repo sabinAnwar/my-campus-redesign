@@ -20,14 +20,14 @@ interface RecentFilesListProps {
 export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListProps) {
   if (filteredFiles.length === 0) {
     return (
-      <div className="bg-white dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-3xl p-12 text-center">
-        <div className="bg-neutral-100 dark:bg-neutral-800 w-16 h-16 rounded-2xl flex items-center justify-center mx-auto mb-6">
-          <FileIcon className="h-8 w-8 text-neutral-400" />
+      <div className="bg-white dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center">
+        <div className="bg-neutral-100 dark:bg-neutral-800 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6">
+          <FileIcon className="h-7 w-7 sm:h-8 sm:w-8 text-neutral-400" />
         </div>
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
           {t.noFilesOpened}
         </h3>
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto mb-8">
+        <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto mb-6 sm:mb-8">
           {t.noFilesDesc}
         </p>
         <ul className="text-xs text-neutral-400 dark:text-neutral-500 space-y-2 inline-block text-left">
@@ -49,7 +49,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-5 sm:space-y-6">
       {filteredFiles.map((f, idx) => {
         const type = f.fileType?.toLowerCase() || "";
 
@@ -60,15 +60,15 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
         return (
           <div
             key={f.id + idx}
-            className="group bg-card/60 backdrop-blur-xl border border-border rounded-[2.5rem] p-8 hover:border-iu-blue/30 hover:bg-card transition-all duration-500 shadow-xl relative overflow-hidden"
+            className="group bg-card/60 backdrop-blur-xl border border-border rounded-[2.5rem] p-5 sm:p-8 hover:border-iu-blue/30 hover:bg-card transition-all duration-500 shadow-xl relative overflow-hidden"
           >
             {/* Hover background effect */}
             <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity -mr-32 -mt-32"></div>
 
-            <div className="flex items-start gap-6 relative z-10">
+            <div className="flex flex-col sm:flex-row sm:items-start gap-4 sm:gap-6 relative z-10">
               {/* Type Icon Container */}
               <div
-                className={`p-4 rounded-2xl flex-shrink-0 transition-transform group-hover:scale-110 shadow-lg border ${
+                className={`p-3 sm:p-4 rounded-2xl flex-shrink-0 transition-transform group-hover:scale-110 shadow-lg border ${
                 isVideo
                   ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
                   : isPodcast
@@ -79,25 +79,25 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
               }`}
               >
                 {isVideo ? (
-                  <Video className="h-7 w-7" />
+                  <Video className="h-6 w-6 sm:h-7 sm:w-7" />
                 ) : isPodcast ? (
-                  <Headphones className="h-7 w-7" />
+                  <Headphones className="h-6 w-6 sm:h-7 sm:w-7" />
                 ) : isTest ? (
-                  <ClipboardCheck className="h-7 w-7" />
+                  <ClipboardCheck className="h-6 w-6 sm:h-7 sm:w-7" />
                 ) : (
-                  <FileIcon className="h-7 w-7" />
+                  <FileIcon className="h-6 w-6 sm:h-7 sm:w-7" />
                 )}
               </div>
 
               {/* Info Container */}
               <div className="flex-1 min-w-0 space-y-3">
                 <div className="flex items-center justify-between gap-4 flex-wrap">
-                  <h3 className="text-lg font-bold text-foreground truncate group-hover:text-iu-blue transition-colors">
+                  <h3 className="text-base sm:text-lg font-bold text-foreground truncate group-hover:text-iu-blue transition-colors">
                     {f.name}
                   </h3>
                   {/* Mediatype Badge */}
                   <span
-                    className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
+                    className={`text-[9px] sm:text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
                     isVideo
                       ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
                       : isPodcast
@@ -111,7 +111,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   <div className="flex items-center gap-2">
                     <FolderOpen className="h-4 w-4" />
                     <span className="truncate">
@@ -152,9 +152,9 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                     window.location.href = "/courses";
                   }
                 }}
-                className="absolute right-8 top-1/2 -translate-y-1/2 p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border opacity-0 group-hover:opacity-100 group-hover:translate-x-0 translate-x-4 duration-300"
+                className="static sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0 p-3 sm:p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border opacity-100 sm:opacity-0 group-hover:opacity-100 group-hover:translate-x-0 sm:translate-x-4 duration-300"
               >
-                <ExternalLink className="h-6 w-6" />
+                <ExternalLink className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
             </div>
           </div>

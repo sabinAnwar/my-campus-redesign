@@ -22,13 +22,13 @@ export function CurriculumHeader({ t, userProgram, stats }: CurriculumHeaderProp
       backTo="/dashboard"
       backLabel="Dashboard"
     >
-      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6 w-full lg:w-auto">
-        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-sm font-bold w-fit">
+      <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4 sm:gap-6 w-full lg:w-auto">
+        <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-xs sm:text-sm font-bold w-fit">
           <GraduationCap size={16} />
           <span>{userProgram}</span>
         </div>
 
-        <div className="bg-card border border-border rounded-xl p-6 shadow-sm min-w-[300px] w-full sm:w-auto">
+        <div className="bg-card border border-border rounded-xl p-4 sm:p-6 shadow-sm min-w-0 w-full sm:w-auto">
           <div className="flex items-center gap-4 mb-2">
             <BarChart3 className="h-5 w-5 text-muted-foreground" />
             <span className="text-xs font-black uppercase tracking-widest text-muted-foreground">
@@ -54,4 +54,3 @@ export function CurriculumHeader({ t, userProgram, stats }: CurriculumHeaderProp
     </PageHeader>
   );
 }
-

@@ -57,7 +57,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
           </div>
           <Link
             to="/courses"
-            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all group/btn dark:bg-iu-blue dark:text-white"
+            className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-iu-blue/10 text-iu-blue hover:bg-iu-blue hover:text-white font-bold text-sm transition-all group/btn dark:bg-iu-blue dark:text-white cursor-pointer"
           >
             {t.viewAllCourses}
             <ArrowRight className="h-4 w-4 group-hover/btn:translate-x-1 transition-transform" />
@@ -75,7 +75,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
               </p>
               <Link
                 to="/courses"
-                className="inline-flex items-center justify-center gap-4 w-full md:w-auto px-10 py-4 bg-iu-blue text-white rounded-2xl text-base font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-iu-blue/20 active:scale-95"
+                className="inline-flex items-center justify-center gap-4 w-full md:w-auto px-10 py-4 bg-iu-blue text-white rounded-2xl text-base font-black uppercase tracking-widest hover:opacity-90 transition-all shadow-xl shadow-iu-blue/20 active:scale-95 cursor-pointer"
               >
                 {t.explore}
                 <ArrowRight className="h-5 w-5" />
@@ -89,7 +89,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
                 <Link
                   key={course.id}
                   to={`/courses/${course.id}`}
-                  className={`block min-w-[280px] sm:min-w-0 shrink-0 border rounded-[2rem] p-6 transition-all duration-300 bg-card/40 hover:bg-card hover:shadow-xl hover:-translate-y-1 group/card ${
+                  className={`block min-w-[280px] sm:min-w-0 shrink-0 border rounded-[2rem] p-6 transition-all duration-300 bg-card/40 hover:bg-card hover:shadow-xl hover:-translate-y-1 group/card cursor-pointer ${
                     RECENT_COURSE_COLORS[
                       course.color as keyof typeof RECENT_COURSE_COLORS
                     ] || RECENT_COURSE_COLORS.blue

@@ -198,7 +198,7 @@ export default function Login() {
       {/* Right side - Login Form Section */}
       <div className="iu-login-form-content bg-white dark:bg-slate-800">
         <div className="w-full max-w-2xl">
-          <div className="bg-white dark:bg-slate-800 rounded-3xl p-12 shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-xl bg-white/95 dark:bg-slate-800/95">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-xl bg-white/95 dark:bg-slate-800/95">
             <LoginHeader />
 
             <form onSubmit={handleSubmit} className="space-y-7">

@@ -13,12 +13,12 @@ interface CourseSubmissionsTabProps {
 export function CourseSubmissionsTab({ language, t, submissions, translate, openModal }: CourseSubmissionsTabProps) {
   return (
     <div className="space-y-6 sm:space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8 mb-4 sm:mb-6">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 sm:gap-8 mb-4 sm:mb-6">
         <div className="max-w-2xl">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight mb-2 sm:mb-3 break-words [hyphens:auto]">
             {t.submissions}
           </h3>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground font-medium leading-relaxed">
+          <p className="text-xs sm:text-base md:text-lg text-muted-foreground font-medium leading-relaxed">
             {language === "de"
               ? "Behalte deine Deadlines im Auge und verwalte deine schriftlichen Ausarbeitungen an einem zentralen Ort."
               : "Keep track of your deadlines and manage your written assignments in one central place."}
@@ -34,7 +34,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
       <div className="grid grid-cols-1 gap-3 sm:gap-4 md:gap-6">
         {submissions.length === 0 ? (
-          <div className="rounded-2xl sm:rounded-[3rem] border-2 border-dashed border-border/40 p-8 sm:p-12 md:p-20 text-center bg-muted/5">
+          <div className="rounded-2xl sm:rounded-[3rem] border-2 border-dashed border-border/40 p-6 sm:p-12 md:p-20 text-center bg-muted/5">
             <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-xl sm:rounded-2xl md:rounded-3xl bg-muted/20 flex items-center justify-center mx-auto mb-3 sm:mb-4 md:mb-6">
               <FileText className="w-5 h-5 sm:w-6 sm:h-6 md:w-8 md:h-8 text-muted-foreground opacity-30" />
             </div>
@@ -59,7 +59,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                 key={assignment.id}
                 className={`group relative rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-4 sm:p-6 md:p-10 hover:border-iu-blue/30 transition-all shadow-sm hover:shadow-2xl hover:shadow-iu-blue/5 ${isSubmitted ? "opacity-90" : ""}`}
               >
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8">
+                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-5 sm:gap-8">
                   <div className="flex items-start sm:items-center gap-3 sm:gap-5 md:gap-8 flex-1 min-w-0">
                     <div
                       className={`p-3 sm:p-4 md:p-6 rounded-xl sm:rounded-2xl md:rounded-[2rem] shadow-inner transition-transform duration-500 group-hover:scale-110 flex-shrink-0 ${isExam ? "bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white" : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white"}`}

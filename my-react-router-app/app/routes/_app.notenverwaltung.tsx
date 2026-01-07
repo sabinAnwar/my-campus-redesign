@@ -445,6 +445,7 @@ export default function GradesDashboardIU() {
         exportCSVLabel={t.exportCSV}
         onExportPDF={exportPDF}
         onExportCSV={exportCSV}
+        language={language}
       />
 
 
@@ -512,7 +513,7 @@ export default function GradesDashboardIU() {
       />
 
       {/* SECTIONS */}
-      <div className="space-y-4 pb-12">
+      <div className="space-y-4 pb-8 sm:pb-12">
         {filteredSections.map((section, i) => {
           const isOpen = expanded.includes(i);
           const sectionPassed = section.modules.filter(

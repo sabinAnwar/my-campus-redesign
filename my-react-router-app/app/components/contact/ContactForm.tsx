@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { Mail, Send, CheckCircle2, AlertCircle, ChevronRight } from "lucide-react";
+import { showSuccessToast, showErrorToast } from "~/lib/toast";
+import { FEEDBACK_TRANSLATIONS } from "~/services/translations/feedback";
 
 interface ContactFormProps {
   t: any;
@@ -30,6 +32,8 @@ export function ContactForm({ t, language }: ContactFormProps) {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
+    
+    const f = FEEDBACK_TRANSLATIONS[language as keyof typeof FEEDBACK_TRANSLATIONS];
 
     try {
       const response = await fetch("/api/contact/submit", {
@@ -42,17 +46,21 @@ export function ContactForm({ t, language }: ContactFormProps) {
 
       if (response.ok) {
         setSubmitted(true);
+        showSuccessToast(f.contactSent);
         setTimeout(() => {
           setSubmitted(false);
           setFormData({ subject: "", message: "" });
         }, 5000);
       } else {
         const data = await response.json();
-        setError(data.error || t.errorGeneric);
+        const errorMsg = data.error || t.errorGeneric;
+        setError(errorMsg);
+        showErrorToast(f.contactError);
       }
     } catch (err) {
       console.error("Contact form error:", err);
       setError(t.errorNetwork);
+      showErrorToast(f.contactError);
     } finally {
       setIsSubmitting(false);
     }

@@ -17,7 +17,7 @@ export function FeaturedTools({ t, featuredTools }: FeaturedToolsProps) {
 
       <div className="relative z-10 p-5 sm:p-8 md:p-10">
         {/* Header: Title next to Icon */}
-        <div className="flex flex-col items-start gap-6 mb-8 sm:mb-10 pl-2">
+        <div className="flex flex-col items-start gap-5 sm:gap-6 mb-6 sm:mb-10 pl-2">
           <div className="flex items-center gap-5">
             <div className="relative">
               <div className="absolute inset-0 bg-iu-blue blur-xl opacity-20 dark:opacity-40 rounded-full animate-pulse" />
@@ -25,11 +25,11 @@ export function FeaturedTools({ t, featuredTools }: FeaturedToolsProps) {
                 <Star className="w-5 h-5 sm:w-6 sm:h-6" />
               </div>
             </div>
-            <h3 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+            <h3 className="text-xl sm:text-3xl font-black text-foreground tracking-tight">
               {t.featuredTools}
             </h3>
           </div>
-          <p className="text-[10px] sm:text-xs text-muted-foreground font-black uppercase tracking-[0.25em] pl-1">
+          <p className="text-[9px] sm:text-xs text-muted-foreground font-black uppercase tracking-[0.25em] pl-1">
             Premium Offers & Access
           </p>
         </div>

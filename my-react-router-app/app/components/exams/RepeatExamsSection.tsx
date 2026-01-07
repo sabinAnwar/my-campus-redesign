@@ -14,36 +14,36 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
     <section className="bg-card/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-xl transition-all hover:bg-card/80">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="w-full flex items-center justify-between p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
+        className="w-full flex items-center justify-between p-5 sm:p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
       >
-        <div className="flex items-center gap-6 pointer-events-none">
-          <div className="p-4 bg-iu-blue/20 dark:bg-iu-blue rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
-            <RefreshCw className="w-8 h-8 text-iu-blue dark:text-white" />
+        <div className="flex items-center gap-4 sm:gap-6 pointer-events-none">
+          <div className="p-3 sm:p-4 bg-iu-blue/20 dark:bg-iu-blue rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+            <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8 text-iu-blue dark:text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-foreground mb-1">
+            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
               {t.repeatExams}
             </h2>
-            <p className="text-muted-foreground text-base font-medium opacity-70">
+            <p className="text-foreground/80 dark:text-white/80 text-sm sm:text-base font-medium">
               {t.repeatExamsSubtitle}
             </p>
           </div>
         </div>
         <div>
           {isOpen ? (
-            <ChevronUp className="w-8 h-8 text-muted-foreground" />
+            <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
           ) : (
-            <ChevronDown className="w-8 h-8 text-muted-foreground" />
+            <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
           )}
         </div>
       </button>
 
       {isOpen && (
-        <div className="p-8 border-t border-border bg-muted/10">
+        <div className="p-5 sm:p-8 border-t border-border bg-muted/10">
           <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-3xl">
-            <div className="bg-muted/50 p-6 border-b border-border flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-10 backdrop-blur-md">
-              <div className="flex items-center gap-3 text-sm font-bold text-foreground">
-                <FileText className="w-6 h-6 text-iu-blue dark:text-white" />
+            <div className="bg-muted/50 p-4 sm:p-6 border-b border-border flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-10 backdrop-blur-md">
+              <div className="flex items-center gap-3 text-xs sm:text-sm font-bold text-foreground">
+                <FileText className="w-5 h-5 sm:w-6 sm:h-6 text-iu-blue dark:text-white" />
                 Leitfaden_Wiederholungspruefungen.pdf
               </div>
               <button
@@ -54,32 +54,32 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                     repeatExamsDocument
                   )
                 }
-                className="flex items-center gap-2 text-xs font-black bg-foreground text-background px-6 py-3 rounded-xl hover:opacity-90 transition-all uppercase tracking-widest shadow-lg"
+                className="flex items-center gap-2 text-[10px] sm:text-xs font-black bg-foreground text-background px-5 sm:px-6 py-3 rounded-xl hover:opacity-90 transition-all uppercase tracking-widest shadow-lg"
               >
                 <Download className="w-4 h-4" />
                 {t.download}
               </button>
             </div>
 
-            <div className="p-10 max-h-[700px] overflow-y-auto bg-card text-muted-foreground space-y-12 scrollbar-thin scrollbar-thumb-border">
+            <div className="p-5 sm:p-10 max-h-[700px] overflow-y-auto bg-card text-foreground/90 dark:text-white/90 space-y-8 sm:space-y-12 scrollbar-thin scrollbar-thumb-border">
               <div className="border-b border-border pb-8">
-                <h1 className="text-4xl font-bold text-foreground mb-4 tracking-tight leading-tight">
+                <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight leading-tight">
                   Leitfaden zum Ablauf von Wiederholungsprüfungen
                 </h1>
-                <div className="flex justify-between text-[10px] text-muted-foreground/60 font-black uppercase tracking-[0.2em]">
+                <div className="flex justify-between text-[9px] sm:text-[10px] text-foreground/70 dark:text-white/70 font-black uppercase tracking-[0.2em]">
                   <span>ZPA DS</span>
                   <span>Stand: 01.04.2025</span>
                 </div>
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-4">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-base sm:text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     1
                   </span>{" "}
                   Allgemeines
                 </h3>
-                <p className="text-lg leading-relaxed font-medium">
+                <p className="text-base sm:text-lg leading-relaxed font-medium">
                   In diesem Leitfaden findest Du alle wichtigen
                   Informationen zum Ablauf Deiner Wiederholungsprüfung für
                   Klausuren, mündliche Prüfungsleistungen, schriftliche
@@ -90,18 +90,18 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-4">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-base sm:text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     2
                   </span>{" "}
                   Klausur
                 </h3>
-                <div className="grid md:grid-cols-2 gap-8 pl-2">
-                  <div className="bg-muted/20 p-8 rounded-[2rem] border border-border shadow-inner">
-                    <h4 className="font-bold text-lg mb-4 text-foreground">
+                <div className="grid md:grid-cols-2 gap-6 sm:gap-8 pl-2">
+                  <div className="bg-muted/20 p-5 sm:p-8 rounded-[2rem] border border-border shadow-inner">
+                    <h4 className="font-bold text-base sm:text-lg mb-4 text-foreground">
                       Termin
                     </h4>
-                    <p className="text-base leading-relaxed font-medium">
+                    <p className="text-sm sm:text-base leading-relaxed font-medium">
                       Klausuren können nur in den vorgegebenen{" "}
                       <strong className="text-foreground">
                         Resit-Phasen (Juni/Dezember)
@@ -116,11 +116,11 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                       möglich.
                     </p>
                   </div>
-                  <div className="bg-muted/20 p-8 rounded-[2rem] border border-border shadow-inner">
-                    <h4 className="font-bold text-lg mb-4 text-foreground">
+                  <div className="bg-muted/20 p-5 sm:p-8 rounded-[2rem] border border-border shadow-inner">
+                    <h4 className="font-bold text-base sm:text-lg mb-4 text-foreground">
                       Durchführung & Krankheit
                     </h4>
-                    <p className="text-base leading-relaxed font-medium">
+                    <p className="text-sm sm:text-base leading-relaxed font-medium">
                       Klausurenphasen können nicht übersprungen werden.
                       Nichtantritt führt automatisch zum Fehlversuch, außer
                       es liegt eine genehmigte Prüfungsunfähigkeit vor
@@ -131,18 +131,18 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
               </div>
 
               <div className="space-y-6">
-                <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
+                <h3 className="text-lg sm:text-xl font-bold text-foreground flex items-center gap-4">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center rounded-xl text-base sm:text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     3
                   </span>{" "}
                   Mündliche Prüfungsleistungen
                 </h3>
                 <div className="space-y-6 pl-2">
-                  <div className="border-l-4 border-iu-blue/40 dark:border-iu-blue/60 pl-8 py-2 bg-iu-blue/5 dark:bg-iu-blue/20 rounded-r-[2rem] p-6 shadow-sm">
-                    <h4 className="text-xl font-black text-iu-blue dark:text-white mb-2 uppercase tracking-tight">
+                  <div className="border-l-4 border-iu-blue/40 dark:border-iu-blue/60 pl-6 sm:pl-8 py-2 bg-iu-blue/5 dark:bg-iu-blue/20 rounded-r-[2rem] p-5 sm:p-6 shadow-sm">
+                    <h4 className="text-lg sm:text-xl font-black text-iu-blue dark:text-white mb-2 uppercase tracking-tight">
                       Nach genehmigter Prüfungsunfähigkeit
                     </h4>
-                    <ul className="mt-4 space-y-4 text-base font-medium">
+                    <ul className="mt-4 space-y-4 text-sm sm:text-base font-medium">
                       <li className="flex items-start gap-3">
                         <span className="text-iu-blue dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>
@@ -174,11 +174,11 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                       </li>
                     </ul>
                   </div>
-                  <div className="border-l-4 border-iu-orange/40 dark:border-iu-orange/60 pl-8 py-2 bg-iu-orange/5 dark:bg-iu-orange/20 rounded-r-[2rem] p-6 shadow-sm">
-                    <h4 className="text-xl font-bold text-iu-orange dark:text-white mb-2">
+                  <div className="border-l-4 border-iu-orange/40 dark:border-iu-orange/60 pl-6 sm:pl-8 py-2 bg-iu-orange/5 dark:bg-iu-orange/20 rounded-r-[2rem] p-5 sm:p-6 shadow-sm">
+                    <h4 className="text-lg sm:text-xl font-bold text-iu-orange dark:text-white mb-2">
                       Nach unentschuldigtem Fehlen
                     </h4>
-                    <ul className="mt-4 space-y-4 text-base font-medium">
+                    <ul className="mt-4 space-y-4 text-sm sm:text-base font-medium">
                       <li className="flex items-start gap-3">
                         <span className="text-iu-orange dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>

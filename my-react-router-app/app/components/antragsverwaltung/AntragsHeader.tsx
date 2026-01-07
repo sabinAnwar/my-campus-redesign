@@ -12,6 +12,8 @@ export function AntragsHeader({ t, language }: AntragsHeaderProps) {
       icon={FileText}
       title={t.title}
       subtitle={t.subtitle}
+      backTo="/study-organization"
+      backLabel={language === "de" ? "Zurück zu Studienorganisation" : "Back to Study Organization"}
     >
       <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground bg-card/50 backdrop-blur-xl px-4 py-2 rounded-full border border-border transition-all hover:border-iu-blue/30 shadow-sm">
         <Calendar size={16} />

@@ -38,7 +38,7 @@ export function ScheduleListView({
   setSelectedEvent,
 }: ScheduleListViewProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {weekDates.map((date, idx) => {
         const dateStr = toISODate(date);
         const isToday = dateStr === todayISO;
@@ -65,12 +65,12 @@ export function ScheduleListView({
             <div className="flex flex-col md:flex-row">
               {/* Date Sidebar */}
               <div
-                className={`md:w-48 p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border/50 ${
+                className={`md:w-48 p-5 sm:p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border/50 ${
                   isToday ? "bg-iu-blue/5" : "bg-muted/10"
                 }`}
               >
                 <span
-                  className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
+                  className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
                     isToday
                       ? "text-iu-blue dark:text-white"
                       : "text-muted-foreground dark:text-white/70"
@@ -79,18 +79,18 @@ export function ScheduleListView({
                   {dayNames[idx]}
                 </span>
                 <span
-                  className={`text-4xl font-black mb-1 ${
+                  className={`text-3xl sm:text-4xl font-black mb-1 ${
                     isToday ? "text-iu-blue dark:text-white" : "text-foreground"
                   }`}
                 >
                   {date.getDate()}
                 </span>
-                <span className="text-xs font-medium text-muted-foreground dark:text-white/70">
+                <span className="text-[10px] sm:text-xs font-medium text-muted-foreground dark:text-white/70">
                   {date.toLocaleDateString(locale, { month: "short" })}
                 </span>
                 {phaseConfig && (
                   <div
-                    className={`mt-4 inline-flex items-center gap-1 px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
+                    className={`mt-3 sm:mt-4 inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
                   >
                     {dayBlock?.status === "feiertag" && (
                       <Flag className="h-3 w-3" />
@@ -101,7 +101,7 @@ export function ScheduleListView({
               </div>
 
               {/* Events List */}
-              <div className="flex-1 p-6 md:p-8">
+              <div className="flex-1 p-5 sm:p-6 md:p-8">
                 {events.length > 0 ? (
                   <div className="grid gap-4">
                     {events.map((event, eIdx) => {
@@ -113,7 +113,7 @@ export function ScheduleListView({
                         <div
                           key={eIdx}
                           onClick={() => setSelectedEvent(event)}
-                          className={`group relative flex flex-col sm:flex-row sm:items-center gap-6 p-6 rounded-2xl bg-background/50 border transition-all cursor-pointer ${
+                          className={`group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-background/50 border transition-all cursor-pointer ${
                             isLive
                               ? "border-iu-blue shadow-lg shadow-iu-blue/10 ring-1 ring-iu-blue/20"
                               : "border-border/50 hover:border-iu-blue/30 hover:shadow-lg hover:shadow-iu-blue/5"
@@ -141,7 +141,7 @@ export function ScheduleListView({
                               <span className="font-bold text-foreground leading-none">
                                 {event.startTime}
                               </span>
-                              <span className="text-[10px] font-bold text-muted-foreground mt-1">
+                              <span className="text-[9px] sm:text-[10px] font-bold text-muted-foreground mt-1">
                                 {event.endTime}
                               </span>
                             </div>
@@ -150,7 +150,7 @@ export function ScheduleListView({
                           {/* Content */}
                           <div className="flex-1 min-w-0">
                             <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-bold text-lg text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                              <h3 className="font-bold text-base sm:text-lg text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                                 {event.title}
                               </h3>
                               {event.isOptional && (
@@ -159,7 +159,7 @@ export function ScheduleListView({
                                 </span>
                               )}
                             </div>
-                            <div className="flex flex-wrap items-center gap-4 text-sm text-muted-foreground">
+                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
                               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
                                 <MapPin
                                   size={14}
@@ -186,7 +186,7 @@ export function ScheduleListView({
                                     type={event.type}
                                     className="h-3.5 w-3.5"
                                   />
-                                  <span className="text-[10px] font-bold uppercase tracking-wider">
+                                  <span className="text-[9px] sm:text-[10px] font-bold uppercase tracking-wider">
                                     {event.type}
                                   </span>
                                 </div>
@@ -197,7 +197,7 @@ export function ScheduleListView({
                           {/* Action */}
                           <div className="sm:ml-auto">
                             <div
-                              className={`p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white"}`}
+                              className={`p-2.5 sm:p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white"}`}
                             >
                               <ChevronRight size={18} />
                             </div>
@@ -207,7 +207,7 @@ export function ScheduleListView({
                     })}
                   </div>
                 ) : (
-                  <div className="h-full flex flex-col items-center justify-center text-center py-12">
+                  <div className="h-full flex flex-col items-center justify-center text-center py-10 sm:py-12">
                     <div className="w-16 h-16 rounded-2xl bg-muted/20 flex items-center justify-center mb-4">
                       <CalendarDays
                         className="text-muted-foreground/30"

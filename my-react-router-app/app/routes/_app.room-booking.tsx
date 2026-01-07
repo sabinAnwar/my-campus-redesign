@@ -638,7 +638,7 @@ export default function RoomBooking() {
       : "Manage your room bookings and find available study spots on campus.";
 
   return (
-    <div className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8 md:space-y-12">
+    <div className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8 md:space-y-10">
       <RoomBookingHeader
         title={t.roomBooking}
         subtitle={subtitle}

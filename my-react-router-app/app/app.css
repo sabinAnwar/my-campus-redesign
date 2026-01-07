@@ -314,7 +314,30 @@ body {
   @apply bg-background text-foreground antialiased font-sans;
   color-scheme: light dark;
   font-family: "Inter", sans-serif;
-  /* overflow-x: hidden; */
+  overflow-x: hidden;
+}
+
+img,
+video,
+canvas {
+  max-width: 100%;
+  height: auto;
+}
+
+/* Global Pointer Cursor for Interactive Elements */
+a,
+button,
+[role="button"],
+[role="link"],
+[type="button"],
+[type="submit"],
+[type="reset"],
+label[for],
+select,
+summary,
+[tabindex]:not([tabindex="-1"]),
+.cursor-pointer {
+  cursor: pointer;
 }
 
 /* Global Typography Override to match Schedule Page "Premium" Look */

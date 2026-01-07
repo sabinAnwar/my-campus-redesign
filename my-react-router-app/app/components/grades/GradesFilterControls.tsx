@@ -63,11 +63,11 @@ export function GradesFilterControls({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={labels.searchPlaceholder}
-            className="w-full pl-10 pr-3 py-2.5 sm:py-3 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-iu-blue/10 focus:border-iu-blue transition-all text-sm sm:text-base font-medium"
+            className="w-full pl-10 pr-3 py-3 sm:py-3 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-iu-blue/10 focus:border-iu-blue transition-all text-sm sm:text-base font-medium"
           />
         </div>
 
-        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-2 sm:gap-3">
           <div className="flex items-center gap-1.5 sm:gap-2 bg-background/50 border border-border rounded-lg px-2.5 sm:px-3 py-2 sm:py-2.5 group focus-within:border-iu-blue transition-colors">
             <Filter
               size={14}
@@ -103,7 +103,7 @@ export function GradesFilterControls({
             </select>
             <button
               onClick={onSortDirToggle}
-              className="p-1.5 hover:bg-iu-blue/10 rounded-lg transition-colors text-iu-blue"
+              className="p-2 hover:bg-iu-blue/10 rounded-lg transition-colors text-iu-blue"
             >
               {sortDir === "asc" ? (
                 <ChevronUp size={16} />
@@ -116,14 +116,14 @@ export function GradesFilterControls({
           <div className="flex items-center gap-1 sm:gap-2 bg-muted/50 p-1 rounded-lg border border-border">
             <button
               onClick={onExpandAll}
-              className="px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded transition-all"
+              className="px-3 sm:px-3 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded transition-all"
             >
               {labels.expandAll}
             </button>
             <div className="w-px h-4 bg-border" />
             <button
               onClick={onCollapseAll}
-              className="px-2.5 sm:px-3 py-1.5 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded transition-all"
+              className="px-3 sm:px-3 py-2 text-[10px] sm:text-xs font-bold uppercase tracking-wide text-muted-foreground hover:text-iu-blue hover:bg-white dark:hover:bg-slate-800 rounded transition-all"
             >
               {labels.collapseAll}
             </button>

@@ -29,7 +29,7 @@ export function NewsHeader({
     >
       <form
         method="get"
-        className="flex items-center gap-3 w-full lg:w-auto bg-card backdrop-blur-xl p-2 rounded-[2rem] border border-border shadow-xl"
+        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto bg-card backdrop-blur-xl p-2 rounded-[2rem] border border-border shadow-xl"
       >
         <div className="relative flex-1 md:w-64">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -47,13 +47,13 @@ export function NewsHeader({
           />
         </div>
 
-        <button className="hidden md:block px-6 py-3 bg-iu-blue text-white rounded-2xl text-sm font-black hover:bg-iu-blue/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-iu-blue/20 uppercase tracking-widest">
+        <button className="px-5 sm:px-6 py-3 bg-iu-blue text-white rounded-2xl text-xs sm:text-sm font-black hover:bg-iu-blue/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-iu-blue/20 uppercase tracking-widest w-full sm:w-auto">
           {searchButtonLabel}
         </button>
 
         <Link
           to="/news"
-          className="p-3 bg-muted text-muted-foreground rounded-2xl hover:bg-muted-foreground/10 transition-all"
+          className="p-3 bg-muted text-muted-foreground rounded-2xl hover:bg-muted-foreground/10 transition-all w-full sm:w-auto flex items-center justify-center"
           title={resetTitle}
         >
           <RotateCcw className="h-5 w-5" />
@@ -62,4 +62,3 @@ export function NewsHeader({
     </PageHeader>
   );
 }
-

@@ -110,7 +110,7 @@ export function NewsDetailHero({
               featured={featured}
               labels={labels}
             />
-            <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
+            <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-white leading-tight">
               {title}
             </h1>
             <MetaInfo publishedAt={publishedAt} author={author} locale={locale} />
@@ -121,9 +121,9 @@ export function NewsDetailHero({
   }
 
   return (
-    <div className="max-w-3xl mx-auto px-4 pt-24">
+    <div className="max-w-3xl mx-auto px-4 pt-16 sm:pt-24">
       <CategoryBadges category={category} featured={featured} labels={labels} />
-      <h1 className="text-4xl md:text-6xl font-black text-white leading-tight">
+      <h1 className="text-2xl sm:text-4xl md:text-6xl font-black text-white leading-tight">
         {title}
       </h1>
       <MetaInfo publishedAt={publishedAt} author={author} locale={locale} />

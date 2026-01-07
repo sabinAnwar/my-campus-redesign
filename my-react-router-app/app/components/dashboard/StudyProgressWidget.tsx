@@ -54,7 +54,7 @@ export function StudyProgressWidget({
   t,
 }: StudyProgressWidgetProps) {
   return (
-    <div className="mb-4 sm:mb-6 md:mb-8">
+    <div className="mb-6 sm:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-iu-pink/10 text-iu-pink shadow-sm border border-iu-pink/10 dark:bg-iu-pink dark:text-white dark:border-iu-pink/40">
           <Activity className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -170,7 +170,7 @@ export function StudyProgressWidget({
               {currentStatus === "praxis" ? (
                 <Link
                   to="/praxisbericht2"
-                  className="flex items-center justify-center gap-2 sm:gap-3 w-full py-3 sm:py-4 md:py-5 px-4 sm:px-6 bg-foreground text-background rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl active:scale-95"
+                  className="flex items-center justify-center gap-2 sm:gap-3 w-full py-3 sm:py-4 md:py-5 px-4 sm:px-6 bg-foreground text-background rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl active:scale-95 cursor-pointer"
                 >
                   <FileText className="w-4 h-4 sm:w-5 sm:h-5" />
                   {t.writePraxisReport}
@@ -178,7 +178,7 @@ export function StudyProgressWidget({
               ) : (
                 <Link
                   to="/courses/schedule"
-                  className="flex items-center justify-center gap-2 sm:gap-3 w-full py-3 sm:py-4 md:py-5 px-4 sm:px-6 bg-foreground text-background rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl active:scale-95"
+                  className="flex items-center justify-center gap-2 sm:gap-3 w-full py-3 sm:py-4 md:py-5 px-4 sm:px-6 bg-foreground text-background rounded-xl sm:rounded-2xl font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl active:scale-95 cursor-pointer"
                 >
                   <CalendarDays className="w-4 h-4 sm:w-5 sm:h-5" />
                   {t.viewSchedule}

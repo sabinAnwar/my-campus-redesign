@@ -528,9 +528,15 @@ export default function CourseDetail() {
           )
         );
         setReplyContent("");
+        showSuccessToast(
+          language === "de" ? "Antwort gepostet!" : "Reply posted!"
+        );
       }
     } catch (e) {
       console.error("Failed to post reply", e);
+      showErrorToast(
+        language === "de" ? "Antwort konnte nicht gepostet werden" : "Failed to post reply"
+      );
     }
   };
 
@@ -562,6 +568,9 @@ export default function CourseDetail() {
           setShowNewTopicModal(false);
           setNewTopicTitle("");
           setNewTopicContent("");
+          showSuccessToast(
+            language === "de" ? "Thema erstellt!" : "Topic created!"
+          );
         } else {
           const error = await res.json();
           showErrorToast(error.error || "Failed to create topic");
@@ -576,6 +585,16 @@ export default function CourseDetail() {
       }
   };
 
+
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content).then(() => {
+      showSuccessToast(
+        language === "de"
+          ? "In die Zwischenablage kopiert!"
+          : "Copied to clipboard!"
+      );
+    });
+  };
 
   return (
     <div className="pb-20">
@@ -608,7 +627,7 @@ export default function CourseDetail() {
         onTabChange={setActiveTab}
       />
 
-      <main className="max-w-7xl mx-auto py-4 sm:py-6 md:py-10">
+      <main className="max-w-7xl mx-auto py-2">
         {activeTab === "overview" && (
             <CourseOverviewTab 
                 course={course} 
@@ -675,6 +694,7 @@ export default function CourseDetail() {
                 onTopicClick={handleTopicClick}
                 onBackToTopics={handleBackToTopics}
                 onPostReply={handlePostReply}
+                onCopyMessage={handleCopyMessage}
             />
         )}
       </main>

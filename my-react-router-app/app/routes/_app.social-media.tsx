@@ -21,7 +21,7 @@ export default function SocialMedia() {
   const facultyChannels = getFacultyChannels(t);
 
   return (
-    <main className="max-w-7xl mx-auto relative z-10 space-y-8 sm:space-y-12">
+    <main className="max-w-7xl mx-auto relative z-10 space-y-6 sm:space-y-8">
       {/* Header Section */}
       <div className="animate-in fade-in slide-in-from-top-4 duration-700">
         <PageHeader 
@@ -48,8 +48,8 @@ export default function SocialMedia() {
 
       {/* Faculty Channels Section */}
       <section className="animate-in fade-in slide-in-from-bottom-4 duration-700 delay-200">
-        <div className="rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-card/30 backdrop-blur-xl p-6 sm:p-10 md:p-16 border border-border relative overflow-hidden">
-          <div className="absolute -top-24 -right-24 w-64 h-64 bg-iu-purple blur-[80px] rounded-full" />
+        <div className="rounded-2xl sm:rounded-[2.5rem] md:rounded-[3rem] bg-card/30 backdrop-blur-xl p-6 sm:p-10 md:p-14 lg:p-16 border border-border relative overflow-hidden">
+          <div className="absolute -top-16 -right-16 sm:-top-24 sm:-right-24 w-48 h-48 sm:w-64 sm:h-64 bg-iu-purple blur-[80px] rounded-full" />
 
           <SectionHeader
             icon={GraduationCap}
@@ -115,4 +115,3 @@ export default function SocialMedia() {
     </main>
   );
 }
-

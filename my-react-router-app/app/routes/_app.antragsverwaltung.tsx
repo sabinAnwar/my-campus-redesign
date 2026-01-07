@@ -71,7 +71,7 @@ export default function AntragsVerwaltung() {
       <div className="absolute top-[-10%] right-[-10%] w-[50%] h-[50%] bg-iu-blue/5 blur-[120px] rounded-full pointer-events-none" />
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-iu-blue/3 blur-[100px] rounded-full pointer-events-none" />
 
-      <main className="relative z-10 max-w-[1400px] mx-auto py-8 sm:py-12">
+      <main className="relative z-10 max-w-[1400px] mx-auto py-2">
         {/* Navigation */}
         <AntragsHeader t={t} language={language} />
 
@@ -79,7 +79,7 @@ export default function AntragsVerwaltung() {
         <ApplicationStats stats={stats} t={t} />
 
         {/* Filters Section */}
-        <div className="my-8">
+        <div className="my-6 sm:my-8">
           <FilterBar
             t={t}
             searchQuery={searchQuery}
@@ -92,7 +92,7 @@ export default function AntragsVerwaltung() {
         </div>
 
         {/* Applications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
           {filteredItems.map((application) => (
             <ApplicationCard
               key={application.id}
@@ -106,8 +106,8 @@ export default function AntragsVerwaltung() {
 
         {/* Empty State */}
         {filteredItems.length === 0 && (
-          <div className="text-center py-20 bg-card/50 backdrop-blur-xl border border-border border-dashed rounded-[3rem]">
-            <p className="text-muted-foreground font-medium">{t.noResults}</p>
+          <div className="text-center py-10 sm:py-16 bg-card/50 backdrop-blur-xl border border-border border-dashed rounded-[2rem] sm:rounded-[3rem]">
+            <p className="text-sm sm:text-base text-muted-foreground font-medium">{t.noResults}</p>
           </div>
         )}
       </main>

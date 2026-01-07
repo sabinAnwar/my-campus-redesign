@@ -15,7 +15,7 @@ interface CourseTabNavigationProps {
 export function CourseTabNavigation({ tabs, activeTab, onTabChange }: CourseTabNavigationProps) {
   return (
     <div className="border-t border-border/30 bg-card/10">
-      <div className="max-w-7xl mx-auto">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center gap-1 overflow-x-auto py-2 sm:py-3 px-2 sm:px-4 lg:px-8 no-scrollbar scroll-smooth">
           {tabs.map((tab) => (
             <button

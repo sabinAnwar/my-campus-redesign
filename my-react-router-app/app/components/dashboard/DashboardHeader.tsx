@@ -10,7 +10,7 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 md:gap-8 pb-4 sm:pb-6 border-b border-border/10 mb-4 sm:mb-6 md:mb-8">
+    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 md:gap-8 pb-4 sm:pb-6 border-b border-border/10 mb-6 sm:mb-8">
       <div className="flex-1 space-y-3 sm:space-y-4">
         <div className="space-y-3 sm:space-y-4">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight mb-1 sm:mb-2">
@@ -27,7 +27,7 @@ export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderPro
         <div className="flex flex-wrap gap-3 sm:gap-4">
           <Link
             to="/benefits"
-            className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-iu-blue text-white font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl shadow-iu-blue/20 active:scale-95 group"
+            className="inline-flex items-center gap-2 sm:gap-3 px-5 sm:px-6 md:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-iu-blue text-white font-bold text-sm sm:text-base hover:opacity-90 transition-all shadow-xl shadow-iu-blue/20 active:scale-95 group cursor-pointer"
           >
             {t.studentBenefits}
             <ArrowRight className="h-4 w-4 sm:h-5 sm:w-5 group-hover:translate-x-1 transition-transform" />

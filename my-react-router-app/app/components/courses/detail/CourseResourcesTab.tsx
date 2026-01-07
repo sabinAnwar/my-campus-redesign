@@ -57,14 +57,14 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
             >
               <button
                 onClick={() => toggleSection(section.id)}
-                className="w-full px-6 sm:px-8 py-5 sm:py-7 flex items-center justify-between hover:bg-muted/30 transition-all text-left group"
+                className="w-full px-5 sm:px-8 py-4 sm:py-7 flex items-center justify-between hover:bg-muted/30 transition-all text-left group"
               >
                 <div className="flex items-center gap-4 sm:gap-5">
-                  <div className={`p-3 sm:p-4 rounded-xl sm:rounded-2xl ${colorClass} group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-sm`}>
-                    <section.icon size={24} />
+                  <div className={`p-2.5 sm:p-4 rounded-xl sm:rounded-2xl ${colorClass} group-hover:scale-110 group-hover:rotate-3 transition-transform shadow-sm`}>
+                    <section.icon size={20} />
                   </div>
                   <div>
-                    <span className="text-lg sm:text-xl font-black text-foreground block group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                    <span className="text-base sm:text-xl font-black text-foreground block group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                       {section.label}
                     </span>
                     <span className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1 block">
@@ -77,8 +77,8 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                 </div>
               </button>
 
-              <div className={`px-6 sm:px-8 transition-all duration-500 ease-in-out ${isExpanded ? "max-h-[1000px] pb-6 sm:pb-8 opacity-100" : "max-h-0 pb-0 opacity-0 overflow-hidden"}`}>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-4 border-t border-border/20">
+              <div className={`px-5 sm:px-8 transition-all duration-500 ease-in-out ${isExpanded ? "max-h-[1000px] pb-6 sm:pb-8 opacity-100" : "max-h-0 pb-0 opacity-0 overflow-hidden"}`}>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3 sm:gap-4 pt-4 border-t border-border/20">
                   {section.items.length > 0 ? (
                     section.items.map((item) => (
                       <a

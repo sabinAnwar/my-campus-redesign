@@ -173,7 +173,7 @@ export default function Praxisbericht2() {
       } catch (e: any) {
         console.error("Failed to load praxisberichte", e);
         if (e && e.status === 401) {
-          navigate("/login");
+          navigate("/");
         } else {
           toast.error("Failed to load Praxisberichte");
         }
@@ -489,12 +489,12 @@ export default function Praxisbericht2() {
                 </div>
               )}
             </div>
-            <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2.5rem] border border-border dark:border-white/10 p-8 h-fit">
-              <div className="flex items-center gap-3 mb-8">
-                <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
-                  <Info className="h-6 w-6 text-iu-blue dark:text-white" />
+            <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border dark:border-white/10 p-5 sm:p-6 lg:p-8 h-fit">
+              <div className="flex items-center gap-3 mb-6 sm:mb-8">
+                <div className="p-2.5 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
+                  <Info className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
                 </div>
-                <h3 className="text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
+                <h3 className="text-lg sm:text-xl font-black text-foreground dark:text-white uppercase tracking-tighter">
                   {t.legend}
                 </h3>
               </div>
@@ -653,9 +653,9 @@ function CalendarView({
   const dow = [t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun];
 
   return (
-    <div className="bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border p-8 transition-all duration-500">
-      <div className="flex items-center justify-between mb-8">
-        <div className="text-3xl font-bold text-foreground uppercase tracking-tighter">
+    <div className="bg-card/50 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border p-4 sm:p-6 lg:p-8 transition-all duration-500">
+      <div className="flex items-center justify-between mb-6 sm:mb-8">
+        <div className="text-2xl sm:text-3xl font-bold text-foreground uppercase tracking-tighter">
           {headerDate.toLocaleString(undefined, {
             month: "long",
             year: "numeric",
@@ -750,11 +750,11 @@ function ListView({
 
   if (!sorted.length) {
     return (
-      <div className="bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border p-16 text-center">
-        <div className="p-6 bg-iu-blue/10 dark:bg-iu-blue rounded-3xl w-fit mx-auto mb-6">
-          <ClipboardList className="h-12 w-12 text-iu-blue dark:text-white" />
+      <div className="bg-card/50 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border p-6 sm:p-10 lg:p-16 text-center">
+        <div className="p-4 sm:p-6 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl sm:rounded-3xl w-fit mx-auto mb-5 sm:mb-6">
+          <ClipboardList className="h-10 w-10 sm:h-12 sm:w-12 text-iu-blue dark:text-white" />
         </div>
-        <p className="text-xl text-muted-foreground font-medium">
+        <p className="text-base sm:text-xl text-muted-foreground font-medium">
           {t.noReports}
         </p>
       </div>
@@ -777,11 +777,11 @@ function ListView({
         return (
           <div
             key={String(r.isoWeekKey)}
-            className="p-8 flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between hover:bg-muted/30 transition-all duration-300 group"
+            className="p-5 sm:p-6 lg:p-8 flex flex-col gap-4 sm:gap-6 sm:flex-row sm:items-center sm:justify-between hover:bg-muted/30 transition-all duration-300 group"
           >
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-4 flex-wrap mb-3">
-                <div className="text-3xl font-bold text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                <div className="text-xl sm:text-2xl lg:text-3xl font-bold text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                   {r.isoWeekKey}
                 </div>
                 <span
@@ -806,7 +806,7 @@ function ListView({
             </div>
             <div className="flex items-center gap-3 shrink-0">
               <button
-                className="px-6 py-3 text-sm font-bold rounded-xl border border-border text-foreground bg-card/50 hover:bg-muted/50 transition-all"
+                className="px-5 sm:px-6 py-2.5 sm:py-3 text-sm font-bold rounded-xl border border-border text-foreground bg-card/50 hover:bg-muted/50 transition-all"
                 onClick={() => {
                   if (typeof r.isoWeekKey === "string" && onOpen)
                     onOpen(r.isoWeekKey);
@@ -977,7 +977,7 @@ function WeekModal({
       const err: any = e;
       console.error(err);
       if (err && err.status === 401) {
-        navigate("/login");
+        navigate("/");
       } else {
         const msg = err?.message || "Failed to save week";
         toast.error(msg);
@@ -994,16 +994,16 @@ function WeekModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl bg-card/50 backdrop-blur-xl rounded-[2.5rem] border border-border overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-5xl bg-card/50 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="px-8 py-8 border-b border-border bg-muted/50 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="p-4 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl border border-iu-blue/20 dark:border-iu-blue">
-              <ClipboardList className="h-8 w-8 text-iu-blue dark:text-white" />
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-b border-border bg-muted/50 flex items-center justify-between">
+          <div className="flex items-center gap-4 sm:gap-6">
+            <div className="p-3 sm:p-4 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl border border-iu-blue/20 dark:border-iu-blue">
+              <ClipboardList className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-iu-blue dark:text-white" />
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <h2 className="text-3xl font-black text-foreground tracking-tight">
+                <h2 className="text-xl sm:text-2xl lg:text-3xl font-black text-foreground tracking-tight">
                   {weekKey}
                 </h2>
                 {report?.status && (
@@ -1034,12 +1034,12 @@ function WeekModal({
               )}
             </div>
           </div>
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex flex-col items-end">
               <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
                 {t.totalHours}
               </div>
-              <div className="text-2xl font-bold text-iu-blue dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-iu-blue dark:text-white">
                 {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
               </div>
             </div>
@@ -1047,7 +1047,7 @@ function WeekModal({
               className="p-3 hover:bg-muted/50 rounded-2xl text-muted-foreground hover:text-foreground transition-all duration-300"
               onClick={onClose}
             >
-              <X className="h-6 w-6" />
+              <X className="h-5 w-5 sm:h-6 sm:w-6" />
             </button>
           </div>
         </div>
@@ -1126,33 +1126,33 @@ function WeekModal({
             </div>
 
             {/* Days Table */}
-            <div className="bg-card/50 rounded-3xl border border-border overflow-hidden">
+            <div className="bg-card/50 rounded-2xl sm:rounded-3xl border border-border overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
                     <tr className="bg-muted/50 text-muted-foreground border-b border-border">
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.day}
                       </th>
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.from}
                       </th>
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.till}
                       </th>
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.hours}
                       </th>
-                      <th className="text-center px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-center px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.holiday}
                       </th>
-                      <th className="text-center px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-center px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.hold}
                       </th>
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.rating}
                       </th>
-                      <th className="text-left px-6 py-4 font-bold uppercase tracking-widest text-[10px]">
+                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.notes}
                       </th>
                     </tr>
@@ -1163,13 +1163,13 @@ function WeekModal({
                         key={k}
                         className={`transition-colors ${daysState[k]?.holiday ? "bg-muted/20 opacity-50" : "hover:bg-muted/30"}`}
                       >
-                        <td className="px-6 py-4 whitespace-nowrap">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                           <div className="font-bold text-foreground">{k}</div>
                           <div className="text-[10px] text-muted-foreground font-bold">
                             {weekDates[idx]?.toLocaleDateString?.() || ""}
                           </div>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
                           <input
                             type="time"
                             className="w-full rounded-xl border border-border bg-background text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:dark:invert"
@@ -1183,7 +1183,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
                           <input
                             type="time"
                             className="w-full rounded-xl border border-border bg-background text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all [&::-webkit-calendar-picker-indicator]:opacity-100 [&::-webkit-calendar-picker-indicator]:dark:invert"
@@ -1197,7 +1197,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-6 py-4 text-iu-blue dark:text-white font-bold">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-iu-blue dark:text-white font-bold">
                           {(() => {
                             const d = daysState[k];
                             if (!d || d.holiday) return "–";
@@ -1210,7 +1210,7 @@ function WeekModal({
                             return `${h}h ${m}m`;
                           })()}
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-center">
                           <input
                             type="checkbox"
                             className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
@@ -1231,7 +1231,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-6 py-4 text-center">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-center">
                           <input
                             type="checkbox"
                             className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
@@ -1244,7 +1244,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
                           <select
                             className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
                             value={daysState[k]?.mood || ""}
@@ -1262,7 +1262,7 @@ function WeekModal({
                             <option value="angry"> {t.angry}</option>
                           </select>
                         </td>
-                        <td className="px-6 py-4">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
                           <input
                             type="text"
                             className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
@@ -1285,12 +1285,12 @@ function WeekModal({
 
             {/* Tasks Section */}
             <div className="space-y-6">
-              <div className="flex items-center justify-between">
+              <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
-                    <FileEdit className="h-6 w-6 text-iu-blue dark:text-white" />
+                  <div className="p-2.5 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
+                    <FileEdit className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
                   </div>
-                  <h3 className="text-xl font-black text-foreground tracking-tight">
+                  <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
                     Weekly Summary
                   </h3>
                 </div>
@@ -1301,17 +1301,17 @@ function WeekModal({
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
                 <div className="lg:col-span-2">
                   <textarea
-                    className="w-full min-h-[200px] rounded-3xl border border-border bg-muted/50 text-foreground px-6 py-6 text-sm focus:outline-none focus:ring-2 focus:ring-iu-blue transition-all"
+                    className="w-full min-h-[160px] sm:min-h-[200px] rounded-2xl sm:rounded-3xl border border-border bg-muted/50 text-foreground px-4 sm:px-6 py-4 sm:py-6 text-sm focus:outline-none focus:ring-2 focus:ring-iu-blue transition-all"
                     value={tasks}
                     onChange={(e) => setTasks(e.target.value)}
                     placeholder="Describe your practical work and achievements this week..."
                   />
                 </div>
                 <div className="space-y-6">
-                  <div className="bg-muted/50 rounded-3xl border border-border p-6">
+                  <div className="bg-muted/50 rounded-2xl sm:rounded-3xl border border-border p-5 sm:p-6">
                     <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
                       Grade (optional)
                     </label>
@@ -1339,7 +1339,7 @@ function WeekModal({
         </div>
 
         {/* Modal Footer */}
-        <div className="px-8 py-8 border-t border-border bg-muted/50 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-6">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-t border-border bg-muted/50 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 sm:gap-6">
           <div className="flex items-center justify-end gap-4">
             <button
               onClick={onClose}

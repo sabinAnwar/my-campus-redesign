@@ -10,7 +10,6 @@
       }
     },
     "routeIdToServerBundleId": {
-      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -35,10 +34,6 @@
       "routes/_app.certificates.transcript": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.news": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.news.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.users._index": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.users.new": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.users.$userId": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/_app.events": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.faq": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.contact": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.tasks": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -58,7 +53,8 @@
       "routes/api/news.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/praxisberichte": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/praxisberichte.$weekKey": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
-      "routes/api.room-bookings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/room-bookings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api/upload": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/reminders.preferences": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/request-password-reset": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -77,20 +73,11 @@
         "path": "",
         "config": {}
       },
-      "routes/home": {
-        "id": "routes/home",
-        "parentId": "root",
-        "file": "app/routes/home.tsx",
-        "index": true,
-        "config": {
-          "runtime": "nodejs"
-        }
-      },
       "routes/login": {
         "id": "routes/login",
         "parentId": "root",
         "file": "app/routes/login.tsx",
-        "path": "login",
+        "index": true,
         "config": {
           "runtime": "nodejs"
         }
@@ -264,41 +251,6 @@
         "path": "news/:slug",
         "config": {}
       },
-      "routes/_app.users": {
-        "id": "routes/_app.users",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.users.tsx",
-        "path": "users",
-        "config": {}
-      },
-      "routes/_app.users._index": {
-        "id": "routes/_app.users._index",
-        "parentId": "routes/_app.users",
-        "file": "app/routes/_app.users._index.tsx",
-        "index": true,
-        "config": {}
-      },
-      "routes/_app.users.new": {
-        "id": "routes/_app.users.new",
-        "parentId": "routes/_app.users",
-        "file": "app/routes/_app.users.new.tsx",
-        "path": "new",
-        "config": {}
-      },
-      "routes/_app.users.$userId": {
-        "id": "routes/_app.users.$userId",
-        "parentId": "routes/_app.users",
-        "file": "app/routes/_app.users.$userId.tsx",
-        "path": ":userId",
-        "config": {}
-      },
-      "routes/_app.events": {
-        "id": "routes/_app.events",
-        "parentId": "routes/_app",
-        "file": "app/routes/_app.events.tsx",
-        "path": "events",
-        "config": {}
-      },
       "routes/_app.faq": {
         "id": "routes/_app.faq",
         "parentId": "routes/_app",
@@ -446,11 +398,20 @@
           "runtime": "nodejs"
         }
       },
-      "routes/api.room-bookings": {
-        "id": "routes/api.room-bookings",
+      "routes/api/room-bookings": {
+        "id": "routes/api/room-bookings",
         "parentId": "root",
-        "file": "app/routes/api.room-bookings.tsx",
+        "file": "app/routes/api/room-bookings.tsx",
         "path": "api/room-bookings",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api/upload": {
+        "id": "routes/api/upload",
+        "parentId": "root",
+        "file": "app/routes/api/upload.tsx",
+        "path": "api/upload",
         "config": {
           "runtime": "nodejs"
         }
@@ -552,11 +513,11 @@
     "basename": "/",
     "buildDirectory": "C:/Users/Dell/website-remix-data-base/website-bauen/my-react-router-app/build",
     "future": {
-      "v8_middleware": false,
       "unstable_optimizeDeps": false,
-      "unstable_splitRouteModules": false,
       "unstable_subResourceIntegrity": false,
-      "unstable_viteEnvironmentApi": false
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
     },
     "routes": {
       "root": {
@@ -564,17 +525,11 @@
         "file": "root.tsx",
         "path": ""
       },
-      "routes/home": {
-        "id": "routes/home",
-        "parentId": "root",
-        "file": "routes/home.tsx",
-        "index": true
-      },
       "routes/login": {
         "id": "routes/login",
         "parentId": "root",
         "file": "routes/login.tsx",
-        "path": "login"
+        "index": true
       },
       "routes/logout": {
         "id": "routes/logout",
@@ -714,36 +669,6 @@
         "file": "routes/_app.news.$slug.tsx",
         "path": "news/:slug"
       },
-      "routes/_app.users": {
-        "id": "routes/_app.users",
-        "parentId": "routes/_app",
-        "file": "routes/_app.users.tsx",
-        "path": "users"
-      },
-      "routes/_app.users._index": {
-        "id": "routes/_app.users._index",
-        "parentId": "routes/_app.users",
-        "file": "routes/_app.users._index.tsx",
-        "index": true
-      },
-      "routes/_app.users.new": {
-        "id": "routes/_app.users.new",
-        "parentId": "routes/_app.users",
-        "file": "routes/_app.users.new.tsx",
-        "path": "new"
-      },
-      "routes/_app.users.$userId": {
-        "id": "routes/_app.users.$userId",
-        "parentId": "routes/_app.users",
-        "file": "routes/_app.users.$userId.tsx",
-        "path": ":userId"
-      },
-      "routes/_app.events": {
-        "id": "routes/_app.events",
-        "parentId": "routes/_app",
-        "file": "routes/_app.events.tsx",
-        "path": "events"
-      },
       "routes/_app.faq": {
         "id": "routes/_app.faq",
         "parentId": "routes/_app",
@@ -858,11 +783,17 @@
         "file": "routes/api/praxisberichte.$weekKey.tsx",
         "path": "api/praxisberichte/:weekKey"
       },
-      "routes/api.room-bookings": {
-        "id": "routes/api.room-bookings",
+      "routes/api/room-bookings": {
+        "id": "routes/api/room-bookings",
         "parentId": "root",
-        "file": "routes/api.room-bookings.tsx",
+        "file": "routes/api/room-bookings.tsx",
         "path": "api/room-bookings"
+      },
+      "routes/api/upload": {
+        "id": "routes/api/upload",
+        "parentId": "root",
+        "file": "routes/api/upload.tsx",
+        "path": "api/upload"
       },
       "routes/api/reminders.preferences": {
         "id": "routes/api/reminders.preferences",
@@ -939,12 +870,8 @@
         "file": "root.tsx",
         "children": [
           {
-            "file": "routes/home.tsx",
-            "index": true
-          },
-          {
             "file": "routes/login.tsx",
-            "path": "login"
+            "index": true
           },
           {
             "file": "routes/logout.tsx",
@@ -1038,28 +965,6 @@
                 "path": "news/:slug"
               },
               {
-                "file": "routes/_app.users.tsx",
-                "children": [
-                  {
-                    "file": "routes/_app.users._index.tsx",
-                    "index": true
-                  },
-                  {
-                    "file": "routes/_app.users.new.tsx",
-                    "path": "new"
-                  },
-                  {
-                    "file": "routes/_app.users.$userId.tsx",
-                    "path": ":userId"
-                  }
-                ],
-                "path": "users"
-              },
-              {
-                "file": "routes/_app.events.tsx",
-                "path": "events"
-              },
-              {
                 "file": "routes/_app.faq.tsx",
                 "path": "faq"
               },
@@ -1139,8 +1044,12 @@
             "path": "api/praxisberichte/:weekKey"
           },
           {
-            "file": "routes/api.room-bookings.tsx",
+            "file": "routes/api/room-bookings.tsx",
             "path": "api/room-bookings"
+          },
+          {
+            "file": "routes/api/upload.tsx",
+            "path": "api/upload"
           },
           {
             "file": "routes/api/reminders.preferences.tsx",

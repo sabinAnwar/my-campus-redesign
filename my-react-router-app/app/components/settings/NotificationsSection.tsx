@@ -57,16 +57,16 @@ export function NotificationsSection({
   ];
 
   return (
-    <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl relative overflow-hidden group">
+    <section className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-10 shadow-2xl relative overflow-hidden group">
       <div className="absolute -top-12 -right-12 w-32 h-32 bg-iu-blue/5 blur-3xl rounded-full group-hover:bg-iu-blue/10 transition-colors" />
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue">
-              <Bell className="w-6 h-6" />
+              <Bell className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
-            <h2 className="text-xl font-black text-foreground tracking-tight">
+            <h2 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
               {labels.notifications}
             </h2>
           </div>
@@ -77,7 +77,7 @@ export function NotificationsSection({
           {items.map((item, i) => (
             <label
               key={i}
-              className="flex items-center justify-between p-4 rounded-2xl border border-border bg-background/30 hover:bg-background/50 transition-all cursor-pointer group/item"
+              className="flex items-center justify-between p-3 sm:p-4 rounded-2xl border border-border bg-background/30 hover:bg-background/50 transition-all cursor-pointer group/item"
             >
               <div className="flex items-center gap-3">
                 <item.icon
@@ -107,7 +107,7 @@ export function NotificationsSection({
         <button
           type="button"
           onClick={onSave}
-          className="w-full mt-8 inline-flex items-center justify-center gap-2 rounded-2xl bg-iu-blue text-white px-6 py-4 text-sm font-black shadow-xl shadow-iu-blue/20 hover:shadow-iu-blue/40 transition-all active:scale-95 uppercase tracking-widest"
+          className="w-full mt-6 sm:mt-8 inline-flex items-center justify-center gap-2 rounded-2xl bg-iu-blue text-white px-6 py-4 text-sm font-black shadow-xl shadow-iu-blue/20 hover:shadow-iu-blue/40 transition-all active:scale-95 uppercase tracking-widest"
         >
           <Save className="w-4 h-4" />
           {labels.save}

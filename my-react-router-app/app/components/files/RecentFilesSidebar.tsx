@@ -15,9 +15,9 @@ export function RecentFilesSidebar({
   onClearTerms,
 }: RecentFilesSidebarProps) {
   return (
-    <div className="space-y-8">
+    <div className="space-y-6 sm:space-y-8">
       {/* Search Results / Tags */}
-      <section className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+      <section className="bg-card border border-border rounded-2xl sm:rounded-3xl p-5 sm:p-6 shadow-sm">
         <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-6 flex items-center gap-3">
           <div className="p-1.5 rounded-lg bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white">
             <Search className="h-4 w-4" />
@@ -51,7 +51,7 @@ export function RecentFilesSidebar({
       </section>
 
       {/* Quick Link Card */}
-      <div className="bg-gradient-to-br from-iu-blue to-iu-purple rounded-3xl p-6 text-white shadow-xl shadow-iu-blue/20">
+      <div className="bg-gradient-to-br from-iu-blue to-iu-purple rounded-2xl sm:rounded-3xl p-5 sm:p-6 text-white shadow-xl shadow-iu-blue/20">
         <h3 className="font-black text-lg mb-2">{t.needHelp}</h3>
         <p className="text-blue-100 text-xs leading-relaxed mb-4">
           {t.needHelpDesc}

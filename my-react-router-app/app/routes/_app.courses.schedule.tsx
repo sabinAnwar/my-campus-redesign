@@ -364,7 +364,7 @@ export default function CourseSchedule() {
       />
 
       {/* Main Calendar Area */}
-      <div className="space-y-12">
+      <div className="space-y-8 sm:space-y-12">
         {viewMode === "list" ? (
           <ScheduleListView
             weekDates={weekDates}
@@ -647,17 +647,18 @@ export default function CourseSchedule() {
         )}
 
         {/* Info & Legend Section */}
-        <div className="space-y-8">
+        <div className="space-y-6 sm:space-y-8">
           <ScheduleLegend t={t} />
 
           {/* Semester Plan Section */}
-          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8">
-            <h3 className="text-xl font-black text-foreground mb-8 flex items-center gap-3">
-              <CalendarDays size={24} className="text-iu-blue dark:text-white" />
+          <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-5 sm:p-6 lg:p-8">
+            <h3 className="text-lg sm:text-xl font-black text-foreground mb-6 sm:mb-8 flex items-center gap-3">
+              <CalendarDays size={20} className="text-iu-blue dark:text-white sm:hidden" />
+              <CalendarDays size={24} className="text-iu-blue dark:text-white hidden sm:block" />
               {t.semesterPlan}
             </h3>
 
-            <div className="space-y-12">
+            <div className="space-y-8 sm:space-y-12">
               {/* Main Phases - Horizontal Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {semesterBlocks
@@ -675,7 +676,7 @@ export default function CourseSchedule() {
                     return (
                       <div
                         key={idx}
-                        className={`p-6 rounded-3xl border transition-all duration-500 relative overflow-hidden group ${
+                        className={`p-5 sm:p-6 rounded-2xl sm:rounded-3xl border transition-all duration-500 relative overflow-hidden group ${
                           block.isActive
                             ? "bg-iu-blue/10 border-iu-blue/30 shadow-xl shadow-iu-blue/10 scale-[1.02]"
                             : "bg-card border-border/50 hover:border-iu-blue/30 hover:shadow-lg hover:shadow-iu-blue/5"
@@ -686,15 +687,16 @@ export default function CourseSchedule() {
                             {language === "de" ? "AKTUELL" : "CURRENT"}
                           </div>
                         )}
-                        <div className="flex items-center gap-5">
+                        <div className="flex items-center gap-4 sm:gap-5">
                           <div
-                            className={`p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 ${
+                            className={`p-3 sm:p-4 rounded-2xl transition-transform duration-500 group-hover:scale-110 ${
                               block.isActive
                                 ? `${block.config.bg} ${block.config.text} shadow-lg`
                                 : `${block.config.bg} ${block.config.text}`
                             }`}
                           >
-                            <Icon size={24} />
+                            <Icon size={20} className="sm:hidden" />
+                            <Icon size={24} className="hidden sm:block" />
                           </div>
                           <div>
                             <div className="text-sm font-black text-foreground mb-1 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">

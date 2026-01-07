@@ -196,7 +196,7 @@ export default function NewsList() {
       {items.length === 0 ? (
         <NewsEmptyState message={t.noResults} />
       ) : (
-        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
+        <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 md:gap-8">
           {items.map((n, i) => (
             <NewsCard
               key={n.slug}

@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, type ReactNode } from "react";
 import { Link } from "react-router";
 import FirstSemesterOnboarding from "~/components/ui/FirstSemesterOnboarding";
 import { useLanguage } from "~/contexts/LanguageContext";
@@ -14,6 +14,7 @@ import {
   DoorOpen,
   Library,
   GraduationCap,
+  GripVertical,
 } from "lucide-react";
 import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/lib/studyPlans";
 import { calculateDaysLeft } from "~/lib/tasksSample";
@@ -48,6 +49,7 @@ import { StudyProgressWidget } from "~/components/dashboard/StudyProgressWidget"
 import { WeekOverview } from "~/components/dashboard/WeekOverview";
 import { UpcomingTasks } from "~/components/dashboard/UpcomingTasks";
 import { RecentCourses } from "~/components/dashboard/RecentCourses";
+import { GradesWidget } from "~/components/dashboard/GradesWidget";
 import { NewsModal } from "~/components/news/NewsModal";
 
 export const loader = async ({ request }: { request: Request }) => {
@@ -348,12 +350,78 @@ export default function Dashboard() {
   const [copied, setCopied] = useState(false);
   const closeBtnRef = useRef<HTMLButtonElement>(null);
 
+  type WidgetKey = "modules" | "grades" | "tasks" | "appointments";
+  const DEFAULT_WIDGET_ORDER: WidgetKey[] = [
+    "modules",
+    "grades",
+    "tasks",
+    "appointments",
+  ];
+  const DEFAULT_WIDGET_VISIBILITY: Record<WidgetKey, boolean> = {
+    modules: true,
+    grades: true,
+    tasks: true,
+    appointments: true,
+  };
+  const [widgetOrder, setWidgetOrder] = useState<WidgetKey[]>(
+    DEFAULT_WIDGET_ORDER
+  );
+  const [widgetVisibility, setWidgetVisibility] = useState<
+    Record<WidgetKey, boolean>
+  >(DEFAULT_WIDGET_VISIBILITY);
+  const [draggedWidget, setDraggedWidget] = useState<WidgetKey | null>(null);
+  const [dragOverWidget, setDragOverWidget] = useState<WidgetKey | null>(null);
+  const widgetRefs = useRef<Record<WidgetKey, HTMLDivElement | null>>({
+    modules: null,
+    grades: null,
+    tasks: null,
+    appointments: null,
+  });
   // Load recent courses from localStorage (client-side only)
   useEffect(() => {
     if (userId) {
       setRecentCourses(getRecentCourses(MAX_RECENT_COURSES, userId));
     }
   }, [userId]);
+
+  // Load widget preferences from localStorage
+  useEffect(() => {
+    const storageKey = userId
+      ? `dashboard-widgets:${userId}`
+      : "dashboard-widgets:guest";
+    try {
+      const raw = localStorage.getItem(storageKey);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      if (Array.isArray(parsed.order)) {
+        setWidgetOrder(
+          parsed.order.filter((k: WidgetKey) => DEFAULT_WIDGET_ORDER.includes(k))
+        );
+      }
+      if (parsed.visibility && typeof parsed.visibility === "object") {
+        setWidgetVisibility((prev) => ({
+          ...prev,
+          ...parsed.visibility,
+        }));
+      }
+    } catch {}
+  }, [userId]);
+
+  // Persist widget preferences
+  useEffect(() => {
+    const storageKey = userId
+      ? `dashboard-widgets:${userId}`
+      : "dashboard-widgets:guest";
+    try {
+      localStorage.setItem(
+        storageKey,
+        JSON.stringify({
+          order: widgetOrder,
+          visibility: widgetVisibility,
+        })
+      );
+    } catch {}
+  }, [userId, widgetOrder, widgetVisibility]);
 
   // Auto-slide news carousel
   useEffect(() => {
@@ -554,6 +622,68 @@ export default function Dashboard() {
     },
   ];
 
+  const widgetLabelMap: Record<WidgetKey, string> = {
+    modules: t.modulesLabel ?? t.courses,
+    grades: t.gradesLabel ?? "Grades",
+    tasks: t.tasksLabel ?? t.tasks,
+    appointments: t.appointmentsLabel ?? t.appointments,
+  };
+
+  const widgetContent: Record<WidgetKey, ReactNode> = {
+    modules: (
+      <RecentCourses
+        recentCourses={recentCourses}
+        language={language}
+        t={t}
+      />
+    ),
+    grades: (
+      <GradesWidget
+        averageGrade={averageGrade}
+        language={language}
+        t={t}
+      />
+    ),
+    tasks: (
+      <UpcomingTasks
+        upcomingAssignments={upcomingAssignments}
+        language={language}
+        t={t}
+      />
+    ),
+    appointments: <WeekOverview weekDays={weekDays} t={t} />,
+  };
+
+  const handleDragStart = (key: WidgetKey) => {
+    setDraggedWidget(key);
+  };
+
+  const handleDragOver = (
+    event: React.DragEvent<HTMLDivElement>,
+    key: WidgetKey
+  ) => {
+    event.preventDefault();
+    if (dragOverWidget !== key) setDragOverWidget(key);
+  };
+
+  const handleDrop = (
+    event: React.DragEvent<HTMLDivElement>,
+    key: WidgetKey
+  ) => {
+    event.preventDefault();
+    if (!draggedWidget || draggedWidget === key) {
+      setDraggedWidget(null);
+      setDragOverWidget(null);
+      return;
+    }
+    const next = widgetOrder.filter((k) => k !== draggedWidget);
+    const targetIndex = next.indexOf(key);
+    next.splice(targetIndex, 0, draggedWidget);
+    setWidgetOrder(next);
+    setDraggedWidget(null);
+    setDragOverWidget(null);
+  };
+
   return (
     <div className="max-w-7xl mx-auto">
       <DashboardHeader userName={userName} t={t} getGreeting={getGreeting} />
@@ -583,24 +713,110 @@ export default function Dashboard() {
         t={t}
       />
 
-      <WeekOverview weekDays={weekDays} t={t} />
-
-      <div className="dashboard-grid-container">
-        {/* Row 1: Today's Schedule and Upcoming Tasks (2 columns) */}
-        <div className="dashboard-row-top">
-          <UpcomingTasks
-            upcomingAssignments={upcomingAssignments}
-            language={language}
-            t={t}
-          />
+      <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+        <div className="p-5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-border bg-card/40 backdrop-blur-xl shadow-xl">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+            <div>
+              <h3 className="text-lg sm:text-xl font-black text-foreground">
+                {t.customizeDashboard ?? "Customize dashboard"}
+              </h3>
+              <p className="text-xs sm:text-sm text-muted-foreground font-semibold">
+                {t.dragHint ?? "Drag to reorder"}
+              </p>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  {t.widgetVisibility ?? "Widget visibility"}
+                </p>
+                {DEFAULT_WIDGET_ORDER.map((key) => {
+                  const id = `vis-${key}`;
+                  return (
+                    <label
+                      key={id}
+                      htmlFor={id}
+                      className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-foreground cursor-pointer group"
+                    >
+                      <input
+                        id={id}
+                        type="checkbox"
+                        checked={widgetVisibility[key]}
+                        onChange={() =>
+                          setWidgetVisibility((prev) => ({
+                            ...prev,
+                            [key]: !prev[key],
+                          }))
+                        }
+                        className="rounded border-border text-iu-blue focus:ring-iu-blue"
+                      />
+                      <span className="group-hover:text-iu-blue transition-colors">
+                        {t.showWidget ?? "Show"} {widgetLabelMap[key]}
+                      </span>
+                    </label>
+                  );
+                })}
+              </div>
+              <div className="space-y-2">
+                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">
+                  {t.widgetOrder ?? "Widget order"}
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {widgetOrder.map((key) => (
+                    <span
+                      key={`order-${key}`}
+                      className="px-3 py-1 rounded-full bg-muted text-[10px] sm:text-xs font-bold uppercase tracking-widest text-foreground"
+                    >
+                      {widgetLabelMap[key]}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
 
-        {/* Row 2: Recently Visited Courses */}
-        <RecentCourses
-          recentCourses={recentCourses}
-          language={language}
-          t={t}
-        />
+        <div className="space-y-6 sm:space-y-8">
+          {widgetOrder
+            .filter((key) => widgetVisibility[key])
+            .map((key) => (
+              <div
+                key={key}
+                ref={(el) => {
+                  widgetRefs.current[key] = el;
+                }}
+                onDragOver={(event) => handleDragOver(event, key)}
+                onDrop={(event) => handleDrop(event, key)}
+                className={`rounded-2xl sm:rounded-[2rem] border border-dashed p-3 sm:p-4 transition-all ${
+                  dragOverWidget === key
+                    ? "border-iu-blue/70 bg-iu-blue/5"
+                    : "border-border/60"
+                }`}
+              >
+                <div className="flex items-center justify-between px-2 pb-3">
+                  <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">
+                    {widgetLabelMap[key]}
+                  </span>
+                  <span className="inline-flex items-center gap-2 text-[10px] sm:text-xs font-bold text-muted-foreground">
+                    <button
+                      type="button"
+                      draggable
+                      onDragStart={() => handleDragStart(key)}
+                      onDragEnd={() => {
+                        setDraggedWidget(null);
+                        setDragOverWidget(null);
+                      }}
+                      aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}
+                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/50 hover:bg-iu-blue/10 hover:text-iu-blue transition-all cursor-grab active:cursor-grabbing focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
+                    >
+                      <GripVertical className="h-4 w-4" aria-hidden="true" />
+                      <span className="sr-only sm:not-sr-only text-[10px] font-black uppercase tracking-widest">{t.dragHint ?? "Drag to reorder"}</span>
+                    </button>
+                  </span>
+                </div>
+                {widgetContent[key]}
+              </div>
+            ))}
+        </div>
       </div>
 
       {/* Onboarding für Erstis */}

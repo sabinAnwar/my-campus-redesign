@@ -31,14 +31,14 @@ export function DatabasesSection({
   const otherDatabases = databases.filter((db) => !db.featured);
 
   return (
-    <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-10 shadow-2xl">
-      <div className="flex items-center justify-between mb-10">
+    <div className="bg-card/60 backdrop-blur-xl rounded-[2.5rem] border border-border p-6 sm:p-10 shadow-2xl">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6 sm:mb-10">
         <div className="flex items-center gap-4">
           <div className="p-3 bg-iu-blue/10 rounded-2xl">
-            <Database className="h-8 w-8 text-iu-blue" />
+            <Database className="h-7 w-7 sm:h-8 sm:w-8 text-iu-blue" />
           </div>
           <div>
-            <h2 className="text-3xl font-black text-foreground tracking-tight">
+            <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
               {title}
             </h2>
             <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mt-1">
@@ -46,27 +46,27 @@ export function DatabasesSection({
             </p>
           </div>
         </div>
-        <button className="px-6 py-2 bg-iu-blue/10 text-iu-blue font-black rounded-full hover:bg-iu-blue hover:text-white transition-all text-sm uppercase tracking-widest flex items-center gap-2">
+        <button className="px-5 sm:px-6 py-2.5 bg-iu-blue/10 text-iu-blue font-black rounded-full hover:bg-iu-blue hover:text-white transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 w-fit">
           {viewAllLabel} <ChevronRight className="h-4 w-4" />
         </button>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
         {featuredDatabases.map((db) => (
           <a
             key={db.id}
             href={db.url}
             target="_blank"
             rel="noopener noreferrer"
-            className="group flex items-start gap-5 p-6 rounded-3xl border border-border/50 hover:border-iu-blue/50 hover:bg-iu-blue/5 transition-all duration-300"
+            className="group flex items-start gap-4 sm:gap-5 p-5 sm:p-6 rounded-3xl border border-border/50 hover:border-iu-blue/50 hover:bg-iu-blue/5 transition-all duration-300"
           >
 
-            <div className="p-4 rounded-2xl bg-iu-blue/10 group-hover:scale-110 transition-transform duration-500">
-              <DynamicIcon name={db.icon} className="h-6 w-6 text-iu-blue" />
+            <div className="p-3 sm:p-4 rounded-2xl bg-iu-blue/10 group-hover:scale-110 transition-transform duration-500">
+              <DynamicIcon name={db.icon} className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">
-                <h3 className="text-lg font-black text-foreground group-hover:text-iu-blue transition-colors">
+                <h3 className="text-base sm:text-lg font-black text-foreground group-hover:text-iu-blue transition-colors">
                   {db.name}
                 </h3>
                 <ExternalLink className="h-4 w-4 text-muted-foreground opacity-0 group-hover:opacity-100 transition-all translate-x-[-10px] group-hover:translate-x-0" />

@@ -63,7 +63,7 @@ export function Sidebar({
       <div className="hidden md:flex h-24 items-center justify-between px-6 border-b border-border">
         <Link
           to="/dashboard"
-          className="flex items-center gap-3 group"
+          className="flex items-center gap-3 group cursor-pointer"
           aria-label="IU International University Dashboard"
         >
           <div className="relative">
@@ -93,43 +93,48 @@ export function Sidebar({
       </div>
 
       {/* Navigation Links */}
-      <nav className="flex-1 overflow-y-auto py-6 px-4 space-y-1.5">
-        {navItems.map((item) => {
-          const active = isActive(item.to);
+      <nav className="flex-1 overflow-y-auto py-6 px-4">
+        <ul className="space-y-1.5" role="list">
+          {navItems.map((item) => {
+            const active = isActive(item.to);
 
-          return (
-            <Link
-              key={item.to}
-              to={item.to}
-              onClick={handleNavClick}
-              className={`group relative flex items-center gap-3 px-5 py-4 text-sm font-bold transition-all duration-200 rounded-r-3xl mr-2 ${
-                active
-                  ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
-                  : "text-slate-600 dark:text-white/70 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
-              }`}
-            >
-              {/* Active Indicator Bar */}
-              {active && (
-                <div className="absolute left-0 top-0 bottom-0 w-2 bg-neutral-900 dark:bg-white rounded-r-xl sm:rounded-r-2xl" />
-              )}
+            return (
+              <li key={item.to}>
+                <Link
+                  to={item.to}
+                  onClick={handleNavClick}
+                  aria-current={active ? "page" : undefined}
+                  className={`group relative flex items-center gap-3 px-5 py-4 text-sm font-bold transition-all duration-200 rounded-r-3xl mr-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-iu-blue/50 focus:z-10 ${
+                    active
+                      ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
+                      : "text-slate-600 dark:text-white/70 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
+                  }`}
+                >
+                  {/* Active Indicator Bar */}
+                  {active && (
+                    <div className="absolute left-0 top-0 bottom-0 w-2 bg-neutral-900 dark:bg-white rounded-r-xl sm:rounded-r-2xl" />
+                  )}
 
-              {/* Hover Hint */}
-              {!active && (
-                <div className="absolute left-0 top-2 bottom-2 w-1 bg-neutral-300 dark:bg-neutral-700 rounded-r-xl opacity-0 group-hover:opacity-100 transition-opacity" />
-              )}
+                  {/* Hover Hint */}
+                  {!active && (
+                    <div className="absolute left-0 top-2 bottom-2 w-1 bg-neutral-300 dark:bg-neutral-700 rounded-r-xl opacity-0 group-hover:opacity-100 transition-opacity" />
+                  )}
 
-              <item.icon
-                strokeWidth={active ? 2.5 : 2}
-                className={`h-5 w-5 transition-colors ${
-                  active
-                    ? "text-neutral-900 dark:text-white"
-                    : "group-hover:text-neutral-900 dark:group-hover:text-white"
-                }`}
-              />
-              <span className="tracking-tight flex-1">{item.label}</span>
-            </Link>
-          );
-        })}
+                  <item.icon
+                    strokeWidth={active ? 2.5 : 2}
+                    className={`h-5 w-5 transition-colors ${
+                      active
+                        ? "text-neutral-900 dark:text-white"
+                        : "group-hover:text-neutral-900 dark:group-hover:text-white"
+                    }`}
+                    aria-hidden="true"
+                  />
+                  <span className="tracking-tight flex-1">{item.label}</span>
+                </Link>
+              </li>
+            );
+          })}
+        </ul>
       </nav>
     </aside>
   );

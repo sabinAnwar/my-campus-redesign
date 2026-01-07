@@ -48,9 +48,10 @@ export function PageHeader({
       return (
         <Link
           to={backTo}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          aria-label={backLabel}
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
           {backLabel}
         </Link>
       );
@@ -59,9 +60,10 @@ export function PageHeader({
       return (
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold"
+          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          aria-label={backLabel}
         >
-          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" />
+          <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
           {backLabel}
         </button>
       );
@@ -70,13 +72,13 @@ export function PageHeader({
   };
 
   return (
-    <header className={`mb-8 sm:mb-12 ${className}`}>
+    <header className={`mb-6 sm:mb-10 ${className}`}>
       {renderBack()}
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-6 sm:gap-8">
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-3">
             <div className={`p-2.5 sm:p-3 rounded-2xl ${iconBg} ${iconColor} shadow-sm`}>
-              <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+              <Icon className="w-6 h-6 sm:w-7 sm:h-7" aria-hidden="true" />
             </div>
             <h1 className="text-xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight break-words leading-tight min-w-0 [hyphens:auto]">
               {title}
@@ -123,10 +125,10 @@ export function SectionHeader({
   className = "",
 }: SectionHeaderProps) {
   return (
-    <div className={`flex items-center justify-between gap-4 mb-8 sm:mb-10 ${className}`}>
+    <div className={`flex items-center justify-between gap-4 mb-6 sm:mb-8 ${className}`}>
       <div className="flex items-center gap-3 sm:gap-4">
         <div className={`p-2.5 sm:p-3 rounded-2xl ${iconBg} ${iconColor}`}>
-          <Icon className="w-6 h-6 sm:w-8 sm:h-8" />
+          <Icon className="w-6 h-6 sm:w-8 sm:h-8" aria-hidden="true" />
         </div>
         <div>
           <h2 className="text-lg sm:text-2xl md:text-3xl font-black text-foreground tracking-tight break-words leading-tight min-w-0 [hyphens:auto]">

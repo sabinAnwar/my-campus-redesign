@@ -43,13 +43,13 @@ export default function CurriculumPage() {
     useCurriculumData({ user, language });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-10">
+    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
       <CurriculumHeader t={t} userProgram={userProgram} stats={stats} />
 
       <CurriculumStats stats={stats} t={t} />
 
       {/* CURRICULUM SECTIONS */}
-      <div className="space-y-12 pb-20">
+      <div className="space-y-6 sm:space-y-8 pb-8 sm:pb-12">
         {semesters.map(([semesterName, courses]) => (
           <SemesterSection
             key={semesterName}

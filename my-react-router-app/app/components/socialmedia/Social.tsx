@@ -44,11 +44,11 @@ export const BrandAmbassador = ({
   return (
     <div className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 flex flex-col hover:border-iu-purple/30 transition-all duration-500 group">
       <div className="mb-6 sm:mb-8 md:mb-12">
-        <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-foreground">
+        <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-3 sm:mb-4 flex items-center gap-2 sm:gap-3 text-foreground">
           <Presentation size={20} className="text-iu-purple dark:text-white sm:w-6 sm:h-6" />
           {title}
         </h3>
-        <p className="text-muted-foreground font-medium text-base leading-relaxed">
+        <p className="text-muted-foreground font-medium text-sm sm:text-base leading-relaxed">
           {description}
         </p>
       </div>
@@ -59,10 +59,10 @@ export const BrandAmbassador = ({
             <Users size={20} className="sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-base sm:text-lg text-foreground">
+            <h4 className="font-bold text-sm sm:text-lg text-foreground">
               {whatAwaitsTitle}
             </h4>
-            <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
               {whatAwaitsDesc}
             </p>
           </div>
@@ -73,10 +73,10 @@ export const BrandAmbassador = ({
             <Globe size={20} className="sm:w-6 sm:h-6" />
           </div>
           <div>
-            <h4 className="font-bold text-base sm:text-lg text-foreground">
+            <h4 className="font-bold text-sm sm:text-lg text-foreground">
               {yourProfileTitle}
             </h4>
-            <p className="text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
+            <p className="text-xs sm:text-sm text-muted-foreground font-medium mt-2 leading-relaxed">
               {yourProfileDesc}
             </p>
           </div>
@@ -89,7 +89,7 @@ export const BrandAmbassador = ({
         </p>
         <a
           href="mailto:micro-affiliate@iu.org"
-          className="block w-full text-center py-5 bg-foreground text-background hover:bg-iu-purple hover:text-white font-bold rounded-2xl transition-all duration-300 uppercase tracking-widest text-sm shadow-xl"
+          className="block w-full text-center py-4 sm:py-5 bg-foreground text-background hover:bg-iu-purple hover:text-white font-bold rounded-2xl transition-all duration-300 uppercase tracking-widest text-xs sm:text-sm shadow-xl"
         >
           micro-affiliate@iu.org
         </a>
@@ -128,7 +128,7 @@ export const AlumniDiscounts = ({
     <div className="bg-iu-blue/5 dark:bg-iu-blue/10 border border-iu-blue/20 dark:border-iu-blue/30 rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 relative overflow-hidden group">
       <div className="absolute -bottom-12 -right-12 w-32 h-32 bg-iu-blue/10 blur-[40px] rounded-full" />
 
-      <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 flex items-center gap-2 sm:gap-3 text-iu-blue dark:text-white relative z-10">
+      <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 md:mb-8 flex items-center gap-2 sm:gap-3 text-iu-blue dark:text-white relative z-10">
         <div className="p-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue">
           <Trophy size={20} className="sm:w-6 sm:h-6" />
         </div>
@@ -155,12 +155,12 @@ export const DiscountCard = ({ title, code, note }: DiscountCardProps) => {
   return (
     <div className="bg-background/50 backdrop-blur-xl border border-iu-blue/20 rounded-3xl p-6 shadow-xl group-hover:border-iu-blue transition-colors duration-500">
       <div className="flex justify-between items-start mb-2">
-        <span className="font-bold text-lg text-foreground">{title}</span>
+        <span className="font-bold text-base sm:text-lg text-foreground">{title}</span>
         <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/30 dark:border-iu-blue text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest">
           {code}
         </span>
       </div>
-      <p className="text-xs text-muted-foreground font-medium">{note}</p>
+      <p className="text-[10px] sm:text-xs text-muted-foreground font-medium">{note}</p>
     </div>
   );
 };
@@ -213,10 +213,10 @@ export const ChannelCard = ({ channel }: ChannelCardProps) => {
           <Globe size={16} />
         </div>
       </div>
-      <h3 className="text-base sm:text-lg font-bold text-foreground mb-2 sm:mb-3 leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors line-clamp-2">
+      <h3 className="text-sm sm:text-lg font-bold text-foreground mb-2 sm:mb-3 leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors line-clamp-2">
         {channel.name}
       </h3>
-      <p className="text-xs sm:text-sm text-muted-foreground font-medium leading-relaxed flex-1 line-clamp-3">
+      <p className="text-[10px] sm:text-sm text-muted-foreground font-medium leading-relaxed flex-1 line-clamp-3">
         {channel.description}
       </p>
     </a>
@@ -231,13 +231,13 @@ export const SocialMediaHeader = ({
   iconColor = "text-iu-blue dark:text-white",
 }: SocialMediaHeaderProps) => {
   return (
-    <div className="flex items-center gap-4 mb-12">
-      <div className={`p-3 rounded-2xl ${iconBg} ${iconColor}`}>
-        <Icon size={28} />
+    <div className="flex items-center gap-3 sm:gap-4 mb-8 sm:mb-12">
+      <div className={`p-2.5 sm:p-3 rounded-2xl ${iconBg} ${iconColor}`}>
+        <Icon size={24} />
       </div>
       <div>
-        <h2 className="text-3xl font-bold text-foreground">{title}</h2>
-        <p className="text-sm text-muted-foreground font-medium">{subtitle}</p>
+        <h2 className="text-2xl sm:text-3xl font-bold text-foreground">{title}</h2>
+        <p className="text-xs sm:text-sm text-muted-foreground font-medium">{subtitle}</p>
       </div>
     </div>
   );
@@ -250,11 +250,11 @@ export function AlumniConnect({
 }: AlumniConnectProps) {
   return (
     <div className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-8 md:p-10 hover:border-iu-blue/30 transition-all duration-500 group">
-      <h3 className="text-lg sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 text-foreground">
+      <h3 className="text-base sm:text-xl md:text-2xl font-bold mb-4 sm:mb-6 flex items-center gap-2 sm:gap-3 text-foreground">
         <Globe size={20} className="text-iu-blue dark:text-white sm:w-6 sm:h-6" />
         {title}
       </h3>
-      <p className="text-muted-foreground font-medium text-sm sm:text-base mb-6 sm:mb-8 md:mb-10 leading-relaxed">
+      <p className="text-muted-foreground font-medium text-xs sm:text-base mb-6 sm:mb-8 md:mb-10 leading-relaxed">
         {description}
       </p>
       <div className="flex flex-col sm:flex-row gap-3 sm:gap-4">
