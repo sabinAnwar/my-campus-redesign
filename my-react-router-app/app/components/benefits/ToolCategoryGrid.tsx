@@ -20,7 +20,7 @@ export function ToolCategoryGrid({ t, category }: ToolCategoryGridProps) {
           <h3 className="text-base sm:text-lg md:text-xl font-black tracking-tight text-foreground">
             {category.title}
           </h3>
-          <p className="text-[9px] sm:text-[10px] md:text-xs text-muted-foreground/50 font-black uppercase tracking-widest sm:tracking-[0.2em] mt-0.5 sm:mt-1">
+          <p className="text-[9px] sm:text-[10px] md:text-xs text-foreground/70 dark:text-white/70 font-black uppercase tracking-widest sm:tracking-[0.2em] mt-0.5 sm:mt-1">
             {category.tools.length} {t.tools}
           </p>
         </div>

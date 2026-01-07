@@ -46,9 +46,9 @@ html, body {
   }
 }
 
-@media (min-width: 1024px) {
+@media (min-width: 1280px) {
   .dashboard-row-top {
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: 1fr;
     gap: 2rem;
   }
 }
@@ -68,16 +68,22 @@ html, body {
   display: none;
 }
 
-@media (min-width: 640px) {
+@media (min-width: 768px) {
   .week-days-scroll {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 1rem;
     overflow-x: visible;
     padding-bottom: 0;
   }
+}
+
+@media (min-width: 1100px) {
+  .week-days-scroll {
+    grid-template-columns: repeat(5, 1fr);
+  }
   
-  /* Hide days beyond 5 on tablet/desktop */
+  /* Hide days beyond 5 on desktop */
   .week-days-scroll > *:nth-child(n+6) {
     display: none;
   }
@@ -139,12 +145,16 @@ html, body {
   --color-glass-border: var(--glass-border);
 
   /* IU Specific Colors */
-  --color-iu-blue: #245eeb;
-  --color-iu-pink: #fe4df9;
-  --color-iu-orange: #ffa933;
-  --color-iu-green: #55ff4d;
-  --color-iu-purple: #a74ee2;
-  --color-iu-red: #ff4757;
+  --color-iu-blue: hsl(var(--iu-blue));
+  --color-iu-pink: hsl(var(--iu-pink));
+  --color-iu-orange: hsl(var(--iu-orange));
+  --color-iu-green: hsl(var(--iu-green));
+  --color-iu-purple: hsl(var(--iu-purple));
+  --color-iu-red: hsl(var(--iu-red));
+  --color-iu-teal: hsl(var(--iu-teal));
+  --color-iu-indigo: hsl(var(--iu-indigo));
+  --color-iu-brown: hsl(var(--iu-brown));
+  --color-iu-gold: hsl(var(--iu-gold));
   
   /* Neutral Palette (Apple Style) */
   --color-apple-black: #000000;
@@ -176,13 +186,17 @@ html, body {
 
 /* IU Design System Variables */
 :root {
-  /* IU Colors */
-  --iu-blue: 223 84% 53%;
-  --iu-pink: 301 99% 65%;
-  --iu-orange: 35 100% 60%;
-  --iu-green: 118 100% 65%;
-  --iu-red: 355 100% 64%;
-  --iu-purple: 276 74% 59%;
+  /* IU Colors - Darkened for AAA Accessibility (7:1 Contrast) */
+  --iu-blue: 223 70% 22%;
+  --iu-pink: 312 80% 22%;
+  --iu-orange: 29 90% 22%;
+  --iu-green: 132 55% 22%;
+  --iu-red: 349 85% 22%;
+  --iu-purple: 262 60% 25%;
+  --iu-teal: 190 65% 22%;
+  --iu-indigo: 230 55% 25%;
+  --iu-brown: 24 70% 22%;
+  --iu-gold: 38 85% 25%;
   
   /* Neutral HSLs */
   --apple-black: 0 0% 0%;
@@ -210,13 +224,21 @@ html, body {
   --secondary-foreground: 240 5.9% 10%;
 
   --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3.8% 46.1%;
+  --muted-foreground: 240 3% 20%; /* Darkened for AAA contrast */
 
   --accent: 240 4.8% 95.9%;
   --accent-foreground: 240 5.9% 10%;
 
   --destructive: var(--iu-red);
-  --destructive-foreground: 0 0% 98%;
+  --destructive-foreground: 0 0% 100%;
+
+  --success: 142 55% 22%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 28 80% 22%;
+  --warning-foreground: 0 0% 100%;
+
+  --link: var(--iu-blue);
 
   --border: 240 5.9% 90%;
   --input: 240 5.9% 90%;
@@ -227,13 +249,13 @@ html, body {
   --glass-border: rgba(255, 255, 255, 0.5);
 
   /* IU Raw Variables */
-  --default-cta-color: #2f5ed6;
-  --dark-cta-color: #245eeb;
-  --default-pink-color: #fe4df9;
-  --default-orange-color: #ffa933;
-  --default-green-color: #54ff4e;
-  --default-purple-color: #a74ee2;
-  --default-red-color: #e44d53;
+  --default-cta-color: hsl(var(--iu-blue));
+  --dark-cta-color: hsl(var(--iu-blue));
+  --default-pink-color: hsl(var(--iu-pink));
+  --default-orange-color: hsl(var(--iu-orange));
+  --default-green-color: hsl(var(--iu-green));
+  --default-purple-color: hsl(var(--iu-purple));
+  --default-red-color: hsl(var(--iu-red));
 }
 
 .dark {
@@ -246,28 +268,46 @@ html, body {
   --popover: 0 0% 4%;
   --popover-foreground: 0 0% 100%;
 
-  --primary: 223 84% 53%; /* IU Blue */
+  --primary: 223 60% 20%;
   --primary-foreground: 0 0% 100%;
 
   --secondary: 0 0% 10%;
   --secondary-foreground: 0 0% 100%;
 
   --muted: 0 0% 7%;
-  --muted-foreground: 0 0% 53%;
+  --muted-foreground: 0 0% 72%;
 
   --accent: 0 0% 7%;
   --accent-foreground: 0 0% 100%;
 
-  --destructive: 355 100% 64%; /* IU Red */
-  --destructive-foreground: 0 0% 98%;
+  --destructive: 349 80% 20%;
+  --destructive-foreground: 0 0% 100%;
 
-  --border: 0 0% 10%;
+  --success: 142 55% 20%;
+  --success-foreground: 0 0% 100%;
+
+  --warning: 28 80% 20%;
+  --warning-foreground: 0 0% 100%;
+
+  --link: 210 100% 72%;
+
+  --border: 0 0% 22%;
   --input: 0 0% 4%;
   --ring: 223 84% 53%;
 
   --glass-bg: rgba(0, 0, 0, 0.7);
   --glass-border: rgba(255, 255, 255, 0.1);
+
+  --iu-blue-text: 210 100% 72%;
+  --iu-pink-text: 315 100% 75%;
+  --iu-orange-text: 28 100% 72%;
+  --iu-green-text: 140 70% 72%;
+  --iu-purple-text: 270 80% 78%;
+  --iu-red-text: 350 90% 72%;
+  --iu-teal-text: 190 80% 78%;
+  --iu-indigo-text: 230 85% 78%;
 }
+
 
 html,
 body {
@@ -525,7 +565,6 @@ p, span, div {
     grid-template-columns: repeat(5, 1fr);
   }
 }
-
 /* Filter tabs scroll container */
 .filter-tabs-scroll {
   display: flex;

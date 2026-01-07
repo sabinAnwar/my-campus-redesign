@@ -8,62 +8,63 @@ interface ToolCardProps {
 
 export function ToolCard({ t, tool }: ToolCardProps) {
   return (
-    <article className="group relative rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] p-4 sm:p-6 md:p-8 bg-card/60 border border-border shadow-xl hover:border-iu-blue/30 hover:bg-card hover:shadow-2xl transition-all duration-500 backdrop-blur-xl overflow-hidden">
+    <article className="group relative rounded-[2rem] sm:rounded-[2.5rem] p-5 sm:p-8 bg-card/40 dark:bg-card/30 border border-border/50 dark:border-white/5 shadow-xl hover:border-iu-blue/30 dark:hover:border-iu-blue/50 hover:bg-card dark:hover:bg-card/50 hover:shadow-2xl hover:shadow-iu-blue/5 transition-all duration-500 backdrop-blur-xl overflow-hidden group/card flex flex-col sm:flex-row gap-5 sm:gap-8 items-start sm:items-center">
       {/* Hover background effect */}
-      <div className="absolute top-0 right-0 w-48 sm:w-64 h-48 sm:h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity -mr-24 sm:-mr-32 -mt-24 sm:-mt-32"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 blur-[100px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity -mr-32 -mt-32 pointer-events-none" />
 
-      <div className="flex items-start gap-3 sm:gap-4 md:gap-6 relative z-10">
-        <div
-          className={`h-12 w-12 sm:h-14 sm:w-14 md:h-16 md:w-16 rounded-xl sm:rounded-2xl flex-shrink-0 flex items-center justify-center text-white text-xs sm:text-sm font-bold shadow-xl transition-transform group-hover:scale-110 ${tool.logo.bg}`}
-        >
-          {tool.logo.text}
+      <div
+        className={`h-16 w-16 sm:h-20 sm:w-20 rounded-[1.25rem] sm:rounded-[1.75rem] flex-shrink-0 flex items-center justify-center text-white text-base sm:text-lg font-black shadow-xl transition-all duration-500 group-hover:scale-110 group-hover:rotate-3 relative z-10 ${tool.logo.bg}`}
+      >
+        {tool.logo.text}
+      </div>
+
+      <div className="flex-1 min-w-0 space-y-3 sm:space-y-4 relative z-10">
+        <div className="flex items-center justify-between gap-4">
+          <p className="text-lg sm:text-xl font-black text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+            {tool.name}
+          </p>
+          <div className="p-2 ml-auto rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground/70 dark:text-white/60 group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all">
+            <ExternalLink className="w-4 h-4" />
+          </div>
         </div>
 
-        <div className="flex-1 min-w-0 space-y-2 sm:space-y-3 md:space-y-4">
-          <div className="flex items-center justify-between gap-2 sm:gap-4">
-            <p className="text-sm sm:text-base md:text-lg font-bold text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
-              {tool.name}
-            </p>
-            <ExternalLink className="w-4 h-4 sm:w-5 sm:h-5 text-muted-foreground/20 group-hover:text-iu-blue group-hover:scale-110 transition-all flex-shrink-0" />
-          </div>
+        <p className="text-sm sm:text-base text-muted-foreground dark:text-white/70 font-medium leading-relaxed line-clamp-2">
+          {tool.description}
+        </p>
 
-          <p className="text-xs sm:text-sm md:text-base text-muted-foreground font-medium leading-relaxed">
-            {tool.description}
-          </p>
+        <div className="flex flex-wrap items-center gap-4 sm:gap-6 pt-2">
+          <a
+            href={tool.url}
+            target="_blank"
+            rel="noreferrer"
+            className="inline-flex items-center gap-2 text-iu-blue dark:text-white font-black text-[10px] uppercase tracking-[0.2em] border-b-2 border-iu-blue/10 dark:border-iu-blue/30 hover:border-iu-blue dark:hover:border-white transition-all pb-1 group/link"
+          >
+            {t.open} 
+            <ArrowUpRight className="w-3.5 h-3.5 group-hover/link:translate-x-0.5 group-hover/link:-translate-y-0.5 transition-transform" />
+          </a>
 
-          <div className="flex flex-wrap gap-3 sm:gap-4 md:gap-6 pt-1 sm:pt-2">
+          {tool.support && (
             <a
-              href={tool.url}
+              href={tool.support}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-1.5 sm:gap-2 text-iu-blue font-black text-[9px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest hover:text-iu-blue/80 transition-all border-b-2 border-iu-blue/10 hover:border-iu-blue/40 pb-0.5 sm:pb-1"
+              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white/50 hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
             >
-              {t.open} <ArrowUpRight className="w-3 h-3 sm:w-4 sm:h-4" />
+              <LifeBuoy className="w-3.5 h-3.5" />
+              {t.support}
             </a>
+          )}
 
-            {tool.support && (
-              <a
-                href={tool.support}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 sm:gap-2 text-muted-foreground/50 hover:text-iu-blue font-black text-[9px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest transition-all"
-              >
-                <LifeBuoy className="w-3 h-3 sm:w-4 sm:h-4" />
-                {t.support}
-              </a>
-            )}
-
-            {tool.alt && (
-              <a
-                href={tool.alt}
-                target="_blank"
-                rel="noreferrer"
-                className="inline-flex items-center gap-1.5 sm:gap-2 text-muted-foreground/50 hover:text-iu-blue font-black text-[9px] sm:text-[10px] uppercase tracking-wider sm:tracking-widest transition-all"
-              >
-                {t.alternative}
-              </a>
-            )}
-          </div>
+          {tool.alt && (
+            <a
+              href={tool.alt}
+              target="_blank"
+              rel="noreferrer"
+              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white/50 hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+            >
+              {t.alternative}
+            </a>
+          )}
         </div>
       </div>
     </article>

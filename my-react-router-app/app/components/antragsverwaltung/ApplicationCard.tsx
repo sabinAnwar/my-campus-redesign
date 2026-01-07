@@ -40,17 +40,17 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
               {t.categories[application.categoryKey as keyof typeof t.categories]}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-foreground leading-tight group-hover:text-iu-blue transition-colors">
+          <h2 className="text-xl font-bold text-foreground leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
             {t.itemTitles[application.id as keyof typeof t.itemTitles] || application.titleKey}
           </h2>
         </div>
         <div
           className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
             application.status === "approved"
-              ? "border-iu-blue/20 text-iu-blue bg-iu-blue/10"
+              ? "border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue"
               : application.status === "rejected"
-                ? "border-rose-500/20 text-rose-500 bg-rose-500/10"
-                : "border-amber-500/20 text-amber-500 bg-amber-500/10"
+                ? "border-rose-500/20 dark:border-rose-500 text-rose-500 dark:text-white bg-rose-500/10 dark:bg-rose-500"
+                : "border-amber-500/20 dark:border-amber-500 text-amber-500 dark:text-white bg-amber-500/10 dark:bg-amber-500"
           }`}
         >
           {getStatusText(application.status)}
@@ -68,7 +68,7 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
         </div>
         <button
           onClick={() => onOpen(application)}
-          className="flex items-center gap-2 text-sm font-bold text-iu-blue hover:text-iu-blue transition-colors"
+          className="flex items-center gap-2 text-sm font-bold text-iu-blue dark:text-white hover:text-iu-blue transition-colors"
         >
           <span>{t.startApplication}</span>
           <ArrowRight

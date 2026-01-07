@@ -9,18 +9,18 @@ interface GradesTableProps {
 
 export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
   const getGradeColor = (grade: number) => {
-    if (grade <= 1.5) return "text-iu-blue dark:text-iu-blue bg-iu-blue/10 border border-iu-blue/20";
-    if (grade <= 2.5) return "text-iu-blue bg-iu-blue/10 border border-iu-blue/20";
-    if (grade <= 3.5) return "text-iu-orange bg-iu-orange/10 border border-iu-orange/20";
-    return "text-iu-red bg-iu-red/10 border border-iu-red/20";
+    if (grade <= 1.5) return "text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue";
+    if (grade <= 2.5) return "text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue";
+    if (grade <= 3.5) return "text-iu-orange dark:text-white bg-iu-orange/10 dark:bg-iu-orange border border-iu-orange/20 dark:border-iu-orange";
+    return "text-iu-red dark:text-white bg-iu-red/10 dark:bg-iu-red border border-iu-red/20 dark:border-iu-red";
   };
 
   return (
     <div className="bg-card/60 backdrop-blur-xl sm:rounded-[2.5rem] rounded-2xl border border-border shadow-2xl overflow-hidden mb-8 sm:mb-12">
       <div className="p-6 sm:p-10 border-b border-border/50 bg-iu-blue/5">
         <div className="flex items-center gap-3 sm:gap-4">
-          <div className="p-2 sm:p-3 bg-iu-blue/10 rounded-xl sm:rounded-2xl">
-            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-iu-blue" />
+          <div className="p-2 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-xl sm:rounded-2xl">
+            <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-iu-blue dark:text-white" />
           </div>
           <h2 className="text-xl sm:text-3xl font-black text-foreground tracking-tight">
             {t.grades}
@@ -52,10 +52,10 @@ export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
           <tbody className="divide-y divide-border/50">
             {groupedMarks.map(([semester, semesterMarks]) => (
               <React.Fragment key={semester}>
-                <tr className="bg-iu-blue/5">
+                <tr className="bg-iu-blue/5 dark:bg-iu-blue/20">
                   <td
                     colSpan={5}
-                    className="px-4 sm:px-8 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-iu-blue uppercase tracking-[0.2em] sm:tracking-[0.3em]"
+                    className="px-4 sm:px-8 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] sm:tracking-[0.3em]"
                   >
                     {semester}
                   </td>
@@ -65,7 +65,7 @@ export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
                     key={mark.id}
                     className="hover:bg-iu-blue/5 transition-colors group"
                   >
-                    <td className="px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base font-bold text-foreground group-hover:text-iu-blue transition-colors">
+                    <td className="px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                       <div className="flex flex-col gap-1">
                         <span>{mark.course}</span>
                         <div className="flex sm:hidden items-center gap-2 text-[10px] text-muted-foreground">

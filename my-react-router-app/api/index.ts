@@ -147,13 +147,13 @@ function getCookieOptions(req: Request): CookieOptions {
 // Simple current user endpoint (used by dashboard)
 app.get("/api/user", async (req: Request, res: Response) => {
   try {
-    console.log("🔎 /api/user headers", {
+    console.log(" /api/user headers", {
       cookie: req.headers?.cookie || null,
       xSession:
         req.get("x-session-token") || req.get("X-Session-Token") || null,
     });
     const token = getSessionToken(req);
-    console.log("🔑 /api/user resolved token", token);
+    console.log(" /api/user resolved token", token);
     if (!token) return res.status(401).json({ error: "Not authenticated" });
 
     const session = await prisma.session.findUnique({
@@ -161,7 +161,7 @@ app.get("/api/user", async (req: Request, res: Response) => {
       include: { user: true },
     });
     console.log(
-      "🗄️ /api/user session lookup",
+      " /api/user session lookup",
       !!session,
       session?.user ? "has-user" : "no-user"
     );
@@ -217,29 +217,29 @@ app.post(
   try {
     const { email } = req.body;
 
-    console.log("📝 Password reset request for:", email);
+    console.log(" Password reset request for:", email);
     console.log("   req.body:", req.body);
     console.log("   Content-Type:", req.headers["content-type"]);
 
     if (!email || typeof email !== "string") {
-      console.log("❌ Invalid email:", { email, type: typeof email });
+      console.log(" Invalid email:", { email, type: typeof email });
       return res
         .status(400)
         .json({ error: "Please provide a valid email address" });
     }
 
-    console.log("🔍 Looking up user with email:", email.toLowerCase());
+    console.log(" Looking up user with email:", email.toLowerCase());
 
     // Find user by email (case-insensitive)
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
 
-    console.log("👤 User found:", user ? user.email : "none");
+    console.log(" User found:", user ? user.email : "none");
 
     // Always return success even if user doesn't exist (security best practice)
     if (!user) {
-      console.log("⚠️  No user found for email:", email);
+      console.log("  No user found for email:", email);
       return res.json({
         success: true,
         message:
@@ -251,7 +251,7 @@ app.post(
     const resetToken = crypto.randomUUID();
     const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
 
-    console.log("🔐 Generated reset token, updating user...");
+    console.log(" Generated reset token, updating user...");
 
     // Update user with reset token
     await prisma.user.update({
@@ -259,14 +259,14 @@ app.post(
       data: { resetToken, resetTokenExpiry },
     });
 
-    console.log("📧 Sending password reset email...");
+    console.log(" Sending password reset email...");
 
     // Send email
     const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
 
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
 
-    console.log("✅ Password reset email sent to:", email);
+    console.log(" Password reset email sent to:", email);
 
     return res.json({
       success: true,
@@ -284,7 +284,7 @@ app.post(
     } else if (typeof error === "string") {
       message = error;
     }
-    console.error("❌ Error requesting password reset:", message);
+    console.error(" Error requesting password reset:", message);
     if (stack) {
       console.error("   Error stack:", stack);
     }
@@ -433,7 +433,7 @@ app.post(
 
     return res.json({ success: true, valid: true });
   } catch (error: unknown) {
-    console.error("❌ Error verifying reset token:", error);
+    console.error(" Error verifying reset token:", error);
     return res.status(500).json({ error: "Failed to verify token" });
   }
   }
@@ -449,7 +449,7 @@ app.post(
     const { token, password } = req.body;
 
     console.log(
-      "📝 Password reset attempt with token:",
+      " Password reset attempt with token:",
       token?.substring(0, 8) + "..."
     );
 
@@ -494,14 +494,14 @@ app.post(
       },
     });
 
-    console.log("✅ Password reset successfully for user:", user.email);
+    console.log(" Password reset successfully for user:", user.email);
 
     return res.json({
       success: true,
       message: "Password reset successfully!",
     });
   } catch (error: unknown) {
-    console.error("❌ Error resetting password:", error);
+    console.error(" Error resetting password:", error);
     return res.status(500).json({ error: "Failed to reset password" });
   }
   }
@@ -519,7 +519,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
       process.env.NODE_ENV === "production" ? true : !!cronSecret;
 
     if (!isVercelCron && requireSecret && (!cronSecret || secret !== cronSecret)) {
-      console.warn("⚠️  Unauthorized cron request");
+      console.warn("  Unauthorized cron request");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -540,7 +540,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     );
     const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
 
-    console.log(`📧 Cron: Checking reminders for week ${currentWeekKey}`);
+    console.log(` Cron: Checking reminders for week ${currentWeekKey}`);
 
     // Get all students
     const students = await prisma.user.findMany({
@@ -548,7 +548,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
       select: { id: true, email: true, name: true },
     });
 
-    console.log(`👥 Found ${students.length} students`);
+    console.log(` Found ${students.length} students`);
 
     // Find students who haven't submitted for current week
     const submitted = await prisma.praxisReport.findMany({
@@ -562,7 +562,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     const submittedIds = new Set(submitted.map((r: { userId: any; }) => r.userId));
     const targets = students.filter((s: { id: unknown; }) => !submittedIds.has(s.id));
 
-    console.log(`📬 Targeting ${targets.length} students for reminders`);
+    console.log(` Targeting ${targets.length} students for reminders`);
 
     if (dryRun) {
       return res.json({
@@ -618,7 +618,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
         const mailOptions = {
           from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
           to: student.email,
-          subject: `📝 Reminder: Submit your Practical Report for Week ${week}`,
+          subject: ` Reminder: Submit your Practical Report for Week ${week}`,
           html: `
             <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
               <h2 style="margin: 0 0 12px;">Hi ${student.name || "Student"},</h2>
@@ -643,7 +643,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
 
         const info = await transporter.sendMail(mailOptions);
         console.log(
-          `✅ Email sent to ${student.email}`,
+          ` Email sent to ${student.email}`,
           emailService === "test"
             ? `Preview: ${nodemailer.getTestMessageUrl(info)}`
             : ""
@@ -657,13 +657,13 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
           message = err;
         }
         console.error(
-          `❌ Failed to send email to ${student.email}:`,
+          ` Failed to send email to ${student.email}:`,
           message
         );
       }
     }
 
-    console.log(`📊 Sent ${sent}/${targets.length} reminder emails`);
+    console.log(` Sent ${sent}/${targets.length} reminder emails`);
 
     return res.json({
       success: true,
@@ -671,7 +671,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
       currentWeekKey,
     });
   } catch (error: unknown) {
-    console.error("❌ Error in cron reminder:", error);
+    console.error(" Error in cron reminder:", error);
     return res.status(500).json({ error: "Failed to send reminders" });
   }
 });
@@ -701,7 +701,7 @@ app.get("/api/praxisberichte", async (req, res) => {
 
     return res.json({ reports });
   } catch (error: unknown) {
-    console.error("❌ Error fetching praxisberichte:", error);
+    console.error(" Error fetching praxisberichte:", error);
     return res.status(500).json({ error: "Failed to fetch reports" });
   }
 });
@@ -758,7 +758,7 @@ app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
 
     return res.json(report);
   } catch (error: unknown) {
-    console.error("❌ Error updating praxisbericht:", error);
+    console.error(" Error updating praxisbericht:", error);
     return res.status(500).json({ error: "Failed to update report" });
   }
 });
@@ -1142,7 +1142,7 @@ app.get("/api/news", async (req, res) => {
 // ---------------------------------
 app.get("/api/cron/daily-reminders", async (req, res) => {
   try {
-    console.log("🚦 daily-reminders hit", {
+    console.log(" daily-reminders hit", {
       hour: req.query.hour,
       minute: req.query.minute,
       userId: req.query.userId,
@@ -1158,7 +1158,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       requireSecret &&
       (!cronSecret || secret !== cronSecret)
     ) {
-      console.warn("⚠️ daily-reminders unauthorized");
+      console.warn(" daily-reminders unauthorized");
       return res.status(401).json({ error: "Unauthorized" });
     }
 
@@ -1210,7 +1210,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         },
       ];
     } else if (targetUserIdRaw) {
-      console.log("🔎 daily-reminders targeting userId", targetUserIdRaw);
+      console.log(" daily-reminders targeting userId", targetUserIdRaw);
       const user = await prisma.user.findUnique({
         where: { id: Number(targetUserIdRaw) || -1 },
         select: {
@@ -1254,7 +1254,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       });
     }
 
-    console.log("👥 daily-reminders users loaded", users.length);
+    console.log(" daily-reminders users loaded", users.length);
 
     // Get current ISO week key util (same as used elsewhere)
     const now = new Date();
@@ -1364,7 +1364,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           process.env.EMAIL_USER ||
           "noreply@iu-portal.com",
         to: u.email,
-        subject: "🔔 Erinnerung: Praxisbericht heute noch ausfüllen",
+        subject: " Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
           <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
             <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
@@ -1417,7 +1417,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     };
     if (debugMode) summary["userDebug"] = userDebug;
 
-    console.log("✅ daily-reminders complete", summary);
+    console.log(" daily-reminders complete", summary);
     return res.json({
       success: true,
       sent,

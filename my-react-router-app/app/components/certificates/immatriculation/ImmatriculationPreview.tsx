@@ -40,7 +40,7 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
           {t.studentId}: {studentData.studentId}
         </p>
         <p className="text-center text-sm sm:text-xl font-medium opacity-80">{t.isEnrolled}</p>
-        <p className="text-center text-lg sm:text-2xl font-bold text-iu-blue tracking-tight px-2">
+        <p className="text-center text-lg sm:text-2xl font-bold text-iu-blue dark:text-white tracking-tight px-2">
           {studentData.program}
         </p>
         <p className="text-center text-sm sm:text-xl font-medium leading-relaxed px-2">
@@ -58,8 +58,8 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
 
       <div className="mt-8 sm:mt-16 pt-6 sm:pt-10 border-t border-border/50 flex flex-col sm:flex-row justify-between items-center gap-6 sm:gap-8 relative z-10">
         <div className="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-          <div className="w-14 h-14 sm:w-20 sm:h-20 border-4 border-iu-blue/20 rounded-xl sm:rounded-2xl flex items-center justify-center bg-iu-blue/5 shadow-inner shrink-0">
-            <Shield className="h-7 w-7 sm:h-10 sm:w-10 text-iu-blue" />
+          <div className="w-14 h-14 sm:w-20 sm:h-20 border-4 border-iu-blue/20 dark:border-iu-blue/40 rounded-xl sm:rounded-2xl flex items-center justify-center bg-iu-blue/5 dark:bg-iu-blue/20 shadow-inner shrink-0">
+            <Shield className="h-7 w-7 sm:h-10 sm:w-10 text-iu-blue dark:text-white" />
           </div>
           <div className="min-w-0">
             <p className="text-[8px] sm:text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest mb-0.5 sm:mb-1">
@@ -72,7 +72,7 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
         </div>
         <div className="text-center sm:text-right w-full sm:w-auto">
           <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-3 text-[10px] sm:text-sm text-muted-foreground font-bold mb-2 sm:mb-4">
-            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-iu-blue/40" />
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60" />
             <span>
               {t.issueDate}: {today}
             </span>
