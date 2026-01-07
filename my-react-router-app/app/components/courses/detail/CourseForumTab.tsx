@@ -96,7 +96,7 @@ export function CourseForumTab({
                             <Flag size={14} className="fill-current" />
                           </div>
                         )}
-                        <h4 className="text-2xl font-black text-foreground truncate group-hover:text-iu-blue transition-colors tracking-tight">
+                        <h4 className="text-2xl font-black text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight">
                           {topic.title}
                         </h4>
                       </div>
@@ -110,10 +110,10 @@ export function CourseForumTab({
                           </span>
                         </div>
                         <span className="flex items-center gap-2">
-                          <Clock size={12} className="text-iu-blue/40" />
+                          <Clock size={12} className="text-iu-blue/40 dark:text-white/40" />
                           {topic.lastPost}
                         </span>
-                        <span className="flex items-center gap-2 px-3 py-1 bg-iu-blue/5 rounded-lg text-iu-blue">
+                        <span className="flex items-center gap-2 px-3 py-1 bg-iu-blue/5 dark:bg-iu-blue rounded-lg text-iu-blue dark:text-white">
                           <MessageCircle size={12} />
                           {topic.replies} Replies
                         </span>
@@ -138,22 +138,22 @@ export function CourseForumTab({
           {/* Thread Header */}
           <div className="flex items-center gap-6 mb-8 pb-8 border-b border-border/40 flex-shrink-0">
             <button
-              onClick={onBackToTopics}
-              className="p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue hover:text-white transition-all group shadow-sm active:scale-95"
-            >
-              <ArrowLeft
-                size={20}
-                className="group-hover:-translate-x-1 transition-transform"
-              />
-            </button>
+               onClick={onBackToTopics}
+               className="p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-white dark:hover:text-white transition-all group shadow-sm active:scale-95"
+             >
+               <ArrowLeft
+                 size={20}
+                 className="group-hover:-translate-x-1 transition-transform"
+               />
+             </button>
             <div className="flex-1 min-w-0">
               <div className="flex items-center gap-3 mb-2">
                 {selectedTopic.status === "pinned" && (
-                  <span className="px-2 py-0.5 rounded-lg bg-iu-orange/10 text-iu-orange text-[9px] font-black uppercase tracking-wider border border-iu-orange/20">
+                  <span className="px-2 py-0.5 rounded-lg bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white text-[9px] font-black uppercase tracking-wider border border-iu-orange/20 dark:border-iu-orange">
                     Pinned
                   </span>
                 )}
-                <span className="px-2 py-0.5 rounded-lg bg-iu-blue/10 text-iu-blue text-[9px] font-black uppercase tracking-wider border border-iu-blue/20">
+                <span className="px-2 py-0.5 rounded-lg bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-[9px] font-black uppercase tracking-wider border border-iu-blue/20 dark:border-iu-blue">
                   Discussion
                 </span>
               </div>
@@ -193,7 +193,7 @@ export function CourseForumTab({
                 </p>
               </div>
               <div className="flex items-center gap-4">
-                <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 hover:text-iu-blue transition-colors text-xs font-black uppercase tracking-wider text-muted-foreground">
+                <button className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors text-xs font-black uppercase tracking-wider text-muted-foreground dark:text-white/60">
                   <ThumbsUp size={14} /> Like
                 </button>
               </div>

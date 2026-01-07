@@ -17,11 +17,11 @@ interface CourseCardProps {
 export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
   const getStatusStyles = (status: string, active: boolean) => {
     if (status === "passed")
-      return "bg-iu-blue/10 text-iu-blue border-iu-blue/20";
+      return "bg-iu-blue text-white border-iu-blue";
     if (status === "failed")
-      return "bg-rose-500/10 text-rose-500 border-rose-500/20";
-    if (active) return "bg-amber-500/10 text-amber-500 border-amber-500/20";
-    return "bg-slate-500/10 text-slate-500 border-slate-500/20";
+      return "bg-iu-red text-white border-iu-red";
+    if (active) return "bg-iu-orange text-white border-iu-orange";
+    return "bg-slate-700 text-white border-slate-700 dark:bg-slate-600 dark:border-slate-600";
   };
 
   return (
@@ -40,7 +40,7 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
       <div className="p-4 sm:p-5 md:p-8 flex flex-col h-full">
         {/* Card Header */}
         <div className="flex items-center justify-between mb-3 sm:mb-4 md:mb-6">
-          <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-muted-foreground uppercase tracking-widest">
+          <span className="text-[9px] sm:text-[10px] md:text-xs font-bold text-foreground uppercase tracking-widest">
             {course.semester}
           </span>
           <div
@@ -48,8 +48,8 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
           >
             {course.status === "passed"
               ? language === "de"
-                ? `✓ ${course.markValue?.toFixed(1)}`
-                : `✓ ${course.markValue?.toFixed(1)}`
+                ? ` ${course.markValue?.toFixed(1)}`
+                : ` ${course.markValue?.toFixed(1)}`
               : course.status === "failed"
                 ? t.retry
                 : course.active
@@ -59,36 +59,32 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-2 sm:mb-3 md:mb-4 group-hover:text-iu-blue transition-colors line-clamp-2 leading-tight">
+        <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-2 sm:mb-3 md:mb-4 dark:group-hover:text-white group-hover:text-iu-blue transition-colors line-clamp-2 leading-tight">
           {course.title}
         </h3>
 
         {/* Meta Info */}
         <div className="grid grid-cols-2 gap-2 sm:gap-3 md:gap-4 mb-3 sm:mb-4 md:mb-6">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
-            <CalendarDays className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-iu-blue flex-shrink-0" />
+          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-foreground col-span-2">
+            <CalendarDays className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-iu-blue dark:text-white flex-shrink-0" />
             <span className="truncate">{course.startDate}</span>
-          </div>
-          <div className="flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs text-muted-foreground">
-            <UserIcon className="w-3 h-3 sm:w-3.5 sm:h-3.5 text-iu-blue flex-shrink-0" />
-            <span className="truncate">{course.instructor}</span>
           </div>
         </div>
 
         {/* Description - hidden on mobile */}
         <p className="hidden sm:block text-xs sm:text-sm text-muted-foreground line-clamp-2 sm:line-clamp-3 mb-4 sm:mb-6 md:mb-8 flex-grow leading-relaxed">
-          {getTranslatedDescription(course.description || "", language)}
+          {getTranslatedDescription(course.description || "", language as "de" | "en")}
         </p>
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 sm:pt-4 md:pt-6 border-t border-border mt-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-iu-blue font-bold text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-iu-blue dark:text-white font-bold text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">
             <span className="hidden sm:inline">{t.openCourse}</span>
             <span className="sm:hidden">{t.openMobile}</span>
             <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-2 transition-transform" />
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20">
+          <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 dark:bg-iu-blue dark:text-white dark:border-iu-blue">
             <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse" />
             <span className="text-[9px] sm:text-[10px] font-bold">
               {course.credits} CP

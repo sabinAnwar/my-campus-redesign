@@ -36,16 +36,16 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
           </div>
           <div className="flex-1">
             <div className="flex items-center gap-3 mb-4">
-              <h4 className="text-2xl font-black text-iu-red">
+              <h4 className="text-2xl font-black text-iu-red dark:text-white">
                 {language === "de" ? "Nächste Prüfung" : "Upcoming Exam"}
               </h4>
-              <span className="px-3 py-1 rounded-full bg-iu-red/10 text-iu-red text-[10px] font-black uppercase tracking-widest border border-iu-red/20 animate-pulse">
+              <span className="px-3 py-1 rounded-full bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white text-[10px] font-black uppercase tracking-widest border border-iu-red/20 dark:border-iu-red animate-pulse">
                 Live Status
               </span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
                   {language === "de" ? "Datum & Zeit" : "Date & Time"}
                 </p>
                 <p className="text-2xl font-black text-foreground">
@@ -53,7 +53,7 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
                   {language === "de" ? "Modus / Ort" : "Mode / Location"}
                 </p>
                 <p className="text-2xl font-black text-foreground">
@@ -61,10 +61,10 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
                   Anmeldung
                 </p>
-                <p className="text-2xl font-black text-iu-blue flex items-center gap-2">
+                <p className="text-2xl font-black text-iu-blue dark:text-white flex items-center gap-2">
                   <CheckCircle size={24} /> Bestätigt
                 </p>
               </div>
@@ -81,22 +81,22 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
             className="group relative rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-10 hover:border-iu-blue/30 transition-all shadow-sm hover:shadow-2xl"
           >
             <div className="flex items-start justify-between mb-10">
-              <div className="p-5 rounded-3xl bg-iu-blue/10 text-iu-blue shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform">
+              <div className="p-5 rounded-3xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform">
                 <CheckCircle size={32} />
               </div>
-              <div className="px-4 py-1.5 rounded-xl bg-iu-blue/10 text-iu-blue text-[9px] font-black uppercase tracking-[0.2em] border border-iu-blue/20">
+              <div className="px-4 py-1.5 rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-[9px] font-black uppercase tracking-[0.2em] border border-iu-blue/20 dark:border-iu-blue">
                 Module Test
               </div>
             </div>
-            <h4 className="text-2xl font-black text-foreground mb-4 group-hover:text-iu-blue transition-colors tracking-tight">
+            <h4 className="text-2xl font-black text-foreground mb-4 group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight">
               {test.title}
             </h4>
             <div className="flex items-center gap-6 mb-10 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
-                <Clock size={12} className="text-iu-blue" /> 45 Min
+                <Clock size={12} className="text-iu-blue dark:text-white" /> 45 Min
               </span>
               <span className="flex items-center gap-1.5">
-                <ClipboardList size={12} className="text-iu-blue" /> 15 Fragen
+                <ClipboardList size={12} className="text-iu-blue dark:text-white" /> 15 Fragen
               </span>
             </div>
             <a
@@ -121,14 +121,14 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
             className="group relative rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-10 hover:border-iu-purple/30 transition-all shadow-sm hover:shadow-2xl"
           >
             <div className="flex items-start justify-between mb-10">
-              <div className="p-5 rounded-3xl bg-iu-purple/10 text-iu-purple shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform">
+              <div className="p-5 rounded-3xl bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white shadow-inner group-hover:scale-110 group-hover:rotate-3 transition-transform">
                 <Star size={32} />
               </div>
-              <div className="px-4 py-1.5 rounded-xl bg-iu-purple/10 text-iu-purple text-[9px] font-black uppercase tracking-[0.2em] border border-iu-purple/20">
+              <div className="px-4 py-1.5 rounded-xl bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white text-[9px] font-black uppercase tracking-[0.2em] border border-iu-purple/20 dark:border-iu-purple">
                 Feedback
               </div>
             </div>
-            <h4 className="text-2xl font-black text-foreground mb-4 group-hover:text-iu-purple transition-colors tracking-tight">
+            <h4 className="text-2xl font-black text-foreground mb-4 group-hover:text-iu-purple dark:group-hover:text-white transition-colors tracking-tight">
               {evaluation.title}
             </h4>
             <p className="text-muted-foreground text-sm font-medium mb-10 leading-relaxed">

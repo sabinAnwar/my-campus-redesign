@@ -10,8 +10,8 @@ export function TranscriptFilter({ t, showPassedOnly, onToggle }: TranscriptFilt
   return (
     <div className="flex items-center justify-between bg-card/60 backdrop-blur-xl sm:rounded-[2.5rem] rounded-2xl border border-border p-5 sm:p-8 shadow-2xl mb-8 sm:mb-12">
       <div className="flex items-center gap-3 sm:gap-4">
-        <div className="p-2 sm:p-3 bg-muted rounded-xl sm:rounded-2xl">
-          <Filter className="h-5 w-5 sm:h-6 sm:w-6 text-muted-foreground" />
+        <div className="p-2 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-xl sm:rounded-2xl">
+          <Filter className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
         </div>
         <span className="font-black text-foreground uppercase tracking-[0.1em] sm:tracking-[0.2em] text-[10px] sm:text-sm">
           {showPassedOnly ? t.passedOnly : t.allGrades}

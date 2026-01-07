@@ -8,19 +8,23 @@ interface CourseHeaderProps {
   onBack: () => void;
 }
 
-const COLOR_MAP: Record<string, string> = {
-  cyan: "bg-cyan-500/10 text-cyan-500",
-  rose: "bg-rose-500/10 text-rose-500",
-  blue: "bg-blue-500/10 text-blue-500",
-  amber: "bg-amber-500/10 text-amber-500",
-  emerald: "bg-emerald-500/10 text-emerald-500",
-  violet: "bg-violet-500/10 text-violet-500",
+const COLOR_MAP: Record<string, { bg: string; text: string }> = {
+  cyan: { bg: "bg-cyan-500/10 dark:bg-cyan-500", text: "text-cyan-500 dark:text-white" },
+  rose: { bg: "bg-rose-500/10 dark:bg-rose-500", text: "text-rose-500 dark:text-white" },
+  blue: { bg: "bg-iu-blue", text: "text-white" },
+  amber: { bg: "bg-amber-500/10 dark:bg-amber-500", text: "text-amber-500 dark:text-white" },
+  emerald: { bg: "bg-emerald-500/10 dark:bg-emerald-500", text: "text-emerald-500 dark:text-white" },
+  violet: { bg: "bg-violet-500/10 dark:bg-violet-500", text: "text-violet-500 dark:text-white" },
 };
 
 export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
   const colorKey = course?.color || "iu-blue";
-  const colorClass = COLOR_MAP[colorKey] || "bg-iu-blue/10 text-iu-blue";
-  const [iconBg, iconColor] = colorClass.split(" ");
+  const colorConfig = COLOR_MAP[colorKey] || {
+    bg: "bg-iu-blue",
+    text: "text-white",
+  };
+  const iconBg = colorConfig.bg;
+  const iconColor = colorConfig.text;
 
   return (
     <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl border-b border-border/40 -mx-3 sm:-mx-4 md:-mx-6 lg:-mx-10 transition-all duration-300 mb-6">
@@ -28,7 +32,7 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
         <PageHeader
           icon={BookOpen}
           title={course?.title || course?.name || "Course"}
-          subtitle={course?.instructor || ""}
+          subtitle=""
           onBack={onBack}
           backLabel={language === "de" ? "Zurück zu Kursen" : "Back to Courses"}
 
@@ -56,4 +60,3 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
     </div>
   );
 }
-

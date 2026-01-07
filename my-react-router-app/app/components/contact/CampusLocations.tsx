@@ -8,7 +8,7 @@ export function CampusLocations({ t }: CampusLocationsProps) {
   return (
     <div className="bg-card/60 backdrop-blur-xl border border-border sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden">
       <div className="flex items-center gap-3 mb-4 sm:mb-6 pb-4 sm:pb-6 border-b border-border/50">
-        <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 shrink-0">
+        <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 shrink-0">
           <MapPin className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">

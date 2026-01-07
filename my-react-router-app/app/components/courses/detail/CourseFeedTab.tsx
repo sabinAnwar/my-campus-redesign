@@ -25,8 +25,8 @@ export function CourseFeedTab({ language }: CourseFeedTabProps) {
         <div className="absolute bottom-0 left-0 w-64 h-64 bg-iu-purple/5 rounded-full blur-3xl -ml-32 -mb-32" />
 
         <div className="relative z-10">
-          <div className="w-28 h-28 rounded-[2.5rem] bg-iu-blue/10 flex items-center justify-center mx-auto mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-inner">
-            <Rss size={56} className="text-iu-blue" />
+          <div className="w-28 h-28 rounded-[2.5rem] bg-iu-blue/10 dark:bg-iu-blue flex items-center justify-center mx-auto mb-10 group-hover:scale-110 group-hover:rotate-3 transition-transform duration-500 shadow-inner">
+            <Rss size={56} className="text-iu-blue dark:text-white" />
           </div>
 
           <h3 className="text-4xl font-black text-foreground mb-6 tracking-tight">

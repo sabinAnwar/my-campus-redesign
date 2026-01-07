@@ -12,7 +12,7 @@ export function TranscriptHeader({ t }: TranscriptHeaderProps) {
       title={t.title}
       subtitle={t.subtitle}
     >
-      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-sm font-bold w-fit">
+      <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 dark:border-iu-blue bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-sm font-bold w-fit">
         <FileText size={16} />
         <span>{t.officialDocument}</span>
       </div>

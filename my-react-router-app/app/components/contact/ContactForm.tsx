@@ -66,7 +66,7 @@ export function ContactForm({ t, language }: ContactFormProps) {
       <div className="relative z-10">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6 mb-6 pb-6 border-b border-border/50">
           <div className="flex items-center gap-3">
-            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 shrink-0">
+            <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 shrink-0">
               <Mail className="w-5 h-5 sm:w-6 sm:h-6" />
             </div>
             <div>
@@ -78,16 +78,16 @@ export function ContactForm({ t, language }: ContactFormProps) {
               </p>
             </div>
           </div>
-          <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue text-[9px] sm:text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 border border-iu-blue/20 shadow-sm w-fit">
-            <span className="h-1.5 w-1.5 rounded-full bg-iu-blue animate-pulse" />
+          <div className="px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg sm:rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white text-[9px] sm:text-[10px] font-black uppercase tracking-widest inline-flex items-center gap-2 border border-iu-blue/20 dark:border-iu-blue shadow-sm w-fit">
+            <span className="h-1.5 w-1.5 rounded-full bg-iu-blue dark:bg-white animate-pulse" />
             {t.responseTime}
           </div>
         </div>
 
         {submitted ? (
           <div className="bg-iu-blue/5 border border-iu-blue/20 sm:rounded-[2rem] rounded-xl p-8 sm:p-12 text-center animate-in zoom-in-95 duration-500">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-iu-blue/10 rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl">
-              <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-iu-blue" />
+            <div className="w-16 h-16 sm:w-20 sm:h-20 bg-iu-blue/10 dark:bg-iu-blue rounded-full flex items-center justify-center mx-auto mb-4 sm:mb-6 shadow-xl">
+              <CheckCircle2 className="w-8 h-8 sm:w-10 sm:h-10 text-iu-blue dark:text-white" />
             </div>
             <h3 className="text-xl sm:text-3xl font-bold text-foreground mb-2 sm:mb-3">
               {t.sentTitle}
@@ -99,9 +99,9 @@ export function ContactForm({ t, language }: ContactFormProps) {
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8">
             {error && (
-              <div className="bg-iu-red/5 border border-iu-red/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-in slide-in-from-top-2">
-                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-iu-red flex-shrink-0" />
-                <p className="text-iu-red font-bold text-xs sm:text-sm">{error}</p>
+              <div className="bg-iu-red/5 dark:bg-iu-red/20 border border-iu-red/20 rounded-xl sm:rounded-2xl p-4 sm:p-5 flex items-center gap-3 sm:gap-4 animate-in slide-in-from-top-2">
+                <AlertCircle className="w-5 h-5 sm:w-6 sm:h-6 text-iu-red dark:text-white flex-shrink-0" />
+                <p className="text-iu-red dark:text-white font-bold text-xs sm:text-sm">{error}</p>
               </div>
             )}
 

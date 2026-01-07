@@ -63,7 +63,7 @@ export function CourseFilters({
           className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs md:text-sm transition-all whitespace-nowrap border ${
             listFilter === tab.id
               ? "bg-iu-blue text-white border-iu-blue shadow-lg shadow-iu-blue/20"
-              : "bg-card/50 text-muted-foreground border-border hover:border-iu-blue/50 hover:text-foreground"
+              : "bg-card text-foreground border-border hover:border-iu-blue/50 hover:bg-card/80"
           }`}
         >
           <tab.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />
@@ -78,7 +78,7 @@ export function CourseFilters({
                   : t.allMobile}
           </span>
           <span
-            className={`ml-0.5 sm:ml-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[8px] sm:text-[10px] ${listFilter === tab.id ? "bg-white/20 text-white" : "bg-muted text-muted-foreground"}`}
+            className={`ml-0.5 sm:ml-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[11px] font-bold ${listFilter === tab.id ? "bg-white/20 text-white" : "bg-muted text-foreground"}`}
           >
             {tab.count}
           </span>

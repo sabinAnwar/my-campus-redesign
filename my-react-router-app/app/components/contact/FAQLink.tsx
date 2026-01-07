@@ -7,9 +7,9 @@ interface FAQLinkProps {
 
 export function FAQLink({ t }: FAQLinkProps) {
   return (
-    <div className="bg-iu-blue/5 border border-iu-blue/10 sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden group hover:bg-iu-blue/10 transition-all duration-500">
+    <div className="bg-iu-blue/5 dark:bg-iu-blue/20 border border-iu-blue/10 dark:border-iu-blue/30 sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 shadow-xl relative overflow-hidden group hover:bg-iu-blue/10 transition-all duration-500">
       <div className="flex items-center gap-3 mb-3 sm:mb-4">
-        <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 shrink-0">
+        <div className="p-2.5 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm border border-iu-blue/10 dark:border-iu-blue shrink-0">
           <HelpCircle className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
