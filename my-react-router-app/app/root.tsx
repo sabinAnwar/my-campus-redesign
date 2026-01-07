@@ -35,10 +35,11 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
     as: "style",
   },
-  {
-    rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
-  },
+  { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
+  // PWA Manifest
+  { rel: "manifest", href: "/manifest.json" },
+  // Apple Touch Icon for iOS
+  { rel: "apple-touch-icon", href: "/app-icon.png" },
 ];
 
 // THE HTML SHELL (DOCUMENT)
