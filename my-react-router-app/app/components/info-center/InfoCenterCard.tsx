@@ -27,8 +27,8 @@ export function InfoCenterCard({
 }: InfoCenterCardProps) {
   const badgeClasses =
     badge.variant === "amber"
-      ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
-      : "bg-iu-blue/10 text-iu-blue border-iu-blue/20";
+      ? "bg-amber-500/10 dark:bg-amber-500 text-amber-500 dark:text-white border-amber-500/20 dark:border-amber-500"
+      : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue";
 
   return (
     <Link
@@ -37,12 +37,12 @@ export function InfoCenterCard({
       className="group relative overflow-hidden rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8 transition-all duration-500 hover:border-iu-blue/50 hover:shadow-2xl hover:shadow-iu-blue/10 no-underline"
     >
       <div className="absolute top-0 right-0 p-6 opacity-10 group-hover:opacity-20 transition-opacity">
-        <BackgroundIcon size={120} className="text-iu-blue" />
+        <BackgroundIcon size={120} className="text-iu-blue dark:text-white" />
       </div>
 
       <div className="relative z-10">
         <div className="flex items-center justify-between mb-6">
-          <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue group-hover:scale-110 transition-transform duration-500">
+          <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:scale-110 transition-transform duration-500">
             <Icon size={28} />
           </div>
           <span
@@ -53,14 +53,14 @@ export function InfoCenterCard({
           </span>
         </div>
 
-        <h2 className="text-xl font-black text-foreground mb-3 group-hover:text-iu-blue transition-colors">
+        <h2 className="text-xl font-black text-foreground mb-3 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
           {title}
         </h2>
         <p className="text-muted-foreground leading-relaxed mb-8">
           {description}
         </p>
 
-        <div className="flex items-center gap-2 text-iu-blue font-bold text-sm uppercase tracking-widest">
+        <div className="flex items-center gap-2 text-iu-blue dark:text-white font-bold text-sm uppercase tracking-widest">
           {t.viewMore}
           <ArrowRight
             size={16}

@@ -16,8 +16,8 @@ export function SickNoteSection({ t }: SickNoteSectionProps) {
       <div className="relative z-10 flex flex-col lg:flex-row items-center justify-between gap-10">
         <div className="space-y-6">
           <div className="flex items-center gap-4">
-            <div className="p-3 bg-iu-blue/20 rounded-2xl">
-              <AlertCircle className="w-8 h-8 text-iu-blue" />
+            <div className="p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
+              <AlertCircle className="w-8 h-8 text-iu-blue dark:text-white" />
             </div>
             <h2 className="text-3xl font-bold text-foreground">
               {t.sickDuringExams}
@@ -27,12 +27,12 @@ export function SickNoteSection({ t }: SickNoteSectionProps) {
             {t.sickDuringExamsDesc}
           </p>
           <div className="flex flex-wrap gap-3 mt-4">
-            <span className="flex items-center gap-2 bg-muted/50 px-5 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground uppercase tracking-widest hover:border-iu-blue/30 transition-colors">
-              <FileCheck className="w-4 h-4 text-iu-blue" />{" "}
+            <span className="flex items-center gap-2 bg-muted/50 dark:bg-iu-blue px-5 py-2.5 rounded-xl border border-border dark:border-iu-blue text-xs font-bold text-muted-foreground dark:text-white uppercase tracking-widest hover:border-iu-blue/30 transition-colors">
+              <FileCheck className="w-4 h-4 text-iu-blue dark:text-white" />{" "}
               {t.extensionRequest}
             </span>
-            <span className="flex items-center gap-2 bg-muted/50 px-5 py-2.5 rounded-xl border border-border text-xs font-bold text-muted-foreground uppercase tracking-widest hover:border-iu-blue/30 transition-colors">
-              <FileCheck className="w-4 h-4 text-iu-blue" /> {t.certificate}
+            <span className="flex items-center gap-2 bg-muted/50 dark:bg-iu-blue px-5 py-2.5 rounded-xl border border-border dark:border-iu-blue text-xs font-bold text-muted-foreground dark:text-white uppercase tracking-widest hover:border-iu-blue/30 transition-colors">
+              <FileCheck className="w-4 h-4 text-iu-blue dark:text-white" /> {t.certificate}
             </span>
           </div>
         </div>

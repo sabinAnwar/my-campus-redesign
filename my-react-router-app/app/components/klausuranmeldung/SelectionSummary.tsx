@@ -25,7 +25,7 @@ export function SelectionSummary({
       <div className="absolute top-0 right-0 w-32 h-32 bg-iu-blue/10 blur-[50px] rounded-full -translate-y-16 translate-x-16" />
 
       <h3 className="text-xl font-bold text-foreground mb-8 flex items-center gap-2 relative z-10">
-        <Award size={20} className="text-iu-blue" />
+        <Award size={20} className="text-iu-blue dark:text-white" />
         {t.summary}
       </h3>
 
@@ -36,7 +36,7 @@ export function SelectionSummary({
               key={course.id}
               className="p-6 rounded-3xl bg-iu-blue/5 border border-iu-blue/10"
             >
-              <p className="text-[10px] font-black text-iu-blue uppercase tracking-widest mb-2">
+              <p className="text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-widest mb-2">
                 {t.selectedCourse}
               </p>
               <h4 className="text-lg font-bold text-foreground mb-4">

@@ -23,7 +23,7 @@ export function RecommendationsSection({
         <h3 className="text-2xl font-black text-foreground uppercase tracking-widest">
           {t.recommendationTitle(focus)}
         </h3>
-        <span className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-iu-blue/10 text-iu-blue dark:text-iu-blue border border-iu-blue/20">
+        <span className="text-[10px] font-black uppercase tracking-widest px-4 py-1.5 rounded-full bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue">
           {t.recommendationChip}
         </span>
       </div>
@@ -34,7 +34,7 @@ export function RecommendationsSection({
               {idx + 1}
             </span>
             <div>
-              <p className="font-black text-foreground text-lg group-hover:text-iu-blue transition-colors">
+              <p className="font-black text-foreground text-lg group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                 {rec.title} ({rec.code})
               </p>
               <p className="mt-1 text-sm text-muted-foreground font-bold leading-relaxed">

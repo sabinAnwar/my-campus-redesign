@@ -7,8 +7,8 @@ interface InfoCenterFooterProps {
 
 export function InfoCenterFooter({ language }: InfoCenterFooterProps) {
   return (
-    <div className="mt-12 p-6 rounded-[2rem] bg-iu-blue/5 border border-iu-blue/10 flex items-start gap-4">
-      <div className="p-2 rounded-xl bg-iu-blue/10 text-iu-blue shrink-0">
+    <div className="mt-12 p-6 rounded-[2rem] bg-iu-blue/5 dark:bg-iu-blue/20 border border-iu-blue/10 dark:border-iu-blue/30 flex items-start gap-4">
+      <div className="p-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shrink-0">
         <Info size={20} />
       </div>
       <p className="text-sm text-muted-foreground leading-relaxed">

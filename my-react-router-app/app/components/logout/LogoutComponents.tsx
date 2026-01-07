@@ -22,7 +22,7 @@ const TEXT = {
   thanks: "Thank you for using our platform",
   clearing: "Clearing session data",
   redirecting: "Redirecting you to the login page...",
-  goodbye: "We hope to see you again soon! 👋",
+  goodbye: "We hope to see you again soon! ",
 } as const;
 
 // ============================================================================
@@ -165,7 +165,7 @@ export function FloatingSparkles() {
   return (
     <>
       <div className="absolute top-8 right-8 animate-float">
-        <Sparkles className="w-5 h-5 text-iu-blue dark:text-iu-blue" />
+        <Sparkles className="w-5 h-5 text-iu-blue dark:text-white" />
       </div>
       <div className="absolute bottom-8 left-8 animate-float animation-delay-1000">
         <Sparkles className="w-4 h-4 text-orange-500 dark:text-orange-400" />

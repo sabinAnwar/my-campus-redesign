@@ -17,8 +17,8 @@ export function LernassistentHeader({ t }: LernassistentHeaderProps) {
         </span>
       }
       subtitle={t.subtitle}
-      iconBg="bg-gradient-to-br from-violet-500 to-purple-600 shadow-lg shadow-violet-500/20"
-      iconColor="text-white"
+      iconBg="bg-iu-blue/10 dark:bg-iu-blue"
+      iconColor="text-iu-blue dark:text-white"
     />
   );
 }

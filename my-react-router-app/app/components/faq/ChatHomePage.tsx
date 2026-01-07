@@ -20,9 +20,9 @@ export function ChatHomePage({ onNavigate, t, features }: ChatHomePageProps) {
   return (
     <section className="relative flex min-h-[85vh] flex-col items-center justify-center px-4 sm:px-6 py-12 sm:py-20 text-center">
       <div className="relative z-10 max-w-4xl space-y-8 sm:space-y-12">
-        <div className="inline-flex items-center gap-2 sm:gap-3 rounded-full border border-iu-blue/20 bg-iu-blue/10 px-4 sm:px-8 py-2 sm:py-3 shadow-lg backdrop-blur-xl">
-          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-iu-blue animate-pulse" />
-          <span className="text-[8px] sm:text-[10px] font-bold tracking-[0.2em] sm:tracking-[0.4em] text-iu-blue uppercase">
+        <div className="inline-flex items-center gap-2 sm:gap-3 rounded-full border border-iu-blue bg-iu-blue px-4 sm:px-8 py-2 sm:py-3 shadow-lg backdrop-blur-xl">
+          <Sparkles className="h-4 w-4 sm:h-5 sm:w-5 text-white animate-pulse" />
+          <span className="text-[10px] sm:text-xs font-bold tracking-[0.2em] sm:tracking-[0.4em] text-white uppercase">
             IU AI Assistant 2.0
           </span>
         </div>
@@ -58,7 +58,7 @@ export function ChatHomePage({ onNavigate, t, features }: ChatHomePageProps) {
               <div className="absolute top-0 right-0 w-24 sm:w-32 h-24 sm:h-32 bg-iu-blue/5 blur-[40px] sm:blur-[60px] rounded-full opacity-0 group-hover:opacity-100 transition-opacity duration-500 -mr-12 -mt-12"></div>
 
               <div className="relative z-10">
-                <div className="mb-3 sm:mb-6 inline-flex rounded-lg sm:rounded-2xl p-2.5 sm:p-4 bg-iu-blue/10 text-iu-blue group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow">
+                <div className="mb-3 sm:mb-6 inline-flex rounded-lg sm:rounded-2xl p-2.5 sm:p-4 bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow">
                   {card.icon}
                 </div>
                 <h3 className="mb-1.5 sm:mb-3 text-sm sm:text-xl font-bold text-foreground tracking-tight">

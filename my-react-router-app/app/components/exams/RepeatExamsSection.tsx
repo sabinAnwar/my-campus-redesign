@@ -17,8 +17,8 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
         className="w-full flex items-center justify-between p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
       >
         <div className="flex items-center gap-6 pointer-events-none">
-          <div className="p-4 bg-iu-blue/20 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
-            <RefreshCw className="w-8 h-8 text-iu-blue" />
+          <div className="p-4 bg-iu-blue/20 dark:bg-iu-blue rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+            <RefreshCw className="w-8 h-8 text-iu-blue dark:text-white" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-1">
@@ -43,7 +43,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
           <div className="bg-card border border-border rounded-[2rem] overflow-hidden shadow-3xl">
             <div className="bg-muted/50 p-6 border-b border-border flex flex-col md:flex-row justify-between items-center gap-4 sticky top-0 z-10 backdrop-blur-md">
               <div className="flex items-center gap-3 text-sm font-bold text-foreground">
-                <FileText className="w-6 h-6 text-iu-blue" />
+                <FileText className="w-6 h-6 text-iu-blue dark:text-white" />
                 Leitfaden_Wiederholungspruefungen.pdf
               </div>
               <button
@@ -74,7 +74,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
 
               <div className="space-y-4">
                 <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 text-iu-blue w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     1
                   </span>{" "}
                   Allgemeines
@@ -91,7 +91,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
 
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 text-iu-blue w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     2
                   </span>{" "}
                   Klausur
@@ -109,7 +109,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                       wiederholt werden.
                       <br />
                       <br />
-                      <em className="text-iu-blue not-italic font-bold">
+                      <em className="text-iu-blue dark:text-white not-italic font-bold">
                         Ausnahme ab 7. Semester:
                       </em>{" "}
                       Wiederholung auch in regulären Phasen (Februar/August)
@@ -132,19 +132,19 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
 
               <div className="space-y-6">
                 <h3 className="text-xl font-bold text-foreground flex items-center gap-4">
-                  <span className="bg-iu-blue/10 text-iu-blue w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20">
+                  <span className="bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white w-10 h-10 flex items-center justify-center rounded-xl text-lg font-bold border border-iu-blue/20 dark:border-iu-blue">
                     3
                   </span>{" "}
                   Mündliche Prüfungsleistungen
                 </h3>
                 <div className="space-y-6 pl-2">
-                  <div className="border-l-4 border-iu-blue/40 pl-8 py-2 bg-iu-blue/5 rounded-r-[2rem] p-6 shadow-sm">
-                    <h4 className="text-xl font-black text-iu-blue dark:text-iu-blue mb-2 uppercase tracking-tight">
+                  <div className="border-l-4 border-iu-blue/40 dark:border-iu-blue/60 pl-8 py-2 bg-iu-blue/5 dark:bg-iu-blue/20 rounded-r-[2rem] p-6 shadow-sm">
+                    <h4 className="text-xl font-black text-iu-blue dark:text-white mb-2 uppercase tracking-tight">
                       Nach genehmigter Prüfungsunfähigkeit
                     </h4>
                     <ul className="mt-4 space-y-4 text-base font-medium">
                       <li className="flex items-start gap-3">
-                        <span className="text-iu-blue mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
+                        <span className="text-iu-blue dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>
                           <strong className="text-foreground font-black uppercase text-xs tracking-widest">
                             Termin:
@@ -154,7 +154,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <span className="text-iu-blue mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
+                        <span className="text-iu-blue dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>
                           <strong className="text-foreground font-black uppercase text-xs tracking-widest">
                             Thema:
@@ -174,13 +174,13 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                       </li>
                     </ul>
                   </div>
-                  <div className="border-l-4 border-iu-orange/40 pl-8 py-2 bg-iu-orange/5 rounded-r-[2rem] p-6 shadow-sm">
-                    <h4 className="text-xl font-bold text-iu-orange mb-2">
+                  <div className="border-l-4 border-iu-orange/40 dark:border-iu-orange/60 pl-8 py-2 bg-iu-orange/5 dark:bg-iu-orange/20 rounded-r-[2rem] p-6 shadow-sm">
+                    <h4 className="text-xl font-bold text-iu-orange dark:text-white mb-2">
                       Nach unentschuldigtem Fehlen
                     </h4>
                     <ul className="mt-4 space-y-4 text-base font-medium">
                       <li className="flex items-start gap-3">
-                        <span className="text-iu-orange mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
+                        <span className="text-iu-orange dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>
                           <strong className="text-foreground">
                             Termin:
@@ -189,7 +189,7 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
                         </span>
                       </li>
                       <li className="flex items-start gap-3">
-                        <span className="text-iu-orange mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
+                        <span className="text-iu-orange dark:text-white mt-1.5 w-1.5 h-1.5 rounded-full shrink-0 bg-current" />{" "}
                         <span>
                           <strong className="text-foreground">
                             Thema:

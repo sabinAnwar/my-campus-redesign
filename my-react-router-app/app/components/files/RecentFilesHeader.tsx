@@ -26,7 +26,7 @@ export function RecentFilesHeader({
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-8">
         <div className="space-y-4">
           <div className="flex items-center gap-3">
-            <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm">
+            <div className="p-3 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white shadow-sm">
               <Clock size={28} />
             </div>
             <h1 className="text-4xl font-black text-foreground tracking-tight">
@@ -54,8 +54,8 @@ export function RecentFilesHeader({
             onClick={() => setActiveFilter(filter.id)}
             className={`flex items-center gap-2 px-5 py-2.5 rounded-full text-sm font-bold transition-all duration-300 ${
               activeFilter === filter.id
-                ? "bg-blue-600 text-white shadow-lg shadow-blue-500/20 translate-y-[-2px]"
-                : "bg-white dark:bg-neutral-900 text-neutral-600 dark:text-neutral-400 hover:bg-neutral-100 dark:hover:bg-neutral-800 border border-neutral-200 dark:border-neutral-800"
+                ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 translate-y-[-2px]"
+                : "bg-card dark:bg-card text-muted-foreground hover:bg-muted dark:hover:bg-muted border border-border"
             }`}
           >
             <filter.icon className="h-4 w-4" />

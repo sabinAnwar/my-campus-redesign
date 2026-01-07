@@ -1,5 +1,6 @@
 import React from "react";
 import { Database, ExternalLink, ChevronRight } from "lucide-react";
+import { DynamicIcon } from "../ui/DynamicIcon";
 
 interface DatabaseItem {
   id: string;
@@ -59,8 +60,9 @@ export function DatabasesSection({
             rel="noopener noreferrer"
             className="group flex items-start gap-5 p-6 rounded-3xl border border-border/50 hover:border-iu-blue/50 hover:bg-iu-blue/5 transition-all duration-300"
           >
+
             <div className="p-4 rounded-2xl bg-iu-blue/10 group-hover:scale-110 transition-transform duration-500">
-              <db.icon className="h-6 w-6 text-iu-blue" />
+              <DynamicIcon name={db.icon} className="h-6 w-6 text-iu-blue" />
             </div>
             <div className="flex-1">
               <div className="flex items-center gap-2 mb-2">

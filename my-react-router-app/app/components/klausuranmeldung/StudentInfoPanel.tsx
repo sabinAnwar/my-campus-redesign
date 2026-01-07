@@ -10,7 +10,7 @@ export function StudentInfoPanel({ t }: StudentInfoPanelProps) {
   return (
     <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-8 shadow-xl">
       <div className="flex items-center gap-4 mb-6">
-        <div className="w-12 h-12 rounded-2xl bg-iu-blue/10 flex items-center justify-center text-iu-blue">
+        <div className="w-12 h-12 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue flex items-center justify-center text-iu-blue dark:text-white">
           <GraduationCap size={24} />
         </div>
         <div>
@@ -23,7 +23,7 @@ export function StudentInfoPanel({ t }: StudentInfoPanelProps) {
         </div>
       </div>
       <div className="space-y-2">
-        <p className="text-sm font-bold text-iu-blue dark:text-iu-blue">
+        <p className="text-sm font-bold text-iu-blue dark:text-white">
           {STUDENT_DATA.studiengang}
         </p>
         <p className="text-xs font-bold text-muted-foreground uppercase tracking-widest">

@@ -34,7 +34,7 @@ export function GradesLegend({ labels }: GradesLegendProps) {
   return (
     <div className="bg-card/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 shadow-lg">
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-        <div className="p-2 sm:p-2.5 bg-iu-blue/10 text-iu-blue rounded-lg">
+        <div className="p-2 sm:p-2.5 bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white rounded-lg">
           <MoreHorizontal className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         <h3 className="text-lg sm:text-xl font-bold text-foreground tracking-tight">

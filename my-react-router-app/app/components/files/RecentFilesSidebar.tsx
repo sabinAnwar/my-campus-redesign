@@ -17,9 +17,11 @@ export function RecentFilesSidebar({
   return (
     <div className="space-y-8">
       {/* Search Results / Tags */}
-      <section className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-3xl p-6 shadow-sm">
-        <h3 className="text-sm font-black text-neutral-900 dark:text-white uppercase tracking-wider mb-6 flex items-center gap-2">
-          <Search className="h-4 w-4 text-neutral-400" />
+      <section className="bg-card border border-border rounded-3xl p-6 shadow-sm">
+        <h3 className="text-sm font-black text-foreground uppercase tracking-wider mb-6 flex items-center gap-3">
+          <div className="p-1.5 rounded-lg bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white">
+            <Search className="h-4 w-4" />
+          </div>
           {t.recentSearchTerms}
         </h3>
 
@@ -33,7 +35,7 @@ export function RecentFilesSidebar({
               <button
                 key={term}
                 onClick={() => onSearch(term)}
-                className="px-3 py-1.5 bg-neutral-100 dark:bg-neutral-800 hover:bg-neutral-200 dark:hover:bg-neutral-700 text-neutral-600 dark:text-neutral-400 text-xs font-bold rounded-lg transition-colors"
+                className="px-3 py-1.5 bg-muted hover:bg-muted/80 text-muted-foreground text-xs font-bold rounded-lg transition-colors"
               >
                 {term}
               </button>
@@ -49,7 +51,7 @@ export function RecentFilesSidebar({
       </section>
 
       {/* Quick Link Card */}
-      <div className="bg-gradient-to-br from-blue-600 to-blue-800 rounded-3xl p-6 text-white shadow-xl shadow-blue-500/20">
+      <div className="bg-gradient-to-br from-iu-blue to-iu-purple rounded-3xl p-6 text-white shadow-xl shadow-iu-blue/20">
         <h3 className="font-black text-lg mb-2">{t.needHelp}</h3>
         <p className="text-blue-100 text-xs leading-relaxed mb-4">
           {t.needHelpDesc}

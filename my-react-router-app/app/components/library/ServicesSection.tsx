@@ -1,5 +1,6 @@
 import React from "react";
 import { Users } from "lucide-react";
+import { DynamicIcon } from "../ui/DynamicIcon";
 
 interface ServiceItem {
   id: string;
@@ -38,7 +39,7 @@ export function ServicesSection({ services, language, title }: ServicesSectionPr
             <div
               className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl mb-5 bg-${service.color}/10 group-hover:scale-110 transition-transform duration-500`}
             >
-              <service.icon className={`h-7 w-7 text-${service.color}`} />
+              <DynamicIcon name={service.icon} className={`h-7 w-7 text-${service.color}`} />
             </div>
             <h3 className="font-black text-foreground text-base mb-2 group-hover:text-iu-blue transition-colors">
               {language === "de" ? service.titleDe : service.titleEn}

@@ -40,10 +40,6 @@ export const SimpleMarkdown = ({ text }: { text: string }) => {
       const isBullet =
         line.trim().startsWith("- ") || line.trim().startsWith("• ");
       const isNumbered = /^\d+\.\s/.test(line.trim());
-      const isEmoji =
-        /^[📅📝🔄📊🏥📆🎯📄📚📧📖🏫🪪💰🌍📞🧠👋✅❌⚠️💡🎥🗂️💪💰💵]/.test(
-          line.trim()
-        );
 
       if (isBullet) {
         return (
@@ -79,7 +75,7 @@ export const SimpleMarkdown = ({ text }: { text: string }) => {
       return (
         <div
           key={lineIndex}
-          className={isEmoji ? "mt-3 first:mt-0 font-bold" : "font-bold"}
+          className="font-bold"
         >
           {processed}
         </div>

@@ -69,14 +69,14 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
               {/* Type Icon Container */}
               <div
                 className={`p-4 rounded-2xl flex-shrink-0 transition-transform group-hover:scale-110 shadow-lg border ${
-                  isVideo
-                    ? "bg-iu-red/10 border-iu-red/20 text-iu-red"
-                    : isPodcast
-                      ? "bg-iu-purple/10 border-iu-purple/20 text-iu-purple"
-                      : isTest
-                        ? "bg-iu-orange/10 border-iu-orange/20 text-iu-orange"
-                        : "bg-iu-blue/10 border-iu-blue/20 text-iu-blue"
-                }`}
+                isVideo
+                  ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
+                  : isPodcast
+                    ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
+                    : isTest
+                      ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
+                      : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
+              }`}
               >
                 {isVideo ? (
                   <Video className="h-7 w-7" />
@@ -98,28 +98,28 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                   {/* Mediatype Badge */}
                   <span
                     className={`text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
-                      isVideo
-                        ? "bg-iu-red/10 border-iu-red/20 text-iu-red"
-                        : isPodcast
-                          ? "bg-iu-purple/10 border-iu-purple/20 text-iu-purple"
-                          : isTest
-                            ? "bg-iu-orange/10 border-iu-orange/20 text-iu-orange"
-                            : "bg-iu-blue/10 border-iu-blue/20 text-iu-blue"
-                    }`}
+                    isVideo
+                      ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
+                      : isPodcast
+                        ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
+                        : isTest
+                          ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
+                          : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
+                  }`}
                   >
                     {type || "Source"}
                   </span>
                 </div>
 
-                <div className="flex flex-wrap items-center gap-6 text-xs font-bold uppercase tracking-widest text-muted-foreground/50">
+                <div className="flex flex-wrap items-center gap-6 text-xs font-bold uppercase tracking-widest text-muted-foreground">
                   <div className="flex items-center gap-2">
-                    <FolderOpen className="h-4 w-4 text-muted-foreground/30" />
+                    <FolderOpen className="h-4 w-4" />
                     <span className="truncate">
                       {f.moduleName || t.unknownCourse}
                     </span>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Clock className="h-4 w-4 text-muted-foreground/30" />
+                    <Clock className="h-4 w-4" />
                     {new Date(f.at).toLocaleDateString(
                       language === "de" ? "de-DE" : "en-US",
                       {

@@ -27,7 +27,7 @@ export function ModuleGrid({ t, language, filteredModules }: ModuleGridProps) {
             {TYPE_LABELS[language][module.type]}
           </div>
           <div className="flex items-center gap-4 text-[10px] font-black uppercase tracking-widest mb-4">
-            <span className="px-3 py-1 bg-muted text-iu-blue border border-border rounded-lg">
+            <span className="px-3 py-1 bg-muted text-iu-blue dark:text-white border border-border rounded-lg">
               {module.code}
             </span>
             <span className="text-muted-foreground">
@@ -49,7 +49,7 @@ export function ModuleGrid({ t, language, filteredModules }: ModuleGridProps) {
             </span>
           </div>
 
-          <h3 className="text-xl font-black text-foreground mb-3 group-hover:text-iu-blue transition-colors">
+          <h3 className="text-xl font-black text-foreground mb-3 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
             {module.title}
           </h3>
 

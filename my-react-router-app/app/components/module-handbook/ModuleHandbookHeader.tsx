@@ -33,10 +33,6 @@ export function ModuleHandbookHeader({
             <span>{studiengangName || userProfile.program}</span>
           </div>
 
-          <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-pink-500/20 bg-pink-500/10 text-pink-500 text-sm font-bold w-fit">
-            <span>{userProfile.focus}</span>
-          </div>
-
           <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-iu-blue/20 bg-iu-blue/10 text-iu-blue text-sm font-bold w-fit">
             <span>{userProfile.campus}</span>
           </div>

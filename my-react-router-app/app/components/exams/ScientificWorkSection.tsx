@@ -25,8 +25,8 @@ export function ScientificWorkSection({
         className="w-full flex items-center justify-between p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
       >
         <div className="flex items-center gap-6 pointer-events-none">
-          <div className="p-4 bg-primary/20 rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
-            <GraduationCap className="w-8 h-8 text-primary" />
+          <div className="p-4 bg-iu-blue/20 dark:bg-iu-blue rounded-2xl group-hover:scale-110 transition-transform shadow-lg">
+            <GraduationCap className="w-8 h-8 text-iu-blue dark:text-white" />
           </div>
           <div>
             <h2 className="text-2xl font-bold text-foreground mb-1">
@@ -48,8 +48,8 @@ export function ScientificWorkSection({
 
       {isOpen && (
         <div className="p-8 border-t border-border bg-muted/10 space-y-10">
-          <div className="bg-primary/5 border border-primary/20 rounded-2xl p-6 text-base text-foreground leading-relaxed shadow-inner">
-            <p className="font-bold mb-3 flex items-center gap-3 text-primary text-lg">
+          <div className="bg-iu-blue/5 dark:bg-iu-blue/10 border border-iu-blue/20 dark:border-iu-blue/30 rounded-2xl p-6 text-base text-foreground leading-relaxed shadow-inner">
+            <p className="font-bold mb-3 flex items-center gap-3 text-iu-blue dark:text-white text-lg">
               <Info className="w-6 h-6" />
               {t.versionNote}
             </p>
@@ -73,7 +73,7 @@ export function ScientificWorkSection({
                     <item.icon className="w-8 h-8" />
                   </div>
                   <div>
-                    <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors">
+                    <h3 className="text-xl font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                       {item.title}
                     </h3>
                     {item.subtitle && (
@@ -82,7 +82,7 @@ export function ScientificWorkSection({
                       </p>
                     )}
                     <div className="mt-6 flex items-center gap-3 text-[10px] font-black text-muted-foreground uppercase tracking-widest opacity-50 group-hover:opacity-100 transition-opacity">
-                      <FileText className="w-4 h-4 text-primary" />
+                      <FileText className="w-4 h-4 text-iu-blue dark:text-white" />
                       <span>{t.openDocument}</span>
                     </div>
                   </div>
@@ -108,11 +108,11 @@ export function ScientificWorkSection({
                     <item.icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-primary transition-colors text-sm truncate">
+                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm truncate">
                       {item.title}
                     </h3>
                   </div>
-                  <FileText className="w-4 h-4 text-muted-foreground/30 group-hover:text-primary/50 transition-colors" />
+                  <FileText className="w-4 h-4 text-muted-foreground/30 group-hover:text-iu-blue/50 dark:group-hover:text-white/50 transition-colors" />
                 </button>
               ))}
             </div>
@@ -129,11 +129,11 @@ export function ScientificWorkSection({
                   onClick={() => setSelectedDocument(item)}
                   className="flex items-center gap-4 p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5"
                 >
-                  <div className="p-3 bg-muted/50 rounded-xl text-muted-foreground group-hover:text-primary group-hover:bg-primary/20 transition-all border border-border/50">
+                  <div className="p-3 bg-muted/50 rounded-xl text-muted-foreground group-hover:text-white group-hover:bg-iu-blue transition-all border border-border/50">
                     <item.icon className="w-5 h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-primary transition-colors text-sm truncate">
+                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm truncate">
                       {item.title}
                     </h3>
                   </div>

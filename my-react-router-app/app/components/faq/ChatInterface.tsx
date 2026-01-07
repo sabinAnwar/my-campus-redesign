@@ -103,13 +103,13 @@ export function ChatInterface({ onNavigate, faqs, t }: ChatInterfaceProps) {
           </div>
           <div>
             <h2 className="text-base sm:text-xl font-bold tracking-tight text-foreground">IU Assistant</h2>
-            <p className="text-[8px] sm:text-[10px] font-bold text-iu-blue uppercase tracking-[0.2em] sm:tracking-[0.3em]">AI Learning Partner</p>
+            <p className="text-[8px] sm:text-[10px] font-bold text-iu-blue dark:text-white uppercase tracking-[0.2em] sm:tracking-[0.3em]">AI Learning Partner</p>
           </div>
         </div>
 
         <div className="flex gap-2 sm:gap-3">
           <button onClick={() => onNavigate("home")} className="rounded-lg sm:rounded-xl border border-border px-3 sm:px-6 py-1.5 sm:py-2.5 text-xs font-bold text-muted-foreground hover:bg-card hover:text-foreground transition-all active:scale-95 shadow">Beenden</button>
-          <button onClick={handleClear} className="rounded-lg sm:rounded-xl bg-iu-blue/10 border border-iu-blue/20 p-1.5 sm:p-2.5 text-iu-blue hover:bg-iu-blue hover:text-white transition-all active:scale-95 shadow" title="Chat neu starten">
+          <button onClick={handleClear} className="rounded-lg sm:rounded-xl bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue p-1.5 sm:p-2.5 text-iu-blue dark:text-white hover:bg-iu-blue hover:text-white transition-all active:scale-95 shadow" title="Chat neu starten">
             <RefreshCcw className="h-4 w-4 sm:h-5 sm:w-5" />
           </button>
         </div>
@@ -137,9 +137,9 @@ export function ChatInterface({ onNavigate, faqs, t }: ChatInterfaceProps) {
               <span className="text-sm sm:text-lg font-bold">IU</span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 rounded-xl sm:rounded-2xl bg-card px-4 sm:px-6 py-3 sm:py-4 border border-border shadow">
-              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue [animation-delay:-0.3s]"></div>
-              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue [animation-delay:-0.15s]"></div>
-              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue"></div>
+              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue dark:bg-white [animation-delay:-0.3s]"></div>
+              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue dark:bg-white [animation-delay:-0.15s]"></div>
+              <div className="h-1.5 w-1.5 sm:h-2 sm:w-2 animate-bounce rounded-full bg-iu-blue dark:bg-white"></div>
             </div>
           </div>
         )}
@@ -148,7 +148,7 @@ export function ChatInterface({ onNavigate, faqs, t }: ChatInterfaceProps) {
       <div className="relative z-30 flex-shrink-0 border-t border-border bg-background/60 p-3 sm:p-6 backdrop-blur-xl sticky bottom-0">
         <div className="mb-3 sm:mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
           {t.suggestions.map((sug: any) => (
-            <button key={sug.text} onClick={() => handleSuggestion(sug.question)} className="group flex items-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-full border border-border bg-card px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold text-muted-foreground transition-all hover:border-iu-blue hover:text-iu-blue hover:bg-iu-blue/5 shadow">
+            <button key={sug.text} onClick={() => handleSuggestion(sug.question)} className="group flex items-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-full border border-border bg-card px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold text-muted-foreground transition-all hover:border-iu-blue dark:hover:border-white hover:text-iu-blue dark:hover:text-white hover:bg-iu-blue/5 shadow">
               {sug.text}
             </button>
           ))}

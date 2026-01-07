@@ -35,16 +35,16 @@ export function ExamsList({ exams, language, t }: ExamsListProps) {
 
             <div className="relative z-10">
               <div className="flex items-start justify-between mb-8">
-                <div className="p-4 rounded-2xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 shadow-lg group-hover:scale-110 transition-transform">
+                <div className="p-4 rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue shadow-lg group-hover:scale-110 transition-transform">
                   <GraduationCap className="w-8 h-8" />
                 </div>
-                <span className="px-4 py-2 rounded-xl bg-iu-blue/10 border border-iu-blue/20 text-iu-blue text-[10px] font-black uppercase tracking-widest shadow-sm">
+                <span className="px-4 py-2 rounded-xl bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white text-[10px] font-black uppercase tracking-widest shadow-sm">
                   {new Date(exam.dueDate).toLocaleDateString(
                     language === "de" ? "de-DE" : "en-US"
                   )}
                 </span>
               </div>
-              <h3 className="font-bold text-2xl mb-3 text-foreground tracking-tight group-hover:text-iu-blue transition-colors">
+              <h3 className="font-bold text-2xl mb-3 text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                 {exam.title}
               </h3>
               <p className="text-[10px] font-black uppercase tracking-[0.3em] text-muted-foreground/50">
