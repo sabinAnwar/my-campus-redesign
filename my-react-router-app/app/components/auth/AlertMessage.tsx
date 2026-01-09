@@ -1,9 +1,7 @@
 import type { ReactNode } from "react";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 type AlertVariant = "error" | "success";
 
 interface AlertMessageProps {
@@ -13,10 +11,8 @@ interface AlertMessageProps {
   children: ReactNode;
 }
 
-// ============================================================================
-// STYLES
-// ============================================================================
-
+//// STYLES
+//
 const VARIANT_STYLES: Record<AlertVariant, { container: string; text: string }> = {
   error: {
     container: "rounded-md bg-red-50 p-4",
@@ -28,10 +24,8 @@ const VARIANT_STYLES: Record<AlertVariant, { container: string; text: string }> 
   },
 } as const;
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
-
+//// COMPONENT
+//
 /**
  * Reusable alert message component
  * Supports error and success variants

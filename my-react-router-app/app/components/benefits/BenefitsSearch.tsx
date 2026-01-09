@@ -33,7 +33,7 @@ export function BenefitsSearch({
             placeholder={t.searchPlaceholder}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-12 sm:pl-14 pr-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-background/50 dark:bg-card/40 border border-border/50 dark:border-white/5 text-foreground placeholder:text-muted-foreground/60 focus:outline-none focus:border-iu-blue/50 dark:focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all text-sm font-bold shadow-sm"
+            className="w-full pl-12 sm:pl-14 pr-6 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-background/50 dark:bg-card/40 border border-border/50 dark:border-white/5 text-foreground placeholder:text-muted-foreground focus:outline-none focus:border-iu-blue/50 dark:focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all text-sm font-bold shadow-sm"
           />
         </div>
 

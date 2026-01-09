@@ -1,7 +1,5 @@
-// ============================================================================
-// AUTH COMPONENTS BARREL EXPORT
-// ============================================================================
-
+//// AUTH COMPONENTS BARREL EXPORT
+//
 export { AuthCard } from "./AuthCard";
 export { FormInput } from "./FormInput";
 export { AlertMessage } from "./AlertMessage";

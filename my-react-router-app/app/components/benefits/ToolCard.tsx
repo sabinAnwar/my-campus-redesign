@@ -23,12 +23,12 @@ export function ToolCard({ t, tool }: ToolCardProps) {
           <p className="text-base sm:text-xl font-black text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
             {tool.name}
           </p>
-          <div className="p-2 ml-auto rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground/70 dark:text-white/60 group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all">
+          <div className="p-2 ml-auto rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground dark:text-white group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all">
             <ExternalLink className="w-4 h-4" />
           </div>
         </div>
 
-        <p className="text-xs sm:text-base text-muted-foreground dark:text-white/70 font-medium leading-relaxed line-clamp-2">
+        <p className="text-xs sm:text-base text-muted-foreground dark:text-white font-medium leading-relaxed line-clamp-2">
           {tool.description}
         </p>
 
@@ -48,7 +48,7 @@ export function ToolCard({ t, tool }: ToolCardProps) {
               href={tool.support}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white/50 hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
             >
               <LifeBuoy className="w-3.5 h-3.5" />
               {t.support}
@@ -60,7 +60,7 @@ export function ToolCard({ t, tool }: ToolCardProps) {
               href={tool.alt}
               target="_blank"
               rel="noreferrer"
-              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white/50 hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
+              className="inline-flex items-center gap-2 text-muted-foreground dark:text-white hover:text-iu-blue dark:hover:text-white font-black text-[10px] uppercase tracking-[0.2em] transition-all"
             >
               {t.alternative}
             </a>

@@ -63,7 +63,7 @@ export function FeaturedTools({ t, featuredTools }: FeaturedToolsProps) {
                 </div>
               </div>
 
-              <div className="p-2 rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground/70 dark:text-white/60 group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all shrink-0">
+              <div className="p-2 rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground dark:text-white group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all shrink-0">
                 <ExternalLink className="w-3.5 h-3.5" />
               </div>
             </a>

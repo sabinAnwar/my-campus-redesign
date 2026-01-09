@@ -7,11 +7,25 @@ html, body {
   min-height: 100%;
   margin: 0;
   padding: 0;
+  overflow-x: hidden; /* Prevent horizontal scroll */
 }
 
 #root {
   width: 100%;
   min-height: 100vh;
+}
+
+@keyframes route-loading {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(300%);
+  }
+}
+
+.route-loading-bar {
+  animation: route-loading 1.4s ease-in-out infinite;
 }
 
 /* Dashboard Layout Grids - Defined first as requested */
@@ -186,17 +200,17 @@ html, body {
 
 /* IU Design System Variables */
 :root {
-  /* IU Colors - Darkened for AAA Accessibility (7:1 Contrast) */
-  --iu-blue: 223 70% 22%;
-  --iu-pink: 312 80% 22%;
-  --iu-orange: 29 90% 22%;
-  --iu-green: 132 55% 22%;
-  --iu-red: 349 85% 22%;
-  --iu-purple: 262 60% 25%;
-  --iu-teal: 190 65% 22%;
-  --iu-indigo: 230 55% 25%;
-  --iu-brown: 24 70% 22%;
-  --iu-gold: 38 85% 25%;
+  /* IU Colors - Darkened for AAA Accessibility (7:1 Contrast against white) */
+  --iu-blue: 223 70% 22%;      /* #111f60 ~13.9:1 */
+  --iu-pink: 312 80% 22%;      /* #650b4b ~10.5:1 */
+  --iu-orange: 29 90% 22%;     /* #6b2f06 ~10.8:1 */
+  --iu-green: 132 55% 20%;     /* #174f26 ~9.2:1 */
+  --iu-red: 349 85% 23%;       /* #6d091e ~10.3:1 */
+  --iu-purple: 262 60% 25%;    /* #421a66 ~12.3:1 */
+  --iu-teal: 190 90% 20%;      /* #05616b ~8.5:1 */
+  --iu-indigo: 235 70% 25%;    /* #1e266d ~12.8:1 */
+  --iu-brown: 20 60% 25%;      /* #66301a ~9.6:1 */
+  --iu-gold: 45 100% 22%;      /* #705100 ~8.2:1 */
   
   /* Neutral HSLs */
   --apple-black: 0 0% 0%;
@@ -224,7 +238,7 @@ html, body {
   --secondary-foreground: 240 5.9% 10%;
 
   --muted: 240 4.8% 95.9%;
-  --muted-foreground: 240 3% 20%; /* Darkened for AAA contrast */
+  --muted-foreground: 240 3% 12%;
 
   --accent: 240 4.8% 95.9%;
   --accent-foreground: 240 5.9% 10%;
@@ -275,7 +289,7 @@ html, body {
   --secondary-foreground: 0 0% 100%;
 
   --muted: 0 0% 7%;
-  --muted-foreground: 0 0% 72%;
+  --muted-foreground: 0 0% 90%;
 
   --accent: 0 0% 7%;
   --accent-foreground: 0 0% 100%;
@@ -306,6 +320,86 @@ html, body {
   --iu-red-text: 350 90% 72%;
   --iu-teal-text: 190 80% 78%;
   --iu-indigo-text: 230 85% 78%;
+  --iu-brown-text: 24 80% 78%;
+  --iu-gold-text: 42 90% 75%;
+}
+
+.dark .text-iu-blue {
+  color: hsl(var(--iu-blue-text));
+}
+
+.curriculum-aaa .text-muted-foreground {
+  color: hsl(var(--foreground));
+}
+
+.curriculum-aaa .bg-muted {
+  background-color: hsl(var(--background));
+}
+
+.dark .text-iu-pink {
+  color: hsl(var(--iu-pink-text));
+}
+
+.dark .text-iu-orange {
+  color: hsl(var(--iu-orange-text));
+}
+
+.dark .text-iu-green {
+  color: hsl(var(--iu-green-text));
+}
+
+.dark .text-iu-purple {
+  color: hsl(var(--iu-purple-text));
+}
+
+.dark .text-iu-red {
+  color: hsl(var(--iu-red-text));
+}
+
+.dark .text-iu-teal {
+  color: hsl(var(--iu-teal-text));
+}
+
+.dark .text-iu-indigo {
+  color: hsl(var(--iu-indigo-text));
+}
+
+.dark .text-iu-brown {
+  color: hsl(var(--iu-brown-text));
+}
+
+.dark .text-iu-gold {
+  color: hsl(var(--iu-gold-text));
+}
+
+.dark .bg-iu-blue.text-iu-blue,
+.dark .bg-iu-pink.text-iu-pink,
+.dark .bg-iu-orange.text-iu-orange,
+.dark .bg-iu-green.text-iu-green,
+.dark .bg-iu-purple.text-iu-purple,
+.dark .bg-iu-red.text-iu-red,
+.dark .bg-iu-teal.text-iu-teal,
+.dark .bg-iu-indigo.text-iu-indigo,
+.dark .bg-iu-brown.text-iu-brown,
+.dark .bg-iu-gold.text-iu-gold {
+  color: hsl(0 0% 100%);
+}
+
+.dark [class*="bg-iu-blue/"].text-iu-blue,
+.dark [class*="bg-iu-pink/"].text-iu-pink,
+.dark [class*="bg-iu-orange/"].text-iu-orange,
+.dark [class*="bg-iu-green/"].text-iu-green,
+.dark [class*="bg-iu-purple/"].text-iu-purple,
+.dark [class*="bg-iu-red/"].text-iu-red,
+.dark [class*="bg-iu-teal/"].text-iu-teal,
+.dark [class*="bg-iu-indigo/"].text-iu-indigo,
+.dark [class*="bg-iu-brown/"].text-iu-brown,
+.dark [class*="bg-iu-gold/"].text-iu-gold {
+  color: hsl(0 0% 100%);
+}
+
+.dark .dashboard-icons-white svg {
+  color: #ffffff;
 }
 
 

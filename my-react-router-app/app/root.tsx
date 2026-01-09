@@ -11,8 +11,8 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import type { Route } from "./+types/root";
-import "./app.css";
-import "react-toastify/dist/ReactToastify.css";
+import appStyles from "./app.css?url";
+import toastifyStyles from "react-toastify/dist/ReactToastify.css?url";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
@@ -35,17 +35,18 @@ export const links: Route.LinksFunction = () => [
     href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
     as: "style",
   },
-  { rel: "stylesheet", href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" },
-  // PWA Manifest
-  { rel: "manifest", href: "/manifest.json" },
-  // Apple Touch Icon for iOS
-  { rel: "apple-touch-icon", href: "/app-icon.png" },
+  {
+    rel: "stylesheet",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+  },
+  { rel: "stylesheet", href: appStyles },
+  { rel: "stylesheet", href: toastifyStyles },
 ];
 
 // THE HTML SHELL (DOCUMENT)
 export function Layout({ children }: { children: React.ReactNode }) {
   return (
-    <html lang="en">
+    <html lang="en" suppressHydrationWarning>
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
