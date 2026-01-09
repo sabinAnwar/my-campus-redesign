@@ -551,15 +551,17 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     console.log(` Found ${students.length} students`);
 
     // Find students who haven't submitted for current week
-    const submitted = await prisma.praxisReport.findMany({
+    const submitted = await prisma.practicalReport.findMany({
       where: {
-        isoWeekKey: currentWeekKey,
+        iso_week_key: currentWeekKey,
         status: { in: ["SUBMITTED", "APPROVED"] },
       },
-      select: { userId: true },
+      select: { user_id: true },
     });
 
-    const submittedIds = new Set(submitted.map((r: { userId: any; }) => r.userId));
+    const submittedIds = new Set(
+      submitted.map((r: { user_id: any }) => r.user_id)
+    );
     const targets = students.filter((s: { id: unknown; }) => !submittedIds.has(s.id));
 
     console.log(` Targeting ${targets.length} students for reminders`);
@@ -694,9 +696,9 @@ app.get("/api/praxisberichte", async (req, res) => {
     }
 
     // Get all praxisbericht reports for this user
-    const reports = await prisma.praxisReport.findMany({
-      where: { userId: session.user.id },
-      orderBy: { isoWeekKey: "asc" },
+    const reports = await prisma.practicalReport.findMany({
+      where: { user_id: session.user.id },
+      orderBy: { iso_week_key: "asc" },
     });
 
     return res.json({ reports });
@@ -731,28 +733,28 @@ app.put("/api/praxisberichte/:weekKey", express.json(), async (req, res) => {
         .json({ error: "Tasks must be at least 10 characters" });
     }
 
-    const report = await prisma.praxisReport.upsert({
+    const report = await prisma.practicalReport.upsert({
       where: {
-        isoWeekKey_userId: {
-          isoWeekKey: weekKey,
-          userId: session.user.id,
+        iso_week_key_user_id: {
+          iso_week_key: weekKey,
+          user_id: session.user.id,
         },
       },
       create: {
-        isoWeekKey: weekKey,
-        userId: session.user.id,
+        iso_week_key: weekKey,
+        user_id: session.user.id,
         days: days || {},
         tasks,
         grade: grade || 0,
         status: (status || "DUE").toUpperCase(),
-        editedAt: new Date(),
+        edited_at: new Date(),
       },
       update: {
         days: days || {},
         tasks,
         grade: grade || 0,
         status: (status || "DUE").toUpperCase(),
-        editedAt: new Date(),
+        edited_at: new Date(),
       },
     });
 
@@ -775,13 +777,13 @@ app.get("/api/reminders/preferences", async (req, res) => {
       include: { user: true },
     });
     if (!session?.user) return res.status(401).json({ error: "Unauthorized" });
-    const { reminderEnabled, reminderHour, reminderMinute, reminderTimezone } =
+    const { reminder_enabled, reminder_hour, reminder_minute, reminder_timezone } =
       session.user;
     return res.json({
-      reminderEnabled: !!reminderEnabled,
-      reminderHour: reminderHour ?? 18,
-      reminderMinute: reminderMinute ?? 0,
-      reminderTimezone: reminderTimezone || "Europe/Berlin",
+      reminderEnabled: !!reminder_enabled,
+      reminderHour: reminder_hour ?? 18,
+      reminderMinute: reminder_minute ?? 0,
+      reminderTimezone: reminder_timezone || "Europe/Berlin",
     });
   } catch (err: unknown) {
     console.error("/api/reminders/preferences GET error", err);
@@ -806,23 +808,27 @@ app.post(
 
       const enabledRaw = (
         req.body.enabled ??
+        req.body.reminder_enabled ??
         req.body.reminderEnabled ??
         "false"
       ).toString();
       const hourRaw = (
         req.body.hour ??
+        req.body.reminder_hour ??
         req.body.reminderHour ??
         "18"
       ).toString();
       const minuteRaw = (
         req.body.minute ??
+        req.body.reminder_minute ??
         req.body.reminderMinute ??
         "0"
       ).toString();
       const tzCandidate =
         req.body.timezone ??
+        req.body.reminder_timezone ??
         req.body.reminderTimezone ??
-        session.user.reminderTimezone;
+        session.user.reminder_timezone;
       const tzRaw = (tzCandidate || "Europe/Berlin").toString();
 
       const enabled =
@@ -835,15 +841,15 @@ app.post(
 
       // Try save with minute; if unsupported (older client/DB), retry without it
       const data = {
-        reminderEnabled: enabled,
-        reminderHour: hour,
-        reminderTimezone: tzRaw,
+        reminder_enabled: enabled,
+        reminder_hour: hour,
+        reminder_timezone: tzRaw,
       };
       let savedMinute: number | null = minute;
       try {
         await prisma.user.update({
           where: { id: session.user.id },
-          data: { ...data, reminderMinute: minute },
+          data: { ...data, reminder_minute: minute },
         });
       } catch (e: unknown) {
         let msg = "";
@@ -853,8 +859,8 @@ app.post(
           msg = e;
         }
         const minuteUnsupported =
-          msg.includes("Unknown arg `reminderMinute`") ||
-          msg.includes('column "reminderMinute"');
+          msg.includes("Unknown arg `reminder_minute`") ||
+          msg.includes('column "reminder_minute"');
         if (!minuteUnsupported) throw e;
         await prisma.user.update({ where: { id: session.user.id }, data });
         savedMinute = null;
@@ -1195,7 +1201,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         where: { token },
         include: { user: true },
       });
-      if (!session?.user || !session.user.reminderEnabled) {
+      if (!session?.user || !session.user.reminder_enabled) {
         return res.json({ success: true, sent: 0, usersChecked: 0 });
       }
       users = [
@@ -1203,9 +1209,9 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           id: session.user.id,
           email: session.user.email,
           name: session.user.name,
-          reminderHour: session.user.reminderHour,
-          reminderMinute: session.user.reminderMinute,
-          reminderTimezone: session.user.reminderTimezone,
+          reminder_hour: session.user.reminder_hour,
+          reminder_minute: session.user.reminder_minute,
+          reminder_timezone: session.user.reminder_timezone,
           role: session.user.role,
         },
       ];
@@ -1217,23 +1223,23 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
           id: true,
           email: true,
           name: true,
-          reminderHour: true,
-          reminderMinute: true,
-          reminderTimezone: true,
+          reminder_hour: true,
+          reminder_minute: true,
+          reminder_timezone: true,
           role: true,
-          reminderEnabled: true,
+          reminder_enabled: true,
         },
       });
       users =
-        user && user.reminderEnabled
+        user && user.reminder_enabled
           ? [
               {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                reminderHour: user.reminderHour,
-                reminderMinute: user.reminderMinute,
-                reminderTimezone: user.reminderTimezone,
+                reminder_hour: user.reminder_hour,
+                reminder_minute: user.reminder_minute,
+                reminder_timezone: user.reminder_timezone,
                 role: user.role,
               },
             ]
@@ -1241,14 +1247,14 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     } else {
       // Fetch all users who enabled reminders. We'll filter per-hour below if not overriding.
       users = await prisma.user.findMany({
-        where: { reminderEnabled: true },
+        where: { reminder_enabled: true },
         select: {
           id: true,
           email: true,
           name: true,
-          reminderHour: true,
-          reminderMinute: true,
-          reminderTimezone: true,
+          reminder_hour: true,
+          reminder_minute: true,
+          reminder_timezone: true,
           role: true,
         },
       });
@@ -1305,11 +1311,11 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     // Check which users are due and haven't submitted this week
     const userDebug: Array<Record<string, unknown>> = [];
     for (const u of users) {
-      const tz = u.reminderTimezone || "Europe/Berlin";
+      const tz = u.reminder_timezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
-      const targetHour = overrideHour ?? u.reminderHour ?? 18;
-      const targetMinute = overrideMinute ?? u.reminderMinute ?? 0;
+      const targetHour = overrideHour ?? u.reminder_hour ?? 18;
+      const targetMinute = overrideMinute ?? u.reminder_minute ?? 0;
       const currentTotal = currentHour * 60 + currentMinute;
       const targetTotal = targetHour * 60 + targetMinute;
       const diffForward = (currentTotal - targetTotal + 1440) % 1440;
@@ -1332,10 +1338,10 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       }
 
       // Has user submitted this week?
-      const submitted = await prisma.praxisReport.findFirst({
+      const submitted = await prisma.practicalReport.findFirst({
         where: {
-          userId: u.id,
-          isoWeekKey: currentWeekKey,
+          user_id: u.id,
+          iso_week_key: currentWeekKey,
           status: { in: ["SUBMITTED", "APPROVED"] },
         },
       });
