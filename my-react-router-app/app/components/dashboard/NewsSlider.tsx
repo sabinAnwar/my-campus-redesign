@@ -5,9 +5,9 @@ import { Newspaper, ChevronLeft, ChevronRight, ArrowRight } from "lucide-react";
 interface NewsItem {
   slug: string;
   title: string;
-  excerpt: string;
+  excerpt: string | null;
   category: string | null;
-  publishedAt: string;
+  published_at: string;
   featured: boolean;
 }
 
@@ -87,9 +87,9 @@ export function NewsSlider({
               >
                 {newsItems[currentNewsIndex]?.category || "News"}
               </span>
-              <span className="hidden xs:block text-[8px] sm:text-[9px] md:text-[9px] lg:text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5">
+              <span className="hidden xs:block text-[8px] sm:text-[9px] md:text-[9px] lg:text-[10px] font-black text-muted-foreground dark:text-slate-200 uppercase tracking-widest mt-0.5">
                 {new Date(
-                  newsItems[currentNewsIndex]?.publishedAt
+                  newsItems[currentNewsIndex]?.published_at
                 ).toLocaleDateString("de-DE", {
                   day: "2-digit",
                   month: "short",

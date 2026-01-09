@@ -11,17 +11,17 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
   }
 
   const topics = await prisma.forumTopic.findMany({
-    where: { courseId: Number(courseId) },
+    where: { course_id: Number(courseId) },
     orderBy: [
         { pinned: "desc" },
-        { updatedAt: "desc" }
+        { updated_at: "desc" }
     ],
     include: {
       author: {
         select: { name: true }
       },
       posts: {
-        orderBy: { createdAt: "asc" },
+        orderBy: { created_at: "asc" },
         include: {
           author: {
             select: { name: true }
@@ -38,15 +38,15 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     content: topic.content,
     author: topic.author.name || "Unknown",
     lastPost: topic.posts.length > 0 
-      ? new Date(topic.posts[topic.posts.length - 1].createdAt).toLocaleDateString("de-DE")
-      : new Date(topic.updatedAt).toLocaleDateString("de-DE"),
+      ? new Date(topic.posts[topic.posts.length - 1].created_at).toLocaleDateString("de-DE")
+      : new Date(topic.updated_at).toLocaleDateString("de-DE"),
     replies: topic.posts.length,
     status: topic.pinned ? "pinned" : "normal",
     posts: topic.posts.map(post => ({
       id: post.id,
       author: post.author.name || "Unknown",
       content: post.content,
-      date: new Date(post.createdAt).toLocaleDateString("de-DE"),
+      date: new Date(post.created_at).toLocaleDateString("de-DE"),
       likes: post.likes
     }))
   }));
@@ -87,10 +87,10 @@ export const action = async ({ request }: ActionFunctionArgs) => {
 
     const topic = await prisma.forumTopic.create({
       data: {
-        courseId: Number(courseId),
+        course_id: Number(courseId),
         title,
         content,
-        authorId: user.id,
+        author_id: user.id,
       },
       include: {
         author: {
@@ -105,7 +105,7 @@ export const action = async ({ request }: ActionFunctionArgs) => {
         title: topic.title,
         content: topic.content,
         author: topic.author.name || "Unknown",
-        lastPost: new Date(topic.createdAt).toLocaleDateString("de-DE"),
+        lastPost: new Date(topic.created_at).toLocaleDateString("de-DE"),
         replies: 0,
         status: "normal",
         posts: []

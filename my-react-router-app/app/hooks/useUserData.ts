@@ -5,17 +5,17 @@ import { useEffect, useState } from "react";
  */
 export interface UserData {
   name: string;
-  studyProgram: string;
-  campusArea: string;
-  roomBookingEnabled: boolean;
+  study_program: string;
+  campus_area: string;
+  room_booking_enabled: boolean;
 }
 
 /** Default user data used as initial state and fallback. */
 const DEFAULT_USER_DATA: UserData = {
   name: "",
-  studyProgram: "",
-  campusArea: "",
-  roomBookingEnabled: true,
+  study_program: "",
+  campus_area: "",
+  room_booking_enabled: true,
 };
 
 /**
@@ -25,7 +25,7 @@ const DEFAULT_USER_DATA: UserData = {
  * @returns UserData object with user information
  *
  * @example
- * const { name, studyProgram, campusArea, roomBookingEnabled } = useUserData();
+ * const { name, study_program, campus_area, room_booking_enabled } = useUserData();
  */
 export function useUserData(): UserData {
   const [userData, setUserData] = useState<UserData>(DEFAULT_USER_DATA);
@@ -53,9 +53,9 @@ export function useUserData(): UserData {
               user?.name && user.name !== "Student"
                 ? user.name
                 : "Demo Student", // Development fallback
-            studyProgram: user?.studyProgram ?? "",
-            campusArea: user?.campusArea ?? "",
-            roomBookingEnabled: user?.roomBookingEnabled ?? true,
+            study_program: user?.study_program ?? "",
+            campus_area: user?.campus_area ?? "",
+            room_booking_enabled: user?.room_booking_enabled ?? true,
           });
         }
       } catch (error) {

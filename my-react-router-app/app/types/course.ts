@@ -5,14 +5,14 @@ export type CourseSubmission = {
   type: string;
   courseCode?: string;
   professor?: string;
-  dueDateIso: string;
-  dueDate: string;
-  correctionDate: string;
+  due_date_iso: string;
+  due_date: string;
+  correction_date: string;
   status: "pending" | "submitted";
   similarity?: number;
-  submittedFileName?: string;
-  submittedFileSize?: number;
-  daysUntilDue: number;
+  submitted_file_name?: string;
+  submitted_file_size?: number;
+  days_until_due: number;
   submissions: any[];
 };
 
@@ -20,6 +20,6 @@ export interface CoursesLoaderData {
   userStudiengang: string | null;
   marks: any[];
   currentSemester: number;
-  userId?: number;
+  user_id?: number;
   dbCourses: any[];
 }

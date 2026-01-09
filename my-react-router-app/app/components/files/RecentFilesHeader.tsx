@@ -39,7 +39,7 @@ export function RecentFilesHeader({
         </div>
         <button
           onClick={onClearFiles}
-          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-100 hover:bg-red-50 dark:bg-neutral-800 dark:hover:bg-red-950/30 text-neutral-600 hover:text-red-600 dark:text-neutral-400 dark:hover:text-red-400 rounded-xl transition-all duration-300 text-xs sm:text-sm font-bold border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-900/50 shadow-sm"
+          className="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-neutral-100 hover:bg-red-50 dark:bg-neutral-800 dark:hover:bg-red-950/30 text-neutral-700 hover:text-red-600 dark:text-neutral-200 dark:hover:text-red-400 rounded-xl transition-all duration-300 text-xs sm:text-sm font-bold border border-neutral-200 dark:border-neutral-700 hover:border-red-200 dark:hover:border-red-900/50 shadow-sm"
         >
           <Trash2 className="h-4 w-4" />
           {t.clear}

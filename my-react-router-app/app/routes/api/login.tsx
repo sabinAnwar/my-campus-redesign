@@ -85,21 +85,25 @@ async function handleLoginRequest(request: Request) {
     }
 
     // Find user by email (case-insensitive)
+    console.log(" Looking up user:", email.toLowerCase());
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
 
     if (!user) {
+      console.warn(" User not found:", email);
       return Response.json(
         { error: "Invalid email or password" },
         { status: 401 }
       );
     }
 
+    console.log(" User found. Comparing password...");
     // Compare passwords
     const isPasswordValid = await bcryptjs.compare(password, user.password);
 
     if (!isPasswordValid) {
+      console.warn(" Invalid password for:", email);
       return Response.json(
         { error: "Invalid email or password" },
         { status: 401 }
@@ -107,6 +111,7 @@ async function handleLoginRequest(request: Request) {
     }
 
     // Create and store session in database
+    console.log(" Password valid. Creating session...");
     const sessionToken = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -114,10 +119,12 @@ async function handleLoginRequest(request: Request) {
     await prisma.session.create({
       data: {
         token: sessionToken,
-        userId: user.id,
-        expiresAt,
+        user_id: user.id,
+        expires_at: expiresAt,
       },
     });
+
+    console.log(" Session created successfully:", sessionToken);
 
     console.log(" Login successful for:", user.email);
 

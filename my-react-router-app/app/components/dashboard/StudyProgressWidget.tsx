@@ -94,7 +94,7 @@ export function StudyProgressWidget({
                       {t.current}
                     </span>
                   </div>
-                  <p className="text-xs sm:text-sm text-muted-foreground">
+                  <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-200">
                     {new Date(currentBlock?.start || "").toLocaleDateString(
                       "de-DE",
                       { day: "2-digit", month: "short" }
@@ -111,7 +111,7 @@ export function StudyProgressWidget({
               <div className="space-y-4">
                 <div className="flex flex-col xs:flex-row xs:justify-between xs:items-end gap-2">
                   <div className="space-y-0.5 sm:space-y-1 min-w-0">
-                    <span className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wider sm:tracking-widest leading-none block">
+                    <span className="text-[10px] sm:text-xs font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-wider sm:tracking-widest leading-none block">
                       {t.phaseProgress}
                     </span>
                     <div className="text-2xl sm:text-3xl font-black text-foreground tabular-nums">
@@ -128,7 +128,7 @@ export function StudyProgressWidget({
                     style={{ width: `${phaseProgress}%` }}
                   />
                 </div>
-                <div className="flex justify-between text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                <div className="flex justify-between text-[10px] sm:text-xs font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest">
                   <span>
                     {t.day} {Math.ceil(phaseTotalDays - phaseDaysLeft)} {t.of}{" "}
                     {phaseTotalDays}
@@ -140,7 +140,7 @@ export function StudyProgressWidget({
             {/* Right: Next Phase & Quick Action */}
             <div className="w-full lg:w-[320px] xl:w-[350px] flex flex-col gap-4 sm:gap-5 border-t lg:border-t-0 lg:border-l border-border pt-6 sm:pt-8 lg:pt-0 lg:pl-8 xl:pl-10 shrink-0">
               <div className="space-y-3 sm:space-y-4">
-                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest">
+                <p className="text-[10px] sm:text-xs font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest">
                   {t.nextPhase}
                 </p>
                 <div className="flex items-center gap-3 sm:gap-4 bg-muted/50 p-3 sm:p-4 rounded-xl sm:rounded-2xl border border-border">
@@ -154,7 +154,7 @@ export function StudyProgressWidget({
                             ?.label || (DEFAULT_PALETTE as any)[nextBlock.status].label
                         : t.semesterEnd}
                     </p>
-                    <p className="text-[10px] sm:text-xs text-muted-foreground font-semibold">
+                    <p className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-200 font-semibold">
                       {t.from}{" "}
                       {nextBlock
                         ? new Date(nextBlock.start).toLocaleDateString(
@@ -208,11 +208,11 @@ export function StudyProgressWidget({
                       <p className="text-xl font-bold text-foreground leading-tight">
                         {companyInfo.name}
                       </p>
-                      <p className="text-sm text-muted-foreground font-medium mt-1">
+                      <p className="text-sm text-muted-foreground dark:text-slate-200 font-medium mt-1">
                         {companyInfo.department}
                       </p>
                     </div>
-                    <div className="flex items-center gap-3 text-sm text-foreground/80 font-bold bg-muted/50 p-3 rounded-xl border border-border/50 w-fit">
+                    <div className="flex items-center gap-3 text-sm text-foreground font-bold bg-muted/50 p-3 rounded-xl border border-border/50 w-fit">
                       <Users className="w-4 h-4 text-iu-blue dark:text-white" />
                       <span>
                         {t.supervisor}: {companyInfo.supervisor}
@@ -235,7 +235,7 @@ export function StudyProgressWidget({
                           href={`tel:${companyInfo.phone}`}
                           className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-card border border-border text-xs font-bold uppercase tracking-widest text-foreground hover:bg-muted transition-all"
                         >
-                          <Phone className="w-3.5 h-3.5 text-muted-foreground dark:text-white/80" />
+                          <Phone className="w-3.5 h-3.5 text-muted-foreground dark:text-white" />
                           {t.callNow}
                         </a>
                       )}
@@ -244,8 +244,8 @@ export function StudyProgressWidget({
                 </div>
               ) : (
                 <div className="p-6 rounded-[2rem] bg-card/60 border border-border text-center flex flex-col items-center justify-center py-10">
-                  <Building2 className="w-12 h-12 text-muted-foreground/80 mb-4" />
-                  <p className="text-base text-muted-foreground font-bold max-w-xs">
+                  <Building2 className="w-12 h-12 text-muted-foreground dark:text-slate-200 mb-4" />
+                  <p className="text-base text-muted-foreground dark:text-slate-200 font-bold max-w-xs">
                     {language === "de"
                       ? "Kein Praxispartner hinterlegt"
                       : "No practice partner set"}
@@ -271,12 +271,12 @@ export function StudyProgressWidget({
                 <div className="space-y-8">
                   <div className="space-y-4">
                     <div className="flex justify-between items-end">
-                      <span className="text-sm font-bold text-muted-foreground uppercase tracking-widest">
+                      <span className="text-sm font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest">
                         {t.hoursLogged}
                       </span>
                       <div className="text-2xl font-black text-foreground tabular-nums">
                         {praxisHours.logged}{" "}
-                        <span className="text-muted-foreground font-bold text-sm">
+                        <span className="text-muted-foreground dark:text-slate-200 font-bold text-sm">
                           / {praxisHours.required}h
                         </span>
                       </div>
@@ -290,7 +290,7 @@ export function StudyProgressWidget({
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="p-4 rounded-2xl bg-card border border-border/50">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                      <p className="text-[10px] font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest mb-1">
                         {t.thisWeek}
                       </p>
                       <p className="text-2xl font-black text-iu-blue dark:text-white">
@@ -298,11 +298,11 @@ export function StudyProgressWidget({
                       </p>
                     </div>
                     <div className="p-4 rounded-2xl bg-card border border-border/50">
-                      <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+                      <p className="text-[10px] font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest mb-1">
                         {t.targetPerWeek}
                       </p>
                       <p className="text-2xl font-black text-foreground">
-                        {praxisHours.targetPerWeek}h
+                        {praxisHours.target_per_week}h
                       </p>
                     </div>
                   </div>

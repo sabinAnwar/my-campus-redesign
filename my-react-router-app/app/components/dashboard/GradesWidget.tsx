@@ -31,7 +31,7 @@ export function GradesWidget({ averageGrade, language, t }: GradesWidgetProps) {
         <div className="relative z-10 flex flex-col gap-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-xs sm:text-sm font-bold text-muted-foreground uppercase tracking-widest">
+              <p className="text-xs sm:text-sm font-bold text-muted-foreground dark:text-slate-200 uppercase tracking-widest">
                 {t.avgGrade}
               </p>
               <div className="text-3xl sm:text-4xl font-black text-foreground">

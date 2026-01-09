@@ -1,7 +1,5 @@
-// ============================================================================
-// Central barrel export for all translation modules
-// ============================================================================
-
+//// Central barrel export for all translation modules
+//
 export { TRANSLATIONS as ANTRAGSVERWALTUNG_TRANSLATIONS } from "./antragsverwaltung";
 export { TRANSLATIONS as BENEFITS_TRANSLATIONS } from "./benefits";
 export { TRANSLATIONS as CONTACT_TRANSLATIONS } from "./contact";

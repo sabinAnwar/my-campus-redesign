@@ -14,10 +14,8 @@ import {
 import { formatDate } from "~/hooks/useStudentId";
 import type { TRANSLATIONS } from "~/services/translations/student-id";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 type TranslationType = typeof TRANSLATIONS.de;
 
 interface StudentUser {
@@ -25,9 +23,9 @@ interface StudentUser {
   name: string | null;
   email: string;
   birthday: Date | null;
-  studyProgram: string | null;
-  matriculationNumber: string | null;
-  validUntil: Date | null;
+  study_program: string | null;
+  matriculation_number: string | null;
+  valid_until: Date | null;
 }
 
 interface PageHeaderProps {
@@ -63,10 +61,8 @@ interface ErrorStateProps {
   message: string;
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
-
+//// COMPONENTS
+//
 export function PageHeader({ title, subtitle, viewBenefitsLabel }: PageHeaderProps) {
   return (
     <div className="mb-8 sm:mb-12 flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -119,7 +115,7 @@ export function IdCardFront({ user, language, frontRef, translations: t }: IdCar
           <div className="bg-white rounded-lg px-3 sm:px-4 py-2 shadow-lg">
             <span className="text-slate-950 font-black text-2xl sm:text-3xl tracking-tighter">iu</span>
           </div>
-          <div className="text-[9px] font-black text-white/40 text-right leading-tight uppercase tracking-widest">
+          <div className="text-[9px] font-black text-white text-right leading-tight uppercase tracking-widest">
             {t.universityName}
             <br />
             {t.universitySub}
@@ -132,21 +128,21 @@ export function IdCardFront({ user, language, frontRef, translations: t }: IdCar
             {user.name || "Student Name"}
           </h2>
           <p className="text-xs sm:text-sm text-iu-blue font-bold uppercase tracking-widest mb-4 sm:mb-6">
-            {user.studyProgram || "Study Program"}
+            {user.study_program || "Study Program"}
           </p>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-8">
             <div>
-              <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+              <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
                 {t.birthday}
               </p>
               <p className="font-bold text-sm">{formatDate(user.birthday, language)}</p>
             </div>
             <div>
-              <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+              <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
                 {t.matriculationNo}
               </p>
-              <p className="font-bold text-sm">{user.matriculationNumber || "---"}</p>
+              <p className="font-bold text-sm">{user.matriculation_number || "---"}</p>
             </div>
           </div>
         </div>
@@ -154,18 +150,18 @@ export function IdCardFront({ user, language, frontRef, translations: t }: IdCar
         {/* Card Footer */}
         <div className="flex justify-between items-end relative z-10">
           <div>
-            <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-1">
+            <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
               {t.validUntil}
             </p>
             <p className="font-black text-sm sm:text-base text-white">
-              {formatDate(user.validUntil, language)}
+              {formatDate(user.valid_until, language)}
             </p>
           </div>
           <div className="flex flex-col items-center gap-2">
             <div className="bg-white p-1.5 rounded-lg shadow-xl">
               <QrCode className="w-8 h-8 sm:w-10 sm:h-10 text-slate-900" />
             </div>
-            <span className="text-[7px] font-black text-white/30 uppercase tracking-widest">
+            <span className="text-[7px] font-black text-white uppercase tracking-widest">
               {t.scanToVerify}
             </span>
           </div>
@@ -196,7 +192,7 @@ export function IdCardBack({ backRef, translations: t }: IdCardBackProps) {
             <div className="w-1.5 h-6 bg-iu-blue rounded-full" />
             <h3 className="text-base sm:text-lg font-black uppercase tracking-widest">{t.contactInfo}</h3>
           </div>
-          <p className="text-xs sm:text-sm font-medium leading-relaxed text-white/60">
+          <p className="text-xs sm:text-sm font-medium leading-relaxed text-white">
             IU Internationale Hochschule GmbH
             <br />
             Juri-Gagarin-Ring 152
@@ -207,7 +203,7 @@ export function IdCardBack({ backRef, translations: t }: IdCardBackProps) {
           </p>
 
           <div className="mt-6 sm:mt-8 pt-6 border-t border-white/10">
-            <p className="text-[10px] sm:text-xs text-white/40 font-medium">
+            <p className="text-[10px] sm:text-xs text-white font-medium">
               {t.forGlobalBenefits}{" "}
               <a
                 href="https://www.isic.de"
@@ -224,12 +220,12 @@ export function IdCardBack({ backRef, translations: t }: IdCardBackProps) {
 
         <div className="flex justify-between items-end relative z-10">
           <div className="flex-1 max-w-[200px]">
-            <p className="text-[9px] text-white/40 font-black uppercase tracking-widest mb-2">
+            <p className="text-[9px] text-white font-black uppercase tracking-widest mb-2">
               {t.signature}
             </p>
             <div className="h-8 sm:h-10 w-full border-b border-white/20 bg-white/5 rounded-t-lg" />
           </div>
-          <div className="text-right text-[8px] font-black text-white/20 uppercase tracking-widest">
+          <div className="text-right text-[8px] font-black text-white uppercase tracking-widest">
             © {new Date().getFullYear()} IU UNIVERSITY
           </div>
         </div>

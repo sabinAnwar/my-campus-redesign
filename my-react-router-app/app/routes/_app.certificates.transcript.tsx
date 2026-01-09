@@ -3,7 +3,6 @@ import { useLanguage } from "~/contexts/LanguageContext";
 import { useLoaderData, Link } from "react-router-dom";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
-import { getCourseConfig } from "../data/coursesConfig";
 import { TRANSLATIONS } from "~/services/translations/transcript";
 import { showSuccessToast, showErrorToast, showInfoToast } from "~/lib/toast";
 import { FEEDBACK_TRANSLATIONS } from "~/services/translations/feedback";
@@ -31,7 +30,7 @@ export const loader = async ({ request }: { request: Request }) => {
     }
 
     const marks = await prisma.mark.findMany({
-      where: { userId: user.id },
+      where: { user_id: user.id },
       include: {
         teacher: true,
       },
@@ -40,9 +39,9 @@ export const loader = async ({ request }: { request: Request }) => {
       },
     });
 
-    const userWithProgram = await prisma.user.findUnique({
+  const userWithProgram = await prisma.user.findUnique({
       where: { id: user.id },
-      include: { studiengang: true },
+      include: { major: { include: { courses: true } } },
     });
 
     return { user: userWithProgram, marks };
@@ -64,27 +63,72 @@ export default function TranscriptPage() {
 
   const studentData: TranscriptStudentData = {
     name: user.name || "Student Name",
-    studentId: user.matriculationNumber || "12345678",
-    program: user.studyProgram || user.studiengang?.name || t.fallbackProgram,
+    studentId: user.matriculation_number || "12345678",
+    program: user.study_program || user.major?.name || t.fallbackProgram,
     semester: "5",
-    enrollmentDate: user.createdAt
-      ? new Date(user.createdAt).toLocaleDateString(language === "de" ? "de-DE" : "en-US")
+    enrollmentDate: user.created_at
+      ? new Date(user.created_at).toLocaleDateString(language === "de" ? "de-DE" : "en-US")
       : "01.10.2022",
   };
 
-  const courseConfigData = getCourseConfig(language);
-  const displayedMarks = showPassedOnly ? marks.filter((m) => m.value <= 4.0) : marks;
+  const dbCourses = user?.major?.courses ?? [];
 
   const groupedMarks = useMemo(() => {
-    const groups: Record<string, typeof marks> = {};
-    displayedMarks.forEach((m) => {
-      const config = courseConfigData.find((c) => c.titleDE === m.course);
-      const sem = config?.semester || t.otherModules;
-      if (!groups[sem]) groups[sem] = [];
-      groups[sem].push(m);
+    const groups: Record<string, any[]> = {};
+    const matchedMarkIds = new Set<number>();
+
+    const findMark = (course: any) =>
+      marks.find((m: any) => {
+        if (typeof m.course !== "string") return false;
+        const keys = [
+          course.name,
+          course.name_de,
+          course.name_en,
+          course.code,
+        ]
+          .filter(Boolean)
+          .map((val: string) => val.toLowerCase());
+        return keys.includes(m.course.toLowerCase());
+      });
+
+    dbCourses.forEach((course: any) => {
+      const semLabel = `${course.semester}. ${t.semester}`;
+      if (!groups[semLabel]) groups[semLabel] = [];
+
+      const mark = findMark(course);
+      if (mark) matchedMarkIds.add(mark.id);
+
+      const passed = mark ? mark.value <= 4.0 : false;
+      if (showPassedOnly && !passed) return;
+
+      groups[semLabel].push({
+        id: course.id,
+        name:
+          language === "de"
+            ? course.name_de || course.name
+            : course.name_en || course.name,
+        credits: course.credits ?? 5,
+        mark,
+      });
     });
+
+    // Add marks that do not match a course (legacy data)
+    const unmatched = marks.filter((m: any) => !matchedMarkIds.has(m.id));
+    if (unmatched.length) {
+      groups[t.otherModules] = groups[t.otherModules] || [];
+      unmatched.forEach((m: any) => {
+        if (showPassedOnly && m.value > 4.0) return;
+        groups[t.otherModules].push({
+          id: `mark-${m.id}`,
+          name: m.course,
+          credits: 5,
+          mark: m,
+        });
+      });
+    }
+
     return Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
-  }, [displayedMarks, courseConfigData, t]);
+  }, [dbCourses, marks, language, t, showPassedOnly]);
 
   const passedMarks = marks.filter((m) => m.value <= 4.0);
 
@@ -93,15 +137,25 @@ export default function TranscriptPage() {
     let weightedSum = 0;
 
     passedMarks.forEach((m) => {
-      const config = courseConfigData.find((c) => c.titleDE === m.course);
-      const credits = config?.credits || 5;
+      const course = dbCourses.find((c: any) => {
+        const keys = [
+          c.name,
+          c.name_de,
+          c.name_en,
+          c.code,
+        ]
+          .filter(Boolean)
+          .map((val: string) => val.toLowerCase());
+        return typeof m.course === "string" && keys.includes(m.course.toLowerCase());
+      });
+      const credits = course?.credits ?? 5;
       totalCredits += credits;
       weightedSum += m.value * credits;
     });
 
     const gpaVal = totalCredits > 0 ? (weightedSum / totalCredits).toFixed(2) : "0.00";
     return { totalCredits, gpa: gpaVal, passedCount: passedMarks.length };
-  }, [passedMarks, courseConfigData]);
+  }, [passedMarks, dbCourses]);
 
   const today = new Date().toLocaleDateString(language === "de" ? "de-DE" : "en-US", {
     year: "numeric",
@@ -115,7 +169,16 @@ export default function TranscriptPage() {
     try {
       showInfoToast(f.transcriptDownloading);
       const marksToExport = passedOnly ? passedMarks : marks;
-      generateTranscriptPDF(t, studentData, marksToExport, stats, today, language, passedOnly, courseConfigData);
+      generateTranscriptPDF(
+        t,
+        studentData,
+        marksToExport,
+        stats,
+        today,
+        language,
+        passedOnly,
+        dbCourses
+      );
       
       // Show success after a short delay to let the PDF generate
       setTimeout(() => {

@@ -35,7 +35,7 @@ export function DocumentPreviewModal({
                 <span className="text-[10px] font-black text-foreground uppercase tracking-widest bg-muted/50 px-3 py-1 rounded-lg border border-border">
                   {selectedDocument.type}
                 </span>
-                <span className="text-xs text-foreground/80 dark:text-white/80 font-bold uppercase tracking-widest">
+                <span className="text-xs text-foreground dark:text-white font-bold uppercase tracking-widest">
                   {t.preview}
                 </span>
               </div>
@@ -57,7 +57,7 @@ export function DocumentPreviewModal({
             </button>
           <button
             onClick={onClose}
-            className="p-3 sm:p-4 hover:bg-muted rounded-2xl transition-all text-foreground/80 dark:text-white/80 hover:text-iu-red shadow-lg border border-border"
+            className="p-3 sm:p-4 hover:bg-muted rounded-2xl transition-all text-foreground dark:text-white hover:text-iu-red shadow-lg border border-border"
           >
             <X className="w-5 h-5 sm:w-6 sm:h-6" />
           </button>

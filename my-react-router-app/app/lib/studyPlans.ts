@@ -7,7 +7,14 @@ export type DayStatus =
   | "wochenende"
   | "feiertag";
 
-export type PaletteEntry = { label: string; bg: string; text: string; ring: string };
+export type PaletteEntry = { 
+  label: string; 
+  bg: string; 
+  text: string; 
+  ring: string;
+  textSoft?: string; // Text color for soft backgrounds (Light Mode)
+  darkTextSoft?: string; // Text color for soft backgrounds (Dark Mode)
+};
 
 export type StudyBlock = { start: string; end: string; status: DayStatus };
 
@@ -28,42 +35,56 @@ export const DEFAULT_PALETTE: Record<DayStatus, PaletteEntry> = {
     bg: "bg-iu-green",
     text: "text-white",
     ring: "ring-iu-green/30",
+    textSoft: "text-iu-green",
+    darkTextSoft: "text-emerald-50",
   },
   vorlesung: {
     label: "Vorlesungstermine",
     bg: "bg-primary/10",
     text: "text-primary",
     ring: "ring-primary/20",
+    textSoft: "text-foreground",
+    darkTextSoft: "text-foreground",
   },
   theoriephase: {
     label: "Theoriewoche",
     bg: "bg-iu-purple",
     text: "text-white",
     ring: "ring-iu-purple/30",
+    textSoft: "text-iu-purple",
+    darkTextSoft: "text-violet-100",
   },
   klausurphase: {
     label: "Klausurwoche",
     bg: "bg-iu-red",
     text: "text-white",
     ring: "ring-iu-red/30",
+    textSoft: "text-iu-red",
+    darkTextSoft: "text-rose-100",
   },
   nachpruefung: {
     label: "Nachprüfungsphase",
     bg: "bg-iu-indigo",
     text: "text-white",
     ring: "ring-iu-indigo/30",
+    textSoft: "text-iu-indigo",
+    darkTextSoft: "text-indigo-100",
   },
   wochenende: {
     label: "Wochenenden (frei von Praxis)",
     bg: "bg-iu-orange",
     text: "text-white",
     ring: "ring-iu-orange/30",
+    textSoft: "text-iu-orange",
+    darkTextSoft: "text-orange-100",
   },
   feiertag: {
     label: "Feiertag",
     bg: "bg-iu-gold",
     text: "text-white",
     ring: "ring-iu-gold/30",
+    textSoft: "text-iu-gold",
+    darkTextSoft: "text-yellow-50",
   },
 };
 
@@ -103,36 +124,48 @@ export const STUDY_PLANS: StudyPlan[] = [
         bg: "bg-iu-purple",
         text: "text-white",
         ring: "ring-iu-purple/30",
+        textSoft: "text-violet-950",
+        darkTextSoft: "text-violet-50",
       },
       praxis: {
         label: "Praxiswochen",
         bg: "bg-iu-green",
         text: "text-white",
         ring: "ring-iu-green/30",
+        textSoft: "text-emerald-950",
+        darkTextSoft: "text-emerald-50",
       },
       klausurphase: {
         label: "Klausurwoche",
         bg: "bg-iu-red",
         text: "text-white",
         ring: "ring-iu-red/30",
+        textSoft: "text-red-900",
+        darkTextSoft: "text-rose-100",
       },
       nachpruefung: {
         label: "Nachprüfungsphase",
         bg: "bg-iu-indigo",
         text: "text-white",
         ring: "ring-iu-indigo/30",
+        textSoft: "text-indigo-900",
+        darkTextSoft: "text-indigo-100",
       },
       wochenende: {
         label: "Wochenenden (max. 2/Monat arbeiten)",
         bg: "bg-iu-orange",
         text: "text-white",
         ring: "ring-iu-orange/30",
+        textSoft: "text-orange-900",
+        darkTextSoft: "text-orange-100",
       },
       feiertag: {
         label: "Nationaler Feiertag",
         bg: "bg-iu-gold",
         text: "text-white",
         ring: "ring-iu-gold/30",
+        textSoft: "text-yellow-900",
+        darkTextSoft: "text-yellow-50",
       },
     },
     blocks: [
@@ -162,24 +195,32 @@ export const STUDY_PLANS: StudyPlan[] = [
         bg: "bg-iu-purple",
         text: "text-white",
         ring: "ring-iu-purple/30",
+        textSoft: "text-indigo-900",
+        darkTextSoft: "text-violet-100",
       },
       praxis: {
         label: "Praxiswochen",
         bg: "bg-iu-green",
         text: "text-white",
         ring: "ring-iu-green/30",
+        textSoft: "text-emerald-900",
+        darkTextSoft: "text-emerald-50",
       },
       klausurphase: {
         label: "Klausurwoche",
         bg: "bg-iu-red",
         text: "text-white",
         ring: "ring-iu-red/30",
+        textSoft: "text-red-900",
+        darkTextSoft: "text-rose-100",
       },
       nachpruefung: {
         label: "Nachprüfungsphase",
         bg: "bg-iu-indigo",
         text: "text-white",
         ring: "ring-iu-indigo/30",
+        textSoft: "text-indigo-900",
+        darkTextSoft: "text-indigo-100",
       },
     },
     blocks: [
@@ -199,26 +240,34 @@ export const STUDY_PLANS: StudyPlan[] = [
     // No pattern = default fallback
     paletteOverrides: {
       praxis: {
-        label: "Praxisphase",
+        label: "",
         bg: "bg-iu-green",
         text: "text-white",
         ring: "ring-iu-green/30",
+        textSoft: "text-emerald-900",
+        darkTextSoft: "text-emerald-50",
       },
       theoriephase: {
         label: "Theorieblock",
         bg: "bg-iu-purple",
         text: "text-white",
         ring: "ring-iu-purple/30",
+        textSoft: "text-indigo-900",
+        darkTextSoft: "text-violet-100",
       },
       klausurphase: {
         label: "Klausurwoche",
         bg: "bg-iu-red",
         text: "text-white",
         ring: "ring-iu-red/30",
+        textSoft: "text-red-900",
+        darkTextSoft: "text-rose-100",
       },
     },
     blocks: [
       ...COMMON_BLOCKS,
+      { start: "2026-05-25", end: "2026-05-29", status: "klausurphase" },
+      { start: "2026-06-15", end: "2026-06-19", status: "nachpruefung" },
       { start: "2026-04-01", end: "2026-05-31", status: "theoriephase" },
       { start: "2026-06-01", end: "2026-07-31", status: "praxis" },
       { start: "2026-08-01", end: "2026-08-10", status: "klausurphase" },
@@ -240,6 +289,35 @@ export function getStudyPlanByStudiengang(studiengangName: string | null | undef
   
   return matchingPlan || STUDY_PLANS[0]; // Return matching or default
 }
+
+export function getBlockStatusForDate(plan: StudyPlan, date: Date): DayStatus | null {
+  const dateStr = toISODate(date);
+  
+  // 1. Check for holidays first
+  const holiday = plan.blocks.find(b => b.status === "feiertag" && dateStr >= b.start && dateStr <= b.end);
+  if (holiday) return "feiertag";
+
+
+
+  // 2. Check for Priority Blocks (Exams/Resits) BEFORE Split Logic
+  const priorityBlock = plan.blocks.find(b => 
+    (b.status === "klausurphase" || b.status === "nachpruefung") && 
+    dateStr >= b.start && dateStr <= b.end
+  );
+  if (priorityBlock) return priorityBlock.status;
+
+  // 3. Special Logic for SS26 (Split Week) overrides generic blocks
+  if (dateStr >= "2026-04-01" && dateStr <= "2026-06-30") {
+    const day = date.getDay();
+    if (day >= 1 && day <= 3) return "praxis"; 
+    if (day >= 4 && day <= 5) return "theoriephase"; 
+  }
+
+  // 4. Find regular block
+  const block = plan.blocks.find(b => dateStr >= b.start && dateStr <= b.end);
+  return block ? block.status : null;
+}
+
 
 export function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);

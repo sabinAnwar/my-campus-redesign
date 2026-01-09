@@ -3,12 +3,10 @@ import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import { showSuccessToast, showErrorToast } from "~/lib/toast";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface UseStudentIdPdfOptions {
-  matriculationNumber?: string | null;
+  matriculation_number?: string | null;
   translations: {
     pdfCreating: string;
     pdfSuccess: string;
@@ -16,11 +14,9 @@ interface UseStudentIdPdfOptions {
   };
 }
 
-// ============================================================================
-// HOOK
-// ============================================================================
-
-export function useStudentIdPdf({ matriculationNumber, translations: t }: UseStudentIdPdfOptions) {
+//// HOOK
+//
+export function useStudentIdPdf({ matriculation_number, translations: t }: UseStudentIdPdfOptions) {
   const frontRef = useRef<HTMLDivElement | null>(null);
   const backRef = useRef<HTMLDivElement | null>(null);
 
@@ -53,13 +49,13 @@ export function useStudentIdPdf({ matriculationNumber, translations: t }: UseStu
       pdf.addPage();
       pdf.addImage(back, "PNG", 0, 0, 85.6, 53.98);
 
-      pdf.save(`IU_Student_ID_${matriculationNumber || "ID"}.pdf`);
+      pdf.save(`IU_Student_ID_${matriculation_number || "ID"}.pdf`);
       showSuccessToast(t.pdfSuccess);
     } catch (error) {
       console.error("PDF error:", error);
       showErrorToast(t.pdfError);
     }
-  }, [matriculationNumber, t]);
+  }, [matriculation_number, t]);
 
   return {
     frontRef,
@@ -68,10 +64,8 @@ export function useStudentIdPdf({ matriculationNumber, translations: t }: UseStu
   };
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
+//// HELPER FUNCTIONS
+//
 export function formatDate(date: any, language: "de" | "en"): string {
   if (!date) return "---";
   const locale = language === "de" ? "de-DE" : "en-US";

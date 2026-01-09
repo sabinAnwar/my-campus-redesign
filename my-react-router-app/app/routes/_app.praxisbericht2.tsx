@@ -1,9 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
 import { apiGet } from "../lib/api";
 import { toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
 import {
   ChevronLeft,
   ChevronRight,
@@ -32,35 +31,51 @@ import {
 
 const STATUS_STYLES = {
   DUE: {
-    bg: "bg-amber-100 dark:bg-amber-600",
-    text: "text-amber-700 dark:text-white",
-    border: "border-amber-300 dark:border-amber-500",
+    bg: "bg-amber-900",
+    text: "text-white",
+    border: "border-amber-900",
   },
   DRAFT: {
-    bg: "bg-sky-100 dark:bg-sky-600",
-    text: "text-sky-700 dark:text-white",
-    border: "border-sky-300 dark:border-sky-500",
+    bg: "bg-sky-900",
+    text: "text-white",
+    border: "border-sky-900",
   },
   SUBMITTED: {
-    bg: "bg-emerald-100 dark:bg-emerald-600",
-    text: "text-emerald-700 dark:text-white",
-    border: "border-emerald-300 dark:border-emerald-500",
+    bg: "bg-emerald-900",
+    text: "text-white",
+    border: "border-emerald-900",
   },
   APPROVED: {
-    bg: "bg-violet-100 dark:bg-violet-600",
-    text: "text-violet-700 dark:text-white",
-    border: "border-violet-300 dark:border-violet-500",
+    bg: "bg-violet-900",
+    text: "text-white",
+    border: "border-violet-900",
   },
-  KLAUSURPHASE: {
-    bg: "bg-slate-100 dark:bg-slate-700",
-    text: "text-slate-600 dark:text-slate-300",
-    border: "border-slate-300 dark:border-slate-600",
+  EXAM_PHASE: {
+    bg: "bg-slate-900",
+    text: "text-white",
+    border: "border-slate-900",
   },
   ALL: {
     bg: "bg-card/50",
     text: "text-foreground",
     border: "border-border",
   },
+};
+
+const normalizeReport = (report: any) => {
+  if (!report) return report;
+  const rawStatus =
+    typeof report.status === "string" ? report.status.toUpperCase() : "DUE";
+  const normalizedStatus =
+    rawStatus === "KLAUSUR" ? "KLAUSURPHASE" : rawStatus;
+  return {
+    ...report,
+    status: normalizedStatus,
+    isoWeekKey: report.isoWeekKey || report.iso_week_key,
+    editedAt: report.editedAt || report.edited_at,
+    approvedAt: report.approvedAt || report.approved_at,
+    createdAt: report.createdAt || report.created_at,
+  };
 };
 
 // Helpers
@@ -146,6 +161,7 @@ export default function Praxisbericht2() {
   const [activeWeekKey, setActiveWeekKey] = useState<string | null>(null);
   const [activeReport, setActiveReport] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
+  const [reportsVersion, setReportsVersion] = useState(0);
   const [statusFilter, setStatusFilter] = useState("ALL"); // ALL | DUE | DRAFT | SUBMITTED | APPROVED | KLAUSURPHASE
   const navigate = useNavigate();
   // Reminder preferences display
@@ -164,23 +180,26 @@ export default function Praxisbericht2() {
   const [semStartYear, setSemStartYear] = useState(defaultSemStart.y);
   const [semStartMonth, setSemStartMonth] = useState(defaultSemStart.m);
 
-  useEffect(() => {
-    (async () => {
-      try {
-        const data = await apiGet("/api/praxisberichte");
-        setReports(data.reports || []);
-        setLoading(false);
-      } catch (e: any) {
-        console.error("Failed to load praxisberichte", e);
-        if (e && e.status === 401) {
-          navigate("/");
-        } else {
-          toast.error("Failed to load Praxisberichte");
-        }
-        setLoading(false);
+  const fetchReports = useCallback(async () => {
+    try {
+      const data = await apiGet(`/api/praxisberichte?ts=${Date.now()}`);
+      setReports((data.reports || []).map(normalizeReport));
+      setReportsVersion((v) => v + 1);
+      setLoading(false);
+    } catch (e: any) {
+      console.error("Failed to load praxisberichte", e);
+      if (e && e.status === 401) {
+        navigate("/");
+      } else {
+        toast.error("Failed to load Praxisberichte");
       }
-    })();
+      setLoading(false);
+    }
   }, [navigate]);
+
+  useEffect(() => {
+    fetchReports();
+  }, [fetchReports]);
 
   // Load reminder preferences for banner
   useEffect(() => {
@@ -198,12 +217,18 @@ export default function Praxisbericht2() {
     })();
   }, []);
 
+  const normalizedReports = useMemo(
+    () => reports.map(normalizeReport),
+    [reports]
+  );
+
   // Derive period-aware metrics (submitted/due/klausur/completion + drafts/approved/satisfied) for visible period
   const stats = useMemo(() => {
     const statusMap = new Map();
-    for (const r of reports) {
+    for (const r of normalizedReports) {
       if (!r) continue;
-      const s = r.status === "KLAUSUR" ? "KLAUSURPHASE" : r.status;
+      const raw = typeof r.status === "string" ? r.status.toUpperCase() : "DUE";
+      const s = raw === "KLAUSUR" ? "KLAUSURPHASE" : raw;
       statusMap.set(r.isoWeekKey, s);
     }
     const visibleKeys =
@@ -232,7 +257,7 @@ export default function Praxisbericht2() {
       else if (!s || s === "DUE") due += 1;
 
       // satisfied: majority of mooded days are happy/satisfied
-      const rep = reports.find((r) => r && r.isoWeekKey === wk);
+      const rep = normalizedReports.find((r) => r && r.isoWeekKey === wk);
       if (rep && rep.days) {
         const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         let pos = 0,
@@ -251,7 +276,7 @@ export default function Praxisbericht2() {
 
     const completion = total > 0 ? Math.round((submitted / total) * 100) : 0;
     return { submitted, due, klausur, completion, drafts, approved, satisfied };
-  }, [reports, mode, year, month, semStartYear, semStartMonth]);
+  }, [normalizedReports, mode, year, month, semStartYear, semStartMonth]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -275,43 +300,43 @@ export default function Praxisbericht2() {
             label: t.submitted,
             val: stats.submitted,
             icon: CheckCircle,
-            color: "iu-blue",
+            color: "iu-blue-text",
           },
           {
             label: t.mustSubmit,
             val: stats.due,
             icon: AlertCircle,
-            color: "orange-500",
+            color: "orange-900",
           },
           {
             label: t.drafts,
             val: stats.drafts,
             icon: FileEdit,
-            color: "iu-blue",
+            color: "iu-blue-text",
           },
           {
             label: t.reviewed,
             val: stats.approved,
             icon: BadgeCheck,
-            color: "purple-500",
+            color: "purple-900",
           },
           {
             label: t.klausurWeeks,
             val: stats.klausur,
             icon: CalendarClock,
-            color: "slate-400",
+            color: "slate-900",
           },
           {
             label: t.completion,
             val: `${stats.completion}%`,
             icon: GraduationCap,
-            color: "pink-500",
+            color: "pink-900",
           },
           {
             label: t.satisfied,
             val: stats.satisfied,
             icon: Smile,
-            color: "iu-blue",
+            color: "iu-blue-text",
           },
         ]}
       />
@@ -324,7 +349,8 @@ export default function Praxisbericht2() {
           setYear(now.getFullYear());
           setMonth(now.getMonth());
           const wk = getISOWeekKey(now);
-          const r = reports.find((x) => x && x.isoWeekKey === wk) || null;
+          const r =
+            normalizedReports.find((x) => x && x.isoWeekKey === wk) || null;
           setActiveReport(r);
           setActiveWeekKey(wk);
         }}
@@ -450,13 +476,16 @@ export default function Praxisbericht2() {
 
               {mode === "month" ? (
                 <CalendarView
-                  reports={reports}
+                  key={`month-${year}-${month}-${reportsVersion}`}
+                  reports={normalizedReports}
                   year={year}
                   month={month}
                   filter={statusFilter}
                   onDayClick={(weekKey: string) => {
                     const r =
-                      reports.find((x) => x && x.isoWeekKey === weekKey) ||
+                      normalizedReports.find(
+                        (x) => x && x.isoWeekKey === weekKey
+                      ) ||
                       null;
                     setActiveReport(r);
                     setActiveWeekKey(weekKey);
@@ -471,13 +500,13 @@ export default function Praxisbericht2() {
                     return (
                       <CalendarView
                         key={`${y}-${m}`}
-                        reports={reports}
+                        reports={normalizedReports}
                         year={y}
                         month={m}
                         filter={statusFilter}
                         onDayClick={(weekKey: string) => {
                           const r =
-                            reports.find(
+                            normalizedReports.find(
                               (x) => x && x.isoWeekKey === weekKey
                             ) || null;
                           setActiveReport(r);
@@ -506,11 +535,12 @@ export default function Praxisbericht2() {
         </>
       ) : (
         <ListView
-          reports={reports}
+          reports={normalizedReports}
           filter={statusFilter}
           onOpen={(weekKey: string) => {
             const r =
-              reports.find((x) => x && x.isoWeekKey === weekKey) || null;
+              normalizedReports.find((x) => x && x.isoWeekKey === weekKey) ||
+              null;
             setActiveReport(r);
             setActiveWeekKey(weekKey);
           }}
@@ -528,15 +558,18 @@ export default function Praxisbericht2() {
         }}
         onSaved={(saved: { isoWeekKey: any }) => {
           if (!saved) return;
+          const normalized = normalizeReport(saved);
           setReports((prev) => {
             const idx = prev.findIndex(
-              (p) => p && p.isoWeekKey === saved.isoWeekKey
+              (p) => p && p.isoWeekKey === normalized.isoWeekKey
             );
-            if (idx === -1) return [...prev, saved];
+            if (idx === -1) return [...prev, normalized];
             const next = prev.slice();
-            next[idx] = saved;
+            next[idx] = normalized;
             return next;
           });
+          setReportsVersion((v) => v + 1);
+          void fetchReports();
         }}
       />
 
@@ -566,7 +599,10 @@ function CalendarView({
   const statusByWeek = useMemo(() => {
     const map = new Map();
     for (const r of reports) {
-      if (r) map.set(r.isoWeekKey, r.status);
+      if (!r) continue;
+      const raw = typeof r.status === "string" ? r.status.toUpperCase() : "DUE";
+      const normalized = raw === "KLAUSUR" ? "KLAUSURPHASE" : raw;
+      map.set(r.isoWeekKey, normalized);
     }
     return map;
   }, [reports]);
@@ -636,13 +672,13 @@ function CalendarView({
         title={`${weekKey} • ${status}${hoursLabel ? " • " + hoursLabel : ""}${isEdited ? " • edited" : ""}`}
       >
         {isMonday && (
-          <span className="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-muted/80 backdrop-blur-md border border-border text-muted-foreground uppercase tracking-widest">
+          <span className="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-foreground border border-foreground text-background uppercase tracking-widest">
             W{weekNumber}
           </span>
         )}
-        <span className="text-lg text-foreground dark:text-white font-black">{date.getDate()}</span>
+        <span className="text-lg text-white font-black">{date.getDate()}</span>
         {hoursLabel && (
-          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-iu-blue/10 dark:bg-iu-blue backdrop-blur-md border border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white font-bold uppercase tracking-widest">
+          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-iu-blue border border-iu-blue text-white font-bold uppercase tracking-widest">
             {hoursLabel}
           </span>
         )}
@@ -691,17 +727,17 @@ function ListView({
     return trimmed.length > n ? trimmed.slice(0, n - 1) + "…" : trimmed;
   };
   const statusPill = (s: string) => {
-    if (!s) return "bg-iu-orange text-iu-orange border-iu-orange";
+    if (!s) return "bg-amber-900 text-white border-amber-900";
     if (s === "KLAUSUR") s = "KLAUSURPHASE";
     return s === "DRAFT"
-      ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
+      ? "bg-iu-blue text-white border-iu-blue"
       : s === "SUBMITTED"
-        ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
+        ? "bg-emerald-900 text-white border-emerald-900"
         : s === "APPROVED"
-          ? "bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white border-iu-purple/20 dark:border-iu-purple"
+          ? "bg-violet-900 text-white border-violet-900"
           : s === "KLAUSURPHASE"
-            ? "bg-muted text-muted-foreground border-border"
-            : "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border-iu-orange/20 dark:border-iu-orange";
+            ? "bg-slate-900 text-white border-slate-900"
+            : "bg-amber-900 text-white border-amber-900";
   };
   const toMinutes = (t: string | null | undefined) => {
     if (typeof t !== "string" || !t.includes(":")) return null;
@@ -841,7 +877,6 @@ function WeekModal({
   const [saving, setSaving] = useState(false);
   const [saveMode, setSaveMode] = useState("SUBMITTED");
   const [daysState, setDaysState] = useState<Record<string, any>>({});
-  const [grade, setGrade] = useState("");
   const navigate = useNavigate();
   const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
   const taskLen = (tasks || "").trim().length;
@@ -886,7 +921,6 @@ function WeekModal({
   useEffect(() => {
     if (open) {
       setTasks(report?.tasks || "");
-      setGrade(Number.isInteger(report?.grade) ? String(report.grade) : "");
       const init: Record<string, any> = {};
       for (let i = 0; i < dayKeys.length; i++) {
         const k = dayKeys[i];
@@ -962,7 +996,6 @@ function WeekModal({
         isoWeekKey: weekKey,
         tasks: tasks || "",
         days: daysState || {},
-        grade: grade !== "" ? Number(grade) : undefined,
         status: mode,
       };
       const saved = await apiJson(
@@ -970,8 +1003,13 @@ function WeekModal({
         "PUT",
         body
       );
+      const normalized = normalizeReport({
+        ...saved,
+        status: mode,
+        isoWeekKey: weekKey,
+      });
       toast.success(mode === "DRAFT" ? "Draft saved" : "Week submitted");
-      onSaved && onSaved(saved);
+      onSaved && onSaved(normalized);
       onClose && onClose();
     } catch (e) {
       const err: any = e;
@@ -994,12 +1032,12 @@ function WeekModal({
         onClick={onClose}
       />
 
-      <div className="relative w-full max-w-5xl bg-card/50 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border overflow-hidden flex flex-col max-h-[90vh]">
+      <div className="relative w-full max-w-5xl bg-card rounded-[2rem] sm:rounded-[2.5rem] border border-border overflow-hidden flex flex-col max-h-[90vh]">
         {/* Modal Header */}
-        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-b border-border bg-muted/50 flex items-center justify-between">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-b border-border bg-card flex items-center justify-between">
           <div className="flex items-center gap-4 sm:gap-6">
-            <div className="p-3 sm:p-4 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl border border-iu-blue/20 dark:border-iu-blue">
-              <ClipboardList className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-iu-blue dark:text-white" />
+            <div className="p-3 sm:p-4 bg-iu-blue rounded-2xl border border-iu-blue">
+              <ClipboardList className="h-6 w-6 sm:h-7 sm:w-7 lg:h-8 lg:w-8 text-white" />
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
@@ -1010,15 +1048,15 @@ function WeekModal({
                   <span
                     className={`inline-flex items-center rounded-xl px-3 py-1 text-[10px] border font-bold uppercase tracking-widest ${
                       report.status === "DRAFT"
-                        ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border-iu-blue/20 dark:border-iu-blue"
+                        ? "bg-iu-blue text-white border-iu-blue"
                         : report.status === "SUBMITTED"
-                          ? "bg-iu-green/10 dark:bg-iu-green text-iu-green dark:text-white border-iu-green/20 dark:border-iu-green"
+                          ? "bg-emerald-900 text-white border-emerald-900"
                           : report.status === "APPROVED"
-                            ? "bg-iu-purple/10 dark:bg-iu-purple text-iu-purple dark:text-white border-iu-purple/20 dark:border-iu-purple"
+                            ? "bg-violet-900 text-white border-violet-900"
                             : report.status === "KLAUSURPHASE" ||
                                 report.status === "KLAUSUR"
-                              ? "bg-muted text-muted-foreground border-border"
-                              : "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border-iu-orange/20 dark:border-iu-orange"
+                              ? "bg-slate-900 text-white border-slate-900"
+                              : "bg-amber-900 text-white border-amber-900"
                     }`}
                   >
                     {report.status === "APPROVED" ? t.reviewed : report.status}
@@ -1026,8 +1064,8 @@ function WeekModal({
                 )}
               </div>
               {weekDates?.length === 7 && (
-                <div className="text-sm text-muted-foreground font-bold uppercase tracking-widest flex items-center gap-2">
-                  <Calendar className="h-3 w-3" />
+                <div className="text-sm text-foreground font-bold uppercase tracking-widest flex items-center gap-2">
+                  <Calendar className="h-3 w-3 text-foreground" />
                   {weekDates[0].toLocaleDateString()} –{" "}
                   {weekDates[6].toLocaleDateString()}
                 </div>
@@ -1036,15 +1074,15 @@ function WeekModal({
           </div>
           <div className="flex items-center gap-4 sm:gap-6">
             <div className="hidden md:flex flex-col items-end">
-              <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-1">
+              <div className="text-[10px] font-bold text-foreground uppercase tracking-widest mb-1">
                 {t.totalHours}
               </div>
-              <div className="text-xl sm:text-2xl font-bold text-iu-blue dark:text-white">
+              <div className="text-xl sm:text-2xl font-bold text-foreground">
                 {Math.floor(totalMinutes / 60)}h {totalMinutes % 60}m
               </div>
             </div>
             <button
-              className="p-3 hover:bg-muted/50 rounded-2xl text-muted-foreground hover:text-foreground transition-all duration-300"
+              className="p-3 hover:bg-foreground rounded-2xl text-foreground hover:text-background transition-all duration-300"
               onClick={onClose}
             >
               <X className="h-5 w-5 sm:h-6 sm:w-6" />
@@ -1062,7 +1100,7 @@ function WeekModal({
               <div className="flex flex-wrap items-center gap-3">
                 <button
                   type="button"
-                  className="px-4 py-2 text-xs font-bold rounded-xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-foreground text-background bg-foreground hover:bg-foreground/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
                   onClick={() => {
                     const monday = daysState.Mon || {};
                     if (!monday.from || !monday.till) {
@@ -1088,7 +1126,7 @@ function WeekModal({
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 text-xs font-bold rounded-xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  className="px-4 py-2 text-xs font-bold rounded-xl border border-foreground text-background bg-foreground hover:bg-foreground/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
                   onClick={() => {
                     setDaysState((prev) => {
                       const next = { ...prev };
@@ -1103,7 +1141,7 @@ function WeekModal({
                 </button>
                 <button
                   type="button"
-                  className="px-4 py-2 text-xs font-bold rounded-xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue hover:bg-iu-blue/20 dark:hover:bg-iu-blue/80 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+                  className="px-4 py-2 text-xs font-bold rounded-xl bg-iu-blue text-white border border-iu-blue hover:bg-iu-blue/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
                   onClick={() => {
                     setDaysState((prev) => {
                       const next = { ...prev };
@@ -1126,11 +1164,11 @@ function WeekModal({
             </div>
 
             {/* Days Table */}
-            <div className="bg-card/50 rounded-2xl sm:rounded-3xl border border-border overflow-hidden">
+            <div className="bg-card rounded-2xl sm:rounded-3xl border border-border overflow-hidden">
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="bg-muted/50 text-muted-foreground border-b border-border">
+                    <tr className="bg-slate-900 text-white border-b border-slate-900">
                       <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.day}
                       </th>
@@ -1152,20 +1190,17 @@ function WeekModal({
                       <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
                         {t.rating}
                       </th>
-                      <th className="text-left px-3 sm:px-4 lg:px-6 py-3 sm:py-4 font-bold uppercase tracking-widest text-[10px]">
-                        {t.notes}
-                      </th>
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-border">
                     {dayKeys.map((k, idx) => (
                       <tr
                         key={k}
-                        className={`transition-colors ${daysState[k]?.holiday ? "bg-muted/20 opacity-50" : "hover:bg-muted/30"}`}
+                        className={`transition-colors ${daysState[k]?.holiday ? "bg-slate-100 opacity-60" : "hover:bg-slate-100"}`}
                       >
                         <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 whitespace-nowrap">
                           <div className="font-bold text-foreground">{k}</div>
-                          <div className="text-[10px] text-muted-foreground font-bold">
+                          <div className="text-[10px] text-foreground font-bold">
                             {weekDates[idx]?.toLocaleDateString?.() || ""}
                           </div>
                         </td>
@@ -1197,7 +1232,7 @@ function WeekModal({
                             }
                           />
                         </td>
-                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-iu-blue dark:text-white font-bold">
+                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-foreground font-bold">
                           {(() => {
                             const d = daysState[k];
                             if (!d || d.holiday) return "–";
@@ -1213,7 +1248,7 @@ function WeekModal({
                         <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-center">
                           <input
                             type="checkbox"
-                            className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
+                            className="h-5 w-5 rounded-lg border-foreground bg-background text-foreground focus:ring-foreground accent-foreground"
                             checked={!!daysState[k]?.holiday}
                             onChange={(e) =>
                               setDaysState((prev) => {
@@ -1234,7 +1269,7 @@ function WeekModal({
                         <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4 text-center">
                           <input
                             type="checkbox"
-                            className="h-5 w-5 rounded-lg border-border bg-muted/50 text-iu-blue focus:ring-iu-blue accent-iu-blue"
+                            className="h-5 w-5 rounded-lg border-foreground bg-background text-foreground focus:ring-foreground accent-foreground"
                             checked={!!daysState[k]?.hold}
                             onChange={(e) =>
                               setDaysState((prev) => ({
@@ -1246,7 +1281,7 @@ function WeekModal({
                         </td>
                         <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
                           <select
-                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
+                            className="w-full rounded-xl border border-border bg-background text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
                             value={daysState[k]?.mood || ""}
                             onChange={(e) =>
                               setDaysState((prev) => ({
@@ -1262,20 +1297,6 @@ function WeekModal({
                             <option value="angry"> {t.angry}</option>
                           </select>
                         </td>
-                        <td className="px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
-                          <input
-                            type="text"
-                            className="w-full rounded-xl border border-border bg-muted/50 text-foreground px-3 py-2 text-sm focus:ring-2 focus:ring-iu-blue outline-none transition-all"
-                            placeholder="Notes..."
-                            value={daysState[k]?.notes || ""}
-                            onChange={(e) =>
-                              setDaysState((prev) => ({
-                                ...prev,
-                                [k]: { ...prev[k], notes: e.target.value },
-                              }))
-                            }
-                          />
-                        </td>
                       </tr>
                     ))}
                   </tbody>
@@ -1287,70 +1308,45 @@ function WeekModal({
             <div className="space-y-6">
               <div className="flex items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
-                  <div className="p-2.5 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
-                    <FileEdit className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
+                  <div className="p-2.5 sm:p-3 bg-iu-blue rounded-2xl">
+                    <FileEdit className="h-5 w-5 sm:h-6 sm:w-6 text-white" />
                   </div>
                   <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
                     Weekly Summary
                   </h3>
                 </div>
                 <span
-                  className={`text-xs font-bold uppercase tracking-widest ${taskLen >= 10 ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
+                  className={`text-xs font-bold uppercase tracking-widest ${taskLen >= 10 ? "text-foreground" : "text-foreground"}`}
                 >
                   {taskLen} / 10 chars
                 </span>
               </div>
 
-              <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
-                <div className="lg:col-span-2">
-                  <textarea
-                    className="w-full min-h-[160px] sm:min-h-[200px] rounded-2xl sm:rounded-3xl border border-border bg-muted/50 text-foreground px-4 sm:px-6 py-4 sm:py-6 text-sm focus:outline-none focus:ring-2 focus:ring-iu-blue transition-all"
-                    value={tasks}
-                    onChange={(e) => setTasks(e.target.value)}
-                    placeholder="Describe your practical work and achievements this week..."
-                  />
-                </div>
-                <div className="space-y-6">
-                  <div className="bg-muted/50 rounded-2xl sm:rounded-3xl border border-border p-5 sm:p-6">
-                    <label className="block text-[10px] font-bold text-muted-foreground uppercase tracking-widest mb-3">
-                      Grade (optional)
-                    </label>
-                    <div className="grid grid-cols-3 gap-2">
-                      {["1", "2", "3", "4", "5", "6"].map((g) => (
-                        <button
-                          key={g}
-                          type="button"
-                          onClick={() => setGrade(g === grade ? "" : g)}
-                          className={`py-3 rounded-xl font-bold transition-all duration-300 border ${
-                            grade === g
-                              ? "bg-iu-blue text-white border-iu-blue"
-                              : "bg-card/50 text-muted-foreground border-border hover:border-iu-blue/50"
-                          }`}
-                        >
-                          {g}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
+              <div className="grid grid-cols-1">
+                <textarea
+                  className="w-full min-h-[200px] rounded-2xl sm:rounded-3xl border border-border bg-background text-foreground px-4 sm:px-6 py-4 sm:py-6 text-sm focus:outline-none focus:ring-2 focus:ring-iu-blue transition-all"
+                  value={tasks}
+                  onChange={(e) => setTasks(e.target.value)}
+                  placeholder="Describe your practical work and achievements this week..."
+                />
               </div>
             </div>
           </div>
         </div>
 
         {/* Modal Footer */}
-        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-t border-border bg-muted/50 flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 sm:gap-6">
+        <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8 border-t border-border bg-card flex flex-col sm:flex-row sm:items-center sm:justify-end gap-4 sm:gap-6">
           <div className="flex items-center justify-end gap-4">
             <button
               onClick={onClose}
-              className="px-8 py-4 text-sm font-bold rounded-2xl border border-border text-muted-foreground bg-card/50 hover:bg-muted/50 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
+              className="px-8 py-4 text-sm font-bold rounded-2xl border border-foreground text-background bg-foreground hover:bg-foreground/90 hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 uppercase tracking-widest"
             >
               {t.cancel}
             </button>
             <button
               disabled={saving}
               onClick={() => handleSave("DRAFT")}
-              className="px-8 py-4 text-sm font-bold rounded-2xl border border-iu-blue/50 dark:border-iu-blue text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue hover:bg-iu-blue/20 dark:hover:bg-iu-blue/80 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all duration-300 uppercase tracking-widest"
+              className="px-8 py-4 text-sm font-bold rounded-2xl border border-iu-blue text-white bg-iu-blue hover:bg-iu-blue/90 hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 transition-all duration-300 uppercase tracking-widest"
             >
               {saving && saveMode === "DRAFT" ? t.saving : t.saveDraft}
             </button>
@@ -1359,8 +1355,8 @@ function WeekModal({
               onClick={() => handleSave("SUBMITTED")}
               className={`px-10 py-4 text-sm font-bold rounded-2xl text-white transition-all duration-300 uppercase tracking-widest ${
                 saving || taskLen < 10
-                  ? "bg-muted text-muted-foreground cursor-not-allowed"
-                  : "bg-iu-blue hover:bg-iu-blue hover:scale-[1.02] active:scale-[0.98]"
+                  ? "bg-slate-900 text-white cursor-not-allowed"
+                  : "bg-iu-blue hover:bg-iu-blue/90 hover:scale-[1.02] active:scale-[0.98]"
               }`}
             >
               {saving && saveMode !== "DRAFT" ? t.saving : t.submit}

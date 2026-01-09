@@ -121,7 +121,7 @@ export function NewsDetailContent({
           {tags.map((tag) => (
             <span
               key={tag}
-              className="text-[10px] px-3 py-1 rounded-none bg-slate-900 border border-slate-800 font-black text-slate-400 uppercase tracking-widest hover:text-iu-blue hover:border-iu-blue transition-colors cursor-default"
+              className="text-[10px] px-3 py-1 rounded-none bg-slate-900 border border-slate-800 font-black text-slate-700 uppercase tracking-widest hover:text-iu-blue hover:border-iu-blue transition-colors cursor-default"
             >
               #{tag}
             </span>

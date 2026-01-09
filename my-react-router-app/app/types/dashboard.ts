@@ -4,11 +4,11 @@ export type DashboardTask = {
   course: string;
   kind: "ABGABE" | "KLAUSUR";
   type: string;
-  dueDate: string;
+  due_date: string;
 };
 
 export type PraxisPartnerData = {
-  companyName: string;
+  company_name: string;
   department: string | null;
   supervisor: string | null;
   email: string | null;
@@ -20,18 +20,18 @@ export type PraxisHoursData = {
   required: number;
   logged: number;
   thisWeek: number;
-  targetPerWeek: number;
+  target_per_week: number;
 };
 
 export type ScheduleEventData = {
   id: number;
   title: string;
-  courseCode: string | null;
+  course_code: string | null;
   date: string;
-  startTime: string;
-  endTime: string;
+  start_time: string;
+  end_time: string;
   location: string | null;
-  eventType: string;
+  event_type: string;
   professor: string | null;
 };
 
@@ -40,7 +40,7 @@ export type RecentCourse = {
   name: string;
   studiengang?: string;
   semester?: string;
-  visitedAt: number;
+  visited_at: number;
   color?: string;
 };
 
@@ -61,7 +61,7 @@ export type DashboardLoaderData = {
     excerpt: string | null;
     content: string | null;
     category: string | null;
-    publishedAt: string;
+    published_at: string;
     featured: boolean;
   }>;
   userId: number;

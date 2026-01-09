@@ -14,10 +14,8 @@ import {
 import { formatDate, translateValue } from "~/hooks/useTasks";
 import type { TaskUISubmission, TaskLoaderSubmission } from "~/types/tasks";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface TasksHeaderProps {
   title: string;
   subtitle: string;
@@ -56,10 +54,8 @@ interface UploadModalProps {
   onSubmit: () => void;
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
-
+//// COMPONENTS
+//
 export function TasksHeader({
   title,
   subtitle,
@@ -119,7 +115,7 @@ export function SubmissionCard({
               <span className="sm:hidden px-3 py-1 rounded-full bg-iu-orange/10 border border-iu-orange/20 text-iu-orange text-[9px] font-bold uppercase tracking-widest">
                 {submission.status === "pending" ? t.pending : t.submitted}
               </span>
-              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-iu-orange/40 dark:text-white/40 cursor-pointer hover:text-iu-orange dark:hover:text-white transition-colors" />
+              <Info className="h-4 w-4 sm:h-5 sm:w-5 text-iu-orange/40 dark:text-white cursor-pointer hover:text-iu-orange dark:hover:text-white transition-colors" />
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-x-4 gap-y-2 sm:gap-6">
@@ -127,11 +123,11 @@ export function SubmissionCard({
               {submission.status === "pending" ? t.pending : t.submitted}
             </span>
             <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground text-xs sm:text-sm font-semibold shrink-0">
-              <Calendar className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white/60" />
+              <Calendar className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white" />
               <span>{formatDate(submission.dueDateIso, language)}</span>
             </div>
             <div className="flex items-center gap-1.5 sm:gap-2 text-muted-foreground text-xs sm:text-sm font-semibold min-w-0">
-              <BookOpen className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white/60 shrink-0" />
+              <BookOpen className="h-4 sm:h-4.5 w-4 sm:w-4.5 text-iu-orange/60 dark:text-white shrink-0" />
               <span className="truncate">{submission.professor || "Prüfungsamt"}</span>
             </div>
           </div>
@@ -188,15 +184,15 @@ export function ExamCard({ exam, translations: t }: ExamCardProps) {
         </h3>
         <div className="space-y-3 sm:space-y-4">
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold">
-            <Calendar className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
+            <Calendar className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white shrink-0" />
             <span>{exam.date}</span>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold">
-            <Clock className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
+            <Clock className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white shrink-0" />
             <span>{exam.duration}</span>
           </div>
           <div className="flex items-center gap-2.5 sm:gap-3 text-muted-foreground text-xs sm:text-sm font-semibold min-w-0">
-            <MapPin className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60 shrink-0" />
+            <MapPin className="h-4.5 w-4.5 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white shrink-0" />
             <span className="truncate">{exam.location}</span>
           </div>
         </div>
@@ -297,10 +293,8 @@ export function UploadModal({
   );
 }
 
-// ============================================================================
-// HELPER COMPONENTS
-// ============================================================================
-
+//// HELPER COMPONENTS
+//
 function CheckboxField({
   checked,
   onChange,
@@ -389,10 +383,8 @@ function UploadArea({
   );
 }
 
-// ============================================================================
-// SECTION COMPONENTS
-// ============================================================================
-
+//// SECTION COMPONENTS
+//
 export function SectionHeader({
   title,
   color,

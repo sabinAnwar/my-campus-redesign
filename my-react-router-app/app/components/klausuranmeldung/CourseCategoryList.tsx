@@ -95,7 +95,7 @@ export function CourseCategoryList({
                     </h4>
                     <div className="flex items-center gap-3">
                       <span
-                        className={`text-xs font-bold ${isSelected ? "text-white/70" : "text-muted-foreground"}`}
+                        className={`text-xs font-bold ${isSelected ? "text-white" : "text-muted-foreground"}`}
                       >
                         {course.credits} ECTS
                       </span>
@@ -103,7 +103,7 @@ export function CourseCategoryList({
                         className={`w-1 h-1 rounded-full ${isSelected ? "bg-white/30" : "bg-border"}`}
                       />
                       <span
-                        className={`text-xs font-bold ${isSelected ? "text-white/70" : "text-muted-foreground"}`}
+                        className={`text-xs font-bold ${isSelected ? "text-white" : "text-muted-foreground"}`}
                       >
                         {course.type}
                       </span>

@@ -205,9 +205,9 @@ export const getTranslatedDescription = (description: string, language: "de" | "
 // ALL COURSES CONFIGURATION - Synced with prisma/seed.js
 
 export const getCourseConfig = (language: "de" | "en") => [
-  // =================================================================================================
+  //
   // WIRTSCHAFTSINFORMATIK (Business Informatics)
-  // =================================================================================================
+  //
 
   // Semester 1
   {
@@ -350,9 +350,9 @@ export const getCourseConfig = (language: "de" | "en") => [
     studiengang: "Wirtschaftsinformatik", color: "pink", active: true, progress: 0,
   },
 
-  // =================================================================================================
+  //
   // MARKETING (Dual)
-  // =================================================================================================
+  //
 
   // Semester 1
   {
@@ -391,9 +391,9 @@ export const getCourseConfig = (language: "de" | "en") => [
     studiengang: "Marketing", color: "pink", active: false, progress: 100,
   },
 
-  // =================================================================================================
+  //
   // INFORMATIK (Dual)
-  // =================================================================================================
+  //
 
   // Semester 1
   {

@@ -12,9 +12,9 @@ export interface KnowledgeEntry {
 }
 
 export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
-  // ============================================
+  //
   // PRÜFUNGEN / EXAMS
-  // ============================================
+  //
   {
     id: "exam-when",
     category: "Prüfungen",
@@ -305,9 +305,9 @@ Mehr Info in der Studienorganisation!`,
     priority: 8,
   },
 
-  // ============================================
+  //
   // STUDIENORGANISATION / STUDY ORGANIZATION
-  // ============================================
+  //
   {
     id: "semester-dates",
     category: "Studienorganisation",
@@ -458,9 +458,9 @@ abschlussarbeiten@iu.org`,
     priority: 9,
   },
 
-  // ============================================
+  //
   // CAMPUS & SERVICES
-  // ============================================
+  //
   {
     id: "email-setup",
     category: "IT & Services",
@@ -620,9 +620,9 @@ Fragen: studierendensekretariat@iu.org`,
     priority: 6,
   },
 
-  // ============================================
+  //
   // FINANZEN / FINANCES
-  // ============================================
+  //
   {
     id: "tuition-fees",
     category: "Finanzen",
@@ -662,9 +662,9 @@ Bei Fragen: studienfinanzierung@iu.org`,
     priority: 7,
   },
 
-  // ============================================
+  //
   // ERASMUS & INTERNATIONAL
-  // ============================================
+  //
   {
     id: "erasmus",
     category: "International",
@@ -705,9 +705,9 @@ Kontakt: international@iu.org`,
     priority: 8,
   },
 
-  // ============================================
+  //
   // HILFE & SUPPORT
-  // ============================================
+  //
   {
     id: "contact-support",
     category: "Support",
@@ -791,9 +791,9 @@ Du bist nicht allein! `,
     priority: 8,
   },
 
-  // ============================================
+  //
   // FALLBACK ANSWERS
-  // ============================================
+  //
   {
     id: "greeting-hi",
     category: "Allgemein",

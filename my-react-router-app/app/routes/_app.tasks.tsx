@@ -20,10 +20,8 @@ import {
 import type { TaskLoaderSubmission } from "~/types/tasks";
 import { Route } from "~/+types/root";
 
-// ============================================================================
-// LOADER
-// ============================================================================
-
+//// LOADER
+//
 export const loader = async ({ request }: { request: Request }) => {
   try {
     const formatGermanDate = (date: Date) =>
@@ -37,36 +35,44 @@ export const loader = async ({ request }: { request: Request }) => {
     const user = await getUserFromRequest(request);
     let userId = user?.id;
     let currentSemester = user?.semester || 1;
-    let studiengangName = user?.studiengang?.name || "IU Studium";
+    let studiengangName = (user as any)?.major?.name || "IU Studium";
 
     // 2. Fallback to Demo Student if no session (Dev/Fallback)
     if (!userId) {
       const demo = await prisma.user.findUnique({
         where: { email: "student.demo@iu-study.org" },
-        include: { studiengang: true },
+        include: { major: true },
       });
       userId = demo?.id;
       currentSemester = demo?.semester || 1;
-      studiengangName = demo?.studiengang?.name || "IU Studium";
+      studiengangName = (demo as any)?.major?.name || "IU Studium";
     }
 
     if (userId) {
-      await ensureCanonicalTasks(userId);
+      console.log(` Tasks Loader: Syncing tasks for User ID ${userId}...`);
+      try {
+        await ensureCanonicalTasks(userId);
+        console.log(" Tasks Loader: Sync successful.");
+      } catch (e) {
+        console.error(" Tasks Loader: ensureCanonicalTasks failed:", e);
+      }
     }
 
+    console.log(` Tasks Loader: Fetching tasks for User ID ${userId}...`);
     const [rows, userCourses] = await Promise.all([
       prisma.studentTask.findMany({
-        where: { userId: userId },
-        orderBy: { dueDate: "asc" },
+        where: { user_id: userId },
+        orderBy: { due_date: "asc" },
       }),
       prisma.course.findMany({
         where: {
-          studiengang: {
+          major: {
             users: { some: { id: userId } },
           },
         },
       }),
     ]);
+    console.log(` Tasks Loader: Found ${rows.length} rows and ${userCourses.length} user courses.`);
 
     const courseMapDb = new Map<string, { code: string; name: string }>(
       userCourses.map((c: any) => [c.name, c])
@@ -74,7 +80,7 @@ export const loader = async ({ request }: { request: Request }) => {
 
     const allData = rows.map((t: any) => {
       const dbCourse = courseMapDb.get(t.course);
-      const dueDate = new Date(t.dueDate);
+      const dueDate = new Date(t.due_date);
       const correctionDate = new Date(dueDate);
       correctionDate.setDate(dueDate.getDate() + 14);
 
@@ -107,9 +113,10 @@ export const loader = async ({ request }: { request: Request }) => {
         daysUntilExam: calculateDaysLeft(s.dueDateIso),
       }));
 
+    console.log(` Tasks Loader: Returning ${submissions.length} submissions and ${exams.length} exams.`);
     return { submissions, exams, currentSemester, studiengangName };
   } catch (error) {
-    console.error("Loader error:", error);
+    console.error("Loader error in _app.tasks.tsx:", error);
     return {
       submissions: [],
       exams: [],
@@ -119,10 +126,8 @@ export const loader = async ({ request }: { request: Request }) => {
   }
 };
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
-
+//// COMPONENT
+//
 export default function Tasks() {
   const {
     submissions: initialSubmissions,

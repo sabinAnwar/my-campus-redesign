@@ -53,7 +53,7 @@ export function QuickAccessCards({ items, availableLabel }: QuickAccessCardsProp
             <p className="text-sm text-muted-foreground font-bold">
               {item.count} {availableLabel}
             </p>
-            <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground/30 group-hover:text-iu-blue group-hover:translate-x-2 transition-all duration-500" />
+            <ChevronRight className="absolute right-6 top-1/2 -translate-y-1/2 h-6 w-6 text-muted-foreground group-hover:text-iu-blue group-hover:translate-x-2 transition-all duration-500" />
           </div>
         );
       })}

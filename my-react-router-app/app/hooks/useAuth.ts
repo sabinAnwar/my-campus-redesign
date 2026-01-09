@@ -3,16 +3,16 @@ import { useFetcher } from "react-router";
 import { showErrorToast, showSuccessToast } from "../lib/toast";
 import { MOTIVATIONAL_QUOTES } from "../data/quotes";
 
-// ============================================================================
+//
 // CONSTANTS
-// ============================================================================
+//
 
 const QUOTE_ROTATION_INTERVAL = 8000;
 const QUOTE_FADE_DURATION = 500;
 
-// ============================================================================
+//
 // TYPES
-// ============================================================================
+//
 
 interface QuoteState {
   currentIndex: number;
@@ -24,9 +24,9 @@ interface LoginState {
   isSubmitting: boolean;
 }
 
-// ============================================================================
+//
 // USE LOGIN HOOK
-// ============================================================================
+//
 
 /**
  * Hook for handling login form submission and state
@@ -73,9 +73,9 @@ export function useLogin() {
   };
 }
 
-// ============================================================================
+//
 // USE QUOTE ROTATION HOOK
-// ============================================================================
+//
 
 /**
  * Hook for rotating motivational quotes with fade animation
@@ -117,9 +117,9 @@ export function useQuoteRotation() {
   };
 }
 
-// ============================================================================
+//
 // USE LOGOUT HOOK
-// ============================================================================
+//
 
 const LOGOUT_REDIRECT_DELAY = 2000;
 const SESSION_COOKIES = ["session", "auth_session"];

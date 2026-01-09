@@ -90,14 +90,14 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
                     </span>
                   </div>
                   <div className="flex items-center justify-between gap-3">
-                    <p className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.2em] mt-1.5 truncate">
+                    <p className="text-[9px] sm:text-[10px] font-black text-muted-foreground dark:text-slate-200 uppercase tracking-[0.2em] mt-1.5 truncate">
                       {assignment.course}
                     </p>
                     <span
                       className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 shrink-0 ${
                         assignment.daysLeft <= 3
                           ? "text-iu-red"
-                          : "text-muted-foreground"
+                          : "text-muted-foreground dark:text-slate-200"
                       }`}
                     >
                       {assignment.dueDate}
@@ -108,7 +108,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
             ))
           ) : (
             <div className="text-center py-10">
-              <p className="text-muted-foreground font-medium italic">
+              <p className="text-muted-foreground dark:text-slate-200 font-medium italic">
                 {language === "de"
                   ? "Keine anstehenden Aufgaben"
                   : "No upcoming tasks"}

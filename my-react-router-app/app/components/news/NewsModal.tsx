@@ -74,7 +74,7 @@ export function NewsModal({
                 className={`p-2.5 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue ${
                   atStart
                     ? "opacity-20 cursor-not-allowed"
-                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white"
                 }`}
               >
                 <ChevronLeft className="h-5 w-5" aria-hidden="true" />
@@ -86,7 +86,7 @@ export function NewsModal({
                 className={`p-2.5 rounded-xl transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue ${
                   atEnd
                     ? "opacity-20 cursor-not-allowed"
-                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-600 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white"
+                    : "hover:bg-slate-100 dark:hover:bg-white/10 text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white"
                 }`}
               >
                 <ChevronRight className="h-5 w-5" aria-hidden="true" />
@@ -96,7 +96,7 @@ export function NewsModal({
             <button
               onClick={copyLink}
               aria-label="Copy news link"
-              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue"
+              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue"
             >
               {copied ? (
                 <Check className="h-5 w-5 text-iu-blue dark:text-white" aria-hidden="true" />
@@ -109,7 +109,7 @@ export function NewsModal({
               ref={closeBtnRef}
               onClick={onClose}
               aria-label={labels.close}
-              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue"
+              className="p-3 rounded-2xl bg-white dark:bg-white/5 border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-white/10 transition-all focus:outline-none focus:ring-2 focus:ring-iu-blue"
             >
               <X className="h-5 w-5" aria-hidden="true" />
             </button>
@@ -121,7 +121,7 @@ export function NewsModal({
           {loading && (
             <div className="flex flex-col items-center justify-center py-20" role="status">
               <div className="h-12 w-12 border-4 border-iu-blue/20 border-t-iu-blue rounded-full animate-spin mb-4" />
-              <p className="text-slate-500 dark:text-slate-400 font-black uppercase tracking-widest text-xs">
+              <p className="text-slate-700 dark:text-slate-200 font-black uppercase tracking-widest text-xs">
                 {labels.loading}
               </p>
             </div>
@@ -139,13 +139,13 @@ export function NewsModal({
           {!loading && !error && article && (
             <div className="max-w-3xl mx-auto">
               <div className="flex flex-wrap items-center gap-6 mb-8">
-                <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                <div className="flex items-center gap-2 text-[10px] text-slate-700 dark:text-slate-200 font-black uppercase tracking-widest">
                   <Calendar className="h-4 w-4 text-iu-blue dark:text-white" aria-hidden="true" />
                   {labels.published}:{" "}
                   {new Date(article.publishedAt).toLocaleDateString(locale)}
                 </div>
                 {article.author && (
-                  <div className="flex items-center gap-2 text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+                  <div className="flex items-center gap-2 text-[10px] text-slate-700 dark:text-slate-200 font-black uppercase tracking-widest">
                     <User className="h-4 w-4 text-iu-blue dark:text-white" aria-hidden="true" />
                     {labels.author}: {article.author}
                   </div>
@@ -165,7 +165,7 @@ export function NewsModal({
               )}
 
               <div className="prose prose-lg dark:prose-invert max-w-none">
-                <div className="text-slate-600 dark:text-slate-400 leading-relaxed space-y-6 font-medium">
+                <div className="text-slate-700 dark:text-slate-200 leading-relaxed space-y-6 font-medium">
                   {article.content
                     ?.split("\n")
                     .map(

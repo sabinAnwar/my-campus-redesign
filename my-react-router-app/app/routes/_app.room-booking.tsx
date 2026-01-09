@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
-import { useLoaderData, useActionData, useRevalidator } from "react-router-dom";
+import { useLoaderData, useActionData, useRevalidator, useSubmit } from "react-router-dom";
 
 import { prisma } from "../lib/prisma";
+import { getUserFromRequest } from "~/lib/auth.server";
 import { showSuccessToast, showErrorToast, showInfoToast } from "../lib/toast";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/room-booking";
@@ -116,30 +117,54 @@ function getSessionToken(request: { headers: { get: (arg0: string) => any } }) {
   return sessionCookie.split("=")[1];
 }
 
+// Disable caching for this route to ensure real-time availability
+export function headers({
+  actionHeaders,
+  loaderHeaders,
+  parentHeaders,
+}: {
+  actionHeaders: Headers;
+  loaderHeaders: Headers;
+  parentHeaders: Headers;
+}) {
+  return {
+    "Cache-Control": "no-store, no-cache, must-revalidate",
+  };
+}
+
 export async function loader({ request }: { request: Request }) {
   try {
-    // Get session token from cookies
-    const token = getSessionToken(request);
-    console.log(" Cookie header:", request.headers.get("Cookie"));
-    console.log("� Session token:", token);
-
-    let userId = 1; // Default fallback
-
-    if (token) {
-      // Look up session in database
-      const session = await prisma.session.findUnique({
-        where: { token },
-        include: { user: true },
+    const sessionUser = await getUserFromRequest(request);
+    let userId = sessionUser?.id ?? null;
+    if (!userId) {
+      const demo = await prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
+        select: { id: true },
       });
-
-      if (session?.user) {
-        userId = session.user.id;
-        console.log(" Found user from session:", userId);
-      }
+      userId = demo?.id ?? null;
+    }
+    if (!userId) {
+      const fallback = await prisma.user.findFirst({
+        where: { role: "STUDENT" },
+        select: { id: true },
+      });
+      userId = fallback?.id ?? null;
     }
 
     // Fetch all bookings to show occupancy for everyone
+    // Only fetch bookings for TODAY to avoid loading future bookings as conflicts
+    const todayStr = new Date().toISOString().split("T")[0];
+    const startOfDay = new Date(todayStr); // 00:00:00 UTC
+    const endOfDay = new Date(todayStr);
+    endOfDay.setDate(endOfDay.getDate() + 1); // Next day 00:00:00 UTC
+
     const bookings = await prisma.roomBooking.findMany({
+      where: {
+        date: {
+          gte: startOfDay,
+          lt: endOfDay,
+        },
+      },
       include: {
         user: {
           select: {
@@ -158,22 +183,22 @@ export async function loader({ request }: { request: Request }) {
 
     // Convert date objects to ISO strings for JSON serialization
     const serializedBookings = bookings.map(
-      (booking: {
-        date: { toISOString: () => string };
-        createdAt: { toISOString: () => any };
-        updatedAt: { toISOString: () => any };
-      }) => ({
+      (booking: any) => ({
         ...booking,
+        userId: booking.user_id,
+        startTime: booking.start_time,
+        endTime: booking.end_time,
+        roomName: booking.room_name,
         date: booking.date.toISOString().split("T")[0],
-        createdAt: booking.createdAt.toISOString(),
-        updatedAt: booking.updatedAt.toISOString(),
+        created_at: booking.created_at.toISOString(),
+        updated_at: booking.updated_at.toISOString(),
       })
     );
 
     return { bookings: serializedBookings, userId };
   } catch (error) {
     console.error("Error loading bookings:", error);
-    return { bookings: [], userId: 1 };
+    return { bookings: [], userId: null };
   }
 }
 
@@ -184,43 +209,93 @@ export async function action({ request }: { request: Request }) {
   console.log(" Action type:", actionType);
 
   try {
-    // Get session token from cookies
-    const token = getSessionToken(request);
-    let userId = parseInt(String(formData.get("userId") ?? "1"), 10) || 1; // Fallback
-
-    if (token) {
-      // Look up session in database
-      const session = await prisma.session.findUnique({
-        where: { token },
-        include: { user: true },
+    const sessionUser = await getUserFromRequest(request);
+    let userId = sessionUser?.id ?? null;
+    if (!userId) {
+      const demo = await prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
+        select: { id: true },
       });
-
-      if (session?.user) {
-        userId = session.user.id;
-        console.log(" Found user from session for action:", userId);
-      }
+      userId = demo?.id ?? null;
+    }
+    if (!userId) {
+      const fallback = await prisma.user.findFirst({
+        where: { role: "STUDENT" },
+        select: { id: true },
+      });
+      userId = fallback?.id ?? null;
+    }
+    if (!userId) {
+      return {
+        success: false,
+        error: "Keine gültige Benutzer-Session gefunden.",
+      };
     }
 
     if (actionType === "create") {
-      const roomId = formData.get("roomId");
-      const roomName = formData.get("roomName");
+      const roomId = formData.get("roomId") || formData.get("room_id");
+      const roomName = formData.get("roomName") || formData.get("room_name");
       const campus = formData.get("campus");
       const dateStr = formData.get("date");
-      const startTime = formData.get("startTime");
-      const endTime = formData.get("endTime");
+      const startTime = formData.get("startTime") || formData.get("start_time");
+      const endTime = formData.get("endTime") || formData.get("end_time");
 
       // Normalize date from FormData (FormData.get can return FormDataEntryValue | null)
-      const bookingDate = dateStr ? new Date(String(dateStr)) : new Date();
+      // Ensure we always work with "YYYY-MM-DD" at midnight to avoid time mismatches
+      const dateStringRaw = dateStr ? String(dateStr) : new Date().toISOString().split("T")[0];
+      const bookingDate = new Date(dateStringRaw);
 
       // Check if user already has a booking for this room and campus
       const existingBooking = await prisma.roomBooking.findFirst({
         where: {
-          userId: userId,
-          roomName: roomName,
-          campus: campus,
+          user_id: userId,
+          room_name: String(roomName),
+          campus: String(campus),
           date: bookingDate,
         },
       });
+
+      // 1. Check if USER has any overlapping booking in ANY room (Double booking constraint)
+      const userTimeConflict = await prisma.roomBooking.findFirst({
+        where: {
+          user_id: userId,
+          date: bookingDate,
+          start_time: { lt: String(endTime) },
+          end_time: { gt: String(startTime) },
+          // If updating my own booking for Room A, exclude Room A from the check
+          // If existingBooking is found (same room), we exclude it
+          id: existingBooking ? { not: existingBooking.id } : undefined,
+        },
+      });
+
+      if (userTimeConflict) {
+        console.log(
+          ` Auto-cancelling conflicting booking ${userTimeConflict.id} (${userTimeConflict.room_name}) to allow new booking.`
+        );
+        await prisma.roomBooking.delete({
+          where: { id: userTimeConflict.id },
+        });
+      }
+
+      // 2. Check for conflicting bookings from ANY user for THIS room
+      const conflictingBooking = await prisma.roomBooking.findFirst({
+        where: {
+          room_name: String(roomName),
+          campus: String(campus),
+          date: bookingDate,
+          start_time: { lt: String(endTime) },
+          end_time: { gt: String(startTime) },
+          // If updating my own booking, exclude it from conflict check
+          id: existingBooking ? { not: existingBooking.id } : undefined,
+        },
+      });
+
+      if (conflictingBooking) {
+        return {
+          success: false,
+          error: "Dieser Raum ist zu der gewählten Zeit bereits belegt.",
+        };
+      }
 
       let booking;
       if (existingBooking) {
@@ -229,8 +304,8 @@ export async function action({ request }: { request: Request }) {
         booking = await prisma.roomBooking.update({
           where: { id: existingBooking.id },
           data: {
-            startTime,
-            endTime,
+            start_time: String(startTime),
+            end_time: String(endTime),
           },
         });
       } else {
@@ -238,26 +313,26 @@ export async function action({ request }: { request: Request }) {
         console.log(" Creating new booking for", roomName);
         booking = await prisma.roomBooking.create({
           data: {
-            userId,
-            roomId,
-            roomName,
-            campus,
+            user_id: userId,
+            room_id: String(roomId),
+            room_name: String(roomName),
+            campus: String(campus),
             date: bookingDate,
-            startTime,
-            endTime,
+            start_time: String(startTime),
+            end_time: String(endTime),
           },
         });
       }
 
-      console.log(" Booking created/updated:", booking);
+      console.log(" Booking created/updated:", { id: booking.id, date: booking.date, room: booking.room_name });
 
       return {
         success: true,
         booking: {
           ...booking,
           date: booking.date.toISOString().split("T")[0],
-          createdAt: booking.createdAt.toISOString(),
-          updatedAt: booking.updatedAt.toISOString(),
+          created_at: booking.created_at.toISOString(),
+          updated_at: booking.updated_at.toISOString(),
         },
       };
     }
@@ -272,8 +347,7 @@ export async function action({ request }: { request: Request }) {
       });
 
       console.log(" Booking deleted successfully");
-
-      return { success: true };
+      return { success: true, type: "delete" };
     }
 
     return { success: false, error: "Invalid action" };
@@ -339,6 +413,7 @@ export default function RoomBooking() {
   const loaderData = useLoaderData();
   const actionData = useActionData();
   const revalidator = useRevalidator();
+  const submit = useSubmit();
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
 
@@ -364,10 +439,13 @@ export default function RoomBooking() {
   // Handle action completion
   useEffect(() => {
     if (actionData?.success) {
-      console.log(" Action completed successfully");
+      console.log(" Action completed successfully. Reloading...");
       setIsLoading(false);
-      // Revalidate to get fresh data from database
-      revalidator.revalidate();
+      // Force reload to ensure clean state and fresh data
+      window.location.reload();
+    } else if (actionData?.error) {
+      setIsLoading(false);
+      showErrorToast(actionData.error);
     }
   }, [actionData, revalidator]);
 
@@ -403,10 +481,6 @@ export default function RoomBooking() {
     });
 
     // Create form and submit to server action
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.style.display = "none";
-
     const formData = new FormData();
     formData.append("_action", "create");
     formData.append("userId", userId.toString());
@@ -417,17 +491,7 @@ export default function RoomBooking() {
     formData.append("startTime", startTime);
     formData.append("endTime", endTime);
 
-    // Append form data to form
-    for (const [key, value] of formData.entries()) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = String(value);
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
+    submit(formData, { method: "post" });
 
     showSuccessToast(
       `${t.room} ${String(room.name)} ${t.bookingRoom} ${t.time}: ${startTime} - ${endTime}`
@@ -464,45 +528,21 @@ export default function RoomBooking() {
   };
 
   // Stornierungsfunktion mit React Router action
-  const handleCancelBooking = (roomName: any) => {
-    const booking = bookings.find(
-      (b: { roomName: any; campus: string }) =>
-        b.roomName === roomName && b.campus === selectedLocation
-    );
-
-    if (!booking) {
-      showErrorToast(t.bookingNotFound);
-      return;
-    }
-
+  const handleCancelBooking = (bookingId: number, roomName: string) => {
+    console.log(" handleCancelBooking triggered for ID:", bookingId);
     if (isLoading) {
       console.log(" Already processing a request");
       return;
     }
 
     setIsLoading(true);
-    console.log(" Cancelling booking:", booking);
-
-    // Create form and submit to server action
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.style.display = "none";
+    console.log(" Cancelling booking:", bookingId);
 
     const formData = new FormData();
     formData.append("_action", "delete");
-    formData.append("bookingId", booking.id.toString());
+    formData.append("bookingId", bookingId.toString());
 
-    // Append form data to form
-    for (const [key, value] of formData.entries()) {
-      const input = document.createElement("input");
-      input.type = "hidden";
-      input.name = key;
-      input.value = String(value);
-      form.appendChild(input);
-    }
-
-    document.body.appendChild(form);
-    form.submit();
+    submit(formData, { method: "post", encType: "multipart/form-data" });
 
     showInfoToast(`${t.room} ${roomName} - ${t.cancellingBooking}`);
   };
@@ -554,7 +594,7 @@ export default function RoomBooking() {
           person: b.user
             ? b.user.name || b.user.username
             : `${t.student} #${b.userId}`,
-          until: `${b.startTime}–${b.endTime}`,
+          until: `${b.startTime || b.start_time}–${b.endTime || b.end_time}`,
           key: `book-${b.id}`,
         });
       });
@@ -685,7 +725,9 @@ export default function RoomBooking() {
               endTime={endTime}
               isLoading={isLoading}
               onBookRoom={() => handleBookRoom(room)}
-              onCancelBooking={() => handleCancelBooking(room.name)}
+              onCancelBooking={() =>
+                booking && handleCancelBooking(booking.id, String(room.name))
+              }
               labels={{
                 seats: t.seats,
                 occupied: t.occupied,

@@ -39,9 +39,9 @@ export const loader = async ({ request }: { request: Request }) => {
         name: true,
         email: true,
         birthday: true,
-        studyProgram: true,
-        matriculationNumber: true,
-        validUntil: true,
+        study_program: true,
+        matriculation_number: true,
+        valid_until: true,
       },
     });
 
@@ -117,7 +117,7 @@ export default function StudentIdPage() {
       // Study program
       pdf.setTextColor(37, 99, 235); // IU Blue
       pdf.setFontSize(5);
-      pdf.text((user.studyProgram || 'Study Program').toUpperCase(), padding, 26);
+      pdf.text((user.study_program || 'Study Program').toUpperCase(), padding, 26);
       
       // Birthday label
       pdf.setTextColor(100, 116, 139);
@@ -137,7 +137,7 @@ export default function StudentIdPage() {
       // Matriculation value
       pdf.setTextColor(255, 255, 255);
       pdf.setFontSize(5);
-      pdf.text(user.matriculationNumber || '---', 35, 35);
+      pdf.text(user.matriculation_number || '---', 35, 35);
       
       // Valid until label
       pdf.setTextColor(100, 116, 139);
@@ -148,7 +148,7 @@ export default function StudentIdPage() {
       pdf.setTextColor(37, 99, 235);
       pdf.setFontSize(6);
       pdf.setFont('helvetica', 'bold');
-      pdf.text(formatDate(user.validUntil), padding, cardHeight - 6);
+      pdf.text(formatDate(user.valid_until), padding, cardHeight - 6);
       
       // QR Code placeholder
       pdf.setFillColor(255, 255, 255);
@@ -207,7 +207,7 @@ export default function StudentIdPage() {
       pdf.setFontSize(3);
       pdf.text(`© ${new Date().getFullYear()} IU UNIVERSITY`, cardWidth - padding, cardHeight - 4, { align: 'right' });
 
-      pdf.save(`IU_Student_ID_${user.matriculationNumber || "ID"}.pdf`);
+      pdf.save(`IU_Student_ID_${user.matriculation_number || "ID"}.pdf`);
       showSuccessToast(t.pdfSuccess);
     } catch (error) {
       console.error("PDF error:", error);
@@ -270,7 +270,7 @@ export default function StudentIdPage() {
                   iu
                 </span>
               </div>
-              <div className="text-[9px] font-black text-white/70 text-right leading-tight uppercase tracking-widest">
+              <div className="text-[9px] font-black text-white text-right leading-tight uppercase tracking-widest">
                 {t.universityName}
                 <br />
                 {t.universitySub}
@@ -282,13 +282,13 @@ export default function StudentIdPage() {
               <h2 className="text-3xl font-black tracking-tight mb-1 uppercase">
                 {user.name || "Student Name"}
               </h2>
-              <p className="text-sm text-white/70 font-bold uppercase tracking-widest mb-6">
-                {user.studyProgram || "Study Program"}
+              <p className="text-sm text-white font-bold uppercase tracking-widest mb-6">
+                {user.study_program || "Study Program"}
               </p>
 
               <div className="grid grid-cols-2 gap-8">
                 <div>
-                  <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
+                  <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
                     {t.birthday}
                   </p>
                   <p className="font-bold text-sm">
@@ -296,11 +296,11 @@ export default function StudentIdPage() {
                   </p>
                 </div>
                 <div>
-                  <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
+                  <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
                     {t.matriculationNo}
                   </p>
                   <p className="font-bold text-sm">
-                    {user.matriculationNumber || "---"}
+                    {user.matriculation_number || "---"}
                   </p>
                 </div>
               </div>
@@ -309,18 +309,18 @@ export default function StudentIdPage() {
             {/* Card Footer */}
             <div className="flex justify-between items-end relative z-10">
               <div>
-                <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-1">
+                <p className="text-[9px] text-white font-black uppercase tracking-widest mb-1">
                   {t.validUntil}
                 </p>
                 <p className="font-black text-base text-white">
-                  {formatDate(user.validUntil)}
+                  {formatDate(user.valid_until)}
                 </p>
               </div>
               <div className="flex flex-col items-center gap-2">
                 <div className="bg-white p-1.5 rounded-lg shadow-xl">
                   <QrCode className="w-10 h-10 text-slate-900" />
                 </div>
-                <span className="text-[7px] font-black text-white/70 uppercase tracking-widest">
+                <span className="text-[7px] font-black text-white uppercase tracking-widest">
                   {t.scanToVerify}
                 </span>
               </div>
@@ -350,7 +350,7 @@ export default function StudentIdPage() {
                   {t.contactInfo}
                 </h3>
               </div>
-              <p className="text-sm font-medium leading-relaxed text-white/80">
+              <p className="text-sm font-medium leading-relaxed text-white">
                 IU Internationale Hochschule GmbH
                 <br />
                 Juri-Gagarin-Ring 152
@@ -361,7 +361,7 @@ export default function StudentIdPage() {
               </p>
 
               <div className="mt-8 pt-6 border-t border-white/30">
-                <p className="text-xs text-white/70 font-medium">
+                <p className="text-xs text-white font-medium">
                   {t.forGlobalBenefits}{" "}
                    <a
                     href="https://www.isic.de"
@@ -378,12 +378,12 @@ export default function StudentIdPage() {
 
             <div className="flex justify-between items-end relative z-10">
               <div className="flex-1 max-w-[200px]">
-                <p className="text-[9px] text-white/70 font-black uppercase tracking-widest mb-2">
+                <p className="text-[9px] text-white font-black uppercase tracking-widest mb-2">
                   {t.signature}
                 </p>
                 <div className="h-10 w-full border-b border-white/40 bg-white/10 rounded-t-lg" />
               </div>
-              <div className="text-right text-[8px] font-black text-white/70 uppercase tracking-widest">
+              <div className="text-right text-[8px] font-black text-white uppercase tracking-widest">
                 © {new Date().getFullYear()} IU UNIVERSITY
               </div>
             </div>

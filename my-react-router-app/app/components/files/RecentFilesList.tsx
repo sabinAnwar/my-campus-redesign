@@ -22,15 +22,15 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
     return (
       <div className="bg-white dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center">
         <div className="bg-neutral-100 dark:bg-neutral-800 w-14 h-14 sm:w-16 sm:h-16 rounded-2xl flex items-center justify-center mx-auto mb-5 sm:mb-6">
-          <FileIcon className="h-7 w-7 sm:h-8 sm:w-8 text-neutral-400" />
+          <FileIcon className="h-7 w-7 sm:h-8 sm:w-8 text-neutral-700" />
         </div>
         <h3 className="text-lg font-bold text-neutral-900 dark:text-white mb-2">
           {t.noFilesOpened}
         </h3>
-        <p className="text-neutral-500 dark:text-neutral-400 text-sm max-w-sm mx-auto mb-6 sm:mb-8">
+        <p className="text-neutral-700 dark:text-neutral-200 text-sm max-w-sm mx-auto mb-6 sm:mb-8">
           {t.noFilesDesc}
         </p>
-        <ul className="text-xs text-neutral-400 dark:text-neutral-500 space-y-2 inline-block text-left">
+        <ul className="text-xs text-neutral-700 dark:text-neutral-200 space-y-2 inline-block text-left">
           <li className="flex items-center gap-2">
             <span className="w-1 h-1 rounded-full bg-blue-500"></span>
             {t.noFilesItem1}
@@ -152,7 +152,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                     window.location.href = "/courses";
                   }
                 }}
-                className="static sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0 p-3 sm:p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-white transition-all shadow-sm border border-border opacity-100 sm:opacity-0 group-hover:opacity-100 group-hover:translate-x-0 sm:translate-x-4 duration-300"
+                className="static sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0 p-3 sm:p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-foreground dark:text-white transition-all shadow-sm border border-border opacity-100 sm:opacity-0 group-hover:opacity-100 group-hover:translate-x-0 sm:translate-x-4 duration-300"
               >
                 <ExternalLink className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>

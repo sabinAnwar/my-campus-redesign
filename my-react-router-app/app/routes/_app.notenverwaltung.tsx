@@ -1,9 +1,9 @@
 import { useMemo, useState } from "react";
+import type { Course } from "@prisma/client";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 import { useLoaderData } from "react-router-dom";
-import { getCourseConfig } from "../data/coursesConfig";
 import {
   TrendingUp,
   CheckCircle2,
@@ -43,26 +43,18 @@ export const loader = async ({ request }: { request: Request }) => {
         include: { teacher: true },
         orderBy: { date: "desc" },
       },
-      praxisPartner: true,
-      studiengang: true,
+      practical_partner: true,
+      major: { include: { courses: true } },
     },
   });
 
   return {
     user: dbUser,
     marks: dbUser?.marks || [],
-    praxisPartner: dbUser?.praxisPartner || null,
+    praxis_partner: (dbUser as any)?.practical_partner || null,
   };
 };
 
-import {
-  STUDENT_DATA,
-  SEMESTERS,
-  VERTIEFUNG_DATA_ANALYTICS,
-  ZUSATZ_MODULE,
-  CHIP_CLASSES,
-  CHIP_LABEL,
-} from "~/constants/grades";
 import { TRANSLATIONS } from "~/services/translations/grades";
 import type {
   GradeStatusKey as StatusKey,
@@ -99,7 +91,7 @@ function formatCSVCell(val: unknown) {
 export default function GradesDashboardIU() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
-  const { user, marks, praxisPartner } = useLoaderData<typeof loader>();
+  const { user, marks, praxis_partner } = useLoaderData<typeof loader>();
 
   // State for expanded sections (default: current semester is open)
   const [expanded, setExpanded] = useState<number[]>(() => {
@@ -114,73 +106,69 @@ export default function GradesDashboardIU() {
     "OVERVIEW"
   );
 
-  // Group DB marks by semester and include all courses from config
-  const courseConfig = getCourseConfig(language);
+  const dbCourses: Course[] = user?.major?.courses ?? [];
+
   const dbSections: Section[] = useMemo(() => {
-    const config = getCourseConfig("de"); // Use German titles for matching
     const sectionsMap: Record<string, GradeModule[]> = {};
 
-    // Get the localized semester names from the current language config
-    const localizedConfig = getCourseConfig(language);
-    const maxSemesterNum = Math.max(
-      ...localizedConfig.map((cc) => parseInt(cc.semester) || 0)
-    );
-    const maxSemesterStr = maxSemesterNum.toString();
+    const matchMark = (course: Course) =>
+      marks.find((m: any) => {
+        if (typeof m.course !== "string") return false;
+        const courseKeys = [
+          course.name,
+          course.name_de,
+          course.name_en,
+          course.code,
+        ]
+          .filter(Boolean)
+          .map((val) => String(val).toLowerCase());
+        return courseKeys.includes(m.course.toLowerCase());
+      });
 
-    localizedConfig.forEach((cc, idx) => {
-      const sem = cc.semester;
+    dbCourses.forEach((course) => {
+      const sem = String(course.semester ?? 1);
       if (!sectionsMap[sem]) sectionsMap[sem] = [];
 
-      // Find if this user has a mark for this course (match by titleDE)
-      const dbMark = marks.find((m: any) => m.course === cc.titleDE);
+      const dbMark = matchMark(course);
+      const hasMark = Boolean(dbMark);
+      const status: StatusKey = hasMark
+        ? dbMark.value > 4.0
+          ? "F"
+          : "P"
+        : "M";
 
-      let status: StatusKey = dbMark ? (dbMark.value > 4.0 ? "F" : "P") : "M";
-      let note = dbMark ? dbMark.value : null;
-      let datum = dbMark
+      const note = hasMark ? dbMark.value : null;
+      const datum = hasMark
         ? new Date(dbMark.date).toLocaleDateString(
             language === "de" ? "de-DE" : "en-US"
           )
         : "—";
-      let bewertung = dbMark ? (dbMark.value <= 4.0 ? t.pass : t.fail) : "—";
-
-      // Force last semester courses to be registered (CE)
-      if (sem.startsWith(maxSemesterStr)) {
-        status = "CE";
-        note = null;
-        datum = "—";
-        bewertung = "—";
-      }
-
-      // Active courses (current semester) must not have marks if not passed
-      const currentSemStr = (user?.semester || 1).toString();
-      if (sem.startsWith(currentSemStr) && status !== "P") {
-        note = null;
-        bewertung = "—";
-      }
+      const bewertung = hasMark ? (dbMark.value <= 4.0 ? t.pass : t.fail) : "—";
 
       sectionsMap[sem].push({
-        name: language === "de" ? cc.titleDE : cc.title,
+        name:
+          language === "de"
+            ? course.name_de || course.name
+            : course.name_en || course.name,
         status,
         note,
-        credits: cc.credits,
+        credits: course.credits ?? 5,
         datum,
         bewertung,
       });
     });
 
-    // Convert map to sorted array
     return Object.entries(sectionsMap)
       .map(([name, modules]) => ({
         name,
         modules,
       }))
       .sort((a, b) => {
-        // Sort by semester number if possible
         const numA = parseInt(a.name) || 0;
         const numB = parseInt(b.name) || 0;
         return numA - numB;
       });
-  }, [marks, language]);
+  }, [dbCourses, marks, language, t]);
 
   // Handle Tab Filtering
   const displayedSections = useMemo(() => {
@@ -202,22 +190,32 @@ export default function GradesDashboardIU() {
   const studentData = {
     vorname: user?.name?.split(" ")[0] || "Student",
     name: user?.name?.split(" ").slice(1).join(" ") || "",
-    matrikelnummer: user?.matriculationNumber || "N/A",
-    studiengang: user?.studyProgram || user?.studiengang?.name || "N/A",
+    matrikelnummer: user?.matriculation_number || "N/A",
+    studiengang: user?.study_program || (user as any)?.major?.name || "N/A",
     gesamtDurchschnitt: (() => {
       const pm = marks.filter((m: any) => m.value <= 4.0);
       let totalCr = 0;
       let wSum = 0;
       pm.forEach((m: any) => {
-        const config = courseConfig.find((cc) => cc.titleDE === m.course);
-        const cr = config?.credits || 5;
+        const course = dbCourses.find((c) => {
+          const keys = [
+            c.name,
+            c.name_de,
+            c.name_en,
+            c.code,
+          ]
+            .filter(Boolean)
+            .map((val) => String(val).toLowerCase());
+          return typeof m.course === "string" && keys.includes(m.course.toLowerCase());
+        });
+        const cr = course?.credits ?? 5;
         totalCr += cr;
         wSum += m.value * cr;
       });
       return totalCr > 0 ? (wSum / totalCr).toFixed(2) : "0.00";
     })(),
     company:
-      praxisPartner?.companyName ||
+      praxis_partner?.company_name ||
       (language === "de"
         ? "Kein Unternehmen hinterlegt"
         : "No company assigned"),
@@ -650,7 +648,7 @@ export default function GradesDashboardIU() {
                               </td>
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
                                 {m.note == null ? (
-                                  <span className="text-muted-foreground/30 font-bold">
+                                  <span className="text-muted-foreground font-bold">
                                     —
                                   </span>
                                 ) : (

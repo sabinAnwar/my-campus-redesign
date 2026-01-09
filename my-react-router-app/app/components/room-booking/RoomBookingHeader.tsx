@@ -29,11 +29,11 @@ export function RoomBookingHeader({
               {title}
             </h1>
           </div>
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-base md:text-lg text-muted-foreground dark:text-slate-200 max-w-2xl leading-relaxed">
             {subtitle}
           </p>
 
-          <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border bg-card/50 text-xs sm:text-sm font-medium w-fit">
+          <div className="flex items-center gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full border border-border bg-card/50 text-xs sm:text-sm font-medium w-fit text-foreground dark:text-slate-100">
             <Clock size={16} className="text-iu-blue dark:text-white" />
             <span>{dateLabel}</span>
           </div>
@@ -44,14 +44,14 @@ export function RoomBookingHeader({
             <Users className="w-5 h-5 sm:w-6 sm:h-6" />
           </div>
           <div>
-            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">
+            <div className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground dark:text-slate-200 mb-1">
               {liveStatus}
             </div>
             <div className="flex items-baseline gap-2">
               <span className="text-xl sm:text-2xl font-black text-foreground">
                 {occupiedCount}
               </span>
-              <span className="text-xs font-bold text-muted-foreground">
+              <span className="text-xs font-bold text-muted-foreground dark:text-slate-200">
                 {occupiedLabel}
               </span>
             </div>

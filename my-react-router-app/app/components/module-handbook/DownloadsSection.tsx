@@ -45,7 +45,7 @@ export function DownloadsSection({
           {t.askAdvisor(advisor)}
         </a>
       </div>
-      <p className="mt-6 text-[10px] font-bold text-slate-500 uppercase tracking-wider leading-relaxed">
+      <p className="mt-6 text-[10px] font-bold text-slate-700 uppercase tracking-wider leading-relaxed">
         {t.helpText}
       </p>
     </div>

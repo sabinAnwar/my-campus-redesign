@@ -46,7 +46,7 @@ export function DatabasesSection({
             </p>
           </div>
         </div>
-        <button className="px-5 sm:px-6 py-2.5 bg-iu-blue/10 text-iu-blue font-black rounded-full hover:bg-iu-blue hover:text-white transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 w-fit">
+        <button className="px-5 sm:px-6 py-2.5 bg-iu-blue/10 text-iu-blue font-black rounded-full hover:bg-iu-blue hover:text-foreground dark:text-white transition-all text-xs sm:text-sm uppercase tracking-widest flex items-center gap-2 w-fit">
           {viewAllLabel} <ChevronRight className="h-4 w-4" />
         </button>
       </div>

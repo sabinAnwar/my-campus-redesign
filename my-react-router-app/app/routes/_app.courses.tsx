@@ -40,7 +40,7 @@ export const loader = async ({ request }: { request: Request }) => {
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
-        studiengang: true,
+        major: true,
         marks: true,
       },
     });
@@ -55,22 +55,22 @@ export const loader = async ({ request }: { request: Request }) => {
     }
 
     const userStudiengang =
-      dbUser.studiengang?.name || dbUser.studyProgram || null;
+      dbUser.major?.name || dbUser.study_program || null;
 
     // Fetch courses from DB for this user's program
     let dbCourses: any[] = [];
-    if (dbUser.studiengang?.id) {
+    if (dbUser.major?.id) {
       dbCourses = await prisma.course.findMany({
-        where: { studiengangId: dbUser.studiengang.id },
+        where: { major_id: dbUser.major.id },
         orderBy: { semester: "asc" },
       });
     } else if (userStudiengang) {
-      const s = await prisma.studiengang.findUnique({
+      const s = await prisma.major.findUnique({
         where: { name: userStudiengang },
       });
       if (s) {
         dbCourses = await prisma.course.findMany({
-          where: { studiengangId: s.id },
+          where: { major_id: s.id },
           orderBy: { semester: "asc" },
         });
       }
@@ -80,7 +80,7 @@ export const loader = async ({ request }: { request: Request }) => {
       userStudiengang,
       marks: dbUser.marks || [],
       currentSemester: dbUser.semester || 1,
-      userId: user.id,
+      user_id: user.id,
       dbCourses,
     };
   } catch (error) {
@@ -89,7 +89,7 @@ export const loader = async ({ request }: { request: Request }) => {
       userStudiengang: null,
       marks: [],
       currentSemester: 1,
-      userId: undefined,
+      user_id: undefined,
       dbCourses: [],
     };
   }
@@ -109,7 +109,7 @@ export default function Courses() {
 
 function CoursesList() {
   const { language } = useLanguage();
-  const { userStudiengang, marks, currentSemester, userId, dbCourses } =
+  const { userStudiengang, marks, currentSemester, user_id, dbCourses } =
     useLoaderData() as LoaderData;
 
   const t = TRANSLATIONS[language];
@@ -127,7 +127,7 @@ function CoursesList() {
     userStudiengang,
     marks,
     currentSemester,
-    userId,
+    userId: user_id,
     language,
     t,
   });

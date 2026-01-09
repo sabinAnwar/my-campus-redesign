@@ -1,6 +1,7 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, Outlet, useLocation } from "react-router-dom";
+import { Link, Outlet, useLocation, useNavigation, useRevalidator } from "react-router-dom";
 import { DoorOpen, Menu, X, Headphones } from "lucide-react";
+import { isRouteErrorResponse } from "react-router";
 
 import { useLanguage } from "~/contexts/LanguageContext";
 import { ScreenReaderProvider } from "~/contexts/ScreenReaderContext";
@@ -32,11 +33,13 @@ export default function AppShell() {
 
   // ─── Hooks ───────────────────────────────────────────────────────────────────
   const location = useLocation();
+  const navigation = useNavigation();
   const { language } = useLanguage();
   const shellText = SHELL_TRANSLATIONS[language];
+  const isNavigating = navigation.state !== "idle";
 
   // Custom hooks for data and search
-  const { name: userName, campusArea, roomBookingEnabled } = useUserData();
+  const { name: userName, campus_area, room_booking_enabled } = useUserData();
   const { filteredResults } = useAppShellSearch(searchQuery);
 
   // Keep a simple visit-based learning streak in localStorage.
@@ -126,9 +129,9 @@ export default function AppShell() {
     }));
 
     // Conditionally add room booking link
-    if (roomBookingEnabled) {
-      const bookingTo = campusArea
-        ? `/raumbuchung?campus=${encodeURIComponent(campusArea)}`
+    if (room_booking_enabled) {
+      const bookingTo = campus_area
+        ? `/raumbuchung?campus=${encodeURIComponent(campus_area)}`
         : "/raumbuchung";
 
       const insertIndex = items.findIndex((i) => i.key === "praxisReport") + 1;
@@ -141,7 +144,7 @@ export default function AppShell() {
     }
 
     return items;
-  }, [campusArea, language, roomBookingEnabled]);
+  }, [campus_area, language, room_booking_enabled]);
 
   // ─── Event Handlers ──────────────────────────────────────────────────────────
   const handleSidebarClose = () => setSidebarOpen(false);
@@ -153,6 +156,16 @@ export default function AppShell() {
   return (
     <ScreenReaderProvider>
       <div className="min-h-screen w-full flex flex-col relative bg-background text-foreground transition-colors duration-300">
+        {isNavigating && (
+          <div className="fixed top-0 left-0 right-0 z-[200]">
+            <div className="h-1 w-full overflow-hidden bg-iu-blue/20">
+              <div className="route-loading-bar h-full w-1/3 bg-iu-blue" />
+            </div>
+            <div className="sr-only" role="status" aria-live="polite">
+              {language === "de" ? "Seite wird geladen" : "Loading page"}
+            </div>
+          </div>
+        )}
         {/* Accessibility Skip Link */}
         <a 
           href="#main-content" 
@@ -186,7 +199,7 @@ export default function AppShell() {
               <div className="flex items-center gap-4">
                 <button
                   onClick={handleSidebarToggle}
-                  className="md:hidden p-2.5 rounded-none hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors"
+                  className="md:hidden p-2.5 rounded-none hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
                   aria-label={sidebarOpen ? "Close menu" : "Open menu"}
                 >
                   {sidebarOpen ? (
@@ -198,7 +211,7 @@ export default function AppShell() {
 
                 {/* Campus Indicator */}
                 <div className="hidden sm:flex flex-col justify-center h-full">
-                  <div className="text-xs font-black text-foreground/90 dark:text-white/90 flex items-center gap-1.5 leading-none uppercase tracking-widest">
+                  <div className="text-xs font-black text-foreground dark:text-white flex items-center gap-1.5 leading-none uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 rounded-full bg-iu-blue dark:bg-iu-blue shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     {shellText.campus}
                   </div>
@@ -222,7 +235,7 @@ export default function AppShell() {
                 {/* Support Link */}
                 <Link
                   to="/contact"
-                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold cursor-pointer"
+                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold cursor-pointer"
                   aria-label="Contact support"
                 >
                   <Headphones className="h-5 w-5" />
@@ -250,5 +263,34 @@ export default function AppShell() {
       
       </div>
     </ScreenReaderProvider>
+  );
+}
+
+export function ErrorBoundary({ error }: { error: unknown }) {
+  const revalidator = useRevalidator();
+  let message = "Something went wrong.";
+  let details = "Please try again in a moment.";
+
+  if (isRouteErrorResponse(error)) {
+    message = error.status === 404 ? "Page not found." : "Request failed.";
+    details = error.statusText || details;
+  } else if (error instanceof Error) {
+    details = error.message;
+  }
+
+  return (
+    <div className="max-w-4xl mx-auto py-16 px-4">
+      <div className="rounded-2xl border border-iu-red/30 bg-iu-red/5 p-6 text-sm text-foreground space-y-2">
+        <p className="text-lg font-bold">{message}</p>
+        <p className="text-muted-foreground">{details}</p>
+        <button
+          type="button"
+          onClick={() => revalidator.revalidate()}
+          className="inline-flex items-center justify-center rounded-full border border-iu-red/30 px-4 py-2 font-semibold text-iu-red hover:bg-iu-red/10 transition-colors"
+        >
+          Try again
+        </button>
+      </div>
+    </div>
   );
 }

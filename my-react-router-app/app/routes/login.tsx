@@ -25,9 +25,7 @@ import {
 import { useLogin, useQuoteRotation } from "~/hooks/useAuth";
 import type { LoginLoaderData as LoaderData } from "~/types/login";
 
-// ============================================================================
 // LOADER
-// ============================================================================
 
 export const loader = async ({ request }: { request: Request }) => {
   // Quick cookie check - skip DB if no session cookie exists
@@ -44,9 +42,7 @@ export const loader = async ({ request }: { request: Request }) => {
   return { totalUsers: 500, onlineUsers: 42 };
 };
 
-// ============================================================================
 // SUB-COMPONENTS
-// ============================================================================
 
 function LoginErrorAlert({ error }: { error: string }) {
   return (
@@ -103,7 +99,7 @@ function RememberMeSection() {
       <Link
         to="/reset-password"
         title="Forgot password link"
-        className="text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition duration-200 underline-offset-4 hover:underline"
+        className="text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition duration-200 underline-offset-4 hover:underline"
       >
         Forgot password?
       </Link>
@@ -119,7 +115,7 @@ function SupportSection() {
           <div className="w-full border-t border-slate-300 dark:border-slate-600" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="px-3 bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 font-medium text-base">
+          <span className="px-3 bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-medium text-base">
             Need Help?
           </span>
         </div>
@@ -146,11 +142,11 @@ function SupportSection() {
 function LoginFooter() {
   return (
     <div className="mt-10 text-center space-y-3">
-      <p className="text-base text-slate-700 dark:text-slate-400 font-semibold flex items-center justify-center gap-2">
+      <p className="text-base text-slate-700 dark:text-slate-200 font-semibold flex items-center justify-center gap-2">
         <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
         Built by IU Students • Professional Development
       </p>
-      <p className="text-sm text-slate-500 dark:text-slate-500 flex items-center justify-center gap-2">
+      <p className="text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2">
         <ShieldCheck className="w-4 h-4" />
         Enterprise-grade security • Encrypted connections • Data protected
       </p>
@@ -158,9 +154,7 @@ function LoginFooter() {
   );
 }
 
-// ============================================================================
 // MAIN COMPONENT
-// ============================================================================
 
 /**
  * Login page with branded design
@@ -208,6 +202,7 @@ export default function Login() {
                 icon={Mail}
                 type="email"
                 placeholder="your.email@iu-study.org"
+                autoComplete="email"
               />
 
               <LoginFormInput
@@ -216,6 +211,7 @@ export default function Login() {
                 icon={Lock}
                 type="password"
                 placeholder="Enter your password"
+                autoComplete="current-password"
               />
 
               <RememberMeSection />

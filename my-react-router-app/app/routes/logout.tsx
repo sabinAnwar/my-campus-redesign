@@ -10,10 +10,8 @@ import {
   LOGOUT_ANIMATION_STYLES,
 } from "../components/logout";
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
+//// CONSTANTS
+//
 const STYLES = {
   container: `flex items-center justify-center min-h-screen bg-gradient-to-br 
               from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 
@@ -24,16 +22,12 @@ const STYLES = {
          dark:border-slate-700/50 p-6 sm:p-10 lg:p-12 overflow-hidden`,
 } as const;
 
-// ============================================================================
-// LOADER
-// ============================================================================
-
+//// LOADER
+//
 export const loader = async () => null;
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
-
+//// COMPONENT
+//
 /**
  * Logout page with animated transition
  * Clears session and redirects to home after 2 seconds

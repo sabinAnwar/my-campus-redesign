@@ -83,7 +83,7 @@ export function NotificationsSection({
                 <item.icon
                   className={`w-4 h-4 ${item.state ? "text-iu-blue" : "text-muted-foreground"} transition-colors`}
                 />
-                <span className="text-sm font-bold text-foreground/80 group-hover/item:text-foreground">
+                <span className="text-sm font-bold text-foreground group-hover/item:text-foreground">
                   {item.label}
                 </span>
               </div>

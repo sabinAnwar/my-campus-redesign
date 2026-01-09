@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import { showSuccessToast, showErrorToast } from "../lib/toast";
 
-// ============================================================================
+//
 // CONSTANTS
-// ============================================================================
+//
 
 const API_ENDPOINTS = {
   REQUEST_RESET: "/api/request-password-reset",
@@ -27,9 +27,9 @@ const MESSAGES = {
 const MIN_PASSWORD_LENGTH = 8;
 const REDIRECT_DELAY_MS = 2000;
 
-// ============================================================================
+//
 // HELPER FUNCTIONS
-// ============================================================================
+//
 
 /**
  * Extract error message from unknown error type
@@ -40,9 +40,9 @@ function getErrorMessage(err: unknown, fallback: string): string {
   return fallback;
 }
 
-// ============================================================================
+//
 // REQUEST RESET HOOK
-// ============================================================================
+//
 
 interface RequestResetState {
   error: string | null;
@@ -114,9 +114,9 @@ export function useRequestReset(): UseRequestResetReturn {
   return { ...state, handleSubmit };
 }
 
-// ============================================================================
+//
 // RESET PASSWORD HOOK
-// ============================================================================
+//
 
 interface ResetPasswordState {
   error: string | null;

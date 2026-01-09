@@ -49,7 +49,7 @@ export function ScheduleEventModal({
             onClick={onClose}
             className="p-2.5 sm:p-3 hover:bg-muted rounded-2xl transition-all"
           >
-            <X size={24} className="text-muted-foreground dark:text-white/80" />
+            <X size={24} className="text-muted-foreground dark:text-white" />
           </button>
         </div>
 

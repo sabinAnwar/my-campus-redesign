@@ -9,9 +9,9 @@ import type { Vertiefung, VertiefungId } from "~/types/specialization";
 // Re-export translations from the centralized translations service
 export { TRANSLATIONS } from "~/services/translations/specialization";
 
-// ============================================================================
+//
 // Specialization Data (Non-translatable static configuration)
-// ============================================================================
+//
 
 export const VERTIEFUNGEN: Record<VertiefungId, Vertiefung> = {
   datenanalyse: {

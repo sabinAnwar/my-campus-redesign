@@ -1,9 +1,9 @@
 import type { LucideIcon } from "lucide-react";
 import { FileText, Award, BookOpen, Calendar } from "lucide-react";
 
-// ============================================================================
+//
 // TYPES
-// ============================================================================
+//
 
 export interface NavigationCard {
   to: string;
@@ -25,9 +25,9 @@ export interface QuickLink {
   color: string;
 }
 
-// ============================================================================
+//
 // NAVIGATION CARDS CONFIG
-// ============================================================================
+//
 
 export const NAVIGATION_CARDS: NavigationCard[] = [
   {
@@ -76,9 +76,9 @@ export const NAVIGATION_CARDS: NavigationCard[] = [
   },
 ];
 
-// ============================================================================
+//
 // QUICK LINKS CONFIG
-// ============================================================================
+//
 
 export const QUICK_LINKS: QuickLink[] = [
   {

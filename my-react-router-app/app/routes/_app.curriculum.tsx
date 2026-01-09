@@ -27,7 +27,7 @@ export const loader = async ({ request }: { request: Request }) => {
     where: { id: userId },
     include: {
       marks: true,
-      studiengang: true,
+      major: { include: { courses: true } },
     },
   });
 
@@ -39,11 +39,11 @@ export default function CurriculumPage() {
   const { user } = useLoaderData<typeof loader>();
   const t = TRANSLATIONS[language];
 
-  const { userProgram, semesters, stats, userMarks, currentSemester } =
+  const { userProgram, semesters, stats, userMarks, currentSemester, completedCourseIds } =
     useCurriculumData({ user, language });
 
   return (
-    <div className="max-w-7xl mx-auto space-y-6 sm:space-y-8">
+    <div className="curriculum-aaa max-w-7xl mx-auto space-y-6 sm:space-y-8">
       <CurriculumHeader t={t} userProgram={userProgram} stats={stats} />
 
       <CurriculumStats stats={stats} t={t} />
@@ -57,6 +57,7 @@ export default function CurriculumPage() {
             courses={courses}
             userMarks={userMarks}
             currentSemester={currentSemester}
+            completedCourseIds={completedCourseIds}
             t={t}
           />
         ))}

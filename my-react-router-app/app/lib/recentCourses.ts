@@ -19,7 +19,7 @@ export function saveRecentCourse(course: { id: any; name: any; studiengang: any;
       studiengang: course.studiengang ?? null,
       semester: course.semester ?? null,
       color: course.color ?? 'blue',
-      visitedAt: Date.now(),
+      visited_at: Date.now(),
     };
     
     // Remove duplicates (same course ID) and add new entry at top

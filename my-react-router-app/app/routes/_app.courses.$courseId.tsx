@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
+import { useLoaderData, useNavigate, useParams, useRevalidator } from "react-router-dom";
 import {
   ClipboardList,
   FolderOpen,
@@ -14,6 +14,7 @@ import { saveRecentFile } from "../lib/recentFiles";
 import { saveRecentCourse } from "../lib/recentCourses";
 import { showErrorToast, showSuccessToast } from "../lib/toast";
 import { prisma } from "~/lib/prisma";
+import { TimeoutError, withTimeout } from "~/lib/loaderUtils";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import {
   TRANSLATIONS,
@@ -44,6 +45,8 @@ import { UploadModal } from "~/components/courses/detail/UploadModal";
 import { NewTopicModal } from "~/components/courses/detail/NewTopicModal";
 import { VideoModal } from "~/components/courses/detail/VideoModal";
 
+const COURSE_TIMEOUT_MS = 2500;
+
 export const loader = async ({
   request,
   params,
@@ -51,66 +54,151 @@ export const loader = async ({
   request: Request;
   params: { courseId?: string };
 }) => {
-  let user = await prisma.session
-    .findFirst({
-      where: {
-        token: request.headers
-          .get("Cookie")
-          ?.split("session=")[1]
-          ?.split(";")[0],
-      },
-      include: { user: true },
-    })
-    .then((s: any) => s?.user);
+  let errorMessage: string | null = null;
+  const sessionToken = request.headers
+    .get("Cookie")
+    ?.split("session=")[1]
+    ?.split(";")[0];
+
+  let user = await withTimeout(
+    prisma.session
+      .findFirst({
+        where: {
+          token: sessionToken,
+        },
+        include: { user: true },
+      })
+      .then((s: any) => s?.user),
+    COURSE_TIMEOUT_MS,
+    "Loading user session timed out"
+  ).catch((error) => {
+    if (!errorMessage) {
+      errorMessage =
+        error instanceof TimeoutError
+          ? "Course data is taking longer than expected."
+          : "Course data is unavailable right now.";
+    }
+    return null;
+  });
 
   // FALLBACK: If no user found, use Demo Student
   if (!user) {
-    user = await prisma.user.findUnique({
-      where: { email: "student.demo@iu-study.org" },
+    user = await withTimeout(
+      prisma.user.findUnique({
+        where: { email: "student.demo@iu-study.org" },
+      }),
+      COURSE_TIMEOUT_MS,
+      "Loading demo user timed out"
+    ).catch((error) => {
+      if (!errorMessage) {
+        errorMessage =
+          error instanceof TimeoutError
+            ? "Course data is taking longer than expected."
+            : "Course data is unavailable right now.";
+      }
+      return null;
     });
   }
 
   // If still no user, return empty (should ideally redirect)
-  if (!user) return { submissions: [], course: null, userId: 0, studiengangName: "" };
+  if (!user) {
+    console.warn(" Course Loader: No user found even after fallback.");
+    return Response.json({
+      submissions: [],
+      course: null,
+      user_id: 0,
+      studiengangName: "",
+      error: errorMessage || "User not found",
+    });
+  }
+  const typedUser = user as any;
+  console.log(` Course Loader: User found: ${typedUser.email} (ID: ${typedUser.id})`);
 
   const courseIdNum = Number(params.courseId);
-  if (isNaN(courseIdNum)) return { submissions: [], course: null, userId: user.id, studiengangName: user.studiengang?.name };
+  if (isNaN(courseIdNum)) {
+    return Response.json({
+      submissions: [],
+      course: null,
+      user_id: typedUser.id,
+      studiengangName: typedUser.major?.name,
+      error: errorMessage || "Invalid course ID",
+    });
+  }
 
   // Fetch course from DB with files
-  const course = await prisma.course.findUnique({
-    where: { id: courseIdNum },
-    include: {
-      files: {
-        where: { userId: user.id },
+  console.log(` Course Loader: Fetching course ID ${courseIdNum}...`);
+  const course = await withTimeout(
+    prisma.course.findUnique({
+      where: { id: courseIdNum },
+      include: {
+        files: {
+          where: { user_id: typedUser.id },
+        },
+        major: true
       },
-    },
+    }),
+    COURSE_TIMEOUT_MS,
+    "Loading course data timed out"
+  ).catch((error) => {
+    console.error(" Course Loader: course query failed:", error);
+    if (!errorMessage) {
+      errorMessage =
+        error instanceof TimeoutError
+          ? "Course data is taking longer than expected."
+          : "Course data is unavailable right now.";
+    }
+    return null;
   });
 
-  if (!course) return { submissions: [], course: null, userId: user.id, studiengangName: user.studiengang?.name };
+  const typedCourse = course as any;
+
+  if (!typedCourse) {
+    console.warn(` Course Loader: Course ID ${courseIdNum} not found.`);
+    return Response.json({
+      submissions: [],
+      course: null,
+      user_id: typedUser.id,
+      studiengangName: typedUser.major?.name,
+      error: errorMessage || "Course not found",
+    });
+  }
+  console.log(` Course Loader: Course found: ${typedCourse.name}`);
 
   // Map database files to UI resources
-  const resources: CourseResource[] = course.files.map((f: { id: any; name: any; url: any; size: any; fileType: string; uploadedAt: Date; }) => ({
+  const resources: CourseResource[] = (typedCourse.files || []).map((f: any) => ({
     id: f.id,
     title: f.name,
     url: f.url,
     size: f.size || "Unknown",
     type:
-      f.fileType === "video"
+      f.file_type === "video"
         ? "video"
-        : f.fileType === "pdf"
+        : f.file_type === "pdf"
           ? "script"
           : "file",
-    duration: f.fileType === "video" ? f.size || "12:45" : undefined,
-    date: formatGermanDate(f.uploadedAt),
+    duration: f.file_type === "video" ? f.size || "12:45" : undefined,
+    date: formatGermanDate(f.uploaded_at),
   }));
 
   // Fetch tasks for this user and this course
-  const tasks = await prisma.studentTask.findMany({
-    where: {
-      userId: user.id,
-      course: course.name,
-    },
-    orderBy: { dueDate: "asc" },
+  const tasks = await withTimeout(
+    prisma.studentTask.findMany({
+      where: {
+        user_id: typedUser.id,
+        course: typedCourse.name,
+      },
+      orderBy: { due_date: "asc" },
+    }),
+    COURSE_TIMEOUT_MS,
+    "Loading course tasks timed out"
+  ).catch((error) => {
+    if (!errorMessage) {
+      errorMessage =
+        error instanceof TimeoutError
+          ? "Course data is taking longer than expected."
+          : "Course data is unavailable right now.";
+    }
+    return [];
   });
 
   let baseSubmissions: CourseSubmission[] = tasks
@@ -125,18 +213,18 @@ export const loader = async ({
       type: row.type || "Abgabe",
       courseCode: `MOD-${course.id}`, // Placeholder
       professor: "Dozent", // Placeholder as we don't have this in Course model yet
-      dueDateIso: new Date(row.dueDate).toISOString().slice(0, 10),
-      dueDate: formatGermanDate(new Date(row.dueDate)),
-      correctionDate: formatGermanDate(
+      due_date_iso: new Date(row.due_date).toISOString().slice(0, 10),
+      due_date: formatGermanDate(new Date(row.due_date)),
+      correction_date: formatGermanDate(
         new Date(
-          new Date(row.dueDate).setDate(new Date(row.dueDate).getDate() + 14)
+          new Date(row.due_date).setDate(new Date(row.due_date).getDate() + 14)
         )
       ),
       status: "pending",
       similarity: undefined,
       submissions: [],
-      daysUntilDue: calculateDaysLeft(
-        new Date(row.dueDate).toISOString().slice(0, 10)
+      days_until_due: calculateDaysLeft(
+        new Date(row.due_date).toISOString().slice(0, 10)
       ),
     }));
 
@@ -151,6 +239,8 @@ export const loader = async ({
   const courseData: Course = {
     id: course.id,
     title: course.name,
+    name_de: (course as any).name_de || course.name,
+    name_en: (course as any).name_en || course.name,
     instructor: "Dozent",
     description: course.description || "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
     startDate: "01.10.2024",
@@ -167,20 +257,23 @@ export const loader = async ({
   return {
     submissions,
     course: courseData,
-    userId: user.id,
-    studiengangName: user.studiengang?.name || "IU Studium",
+    user_id: user.id,
+    studiengangName: (user as any).major?.name || "IU Studium",
+    error: errorMessage,
   };
 };
 
 export default function CourseDetail() {
   const { courseId } = useParams();
   const loaderData = useLoaderData() as CourseDetailData;
+  const revalidator = useRevalidator();
   const courseSubmissions: CourseSubmission[] = loaderData?.submissions ?? [];
-  const { userId, studiengangName } = loaderData || {};
+  const { user_id, studiengangName } = loaderData || {};
   const { language } = useLanguage();
   const courses = getCourseConfig(language);
   const navigate = useNavigate();
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
+  const retryLabel = language === "de" ? "Erneut versuchen" : "Try again";
 
   // Find the course by ID (from loader or fallback to config)
   // Casting partial course from config to full Course type if needed, or prefer loaderData
@@ -194,7 +287,7 @@ export default function CourseDetail() {
   } as unknown as Course : null);
 
   useEffect(() => {
-    if (course && userId) {
+    if (course && user_id) {
       saveRecentCourse(
         {
           id: course.id,
@@ -203,10 +296,10 @@ export default function CourseDetail() {
           semester: `${course.semester}. Semester`,
           color: course.color || "cyan",
         },
-        userId
+        user_id
       );
     }
-  }, [course, userId, studiengangName]);
+  }, [course, user_id, studiengangName]);
 
   const translate = (value: string) =>
     language === "de" ? value : COURSE_TYPE_MAP[value]?.en || value;
@@ -427,13 +520,35 @@ export default function CourseDetail() {
 
   // If course not found, redirect to courses list
   useEffect(() => {
-    if (!course) {
+    if (!course && !loaderData?.error) {
       navigate("/courses");
     }
-  }, [course, navigate]);
+  }, [course, loaderData?.error, navigate]);
   
   if (!course) {
-    return null;
+    return (
+      <div className="max-w-4xl mx-auto py-12 px-4">
+        <div className="rounded-2xl border border-iu-red/30 bg-iu-red/5 p-6 text-sm text-foreground flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+          <div>
+            <p className="font-semibold">
+              {language === "de" ? "Kurs nicht verfügbar" : "Course unavailable"}
+            </p>
+            <p className="text-muted-foreground">
+              {language === "de"
+                ? "Die Kursdaten konnten nicht geladen werden. Bitte versuche es erneut."
+                : "Course data could not be loaded. Please try again."}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => revalidator.revalidate()}
+            className="inline-flex items-center justify-center rounded-full border border-iu-red/30 px-4 py-2 font-semibold text-iu-red hover:bg-iu-red/10 transition-colors"
+          >
+            {retryLabel}
+          </button>
+        </div>
+      </div>
+    );
   }
 
   // Handlers
@@ -603,6 +718,28 @@ export default function CourseDetail() {
         language={language} 
         onBack={() => navigate("/courses")} 
       />
+
+      {loaderData?.error && (
+        <div className="max-w-7xl mx-auto mt-4 rounded-2xl border border-iu-red/30 bg-iu-red/5 p-4 text-sm text-foreground flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div>
+            <p className="font-semibold">
+              {language === "de" ? "Fehler beim Laden" : "Loading issue"}
+            </p>
+            <p className="text-muted-foreground">
+              {language === "de"
+                ? "Dokumente konnten nicht geladen werden. Bitte versuche es erneut."
+                : "Documents could not be loaded. Please try again."}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={() => revalidator.revalidate()}
+            className="inline-flex items-center justify-center rounded-full border border-iu-red/30 px-4 py-2 font-semibold text-iu-red hover:bg-iu-red/10 transition-colors"
+          >
+            {retryLabel}
+          </button>
+        </div>
+      )}
 
       <CourseTabNavigation
         tabs={[

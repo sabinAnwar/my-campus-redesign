@@ -16,15 +16,26 @@ export async function getUserFromRequest(request: Request) {
   if (!sessionToken) return null;
 
   // 3. Find session in DB
-  const session = await prisma.session.findUnique({
-    where: { token: sessionToken },
-    include: { user: true },
-  });
+  let session = null;
+  try {
+    session = await prisma.session.findUnique({
+      where: { token: sessionToken },
+      include: { 
+        user: {
+          include: { major: true }
+        } 
+      },
+    });
+  } catch (error) {
+    // If the sessions table isn't available yet, fall back to anonymous flow.
+    console.warn("Session lookup failed:", error);
+    return null;
+  }
 
   if (!session) return null;
 
   // 4. Check expiration
-  if (new Date() > session.expiresAt) {
+  if (new Date() > session.expires_at) {
     await prisma.session.delete({ where: { id: session.id } });
     return null;
   }

@@ -20,10 +20,8 @@ import { VERTIEFUNGEN } from "~/constants/specialization";
 import { getTranslatedDescription } from "~/data/coursesConfig";
 import type { VertiefungId } from "~/types/specialization";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface VertiefungCourse {
   id: string;
   code: string;
@@ -110,10 +108,8 @@ interface ConfirmationModalProps {
   };
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
+//// HELPER FUNCTIONS
+//
 export function getColorClasses(color: string): ColorClasses {
   const colors: Record<string, ColorClasses> = {
     emerald: {
@@ -138,10 +134,8 @@ export function getColorClasses(color: string): ColorClasses {
   return colors[color] || colors["iu-blue"];
 }
 
-// ============================================================================
-// COMPONENTS
-// ============================================================================
-
+//// COMPONENTS
+//
 export function SuccessToast({ message }: SuccessToastProps) {
   return (
     <div className="fixed top-6 right-6 z-50 animate-in slide-in-from-top-2">
@@ -176,7 +170,7 @@ export function PageHeader({
         <div className="flex items-center gap-3 px-4 py-3 rounded-xl bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/30 dark:border-iu-blue shadow-sm">
           <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
           <div>
-            <p className="text-[10px] text-iu-blue dark:text-white/60 font-bold uppercase tracking-wider">
+            <p className="text-[10px] text-iu-blue dark:text-white font-bold uppercase tracking-wider">
               {currentChoiceLabel}
             </p>
             <p className="text-sm font-black text-foreground">
@@ -232,7 +226,7 @@ export function SpecializationCard({
             <Icon className="w-6 h-6 text-white" />
           </div>
           {isSaved && (
-            <span className="px-2 py-1 rounded-none bg-white/30 text-white text-xs font-black backdrop-blur-sm">
+            <span className="px-2 py-1 rounded-none bg-white/30 text-foreground dark:text-white text-xs font-black backdrop-blur-sm">
               {labels.chosen}
             </span>
           )}
@@ -299,7 +293,7 @@ export function SpecializationDetails({
               </div>
               <div>
                 <h2 className="text-2xl font-black text-white">{vertiefung.name}</h2>
-                <p className="text-white/80 text-sm font-bold">
+                <p className="text-white text-sm font-bold">
                   {vertiefung.courses.length} Kurse • {totalCredits} Credit Points
                 </p>
               </div>
@@ -310,7 +304,7 @@ export function SpecializationDetails({
               disabled={isSaved}
               className={`px-6 py-3 rounded-none font-black transition-all flex items-center gap-2 ${
                 isSaved
-                  ? "bg-white/30 text-white/70 cursor-not-allowed"
+                  ? "bg-white/30 text-white cursor-not-allowed"
                   : "bg-white text-slate-900 hover:bg-white/90 shadow-lg hover:shadow-xl active:scale-95"
               }`}
             >
@@ -391,7 +385,7 @@ export function SpecializationDetails({
               {vertiefung.careerPaths.map((path: string, idx: number) => (
                 <span
                   key={idx}
-                  className="px-4 py-2 rounded-none bg-card border border-border text-sm font-black text-foreground/80 shadow-sm"
+                  className="px-4 py-2 rounded-none bg-card border border-border text-sm font-black text-foreground shadow-sm"
                 >
                   {path}
                 </span>
@@ -438,7 +432,7 @@ export function ConfirmationModal({
         <div className="flex flex-col-reverse sm:flex-row gap-3">
           <button
             onClick={onCancel}
-            className="flex-1 px-4 py-3 rounded-none border border-border text-foreground/80 font-black hover:bg-muted transition-colors"
+            className="flex-1 px-4 py-3 rounded-none border border-border text-foreground font-black hover:bg-muted transition-colors"
           >
             {labels.cancel}
           </button>

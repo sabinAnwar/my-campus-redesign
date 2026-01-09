@@ -29,7 +29,7 @@ export function useRecentFiles({ dbFiles }: UseRecentFilesParams) {
         id: f.id,
         name: f.name,
         size: f.size || "Unknown",
-        date: f.uploadedAt.toString(),
+        date: (f.uploadedAt || f.uploaded_at || new Date()).toString(),
         moduleName: f.course?.name || f.studiengang?.name || "Unbekannt",
         fileType: f.fileType || undefined,
         url: f.url,

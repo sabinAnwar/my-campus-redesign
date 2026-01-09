@@ -148,7 +148,7 @@ export function ChatInterface({ onNavigate, faqs, t }: ChatInterfaceProps) {
       <div className="relative z-30 flex-shrink-0 border-t border-border bg-background/60 p-3 sm:p-6 backdrop-blur-xl sticky bottom-0">
         <div className="mb-3 sm:mb-6 flex gap-2 overflow-x-auto pb-2 scrollbar-none">
           {t.suggestions.map((sug: any) => (
-            <button key={sug.text} onClick={() => handleSuggestion(sug.question)} className="group flex items-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-full border border-border bg-card px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold text-muted-foreground transition-all hover:border-iu-blue dark:hover:border-white hover:text-iu-blue dark:hover:text-white hover:bg-iu-blue/5 shadow">
+            <button key={sug.text} onClick={() => handleSuggestion(sug.question)} className="group flex items-center gap-1.5 sm:gap-2 whitespace-nowrap rounded-full border border-border bg-card px-3 sm:px-5 py-1.5 sm:py-2 text-[9px] sm:text-xs font-bold text-muted-foreground transition-all hover:border-iu-blue dark:hover:border-white hover:text-iu-blue dark:hover:text-foreground dark:text-white hover:bg-iu-blue/5 shadow">
               {sug.text}
             </button>
           ))}

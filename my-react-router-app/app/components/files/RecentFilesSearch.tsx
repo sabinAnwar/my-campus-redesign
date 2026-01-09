@@ -17,7 +17,7 @@ export function RecentFilesSearch({
   return (
     <div className="bg-white dark:bg-neutral-900 border border-neutral-200 dark:border-neutral-800 rounded-2xl p-4 mb-8 sm:mb-10 shadow-sm focus-within:ring-2 focus-within:ring-blue-500/20 transition-all">
       <div className="flex gap-3 sm:gap-4 items-center">
-        <Search className="h-5 w-5 text-neutral-400" />
+        <Search className="h-5 w-5 text-neutral-700" />
         <input
           value={query}
           onChange={(e) => setQuery(e.target.value)}
@@ -30,7 +30,7 @@ export function RecentFilesSearch({
             onClick={() => setQuery("")}
             className="p-2 hover:bg-neutral-100 dark:hover:bg-neutral-800 rounded-md"
           >
-            <X className="h-4 w-4 text-neutral-400" />
+            <X className="h-4 w-4 text-neutral-700" />
           </button>
         )}
       </div>

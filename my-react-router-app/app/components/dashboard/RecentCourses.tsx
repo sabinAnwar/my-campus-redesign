@@ -14,8 +14,8 @@ interface RecentCoursesProps {
 }
 
 export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps) {
-  const getTimeText = (visitedAt: number) => {
-    const timeSince = Date.now() - visitedAt;
+  const getTimeText = (visited_at: number) => {
+    const timeSince = Date.now() - visited_at;
     const hoursAgo = Math.floor(timeSince / (1000 * 60 * 60));
     const daysAgo = Math.floor(timeSince / (1000 * 60 * 60 * 24));
 
@@ -31,7 +31,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
     } else if (daysAgo < 30) {
       return t.daysAgo.replace("[DAYS]", daysAgo.toString());
     } else {
-      return new Date(visitedAt).toLocaleDateString(
+      return new Date(visited_at).toLocaleDateString(
         language === "de" ? "de-DE" : "en-US"
       );
     }
@@ -67,8 +67,8 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
         <div className="relative z-10 flex gap-4 overflow-x-auto pb-4 sm:grid sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 sm:gap-6 sm:pb-0 scrollbar-hide">
           {recentCourses.length === 0 ? (
             <div className="col-span-full w-full text-center py-20 bg-muted/20 rounded-[2rem] border border-dashed border-border px-8">
-              <BookOpen className="h-16 w-16 text-muted-foreground/40 mx-auto mb-6" />
-              <p className="text-lg text-muted-foreground font-bold mb-8 leading-relaxed">
+              <BookOpen className="h-16 w-16 text-muted-foreground dark:text-slate-200 mx-auto mb-6" />
+              <p className="text-lg text-muted-foreground dark:text-slate-200 font-bold mb-8 leading-relaxed">
                 {language === "de"
                   ? "Noch keine Kurse besucht"
                   : "No courses visited yet"}
@@ -83,7 +83,7 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
             </div>
           ) : (
             recentCourses.slice(0, 6).map((course) => {
-              const timeText = getTimeText(course.visitedAt);
+              const timeText = getTimeText(course.visited_at);
 
               return (
                 <Link
@@ -109,12 +109,12 @@ export function RecentCourses({ recentCourses, language, t }: RecentCoursesProps
                       <h3 className="text-sm font-bold text-foreground truncate group-hover/card:text-amber-500 dark:group-hover/card:text-white transition-colors">
                         {course.name}
                       </h3>
-                      <div className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-0.5 flex items-center gap-3 leading-none">
+                      <div className="text-[10px] font-black text-muted-foreground dark:text-slate-200 uppercase tracking-widest mt-0.5 flex items-center gap-3 leading-none">
                         <Clock className="h-3 w-3" />
                         <span>{timeText}</span>
                       </div>
                     </div>
-                    <ArrowRight className="h-5 w-5 text-muted-foreground/40 group-hover/card:text-iu-blue group-hover/card:translate-x-1 transition-all dark:text-white/70 dark:group-hover/card:text-white" />
+                    <ArrowRight className="h-5 w-5 text-muted-foreground group-hover/card:text-iu-blue group-hover/card:translate-x-1 transition-all dark:text-white dark:group-hover/card:text-white" />
                   </div>
                 </Link>
               );

@@ -43,7 +43,7 @@ function MetaInfo({
   locale: string;
 }) {
   return (
-    <div className="mt-4 text-sm text-slate-400 font-bold flex items-center gap-4">
+    <div className="mt-4 text-sm text-slate-700 font-bold flex items-center gap-4">
       <div className="flex items-center gap-1.5">
         <CalendarIcon />
         <span>{new Date(publishedAt).toLocaleDateString(locale)}</span>

@@ -27,7 +27,7 @@ export function QuickAccessLinks({ t }: QuickAccessLinksProps) {
               <link.icon className="w-4 h-4" />
             </div>
             <span className="text-sm font-bold text-foreground group-hover:text-iu-blue transition-colors">{link.label}</span>
-            <ChevronRight className="w-4 h-4 ml-auto text-foreground/60 group-hover:text-iu-blue group-hover:translate-x-1 transition-all" />
+            <ChevronRight className="w-4 h-4 ml-auto text-foreground group-hover:text-iu-blue group-hover:translate-x-1 transition-all" />
           </Link>
         ))}
       </div>

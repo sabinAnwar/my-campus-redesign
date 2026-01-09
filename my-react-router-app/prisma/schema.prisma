@@ -11,56 +11,58 @@ datasource db {
 }
 
 model User {
-  id              Int       @id @default(autoincrement())
-  email           String    @unique
-  username        String    @unique
-  password        String
-  name            String?
-  role            String    @default("STUDENT")
-  resetToken      String?
-  resetTokenExpiry DateTime?
-  createdAt       DateTime  @default(now())
-  updatedAt       DateTime  @updatedAt
+  id                Int       @id @default(autoincrement())
+  email             String    @unique
+  username          String    @unique
+  password          String
+  name              String?
+  role              String    @default("STUDENT")
+  reset_token       String?
+  reset_token_expiry DateTime?
+  created_at        DateTime  @default(now())
+  updated_at        DateTime  @updatedAt
   
   // Student ID fields
-  matriculationNumber String?
-  birthday        DateTime?
-  studyProgram    String?
-  validUntil      DateTime?
+  matriculation_number String?
+  birthday          DateTime?
+  study_program     String?   // Keep as string for now if used as display
+  valid_until       DateTime?
   
   // Semester tracking for onboarding
-  semester        Int       @default(1)  // Current semester (1 = first semester)
-  totalSemesters  Int       @default(6)  // Total semesters in program
+  semester          Int       @default(1)  // Current semester (1 = first semester)
+  total_semesters   Int       @default(6)  // Total semesters in program
   
-  marks           Mark[]
-  files           File[]
-  studienplan     Studienplan?
-  sessions        Session[]
-  studiengang     Studiengang? @relation("UserStudiengang", fields: [studiengangId], references: [id])
-  studiengangId   Int?
-  praxisReports   PraxisReport[]
-  roomBookings    RoomBooking[]
+  marks             Mark[]
+  files             File[]
+  study_plan        StudyPlan?
+  sessions          Session[]
+  major             Major?    @relation("user_major", fields: [major_id], references: [id])
+  major_id          Int?
+  practical_reports PracticalReport[]
+  room_bookings      RoomBooking[]
 
-  // Daily email reminder preferences for Praxisbericht
-  reminderEnabled  Boolean  @default(false)
-  reminderHour     Int?
-  reminderMinute   Int?     @default(0)
-  reminderTimezone String   @default("Europe/Berlin")
+  // Daily email reminder preferences for PracticalReport
+  reminder_enabled   Boolean  @default(false)
+  reminder_hour      Int?
+  reminder_minute    Int?     @default(0)
+  reminder_timezone  String   @default("Europe/Berlin")
 
-  tasks            StudentTask[]
+  tasks             StudentTask[]
   
   // Forum relations
-  forumTopics      ForumTopic[]
-  forumPosts       ForumPost[]
+  forum_topics       ForumTopic[]
+  forum_posts        ForumPost[]
   
   // Contact submissions
-  contactSubmissions ContactSubmission[]
+  contact_submissions ContactSubmission[]
   
   // Dual Student relations
-  praxisPartner     PraxisPartner?
-  praxisHoursLogs   PraxisHoursLog[]
-  praxisHoursTarget PraxisHoursTarget?
-  scheduleEvents    ScheduleEvent[]
+  practical_partner      PracticalPartner?
+  practical_hours_logs   PracticalHoursLog[]
+  practical_hours_target PracticalHoursTarget?
+  schedule_events        ScheduleEvent[]
+
+  @@map("users")
 }
 
 model Teacher {
@@ -68,132 +70,153 @@ model Teacher {
   name      String
   email     String   @unique
   marks     Mark[]
+
+  @@map("teachers")
 }
 
 model Mark {
-  id        Int      @id @default(autoincrement())
-  value     Float
-  course    String
-  date      DateTime @default(now())
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int
-  teacher   Teacher  @relation(fields: [teacherId], references: [id])
-  teacherId Int
+  id         Int      @id @default(autoincrement())
+  value      Float
+  course     String
+  date       DateTime @default(now())
+  user       User     @relation(fields: [user_id], references: [id])
+  user_id     Int
+  teacher    Teacher  @relation(fields: [teacher_id], references: [id])
+  teacher_id  Int
+
+  @@map("marks")
 }
 
-model Studiengang {
-  id        Int      @id @default(autoincrement())
-  name      String   @unique
+model Major {
+  id          Int      @id @default(autoincrement())
+  name        String   @unique
   description String?
-  createdAt DateTime @default(now())
-  courses   Course[]
-  files     File[]
-  users     User[]   @relation("UserStudiengang")
+  created_at  DateTime @default(now())
+  courses     Course[]
+  files       File[]
+  users       User[]   @relation("user_major")
+
+  @@map("majors")
 }
 
 model Course {
-  id           Int      @id @default(autoincrement())
-  code         String   @unique // e.g., "WEB101"
-  name         String
-  description  String?
-  studiengang  Studiengang @relation(fields: [studiengangId], references: [id])
-  studiengangId Int
-  credits      Int      @default(5)
-  semester     Int      @default(1)
-  color        String   @default("blue")
-  createdAt    DateTime @default(now())
-  files        File[]
+  id            Int      @id @default(autoincrement())
+  code          String   @unique // e.g., "WEB101"
+  name          String   // Fallback name (English)
+  name_de       String?  // German course name
+  name_en       String?  // English course name
+  description   String?
+  major         Major    @relation(fields: [major_id], references: [id])
+  major_id      Int
+  credits       Int      @default(5)
+  semester      Int      @default(1)
+  color         String   @default("blue")
+  created_at    DateTime @default(now())
+  files         File[]
+
+  @@map("courses")
 }
 
 model File {
-  id          Int      @id @default(autoincrement())
-  name        String
-  url         String
-  fileType    String?  // "pdf", "doc", etc.
-  size        String?  // e.g., "2.5 MB"
-  uploadedAt  DateTime @default(now())
-  lastOpenedAt DateTime?
-  user        User     @relation(fields: [userId], references: [id])
-  userId      Int
-  course      Course?  @relation(fields: [courseId], references: [id])
-  courseId    Int?
-  studiengang Studiengang? @relation(fields: [studiengangId], references: [id])
-  studiengangId Int?
-  readingState FileReadingState?
+  id             Int      @id @default(autoincrement())
+  name           String
+  url            String
+  file_type      String?  // "pdf", "doc", etc.
+  size           String?  // e.g., "2.5 MB"
+  uploaded_at    DateTime @default(now())
+  last_opened_at DateTime?
+  user           User     @relation(fields: [user_id], references: [id])
+  user_id        Int
+  course         Course?  @relation(fields: [course_id], references: [id])
+  course_id      Int?
+  major          Major?   @relation(fields: [major_id], references: [id])
+  major_id       Int?
+  reading_state  FileReadingState?
+
+  @@map("files")
 }
 
 model FileReadingState {
-  id          Int      @id @default(autoincrement())
-  file        File     @relation(fields: [fileId], references: [id], onDelete: Cascade)
-  fileId      Int      @unique
-  lastPage    Int?     // Last page number opened in PDF
-  totalPages  Int?     // Total pages in PDF
-  scrollPosition Float? // Scroll position in document
-  bookmarks   String?  // JSON array of bookmarked pages/sections
-  annotations String?  // JSON array of annotations
-  readingProgress Float? // Percentage read (0-100)
-  lastUpdated DateTime @default(now()) @updatedAt
+  id               Int      @id @default(autoincrement())
+  file             File     @relation(fields: [file_id], references: [id], onDelete: Cascade)
+  file_id           Int      @unique
+  last_page        Int?     // Last page number opened in PDF
+  total_pages      Int?     // Total pages in PDF
+  scroll_position  Float? // Scroll position in document
+  bookmarks        String?  // JSON array of bookmarked pages/sections
+  annotations      String?  // JSON array of annotations
+  reading_progress Float? // Percentage read (0-100)
+  last_updated     DateTime @default(now()) @updatedAt
+
+  @@map("file_reading_states")
 }
 
-model Studienplan {
-  id        Int      @id @default(autoincrement())
-  plan      String   // JSON or text representation
-  user      User     @relation(fields: [userId], references: [id])
-  userId    Int @unique
+model StudyPlan {
+  id      Int      @id @default(autoincrement())
+  plan    String   // JSON or text representation
+  user    User     @relation(fields: [user_id], references: [id])
+  user_id  Int @unique
+
+  @@map("study_plans")
 }
 
 model Session {
-  id        String   @id @default(cuid())
-  token     String   @unique
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  expiresAt DateTime
-  createdAt DateTime @default(now())
+  id         String   @id @default(cuid())
+  token      String   @unique
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int
+  expires_at  DateTime
+  created_at  DateTime @default(now())
+
+  @@map("sessions")
 }
 
 enum TaskKind {
-  ABGABE
-  KLAUSUR
+  SUBMISSION
+  EXAM
 }
 
 model StudentTask {
-  id        Int      @id @default(autoincrement())
-  title     String
-  course    String
-  kind      TaskKind
-  type      String
-  dueDate   DateTime
-  user      User?    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  title      String
+  course     String
+  kind       TaskKind
+  type       String
+  due_date   DateTime
+  user       User?    @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int?
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("student_tasks")
 }
 
 // Weekly practical report per user and ISO week
-enum PraxisStatus {
+enum PracticalStatus {
   DUE
   SUBMITTED
   APPROVED
-  KLAUSUR
+  EXAM
   DRAFT
-  KLAUSURPHASE
+  EXAM_PHASE
 }
 
-model PraxisReport {
-  id         Int           @id @default(autoincrement())
-  isoWeekKey String
-  user       User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId     Int
+model PracticalReport {
+  id           Int             @id @default(autoincrement())
+  iso_week_key String
+  user         User            @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id       Int
   // JSON object with keys Mon..Sun or similar shape
-  days       Json
-  tasks      String
-  grade      Int           @default(0)
-  status     PraxisStatus  @default(DUE)
-  editedAt   DateTime      @default(now())
-  approvedAt DateTime?
-  createdAt  DateTime      @default(now())
+  days         Json
+  tasks        String
+  grade        Int             @default(0)
+  status       PracticalStatus @default(DUE)
+  edited_at    DateTime        @default(now())
+  approved_at  DateTime?
+  created_at   DateTime        @default(now())
 
-  @@unique([isoWeekKey, userId], name: "isoWeekKey_userId")
+  @@unique([iso_week_key, user_id], name: "iso_week_key_user_id")
+  @@map("practical_reports")
 }
 
 // News content for students
@@ -204,90 +227,96 @@ enum NewsStatus {
 }
 
 model News {
-  id            Int        @id @default(autoincrement())
-  slug          String     @unique
-  title         String     // Fallback
-  titleDe       String?
-  titleEn       String?
-  excerpt       String?
-  excerptDe     String?
-  excerptEn     String?
-  content       String
-  contentDe     String?
-  contentEn     String?
-  category      String?
-  categoryDe    String?
-  categoryEn    String?
-  tags          String?    // JSON-encoded string array
-  author        String?
-  coverImageUrl String?
-  featured      Boolean    @default(false)
-  status        NewsStatus @default(PUBLISHED)
-  publishedAt   DateTime   @default(now())
-  createdAt     DateTime   @default(now())
-  updatedAt     DateTime   @updatedAt
+  id              Int        @id @default(autoincrement())
+  slug            String     @unique
+  title           String     // Fallback
+  title_de        String?
+  title_en        String?
+  excerpt         String?
+  excerpt_de      String?
+  excerpt_en      String?
+  content         String
+  content_de      String?
+  content_en      String?
+  category        String?
+  category_de     String?
+  category_en     String?
+  tags            String?    // JSON-encoded string array
+  author          String?
+  cover_image_url String?
+  featured        Boolean    @default(false)
+  status          NewsStatus @default(PUBLISHED)
+  published_at    DateTime   @default(now())
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
 
-  @@index([publishedAt, featured])
+  @@index([published_at, featured])
+  @@map("news")
 }
 
 // Room Booking for campus rooms
 model RoomBooking {
-  id        Int      @id @default(autoincrement())
-  roomId    String   // e.g., "HB-A1", "WL-C2"
-  roomName  String   // e.g., "Raum A1", "Raum C2"
-  campus    String   // "Hammerbrook" or "Waterloohain"
-  date      DateTime
-  startTime String   // e.g., "09:00"
-  endTime   String   // e.g., "11:00"
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  room_id    String   // e.g., "HB-A1", "WL-C2"
+  room_name  String   // e.g., "Raum A1", "Raum C2"
+  campus     String   // "Hammerbrook" or "Waterloohain"
+  date       DateTime
+  start_time String   // e.g., "09:00"
+  end_time   String   // e.g., "11:00"
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
-  @@index([date, campus, roomId])
-  @@index([userId, date])
+  @@index([date, campus, room_id])
+  @@index([user_id, date])
+  @@map("room_bookings")
 }
 
 // FAQ - Frequently Asked Questions
 model FAQ {
-  id        Int      @id @default(autoincrement())
-  question  String   @unique
-  answer    String
-  category  String   // e.g., "studium", "prüfungen", "praxisphase", "angebote"
-  keywords  String?  // JSON array of keywords for better search
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id         Int      @id @default(autoincrement())
+  question   String   @unique
+  answer     String
+  category   String   // e.g., "studium", "prüfungen", "praxisphase", "angebote"
+  keywords   String?  // JSON array of keywords for better search
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
 
   @@index([category])
+  @@map("faqs")
 }
 
 // Forum Models
 model ForumTopic {
-  id        Int         @id @default(autoincrement())
-  title     String
-  content   String
-  courseId  Int
-  author    User        @relation(fields: [authorId], references: [id])
-  authorId  Int
-  views     Int         @default(0)
-  pinned    Boolean     @default(false)
-  createdAt DateTime    @default(now())
-  updatedAt DateTime    @updatedAt
-  posts     ForumPost[]
+  id         Int         @id @default(autoincrement())
+  title      String
+  content    String
+  course_id  Int
+  author     User        @relation(fields: [author_id], references: [id])
+  author_id  Int
+  views      Int         @default(0)
+  pinned     Boolean     @default(false)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @updatedAt
+  posts      ForumPost[]
 
-  @@index([courseId])
+  @@index([course_id])
+  @@map("forum_topics")
 }
 
 model ForumPost {
-  id        Int        @id @default(autoincrement())
-  content   String
-  topic     ForumTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
-  topicId   Int
-  author    User       @relation(fields: [authorId], references: [id])
-  authorId  Int
-  likes     Int        @default(0)
-  createdAt DateTime   @default(now())
-  updatedAt DateTime   @updatedAt
+  id         Int        @id @default(autoincrement())
+  content    String
+  topic      ForumTopic @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  topic_id   Int
+  author     User       @relation(fields: [author_id], references: [id])
+  author_id  Int
+  likes      Int        @default(0)
+  created_at DateTime   @default(now())
+  updated_at DateTime   @updatedAt
+
+  @@map("forum_posts")
 }
 
 // Contact Form Submissions
@@ -299,90 +328,98 @@ enum ContactStatus {
 }
 
 model ContactSubmission {
-  id        Int           @id @default(autoincrement())
-  user      User          @relation(fields: [userId], references: [id], onDelete: Cascade)
-  userId    Int
-  subject   String
-  message   String
-  status    ContactStatus @default(PENDING)
-  createdAt DateTime      @default(now())
-  updatedAt DateTime      @updatedAt
+  id         Int           @id @default(autoincrement())
+  user       User          @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id     Int
+  subject    String
+  message    String
+  status     ContactStatus @default(PENDING)
+  created_at DateTime      @default(now())
+  updated_at DateTime      @updatedAt
 
-  @@index([userId])
+  @@index([user_id])
   @@index([status])
-  @@index([createdAt])
+  @@index([created_at])
+  @@map("contact_submissions")
 }
 
-// Praxis Partner (Dual Student Company)
-model PraxisPartner {
+// Practical Partner (Dual Student Company)
+model PracticalPartner {
   id           Int      @id @default(autoincrement())
-  userId       Int      @unique
-  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  companyName  String
+  user_id      Int      @unique
+  user         User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  company_name String
   department   String?
   supervisor   String?
   email        String?
   phone        String?
   address      String?
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @updatedAt
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  @@map("practical_partners")
 }
 
-// Praxis Hours Tracking (for dual students)
-model PraxisHoursLog {
+// Practical Hours Tracking (for dual students)
+model PracticalHoursLog {
   id          Int      @id @default(autoincrement())
-  userId      Int
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user_id     Int
+  user        User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
   date        DateTime
   hours       Float
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
 
-  @@index([userId, date])
+  @@index([user_id, date])
+  @@map("practical_hours_logs")
 }
 
-// Praxis Hours Target (semester goals)
-model PraxisHoursTarget {
-  id              Int      @id @default(autoincrement())
-  userId          Int      @unique
-  user            User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  requiredHours   Int      @default(900)  // per semester
-  targetPerWeek   Int      @default(40)
-  semesterStart   DateTime
-  semesterEnd     DateTime
-  createdAt       DateTime @default(now())
-  updatedAt       DateTime @updatedAt
+// Practical Hours Target (semester goals)
+model PracticalHoursTarget {
+  id               Int      @id @default(autoincrement())
+  user_id          Int      @unique
+  user             User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  required_hours   Int      @default(900)  // per semester
+  target_per_week  Int      @default(40)
+  semester_start   DateTime
+  semester_end     DateTime
+  created_at       DateTime @default(now())
+  updated_at       DateTime @updatedAt
+
+  @@map("practical_hours_targets")
 }
 
 // Schedule Event (for course schedule / Stundenplan)
 enum ScheduleEventType {
-  VORLESUNG
+  LECTURE
   SEMINAR
-  UEBUNG
-  TUTORIUM
+  EXERCISE
+  TUTORIAL
   WORKSHOP
-  PRUEFUNG
-  SONSTIGES
+  EXAM
+  PRAXIS
+  OTHER
 }
 
 model ScheduleEvent {
-  id          Int               @id @default(autoincrement())
-  userId      Int?
-  user        User?             @relation(fields: [userId], references: [id], onDelete: Cascade)
-  title       String
-  courseCode  String?           // e.g., "DLBINGDT01"
-  date        DateTime
-  startTime   String            // e.g., "10:00"
-  endTime     String            // e.g., "11:30"
-  location    String?           // e.g., "Hammerbrook"
-  eventType   ScheduleEventType @default(VORLESUNG)
-  professor   String?
-  isRecurring Boolean           @default(false)
-  recurringDays String?         // JSON array of days ["MO", "WE", "FR"]
-  createdAt   DateTime          @default(now())
-  updatedAt   DateTime          @updatedAt
+  id             Int               @id @default(autoincrement())
+  user_id        Int?
+  user           User?             @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  title          String
+  course_code    String?           // e.g., "DLBINGDT01"
+  date           DateTime
+  start_time     String            // e.g., "10:00"
+  end_time       String            // e.g., "11:30"
+  location       String?           // e.g., "Hammerbrook"
+  event_type     ScheduleEventType @default(LECTURE)
+  professor      String?
+  is_recurring   Boolean           @default(false)
+  recurring_days String?         // JSON array of days ["MO", "WE", "FR"]
+  created_at     DateTime          @default(now())
+  updated_at     DateTime          @updatedAt
 
-  @@index([userId, date])
+  @@index([user_id, date])
   @@index([date])
+  @@map("schedule_events")
 }

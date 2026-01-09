@@ -39,7 +39,7 @@ export function HowItWorksSection({ t }: HowItWorksSectionProps) {
             key={idx}
             className="relative p-6 rounded-3xl bg-background/50 border border-border/50"
           >
-            <div className="text-4xl font-black text-foreground/5 absolute top-4 right-4">
+            <div className="text-4xl font-black text-foreground absolute top-4 right-4">
               {item.step}
             </div>
             <item.icon

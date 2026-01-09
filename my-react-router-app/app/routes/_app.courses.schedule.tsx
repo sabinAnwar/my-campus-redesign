@@ -20,6 +20,7 @@ import {
   startOfMonth,
   addMonths,
   getStudyPlanByStudiengang,
+  getBlockStatusForDate,
 } from "~/lib/studyPlans";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
@@ -45,6 +46,13 @@ import { ScheduleEventModal } from "~/components/schedule/ScheduleEventModal";
 
 export { type ScheduleEvent };
 
+// Helper to create soft background colors for phases
+const toSoftPhaseBg = (bgClassString: string) => {
+  if (!bgClassString) return "";
+  // With AAA dark colors, we need higher opacity for the pastel look
+  return bgClassString.endsWith("/10") ? bgClassString.replace("/10", "/15") : `${bgClassString}/15`;
+};
+
 export const loader = async ({ request }: LoaderFunctionArgs) => {
   try {
     let user = await getUserFromRequest(request);
@@ -61,7 +69,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     const dbUser = await prisma.user.findUnique({
       where: { id: user.id },
       include: {
-        studiengang: {
+        major: {
           include: {
             courses: true,
           },
@@ -73,12 +81,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
 
     let events: any[] = [];
     let userCourses: { id: number; code: string; name: string }[] = [];
-    let studiengangName: string | null = dbUser.studiengang?.name || null;
+    let studiengangName: string | null = dbUser.major?.name || null;
 
     // First, check for existing schedule events in DB
     const dbEvents = await prisma.scheduleEvent.findMany({
-      where: { userId: dbUser.id },
-      orderBy: [{ date: "asc" }, { startTime: "asc" }],
+      where: { user_id: dbUser.id },
+      orderBy: [{ date: "asc" }, { start_time: "asc" }],
     });
 
     if (dbEvents.length > 0) {
@@ -87,11 +95,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
         (e: {
           id: number;
           title: string;
-          courseCode: string | null;
-          eventType: string;
+          course_code: string | null;
+          event_type: string;
           date: Date;
-          startTime: string;
-          endTime: string;
+          start_time: string;
+          end_time: string;
           location: string | null;
           professor: string | null;
         }) => {
@@ -99,27 +107,27 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
           return {
             id: e.id,
             title: e.title,
-            courseCode: e.courseCode || "",
-            type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
+            courseCode: e.course_code || "",
+            type: e.event_type.charAt(0) + e.event_type.slice(1).toLowerCase(),
             date: toISODate(e.date),
-            startTime: e.startTime,
-            endTime: e.endTime,
+            startTime: e.start_time,
+            endTime: e.end_time,
             location: e.location || "",
             professor: e.professor || "",
             room: null,
             isOnline,
             zoomLink: isOnline
-              ? `https://iu-online.zoom.us/j/${e.courseCode?.replace(/[^0-9]/g, "") || "123456789"}`
+              ? `https://iu-online.zoom.us/j/${e.course_code?.replace(/[^0-9]/g, "") || "123456789"}`
               : undefined,
-            isOptional: e.eventType === "TUTORIUM" || e.eventType === "Q&A",
+            isOptional: e.event_type === "TUTORIUM" || e.event_type === "Q&A",
           };
         }
       );
     }
 
-    // Get user's courses from their Studiengang (Current Semester)
-    if (dbUser.studiengang?.courses) {
-      userCourses = dbUser.studiengang.courses
+    // Get user's courses from their Major (Current Semester)
+    if (dbUser.major?.courses) {
+      userCourses = dbUser.major.courses
         .filter((c: any) => c.semester === dbUser.semester)
         .map((c: { id: number; code: string; name: string }) => ({
           id: c.id,
@@ -386,12 +394,11 @@ export default function CourseSchedule() {
               {weekDates.map((date, idx) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
-                const dayBlock = currentPlan?.blocks.find(
-                  (b) => dateStr >= b.start && dateStr <= b.end
-                );
-                const phaseConfig = dayBlock
-                  ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
-                    DEFAULT_PALETTE[dayBlock.status]
+                
+                const status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+                const phaseConfig = status
+                  ? currentPlan?.paletteOverrides?.[status] ||
+                    DEFAULT_PALETTE[status]
                   : null;
 
                 return (
@@ -415,9 +422,9 @@ export default function CourseSchedule() {
                     </div>
                     {phaseConfig && (
                       <div
-                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest ${getPhaseLabelClass(dayBlock?.status)} inline-flex items-center gap-1`}
+                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest inline-flex items-center gap-1 ${status === 'feiertag' ? 'text-iu-gold' : phaseConfig.text.replace('text-white', 'text-iu-blue dark:text-white')}`}
                       >
-                        {dayBlock?.status === "feiertag" && (
+                        {status === "feiertag" && (
                           <Flag className="h-3 w-3" />
                         )}
                         {phaseConfig.label.split(" ")[0]}
@@ -435,7 +442,7 @@ export default function CourseSchedule() {
                 {TIME_SLOTS.map((time) => (
                   <div
                     key={time}
-                    className="h-[100px] flex items-start justify-end pr-6 pt-3 text-[10px] text-muted-foreground font-bold uppercase tracking-widest"
+                    className="h-[100px] flex items-start justify-end pr-6 pt-3 text-[10px] text-foreground/70 font-bold uppercase tracking-widest"
                   >
                     {time}
                   </div>
@@ -464,7 +471,7 @@ export default function CourseSchedule() {
                     {TIME_SLOTS.map((_, idx) => (
                       <div
                         key={idx}
-                        className="absolute w-full border-t border-border/30"
+                        className="absolute w-full border-t border-border"
                         style={{ top: `${idx * 100}px` }}
                       />
                     ))}
@@ -484,8 +491,22 @@ export default function CourseSchedule() {
 
                     {events.map((event) => {
                       const isLive = isEventLive(event);
-                      const colors =
-                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      // Calculate phase config for this specific day
+                      const eventDate = new Date(event.date);
+                      const status = currentPlan ? getBlockStatusForDate(currentPlan, eventDate) : null;
+                      const phaseConfig = status
+                        ? currentPlan?.paletteOverrides?.[status] ||
+                          DEFAULT_PALETTE[status]
+                        : null;
+
+                      // Use Legend Colors strictly for the card
+                      const colors = {
+                        bg: `${typeColors.bg}/15`,
+                        text: typeColors.bg.replace('bg-', 'text-'),
+                        border: typeColors.border
+                      };
+
                       const style = getEventStyle(event);
                       const adjustedStyle = {
                         ...style,
@@ -497,7 +518,7 @@ export default function CourseSchedule() {
                         <div
                           key={event.id}
                           onClick={() => setSelectedEvent(event)}
-                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group text-white ${
+                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group ${colors.text} ${
                             isLive
                               ? "ring-2 ring-iu-blue ring-offset-2 ring-offset-background z-10"
                               : ""
@@ -521,7 +542,7 @@ export default function CourseSchedule() {
                                 />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className="text-[10px] font-black uppercase tracking-wider text-white/80 leading-none mb-1">
+                                <div className={`text-[10px] font-black uppercase tracking-wider ${colors.text} opacity-70 leading-none mb-1`}>
                                   {event.startTime} – {event.endTime}
                                 </div>
                                 <div
@@ -533,7 +554,7 @@ export default function CourseSchedule() {
                             </div>
 
                             <div className="mt-auto flex items-center gap-2 opacity-100 transition-opacity">
-                              <div className="flex items-center gap-1 text-[9px] font-bold text-white/80">
+                              <div className={`flex items-center gap-1 text-[9px] font-bold ${colors.text}`}>
                                 {event.isOnline ? (
                                   <Video size={10} />
                                 ) : (
@@ -585,12 +606,11 @@ export default function CourseSchedule() {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
                 const dayEvents = getEventsForDate(date);
-                const dayBlock = currentPlan?.blocks.find(
-                  (b) => dateStr >= b.start && dateStr <= b.end
-                );
-                const phaseConfig = dayBlock
-                  ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
-                    DEFAULT_PALETTE[dayBlock.status]
+                
+                const status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+                const phaseConfig = status
+                  ? currentPlan?.paletteOverrides?.[status] ||
+                    DEFAULT_PALETTE[status]
                   : null;
 
                 return (
@@ -608,7 +628,7 @@ export default function CourseSchedule() {
                       >
                         {date.getDate()}
                       </span>
-                      {dayBlock?.status === "feiertag" && (
+                      {status === "feiertag" && (
                         <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold text-white">
                           <Flag className="h-3 w-3" />
                           {language === "de" ? "Feiertag" : "Holiday"}
@@ -618,18 +638,25 @@ export default function CourseSchedule() {
 
                     <div className="space-y-2">
                       {dayEvents.slice(0, 3).map((event) => {
-                        const colors =
-                          EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                        const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                        
+                        // Use Legend Colors strictly for the card
+                        const colors = {
+                           bg: `${typeColors.bg}/15`,
+                           text: typeColors.bg.replace('bg-', 'text-'),
+                           border: typeColors.border
+                        };
+
                         return (
                           <div
                             key={event.id}
                             onClick={() => setSelectedEvent(event)}
-                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2 text-white`}
+                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2`}
                           >
-                            <span className="opacity-80 shrink-0 text-white">
+                            <span className="opacity-80 shrink-0">
                               {event.startTime}
                             </span>
-                            <span className="truncate text-white">{event.title}</span>
+                            <span className="truncate">{event.title}</span>
                           </div>
                         );
                       })}
@@ -736,7 +763,7 @@ export default function CourseSchedule() {
                         : "National Holidays"}
                     </h4>
                   </div>
-                  <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-black/90 text-white dark:bg-white/90 dark:text-black">
+                  <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-black/90 text-foreground dark:text-white dark:bg-white/90 dark:text-black">
                     {language === "de" ? "VORLESUNGSFREI" : "NO LECTURES"}
                   </div>
                 </div>

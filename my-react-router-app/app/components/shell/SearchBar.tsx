@@ -85,36 +85,39 @@ export function SearchBar({
               className="max-h-[250px] sm:max-h-[300px] overflow-y-auto p-1.5 sm:p-2 space-y-0.5 sm:space-y-1 custom-scrollbar"
             >
               {results.length > 0 ? (
-                results.map((result) => (
-                  <li key={result.id} role="option">
-                    <Link
-                      to={result.link}
-                      onClick={handleResultClick}
-                      className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-iu-blue/10 group/item transition-all border border-transparent hover:border-iu-blue/20 cursor-pointer focus:outline-none focus:bg-iu-blue/10 focus:border-iu-blue/20"
-                    >
-                      {/* Icon */}
-                      <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border border-border text-muted-foreground group-hover/item:text-iu-blue dark:group-hover/item:text-white group-hover/item:border-iu-blue/30 transition-colors">
-                        <result.icon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
-                      </div>
-
-                      {/* Text Content */}
-                      <div className="flex-1 min-w-0">
-                        <div className="text-xs sm:text-sm font-bold sm:font-black uppercase tracking-tight truncate">
-                          {result.title}
+                results.map((result) => {
+                  const ResultIcon = result.icon ?? FileSearch;
+                  return (
+                    <li key={result.id} role="option">
+                      <Link
+                        to={result.link}
+                        onClick={handleResultClick}
+                        className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-iu-blue/10 group/item transition-all border border-transparent hover:border-iu-blue/20 cursor-pointer focus:outline-none focus:bg-iu-blue/10 focus:border-iu-blue/20"
+                      >
+                        {/* Icon */}
+                        <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border border-border text-muted-foreground group-hover/item:text-iu-blue dark:group-hover/item:text-foreground dark:text-white group-hover/item:border-iu-blue/30 transition-colors">
+                          <ResultIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
                         </div>
-                        <div className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider sm:tracking-widest">
-                          {result.category}
-                        </div>
-                      </div>
 
-                      {/* Arrow Icon */}
-                      <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all text-iu-blue dark:text-white hidden sm:block" aria-hidden="true" />
-                    </Link>
-                  </li>
-                ))
+                        {/* Text Content */}
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs sm:text-sm font-bold sm:font-black uppercase tracking-tight truncate">
+                            {result.title}
+                          </div>
+                          <div className="text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-wider sm:tracking-widest">
+                            {result.category}
+                          </div>
+                        </div>
+
+                        {/* Arrow Icon */}
+                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all text-iu-blue dark:text-white hidden sm:block" aria-hidden="true" />
+                      </Link>
+                    </li>
+                  );
+                })
               ) : (
                 <div className="p-4 sm:p-8 text-center" role="status">
-                  <FileSearch className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground/30 mx-auto mb-2" aria-hidden="true" />
+                  <FileSearch className="h-6 w-6 sm:h-8 sm:w-8 text-muted-foreground mx-auto mb-2" aria-hidden="true" />
                   <p className="text-[10px] sm:text-xs text-muted-foreground font-bold sm:font-black uppercase tracking-wider sm:tracking-widest">
                     {translations.noResults} "{query}"
                   </p>

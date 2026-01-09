@@ -27,29 +27,38 @@ export function useCoursesList({
   const navigate = useNavigate();
 
   const coursesSource = useMemo(() => {
-    return dbCourses.map((c: any) => ({
-      id: c.id,
-      title: c.name,
-      titleDE: c.name,
-      credits: c.credits,
-      semesterNumber: c.semester,
-      semester:
-        language === "de"
-          ? `${c.semester}. Semester`
-          : `${c.semester}${c.semester === 1 ? "st" : c.semester === 2 ? "nd" : c.semester === 3 ? "rd" : "th"} Semester`,
-      studiengang: userStudiengang,
-      color: c.color || "cyan",
-      active: c.semester === currentSemester,
-      progress:
-        c.semester < currentSemester
-          ? 100
-          : c.semester === currentSemester
-            ? 45
-            : 0,
-      description: c.description || t.noDescription,
-      instructor: c.instructor || "TBD",
-      startDate: c.startDate || "TBD",
-    }));
+    return dbCourses.map((c: any) => {
+      // Use language-specific name, fallback to name
+      const displayName = language === "de" 
+        ? (c.name_de || c.name) 
+        : (c.name_en || c.name);
+      
+      return {
+        id: c.id,
+        code: c.code,
+        title: displayName,
+        titleDE: c.name_de || c.name,
+        titleEN: c.name_en || c.name,
+        credits: c.credits,
+        semesterNumber: c.semester,
+        semester:
+          language === "de"
+            ? `${c.semester}. Semester`
+            : `${c.semester}${c.semester === 1 ? "st" : c.semester === 2 ? "nd" : c.semester === 3 ? "rd" : "th"} Semester`,
+        studiengang: userStudiengang,
+        color: c.color || "cyan",
+        active: c.semester === currentSemester,
+        progress:
+          c.semester < currentSemester
+            ? 100
+            : c.semester === currentSemester
+              ? 45
+              : 0,
+        description: c.description || t.noDescription,
+        instructor: c.instructor || "TBD",
+        startDate: c.startDate || "TBD",
+      };
+    });
   }, [dbCourses, language, userStudiengang, currentSemester, t]);
 
   const needsFiltering = dbCourses.length === 0;
@@ -73,9 +82,18 @@ export function useCoursesList({
     }
 
     return baseList.map((course: any) => {
-      const mark = marks.find(
-        (m: any) => m.course === (course.titleDE || course.title)
-      );
+      const courseKeys = [
+        course.title,
+        course.titleDE,
+        course.titleEN,
+        course.code,
+      ]
+        .filter(Boolean)
+        .map((value: string) => value.toLowerCase());
+      const mark = marks.find((m: any) => {
+        if (typeof m?.course !== "string") return false;
+        return courseKeys.includes(m.course.toLowerCase());
+      });
       let status: "open" | "passed" | "failed" = "open";
       if (mark) {
         status = mark.value <= 4.0 ? "passed" : "failed";

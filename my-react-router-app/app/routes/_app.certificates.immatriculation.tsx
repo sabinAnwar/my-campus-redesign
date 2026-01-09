@@ -24,12 +24,12 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
     if (!user) {
       user = await prisma.user.findUnique({
         where: { email: "student.demo@iu-study.org" },
-        include: { studiengang: true },
+        include: { major: true },
       });
     } else {
       user = await prisma.user.findUnique({
         where: { id: user.id },
-        include: { studiengang: true },
+        include: { major: true },
       });
     }
 
@@ -52,11 +52,11 @@ export default function ImmatriculationCertificatePage() {
 
   const studentData: ImmatriculationStudentData = {
     name: user.name || "Student Name",
-    studentId: user.matriculationNumber || "12345678",
-    program: user.studyProgram || user.studiengang?.name || t.fallbackProgram,
-    semester: "5",
-    enrollmentDate: user.createdAt
-      ? new Date(user.createdAt).toLocaleDateString(language === "de" ? "de-DE" : "en-US")
+    studentId: user.matriculation_number || "12345678",
+    program: user.study_program || user.major?.name || t.fallbackProgram,
+    semester: user.semester ? String(user.semester) : "5",
+    enrollmentDate: user.created_at
+      ? new Date(user.created_at).toLocaleDateString(language === "de" ? "de-DE" : "en-US")
       : "01.10.2022",
     status: t.statusActive,
   };

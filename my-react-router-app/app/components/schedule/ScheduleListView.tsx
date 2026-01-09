@@ -7,7 +7,7 @@ import {
   User,
   Flag,
 } from "lucide-react";
-import { toISODate, DEFAULT_PALETTE, type StudyPlan } from "~/lib/studyPlans";
+import { toISODate, DEFAULT_PALETTE, getBlockStatusForDate, type StudyPlan } from "~/lib/studyPlans";
 import { EVENT_COLORS } from "~/constants/schedule";
 import { EventIcon } from "~/components/schedule/EventIcon";
 import type { ScheduleEvent } from "~/types/schedule";
@@ -43,12 +43,17 @@ export function ScheduleListView({
         const dateStr = toISODate(date);
         const isToday = dateStr === todayISO;
         const events = getEventsForDate(date);
-        const dayBlock = currentPlan?.blocks.find(
-          (b) => dateStr >= b.start && dateStr <= b.end
-        );
-        const phaseConfig = dayBlock
-          ? currentPlan?.paletteOverrides?.[dayBlock.status] ||
-            DEFAULT_PALETTE[dayBlock.status]
+        
+        let status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+        // Fallback to basic block lookup if helper returns null (shouldn't happen if plan exists)
+        if (!status && currentPlan) {
+            const block = currentPlan.blocks.find(b => dateStr >= b.start && dateStr <= b.end);
+            status = block?.status || null;
+        }
+
+        const phaseConfig = status
+          ? currentPlan?.paletteOverrides?.[status] ||
+            DEFAULT_PALETTE[status]
           : null;
 
         if (events.length === 0 && !isToday) return null;
@@ -73,7 +78,7 @@ export function ScheduleListView({
                   className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
                     isToday
                       ? "text-iu-blue dark:text-white"
-                      : "text-muted-foreground dark:text-white/70"
+                      : "text-muted-foreground dark:text-white"
                   }`}
                 >
                   {dayNames[idx]}
@@ -85,14 +90,14 @@ export function ScheduleListView({
                 >
                   {date.getDate()}
                 </span>
-                <span className="text-[10px] sm:text-xs font-medium text-muted-foreground dark:text-white/70">
+                <span className="text-[10px] sm:text-xs font-medium text-muted-foreground dark:text-white">
                   {date.toLocaleDateString(locale, { month: "short" })}
                 </span>
                 {phaseConfig && (
                   <div
                     className={`mt-3 sm:mt-4 inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
                   >
-                    {dayBlock?.status === "feiertag" && (
+                    {status === "feiertag" && (
                       <Flag className="h-3 w-3" />
                     )}
                     {phaseConfig.label}
@@ -106,8 +111,14 @@ export function ScheduleListView({
                   <div className="grid gap-4">
                     {events.map((event, eIdx) => {
                       const isLive = isEventLive(event);
-                      const colors =
-                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      
+                      // Use Legend Colors strictly for the card
+                      const colors = {
+                        bg: `${typeColors.bg}/15`,
+                        text: typeColors.bg.replace('bg-', 'text-'),
+                        border: typeColors.border
+                      };
 
                       return (
                         <div
@@ -163,7 +174,7 @@ export function ScheduleListView({
                               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
                                 <MapPin
                                   size={14}
-                                  className="text-iu-blue/70 dark:text-white/70"
+                                  className="text-iu-blue/70 dark:text-white"
                                 />
                                 <span className="font-medium">
                                   {event.location}
@@ -172,7 +183,7 @@ export function ScheduleListView({
                               <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
                                 <User
                                   size={14}
-                                  className="text-iu-blue/70 dark:text-white/70"
+                                  className="text-iu-blue/70 dark:text-white"
                                 />
                                 <span className="font-medium">
                                   {event.professor}
@@ -197,7 +208,7 @@ export function ScheduleListView({
                           {/* Action */}
                           <div className="sm:ml-auto">
                             <div
-                              className={`p-2.5 sm:p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white"}`}
+                              className={`p-2.5 sm:p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-foreground dark:text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-foreground dark:text-white"}`}
                             >
                               <ChevronRight size={18} />
                             </div>
@@ -210,7 +221,7 @@ export function ScheduleListView({
                   <div className="h-full flex flex-col items-center justify-center text-center py-10 sm:py-12">
                     <div className="w-16 h-16 rounded-2xl bg-muted/20 flex items-center justify-center mb-4">
                       <CalendarDays
-                        className="text-muted-foreground/30"
+                        className="text-muted-foreground"
                         size={32}
                       />
                     </div>

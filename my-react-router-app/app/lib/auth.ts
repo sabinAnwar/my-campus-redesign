@@ -98,7 +98,7 @@ export async function createPasswordResetToken(email: any) {
 
   await prisma.user.update({
     where: { id: user.id },
-    data: { resetToken, resetTokenExpiry },
+    data: { reset_token: resetToken, reset_token_expiry: resetTokenExpiry },
   });
 
   // Send email with reset link
@@ -133,8 +133,8 @@ export async function sendPasswordResetEmail(email: any, resetToken: string) {
 export async function validatePasswordResetToken(token: any) {
   const user = await prisma.user.findFirst({
     where: {
-      resetToken: token,
-      resetTokenExpiry: {
+      reset_token: token,
+      reset_token_expiry: {
         gt: new Date(),
       },
     },

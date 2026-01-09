@@ -21,8 +21,8 @@ try {
     user: {
       findMany: async () => [],
       findUnique: async () => null,
-      create: async () => null,
-      update: async () => null,
+      create: async (data: any) => ({ id: 1, ...data }),
+      update: async (data: any) => ({ id: 1, ...data }),
       delete: async () => null,
     },
     news: {
@@ -33,18 +33,33 @@ try {
     studentTask: {
       findMany: async () => [],
       findUnique: async () => null,
-      create: async () => null,
-      update: async () => null,
+      create: async (data: any) => ({ id: 1, ...data }),
+      update: async (data: any) => ({ id: 1, ...data }),
       delete: async () => null,
     },
     session: {
       findUnique: async () => null,
+      create: async (data: any) => ({ id: "1", ...data }),
       deleteMany: async () => ({ count: 0 }),
     },
-    praxisReport: {
+    practicalReport: {
       findMany: async () => [],
       findFirst: async () => null,
-      upsert: async (_data: any) => _data,
+      upsert: async (data: any) => data,
+    },
+    roomBooking: {
+      findMany: async () => [],
+      findFirst: async () => null,
+      create: async (data: any) => ({ id: 1, ...data }),
+      update: async (data: any) => ({ id: 1, ...data }),
+      delete: async () => ({ id: 1 }),
+    },
+    file: {
+      findMany: async () => [],
+      findFirst: async () => null,
+      count: async () => 0,
+      create: async (data: any) => ({ id: 1, ...data }),
+      delete: async () => ({ id: 1 }),
     },
   };
 }

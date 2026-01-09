@@ -1,10 +1,8 @@
 import { LogOut, CheckCircle2, Sparkles } from "lucide-react";
 import type { ReactNode } from "react";
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
+//// CONSTANTS
+//
 const STYLES = {
   container: `flex items-center justify-center min-h-screen bg-gradient-to-br 
               from-slate-50 via-blue-50 to-cyan-50 dark:from-slate-950 
@@ -25,10 +23,8 @@ const TEXT = {
   goodbye: "We hope to see you again soon! ",
 } as const;
 
-// ============================================================================
-// BACKGROUND COMPONENTS
-// ============================================================================
-
+//// BACKGROUND COMPONENTS
+//
 export function LogoutBackground() {
   return (
     <>
@@ -64,10 +60,8 @@ function GradientOrb({ position, color, delay }: { position: string; color: stri
   );
 }
 
-// ============================================================================
-// ICON COMPONENTS
-// ============================================================================
-
+//// ICON COMPONENTS
+//
 export function LogoutIcon() {
   return (
     <div className="flex justify-center mb-8">
@@ -92,20 +86,18 @@ export function LogoutIcon() {
   );
 }
 
-// ============================================================================
-// CONTENT COMPONENTS
-// ============================================================================
-
+//// CONTENT COMPONENTS
+//
 export function LogoutHeader() {
   return (
     <div className="text-center mb-8 space-y-3">
       <h1 className="text-3xl sm:text-4xl font-black tracking-tight">
         <span className={STYLES.title}>{TEXT.title}</span>
       </h1>
-      <p className="text-base sm:text-lg text-slate-600 dark:text-slate-400 font-medium">
+      <p className="text-base sm:text-lg text-slate-700 dark:text-slate-200 font-medium">
         {TEXT.subtitle}
       </p>
-      <p className="text-sm text-slate-500 dark:text-slate-500">{TEXT.thanks}</p>
+      <p className="text-sm text-slate-700 dark:text-slate-200">{TEXT.thanks}</p>
     </div>
   );
 }
@@ -126,11 +118,11 @@ export function LogoutProgress() {
       <div className="flex items-center justify-between px-1">
         <div className="flex items-center space-x-2">
           <BouncingDots />
-          <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+          <p className="text-sm text-slate-700 dark:text-slate-200 font-medium">
             {TEXT.clearing}
           </p>
         </div>
-        <span className="text-xs text-slate-500 dark:text-slate-500 font-mono">2s</span>
+        <span className="text-xs text-slate-700 dark:text-slate-200 font-mono">2s</span>
       </div>
     </div>
   );
@@ -149,18 +141,16 @@ function BouncingDots() {
 export function LogoutFooter() {
   return (
     <div className="mt-8 text-center space-y-2 animate-fadeIn animation-delay-800">
-      <p className="text-sm text-slate-600 dark:text-slate-400 font-medium">
+      <p className="text-sm text-slate-700 dark:text-slate-200 font-medium">
         {TEXT.redirecting}
       </p>
-      <p className="text-xs text-slate-500 dark:text-slate-500">{TEXT.goodbye}</p>
+      <p className="text-xs text-slate-700 dark:text-slate-200">{TEXT.goodbye}</p>
     </div>
   );
 }
 
-// ============================================================================
-// FLOATING SPARKLES
-// ============================================================================
-
+//// FLOATING SPARKLES
+//
 export function FloatingSparkles() {
   return (
     <>
@@ -174,10 +164,8 @@ export function FloatingSparkles() {
   );
 }
 
-// ============================================================================
-// CARD SHINE EFFECT
-// ============================================================================
-
+//// CARD SHINE EFFECT
+//
 export function CardShine() {
   return (
     <div className="absolute inset-0 bg-gradient-to-br from-white/40 via-transparent to-transparent dark:from-iu-blue/5 dark:via-transparent dark:to-purple-500/5 opacity-50" />

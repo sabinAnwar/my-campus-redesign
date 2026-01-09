@@ -1,9 +1,7 @@
 import React from 'react';
 import { CheckCircle2, XCircle, AlertTriangle, Info, X, Loader2 } from 'lucide-react';
 
-// ============================================================================
 // TYPES
-// ============================================================================
 
 export type FeedbackType = 'success' | 'error' | 'warning' | 'info' | 'loading';
 
@@ -17,9 +15,7 @@ export interface FeedbackToastProps {
   duration?: number;
 }
 
-// ============================================================================
 // FEEDBACK CONFIGURATION
-// ============================================================================
 
 const FEEDBACK_CONFIG = {
   success: {
@@ -54,14 +50,12 @@ const FEEDBACK_CONFIG = {
     icon: Loader2,
     bgClass: 'bg-slate-500/10 dark:bg-slate-500/20',
     borderClass: 'border-slate-500/30 dark:border-slate-500/50',
-    iconClass: 'text-slate-600 dark:text-slate-400 animate-spin',
+    iconClass: 'text-slate-700 dark:text-slate-200 animate-spin',
     titleClass: 'text-slate-800 dark:text-slate-300',
   },
 };
 
-// ============================================================================
 // FEEDBACK TOAST COMPONENT
-// ============================================================================
 
 export function FeedbackToast({
   type,
@@ -126,9 +120,7 @@ export function FeedbackToast({
   );
 }
 
-// ============================================================================
 // INLINE FEEDBACK COMPONENT (for forms)
-// ============================================================================
 
 export interface InlineFeedbackProps {
   type: FeedbackType;
@@ -158,9 +150,7 @@ export function InlineFeedback({ type, message, className = '' }: InlineFeedback
   );
 }
 
-// ============================================================================
 // HOOK FOR MANAGING FEEDBACK STATE
-// ============================================================================
 
 export function useFeedback() {
   const [feedback, setFeedback] = React.useState<{

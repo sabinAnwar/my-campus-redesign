@@ -9,7 +9,7 @@ export const generateTranscriptPDF = (
   today: string,
   language: string,
   passedOnly: boolean,
-  courseConfigData: any[]
+  courses: any[]
 ) => {
   const doc = new jsPDF({
     orientation: "portrait",
@@ -106,13 +106,27 @@ export const generateTranscriptPDF = (
   doc.text(t.credits, pageWidth - 60, yPos + 6);
   doc.text(t.teacher, pageWidth - 40, yPos + 6);
 
-  // Group marks by semester
+  // Group marks by semester using DB courses when possible
   const groups: Record<string, any[]> = {};
   marks.forEach((m: any) => {
-    const config = courseConfigData.find((c) => c.titleDE === m.course);
-    const sem = config?.semester || (language === "de" ? "Zusatzmodule" : "Other Modules");
-    if (!groups[sem]) groups[sem] = [];
-    groups[sem].push(m);
+    const course = courses.find((c: any) => {
+      const keys = [c.name, c.name_de, c.name_en, c.code]
+        .filter(Boolean)
+        .map((val: string) => val.toLowerCase());
+      return typeof m.course === "string" && keys.includes(m.course.toLowerCase());
+    });
+    const semLabel = course?.semester
+      ? `${course.semester}. ${t.semester}`
+      : t.otherModules || (language === "de" ? "Sonstige Module" : "Other Modules");
+    if (!groups[semLabel]) groups[semLabel] = [];
+    groups[semLabel].push({
+      mark: m,
+      title:
+        language === "de"
+          ? course?.name_de || course?.name || m.course
+          : course?.name_en || course?.name || m.course,
+      credits: course?.credits ?? 5,
+    });
   });
   const groupedData = Object.entries(groups).sort((a, b) => a[0].localeCompare(b[0]));
 
@@ -131,7 +145,7 @@ export const generateTranscriptPDF = (
     doc.text(semester, 20, yPos);
     yPos += 8;
 
-    semesterMarks.forEach((mark: any) => {
+    semesterMarks.forEach((row: any) => {
       if (yPos > pageHeight - 30) {
         doc.addPage();
         yPos = 30;
@@ -139,11 +153,11 @@ export const generateTranscriptPDF = (
 
       doc.setFont("helvetica", "normal");
       doc.setTextColor(51, 65, 85);
-      doc.text(mark.course, 20, yPos);
+      doc.text(row.title, 20, yPos);
 
       // Grade
-      const gradeValue = mark.value.toFixed(1);
-      if (mark.value > 4.0) {
+      const gradeValue = row.mark.value.toFixed(1);
+      if (row.mark.value > 4.0) {
         doc.setTextColor(225, 29, 72); // Rose-600
       } else {
         doc.setTextColor(5, 150, 105); // Emerald-600
@@ -151,8 +165,8 @@ export const generateTranscriptPDF = (
       doc.text(gradeValue, pageWidth - 80, yPos);
 
       doc.setTextColor(51, 65, 85);
-      doc.text("5 ECTS", pageWidth - 60, yPos);
-      doc.text(mark.teacher?.name || "N/A", pageWidth - 40, yPos);
+      doc.text(`${row.credits} ECTS`, pageWidth - 60, yPos);
+      doc.text(row.mark.teacher?.name || "N/A", pageWidth - 40, yPos);
 
       yPos += 7;
       doc.setDrawColor(241, 245, 249);

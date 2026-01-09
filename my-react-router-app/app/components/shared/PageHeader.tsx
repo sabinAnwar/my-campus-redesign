@@ -48,7 +48,7 @@ export function PageHeader({
       return (
         <Link
           to={backTo}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
           aria-label={backLabel}
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
@@ -60,7 +60,7 @@ export function PageHeader({
       return (
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-sm text-slate-500 dark:text-slate-400 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
           aria-label={backLabel}
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />

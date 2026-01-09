@@ -49,7 +49,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
             >
               <div className="text-center mb-2 sm:mb-4 space-y-0.5 sm:space-y-1">
                 <p
-                  className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${day.isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
+                  className={`text-[10px] sm:text-xs font-bold uppercase tracking-widest ${day.isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground dark:text-slate-200"}`}
                 >
                   {day.dayName}
                 </p>
@@ -66,7 +66,7 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
               </div>
               <div className="space-y-1 sm:space-y-1.5 min-h-[50px] sm:min-h-[60px]">
                 {day.events.length === 0 ? (
-                  <p className="text-[10px] text-muted-foreground text-center italic">
+                  <p className="text-[10px] text-muted-foreground dark:text-slate-200 text-center italic">
                     Keine Termine
                   </p>
                 ) : (

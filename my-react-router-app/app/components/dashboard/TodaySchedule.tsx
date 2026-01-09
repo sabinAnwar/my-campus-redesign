@@ -70,7 +70,7 @@ export function TodaySchedule({ todayClasses, t }: TodayScheduleProps) {
                       {cls.type}
                     </span>
                   </div>
-                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+                  <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground dark:text-slate-200">
                     <span className="flex items-center gap-1 shrink-0">
                       <Clock className="h-3 w-3" />
                       {cls.time}
@@ -84,15 +84,15 @@ export function TodaySchedule({ todayClasses, t }: TodayScheduleProps) {
               </div>
             ))}
             {todayClasses.length > 4 && (
-              <p className="text-center text-xs text-muted-foreground font-medium">
+              <p className="text-center text-xs text-muted-foreground dark:text-slate-200 font-medium">
                 +{todayClasses.length - 4} {t.moreEvents}
               </p>
             )}
           </div>
         ) : (
           <div className="relative z-10 flex flex-col items-center justify-center py-8 text-center">
-            <CalendarDays className="h-10 w-10 text-muted-foreground/60 mb-3" />
-            <p className="text-sm text-muted-foreground font-medium italic">
+            <CalendarDays className="h-10 w-10 text-muted-foreground dark:text-slate-200 mb-3" />
+            <p className="text-sm text-muted-foreground dark:text-slate-200 font-medium italic">
               {t.noClassesToday}
             </p>
           </div>

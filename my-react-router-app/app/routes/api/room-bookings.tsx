@@ -1,30 +1,24 @@
 import { PrismaClient } from "@prisma/client";
 import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 
-// ============================================================================
-// DATABASE CLIENT
-// ============================================================================
-
+//// DATABASE CLIENT
+//
 const prisma = new PrismaClient();
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface BookingFormData {
-  userId: string;
-  roomId: string;
-  roomName: string;
+  user_id: string;
+  room_id: string;
+  room_name: string;
   campus: string;
   date: string;
-  startTime: string;
-  endTime: string;
+  start_time: string;
+  end_time: string;
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
+//// HELPER FUNCTIONS
+//
 /**
  * Safely extract string from FormData
  */
@@ -37,25 +31,23 @@ function getFormString(formData: FormData, key: string): string | null {
  * Parse and validate booking form data
  */
 function parseBookingFormData(formData: FormData): BookingFormData | null {
-  const userId = getFormString(formData, "userId");
-  const roomId = getFormString(formData, "roomId");
-  const roomName = getFormString(formData, "roomName");
+  const user_id = getFormString(formData, "userId") || getFormString(formData, "user_id");
+  const room_id = getFormString(formData, "roomId") || getFormString(formData, "room_id");
+  const room_name = getFormString(formData, "roomName") || getFormString(formData, "room_name");
   const campus = getFormString(formData, "campus");
   const date = getFormString(formData, "date");
-  const startTime = getFormString(formData, "startTime");
-  const endTime = getFormString(formData, "endTime");
+  const start_time = getFormString(formData, "startTime") || getFormString(formData, "start_time");
+  const end_time = getFormString(formData, "endTime") || getFormString(formData, "end_time");
 
-  if (!userId || !roomId || !roomName || !campus || !date || !startTime || !endTime) {
+  if (!user_id || !room_id || !room_name || !campus || !date || !start_time || !end_time) {
     return null;
   }
 
-  return { userId, roomId, roomName, campus, date, startTime, endTime };
+  return { user_id, room_id, room_name, campus, date, start_time, end_time };
 }
 
-// ============================================================================
-// LOADER - Fetch all bookings for a user
-// ============================================================================
-
+//// LOADER - Fetch all bookings for a user
+//
 export async function loader({ request }: LoaderFunctionArgs) {
   try {
     const url = new URL(request.url);
@@ -67,7 +59,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
 
     const bookings = await prisma.roomBooking.findMany({
       where: {
-        userId: parseInt(userId, 10),
+        user_id: parseInt(userId, 10),
       },
       orderBy: {
         date: "desc",
@@ -81,10 +73,8 @@ export async function loader({ request }: LoaderFunctionArgs) {
   }
 }
 
-// ============================================================================
-// ACTION - Create or delete bookings
-// ============================================================================
-
+//// ACTION - Create or delete bookings
+//
 export async function action({ request }: ActionFunctionArgs) {
   try {
     const formData = await request.formData();
@@ -105,10 +95,8 @@ export async function action({ request }: ActionFunctionArgs) {
   }
 }
 
-// ============================================================================
-// ACTION HANDLERS
-// ============================================================================
-
+//// ACTION HANDLERS
+//
 async function handleCreateBooking(formData: FormData) {
   const data = parseBookingFormData(formData);
 
@@ -116,31 +104,31 @@ async function handleCreateBooking(formData: FormData) {
     return Response.json({ error: "Missing required fields" }, { status: 400 });
   }
 
-  const { userId, roomId, roomName, campus, date, startTime, endTime } = data;
+  const { user_id, room_id, room_name, campus, date, start_time, end_time } = data;
 
   // Check if room is already booked for this time slot
   const existingBooking = await prisma.roomBooking.findFirst({
     where: {
-      roomId,
+      room_id: data.room_id,
       campus,
       date: new Date(date),
       OR: [
         {
           AND: [
-            { startTime: { lte: startTime } },
-            { endTime: { gt: startTime } },
+            { start_time: { lte: data.start_time } },
+            { end_time: { gt: data.start_time } },
           ],
         },
         {
           AND: [
-            { startTime: { lt: endTime } },
-            { endTime: { gte: endTime } },
+            { start_time: { lt: data.end_time } },
+            { end_time: { gte: data.end_time } },
           ],
         },
         {
           AND: [
-            { startTime: { gte: startTime } },
-            { endTime: { lte: endTime } },
+            { start_time: { gte: data.start_time } },
+            { end_time: { lte: data.end_time } },
           ],
         },
       ],
@@ -156,13 +144,13 @@ async function handleCreateBooking(formData: FormData) {
 
   const booking = await prisma.roomBooking.create({
     data: {
-      userId: parseInt(userId, 10),
-      roomId,
-      roomName,
+      user_id: parseInt(data.user_id, 10),
+      room_id: data.room_id,
+      room_name: data.room_name,
       campus,
       date: new Date(date),
-      startTime,
-      endTime,
+      start_time: data.start_time,
+      end_time: data.end_time,
     },
   });
 

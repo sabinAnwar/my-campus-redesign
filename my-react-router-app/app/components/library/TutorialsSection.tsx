@@ -63,7 +63,7 @@ export function TutorialsSection({
                 {tutorial.type === "video" ? "Video" : "Guide"} · {tutorial.duration}
               </p>
             </div>
-            <ChevronRight className="h-6 w-6 text-muted-foreground/30 group-hover:text-iu-blue group-hover:translate-x-2 transition-all duration-500" />
+            <ChevronRight className="h-6 w-6 text-muted-foreground group-hover:text-iu-blue group-hover:translate-x-2 transition-all duration-500" />
           </div>
         ))}
       </div>

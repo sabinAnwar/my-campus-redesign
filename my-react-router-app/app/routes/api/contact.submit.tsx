@@ -22,7 +22,7 @@ async function getUser(request: Request) {
     include: { user: true },
   });
 
-  if (!session || new Date() > session.expiresAt) return null;
+  if (!session || new Date() > session.expires_at) return null;
   return session.user;
 }
 
@@ -87,7 +87,7 @@ export async function action({ request }: ActionFunctionArgs) {
     // Save to database
     const contactSubmission = await prisma.contactSubmission.create({
       data: {
-        userId: user.id,
+        user_id: user.id,
         subject,
         message,
         status: "PENDING",

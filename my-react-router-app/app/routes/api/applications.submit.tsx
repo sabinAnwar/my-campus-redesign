@@ -21,9 +21,7 @@ export async function action({ request }: ActionFunctionArgs) {
       timestamp,
     });
 
-    // ========================================
     // OPTION 1: Save to SharePoint using Microsoft Graph API
-    // ========================================
     /*
     const sharePointSiteId = process.env.SHAREPOINT_SITE_ID;
     const listId = process.env.SHAREPOINT_LIST_ID;
@@ -54,13 +52,8 @@ export async function action({ request }: ActionFunctionArgs) {
     }
     */
 
-    // ========================================
     // OPTION 2: Save to your own database (Prisma example)
-    // ========================================
     /*
-    import { PrismaClient } from "@prisma/client";
-    const prisma = new PrismaClient();
-
     const submission = await prisma.applicationSubmission.create({
       data: {
         applicationId,
@@ -72,9 +65,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     */
 
-    // ========================================
     // OPTION 3: Send email notification
-    // ========================================
     /*
     await sendEmail({
       to: "applications@university.de",
@@ -91,9 +82,7 @@ export async function action({ request }: ActionFunctionArgs) {
     });
     */
 
-    // ========================================
     // OPTION 4: Save files to Azure Blob Storage or SharePoint Document Library
-    // ========================================
     /*
     if (formData.documents || formData.medicalCertificate || formData.supportingDocuments) {
       const file = formData.documents || formData.medicalCertificate || formData.supportingDocuments;

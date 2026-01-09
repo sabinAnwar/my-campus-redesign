@@ -7,26 +7,20 @@ import {
 } from "../components/auth";
 import { useRequestReset } from "../hooks/usePasswordReset";
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
+//// CONSTANTS
+//
 const PAGE_TITLE = "Reset your password";
 const PAGE_SUBTITLE =
   "Enter your email address and we'll send you a link to reset your password";
 const SUCCESS_MESSAGE =
   "If an account exists with this email, you will receive a password reset link shortly.";
 
-// ============================================================================
-// LOADER
-// ============================================================================
-
+//// LOADER
+//
 export const loader = async () => null;
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
-
+//// COMPONENT
+//
 /**
  * Password reset request page
  * Step 1: User enters email to receive reset link
@@ -72,7 +66,7 @@ export default function RequestReset() {
         <div className="text-center">
           <Link
             to="/login"
-            className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition-colors"
+            className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition-colors"
           >
             Back to login
           </Link>

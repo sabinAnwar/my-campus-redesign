@@ -2,9 +2,9 @@ import { useState, useEffect, useCallback } from "react";
 import type { VertiefungId } from "~/types/specialization";
 import { VERTIEFUNGEN } from "~/constants/specialization";
 
-// ============================================================================
+//
 // TYPES
-// ============================================================================
+//
 
 interface UseSpecializationReturn {
   selectedVertiefung: VertiefungId | null;
@@ -16,16 +16,16 @@ interface UseSpecializationReturn {
   handleConfirm: () => void;
 }
 
-// ============================================================================
+//
 // CONSTANTS
-// ============================================================================
+//
 
 const STORAGE_KEY = "vertiefungswahl";
 const SUCCESS_TOAST_DURATION = 3000;
 
-// ============================================================================
+//
 // HOOK
-// ============================================================================
+//
 
 /**
  * Hook for managing specialization selection state

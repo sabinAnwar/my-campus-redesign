@@ -23,7 +23,7 @@ export function SickNoteSection({ t }: SickNoteSectionProps) {
               {t.sickDuringExams}
             </h2>
           </div>
-          <p className="text-foreground/90 dark:text-white/90 text-base sm:text-lg max-w-xl font-medium leading-relaxed">
+          <p className="text-foreground dark:text-white text-base sm:text-lg max-w-xl font-medium leading-relaxed">
             {t.sickDuringExamsDesc}
           </p>
           <div className="flex flex-wrap gap-3 mt-4">

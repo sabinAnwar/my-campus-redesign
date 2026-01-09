@@ -7,10 +7,8 @@ import {
   QuickLinksSection,
 } from "~/components/study-organization";
 
-// ============================================================================
-// COMPONENT
-// ============================================================================
-
+//// COMPONENT
+//
 export default function StudyOrganization() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];

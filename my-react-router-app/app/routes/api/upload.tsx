@@ -2,10 +2,8 @@ import type { ActionFunctionArgs } from "react-router";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
+//// HELPER FUNCTIONS
+//
 /**
  * Safely extract string from FormData
  */
@@ -14,10 +12,8 @@ function getFormString(formData: FormData, key: string): string | null {
   return typeof value === "string" ? value : null;
 }
 
-// ============================================================================
-// ACTION - Handle file uploads
-// ============================================================================
-
+//// ACTION - Handle file uploads
+//
 export async function action({ request }: ActionFunctionArgs) {
   const user = await getUserFromRequest(request);
   if (!user) {
@@ -57,10 +53,10 @@ export async function action({ request }: ActionFunctionArgs) {
       data: {
         name: fileName,
         url: "#", // Placeholder for actual storage URL
-        fileType: "pdf",
+        file_type: "pdf",
         size: "1.2 MB",
-        userId: user.id,
-        courseId: courseId,
+        user_id: user.id,
+        course_id: courseId,
       },
     });
 

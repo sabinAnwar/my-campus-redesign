@@ -46,14 +46,14 @@ export function CalendarLegend({ items, language }: LegendProps) {
         </div>
         <div>
           <h3 className="text-lg font-bold text-slate-900 dark:text-white">{t.title}</h3>
-          <p className="text-sm text-slate-600 dark:text-slate-400">{t.subtitle}</p>
+          <p className="text-sm text-slate-700 dark:text-slate-200">{t.subtitle}</p>
         </div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         {/* Phase Colors */}
         <div className="space-y-2">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-3">
             {t.phaseLabel}
           </div>
           <div className="grid gap-2">
@@ -70,7 +70,7 @@ export function CalendarLegend({ items, language }: LegendProps) {
                     {item.label}
                   </div>
                   {item.description && (
-                    <div className="text-xs text-slate-500 dark:text-slate-400">
+                    <div className="text-xs text-slate-700 dark:text-slate-200">
                       {item.description}
                     </div>
                   )}
@@ -82,7 +82,7 @@ export function CalendarLegend({ items, language }: LegendProps) {
 
         {/* Indicators */}
         <div className="space-y-4">
-          <div className="text-xs font-bold uppercase tracking-wider text-slate-500 dark:text-slate-400 mb-3">
+          <div className="text-xs font-bold uppercase tracking-wider text-slate-700 dark:text-slate-200 mb-3">
             Symbole
           </div>
           
@@ -119,7 +119,7 @@ export function CalendarLegend({ items, language }: LegendProps) {
               <div className="text-sm font-bold text-slate-900 dark:text-white">
                 {t.eventIndicator}
               </div>
-              <div className="text-xs text-slate-600 dark:text-slate-400">
+              <div className="text-xs text-slate-700 dark:text-slate-200">
                 {t.eventDesc}
               </div>
             </div>

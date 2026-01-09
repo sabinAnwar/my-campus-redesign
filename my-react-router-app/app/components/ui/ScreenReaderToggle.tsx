@@ -18,7 +18,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
         className={`p-2 rounded-lg transition-all ${
           isEnabled
             ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
-            : 'bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
         } ${className}`}
         aria-label={isEnabled ? 'Screen Reader deaktivieren' : 'Screen Reader aktivieren'}
         aria-pressed={isEnabled}
@@ -37,7 +37,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
           className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all ${
             isEnabled
               ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-700 dark:text-violet-300 border border-violet-300 dark:border-violet-700'
-              : 'bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
           }`}
           aria-label={isEnabled ? 'Screen Reader deaktivieren' : 'Screen Reader aktivieren'}
           aria-pressed={isEnabled}
@@ -89,7 +89,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
           
           <div className="space-y-3">
             <div>
-              <label className="text-xs text-slate-500 dark:text-slate-400 block mb-1">
+              <label className="text-xs text-slate-700 dark:text-slate-200 block mb-1">
                 Geschwindigkeit
               </label>
               <select
@@ -126,7 +126,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
             className={`p-3 rounded-full shadow-lg transition-all ${
               showSettings
                 ? 'bg-violet-600 text-white'
-                : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+                : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
             }`}
             aria-label="Einstellungen"
             title="Einstellungen"
@@ -140,7 +140,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
           className={`p-4 rounded-full shadow-lg transition-all transform hover:scale-105 ${
             isEnabled
               ? 'bg-violet-600 text-white shadow-violet-500/30'
-              : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
+              : 'bg-white dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-50 dark:hover:bg-slate-700'
           }`}
           aria-label={isEnabled ? 'Screen Reader deaktivieren' : 'Screen Reader aktivieren'}
           aria-pressed={isEnabled}

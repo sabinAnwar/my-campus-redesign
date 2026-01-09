@@ -25,14 +25,15 @@ export const TIME_SLOTS = [
 ];
 
 export const EVENT_ICONS: Record<string, LucideIcon> = {
-  Integriert: BookOpen,
+  Lecture: Presentation,
+  Seminar: MessageSquare,
+  Sprint: MessageSquare,
   "Q&A": MessageCircleQuestion,
-  Vorlesung: Presentation,
+  Other: MessageCircleQuestion,
+  Exam: FileCheck,
   Tutorium: Users,
   Workshop: Wrench,
-  Prüfung: FileCheck,
-  Seminar: MessageSquare,
-  Uebung: PenTool,
+  Praxis: PenTool,
 };
 
 export const EVENT_COLORS: Record<
@@ -44,52 +45,65 @@ export const EVENT_COLORS: Record<
     dotColor: string;
   }
 > = {
-  Integriert: {
-    bg: "bg-iu-blue",
-    border: "border-iu-blue/30",
+  // Distinct AAA colors for each type
+  Lecture: {
+    bg: "bg-iu-purple",
+    border: "border-iu-purple/50",
     text: "text-white",
-    dotColor: "#1f4dd9",
+    dotColor: "#421a66",
+  },
+  Seminar: {
+    bg: "bg-iu-indigo",
+    border: "border-iu-indigo/50",
+    text: "text-white",
+    dotColor: "#1e266d",
+  },
+  Sprint: {
+    bg: "bg-iu-brown",
+    border: "border-iu-brown/50",
+    text: "text-white",
+    dotColor: "#66301a",
+  },
+  Exam: {
+    bg: "bg-iu-red",
+    border: "border-iu-red/50",
+    text: "text-white",
+    dotColor: "#6d091e",
   },
   "Q&A": {
-    bg: "bg-iu-teal",
-    border: "border-iu-teal/30",
+    bg: "bg-iu-orange",
+    border: "border-iu-orange/50",
     text: "text-white",
-    dotColor: "#1a5b66",
+    dotColor: "#6b2f06",
   },
-  Vorlesung: {
-    bg: "bg-iu-indigo",
-    border: "border-iu-indigo/30",
+  Other: {
+    bg: "bg-iu-gold",
+    border: "border-iu-gold/50",
     text: "text-white",
-    dotColor: "#2b3f86",
+    dotColor: "#705100",
   },
   Tutorium: {
-    bg: "bg-iu-green",
-    border: "border-iu-green/30",
+    bg: "bg-iu-teal",
+    border: "border-iu-teal/50",
     text: "text-white",
-    dotColor: "#1f7a2e",
+    dotColor: "#05616b",
   },
   Workshop: {
     bg: "bg-iu-pink",
-    border: "border-iu-pink/30",
+    border: "border-iu-pink/50",
     text: "text-white",
-    dotColor: "#b1008a",
+    dotColor: "#650b4b",
   },
-  Prüfung: {
-    bg: "bg-iu-red",
-    border: "border-iu-red/30",
+  Integriert: {
+    bg: "bg-iu-blue",
+    border: "border-iu-blue/50",
     text: "text-white",
-    dotColor: "#b00020",
+    dotColor: "#111f60",
   },
-  Seminar: {
-    bg: "bg-iu-purple",
-    border: "border-iu-purple/30",
+  Praxis: {
+    bg: "bg-iu-green",
+    border: "border-iu-green/50",
     text: "text-white",
-    dotColor: "#5f2db8",
-  },
-  Uebung: {
-    bg: "bg-iu-orange",
-    border: "border-iu-orange/30",
-    text: "text-white",
-    dotColor: "#a14e00",
+    dotColor: "#174f26",
   },
 };

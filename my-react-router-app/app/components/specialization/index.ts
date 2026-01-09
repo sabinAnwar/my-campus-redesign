@@ -1,7 +1,5 @@
-// ============================================================================
-// SPECIALIZATION COMPONENTS BARREL EXPORT
-// ============================================================================
-
+//// SPECIALIZATION COMPONENTS BARREL EXPORT
+//
 export {
   SuccessToast,
   PageHeader,

@@ -20,7 +20,7 @@ export default function LanguageToggle() {
         className={`relative z-10 w-10 sm:w-11 py-1.5 text-[10px] sm:text-xs font-black transition-colors duration-300 tracking-wider ${
           language === "de"
             ? "text-white"
-            : "text-slate-900 dark:text-white/90 hover:text-iu-blue dark:hover:text-white"
+            : "text-slate-900 dark:text-white hover:text-iu-blue dark:hover:text-white"
         }`}
       >
         DE
@@ -33,7 +33,7 @@ export default function LanguageToggle() {
         className={`relative z-10 w-10 sm:w-11 py-1.5 text-[10px] sm:text-xs font-black transition-colors duration-300 tracking-wider ${
           language === "en"
             ? "text-white"
-            : "text-slate-900 dark:text-white/90 hover:text-iu-blue dark:hover:text-white"
+            : "text-slate-900 dark:text-white hover:text-iu-blue dark:hover:text-white"
         }`}
       >
         EN

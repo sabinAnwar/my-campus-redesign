@@ -4,10 +4,8 @@ import { ChevronRight, Wrench } from "lucide-react";
 
 import type { NavigationCard, QuickLink } from "~/constants/study-organization";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface PageHeaderProps {
   title: string;
   subtitle: string;
@@ -40,7 +38,7 @@ export function PageHeader({ title, subtitle, badge }: PageHeaderProps) {
               {title}
             </h1>
           </div>
-          <p className="text-base sm:text-lg text-foreground/80 dark:text-foreground/85 max-w-2xl leading-relaxed">
+          <p className="text-base sm:text-lg text-foreground dark:text-foreground max-w-2xl leading-relaxed">
             {subtitle}
           </p>
 
@@ -83,7 +81,7 @@ export function NavigationCardComponent({
             <Icon className={`w-7 h-7 sm:w-10 sm:h-10 ${card.iconColor}`} strokeWidth={2} />
           </div>
           <div className="w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-border/80 flex items-center justify-center group-hover:bg-foreground group-hover:border-foreground transition-all duration-500">
-            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-foreground/70 dark:text-foreground/80 group-hover:text-background transition-colors" strokeWidth={2.5} />
+            <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6 text-foreground dark:text-foreground group-hover:text-background transition-colors" strokeWidth={2.5} />
           </div>
         </div>
 
@@ -92,7 +90,7 @@ export function NavigationCardComponent({
           <h3 className="text-lg sm:text-xl font-black text-foreground mb-3 sm:mb-4 tracking-tight">
             {title}
           </h3>
-          <p className="text-sm sm:text-lg text-foreground/75 dark:text-foreground/80 font-medium leading-relaxed group-hover:text-foreground transition-colors">
+          <p className="text-sm sm:text-lg text-foreground dark:text-foreground font-medium leading-relaxed group-hover:text-foreground transition-colors">
             {description}
           </p>
         </div>
@@ -141,7 +139,7 @@ function QuickLinkItem({
   return (
     <div className="space-y-4">
       <h4 className="text-lg font-bold text-foreground">{title}</h4>
-      <p className="text-foreground/75 dark:text-foreground/80 text-sm leading-relaxed">
+      <p className="text-foreground dark:text-foreground text-sm leading-relaxed">
         {description}
       </p>
       <Link

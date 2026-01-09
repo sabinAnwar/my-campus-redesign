@@ -13,7 +13,7 @@ export const guidelines = [
       <div className="space-y-6">
         <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Richtlinien zur Gestaltung wissenschaftlicher Arbeiten</h1>
-          <p className="text-slate-500">Gültig ab 01.10.2025</p>
+          <p className="text-slate-700">Gültig ab 01.10.2025</p>
         </div>
         <div className="space-y-4">
           <h3 className="text-xl font-bold">1. Formale Anforderungen</h3>
@@ -31,13 +31,13 @@ export const guidelines = [
     title: "Richtlinien zur Gestaltung wissenschaftlicher Arbeiten",
     subtitle: "Gültig für Erstversuche vor 01.10.2025",
     icon: BookOpen,
-    color: "text-slate-600 dark:text-white",
+    color: "text-slate-700 dark:text-white",
     bgColor: "bg-slate-100 dark:bg-slate-800",
     content: (
       <div className="space-y-6">
         <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Richtlinien zur Gestaltung wissenschaftlicher Arbeiten</h1>
-          <p className="text-slate-500">Gültig bis 30.09.2025</p>
+          <p className="text-slate-700">Gültig bis 30.09.2025</p>
         </div>
         <div className="space-y-4">
           <div className="bg-amber-50 dark:bg-amber-900/20 p-4 rounded-lg border border-amber-200 dark:border-amber-800 mb-6">
@@ -62,16 +62,16 @@ export const guidelines = [
       <div className="space-y-6">
         <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Zitierleitfaden</h1>
-          <p className="text-slate-500">Standard für wissenschaftliche Arbeiten</p>
+          <p className="text-slate-700">Standard für wissenschaftliche Arbeiten</p>
         </div>
         <div className="space-y-6">
           <section>
             <h3 className="text-xl font-bold mb-2">Die APA-Zitierweise</h3>
             <p className="mb-4">Die IU Internationale Hochschule empfiehlt grundsätzlich die Verwendung des APA-Stils (American Psychological Association) in der jeweils aktuellen Auflage.</p>
             <div className="bg-slate-100 dark:bg-slate-800 p-4 rounded-lg font-mono text-sm">
-              <p className="mb-2 text-slate-500">// Beispiel im Text:</p>
+              <p className="mb-2 text-slate-700">// Beispiel im Text:</p>
               <p>Müller (2023) argumentiert, dass...</p>
-              <p className="mt-2 text-slate-500">// Beispiel in Klammern:</p>
+              <p className="mt-2 text-slate-700">// Beispiel in Klammern:</p>
               <p>...dies wurde bereits mehrfach belegt (Müller, 2023, S. 15).</p>
             </div>
           </section>
@@ -95,7 +95,7 @@ export const guidelines = [
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Gendersensible Sprache</h1>
-          <p className="text-slate-500">Leitfaden für Inklusion</p>
+          <p className="text-slate-700">Leitfaden für Inklusion</p>
         </div>
         <p>Sprache schafft Realität. Eine gendersensible und inklusive Sprache trägt dazu bei, alle Menschen gleichermaßen anzusprechen und sichtbar zu machen.</p>
         <h3 className="text-xl font-bold mt-4">Empfohlene Schreibweisen</h3>
@@ -117,7 +117,7 @@ export const guidelines = [
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Plagiatsvermeidung</h1>
-          <p className="text-slate-500">Wissenschaftliche Redlichkeit</p>
+          <p className="text-slate-700">Wissenschaftliche Redlichkeit</p>
         </div>
         <div className="bg-red-50 dark:bg-red-900/20 p-4 rounded-lg border border-red-200 dark:border-red-800 mb-4">
           <h4 className="font-bold text-red-800 dark:text-red-200">Null-Toleranz-Politik</h4>
@@ -144,7 +144,7 @@ export const guidelines = [
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">Vertraulichkeitsvereinbarung</h1>
-          <p className="text-slate-500">Sperrvermerk</p>
+          <p className="text-slate-700">Sperrvermerk</p>
         </div>
         <p>Diese Vereinbarung wird genutzt, wenn eine Abschlussarbeit vertrauliche Daten eines Unternehmens enthält.</p>
         <div className="border p-8 bg-white shadow-sm my-8 font-serif">
@@ -168,7 +168,7 @@ export const guidelines = [
       <div className="space-y-6">
          <div className="text-center border-b border-slate-200 dark:border-slate-700 pb-8 mb-8">
           <h1 className="text-3xl font-black text-slate-900 dark:text-white mb-4">KI-Nutzung</h1>
-          <p className="text-slate-500">Umgang mit ChatGPT & Co.</p>
+          <p className="text-slate-700">Umgang mit ChatGPT & Co.</p>
         </div>
         <h3 className="text-xl font-bold">Grundsätze</h3>
         <p>KI-Tools dürfen als Hilfsmittel verwendet werden, müssen aber transparent gemacht werden. Die Verantwortung für den Inhalt bleibt vollständig bei den Studierenden.</p>
@@ -228,10 +228,10 @@ export const templates = [
            
            <div className="relative z-10 mt-12 ml-8">
              <h2 className="text-3xl font-bold text-slate-900 mb-2">Präsentationstitel</h2>
-             <p className="text-xl text-slate-600">Untertitel oder Thema</p>
+             <p className="text-xl text-slate-700">Untertitel oder Thema</p>
            </div>
 
-           <div className="mt-auto ml-8 mb-4 text-xs text-slate-400">
+           <div className="mt-auto ml-8 mb-4 text-xs text-slate-700">
              IU Internationale Hochschule | Max Student | 22.11.2025
            </div>
         </div>
@@ -248,7 +248,7 @@ export const repeatExamsDocument = {
     <div className="space-y-8">
       <div className="border-b border-slate-200 dark:border-slate-800 pb-6">
         <h1 className="text-2xl font-black text-slate-900 dark:text-white mb-2">Leitfaden zum Ablauf von Wiederholungsprüfungen</h1>
-        <div className="flex justify-between text-xs text-slate-500 font-mono uppercase tracking-wider">
+        <div className="flex justify-between text-xs text-slate-700 font-mono uppercase tracking-wider">
           <span>ZPA DS</span>
           <span>Stand: 01.04.2025</span>
         </div>
@@ -270,13 +270,13 @@ export const repeatExamsDocument = {
         <div className="grid md:grid-cols-2 gap-6 pl-2">
           <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
             <h4 className="font-bold text-sm mb-2 text-slate-900 dark:text-white">Termin</h4>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
               Klausuren können nur in den vorgegebenen Resit-Phasen (Juni/Dezember) wiederholt werden. Ausnahme ab 7. Semester: Wiederholung auch in regulären Phasen (Februar/August) möglich.
             </p>
           </div>
           <div className="bg-slate-50 dark:bg-slate-900/50 p-4 rounded-lg border border-slate-100 dark:border-slate-800">
             <h4 className="font-bold text-sm mb-2 text-slate-900 dark:text-white">Durchführung & Krankheit</h4>
-            <p className="text-sm leading-relaxed text-slate-600 dark:text-slate-400">
+            <p className="text-sm leading-relaxed text-slate-700 dark:text-slate-200">
               Klausurenphasen können nicht übersprungen werden. Nichtantritt führt automatisch zum Fehlversuch, außer es liegt eine genehmigte Prüfungsunfähigkeit vor (Antrag binnen 3 Werktagen).
             </p>
           </div>
@@ -290,7 +290,7 @@ export const repeatExamsDocument = {
         <div className="space-y-4 pl-2">
           <div className="border-l-2 border-emerald-500 pl-4 py-1">
             <h4 className="font-bold text-sm text-emerald-700 dark:text-emerald-400">Nach genehmigter Prüfungsunfähigkeit</h4>
-            <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+            <ul className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-200">
               <li>• Termin: Individueller Nachholtermin bis Ende der nächsten RESIT-Phase.</li>
               <li>• Thema: Gleiches Thema wie im Erstversuch (außer bei mündl. Prüfung: neue Fragen).</li>
               <li>• Status: Kein Fehlversuch.</li>
@@ -298,7 +298,7 @@ export const repeatExamsDocument = {
           </div>
           <div className="border-l-2 border-red-500 pl-4 py-1">
             <h4 className="font-bold text-sm text-red-700 dark:text-red-400">Nach unentschuldigtem Fehlen</h4>
-            <ul className="mt-2 space-y-1 text-sm text-slate-600 dark:text-slate-400">
+            <ul className="mt-2 space-y-1 text-sm text-slate-700 dark:text-slate-200">
               <li>• Termin: Neuer Termin im Folgesemester.</li>
               <li>• Thema: Neues Thema muss erfragt werden (4 Wochen vor Termin).</li>
               <li>• Status: Fehlversuch wird angerechnet.</li>

@@ -98,7 +98,7 @@ export function SelectionSummary({
           <div className="w-16 h-16 rounded-full bg-muted flex items-center justify-center mx-auto">
             <PlusCircle
               size={32}
-              className="text-muted-foreground/30"
+              className="text-muted-foreground"
             />
           </div>
           <p className="text-muted-foreground font-medium">

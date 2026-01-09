@@ -46,10 +46,10 @@ export async function loader({
     return Response.json({ error: "Unauthorized" }, { status: 401 });
   }
   return Response.json({
-    reminderEnabled: !!user.reminderEnabled,
-    reminderHour: user.reminderHour ?? 18,
-    reminderMinute: user.reminderMinute ?? 0,
-    reminderTimezone: user.reminderTimezone || "Europe/Berlin",
+    reminder_enabled: !!user.reminder_enabled,
+    reminder_hour: user.reminder_hour ?? 18,
+    reminder_minute: user.reminder_minute ?? 0,
+    reminder_timezone: user.reminder_timezone || "Europe/Berlin",
   });
 }
 
@@ -73,45 +73,51 @@ export async function action({
       const form = await request.formData();
       enabledRaw = (
         form.get("enabled") ??
+        form.get("reminder_enabled") ??
         form.get("reminderEnabled") ??
         ""
       ).toString();
-      hourRaw = (form.get("hour") ?? form.get("reminderHour") ?? "").toString();
+      hourRaw = (form.get("hour") ?? form.get("reminder_hour") ?? form.get("reminderHour") ?? "").toString();
       minuteRaw = (
         form.get("minute") ??
+        form.get("reminder_minute") ??
         form.get("reminderMinute") ??
         ""
       ).toString();
       const tzCandidate =
         form.get("timezone") ??
+        form.get("reminder_timezone") ??
         form.get("reminderTimezone") ??
-        user.reminderTimezone;
+        user.reminder_timezone;
       tzRaw = (tzCandidate || "Europe/Berlin").toString();
     } else if (contentType.includes("application/json")) {
       const body = await request.json();
-      enabledRaw = (body.enabled ?? body.reminderEnabled ?? "").toString();
-      hourRaw = (body.hour ?? body.reminderHour ?? "").toString();
-      minuteRaw = (body.minute ?? body.reminderMinute ?? "").toString();
+      enabledRaw = (body.enabled ?? body.reminder_enabled ?? body.reminderEnabled ?? "").toString();
+      hourRaw = (body.hour ?? body.reminder_hour ?? body.reminderHour ?? "").toString();
+      minuteRaw = (body.minute ?? body.reminder_minute ?? body.reminderMinute ?? "").toString();
       const tzCandidate =
-        body.timezone ?? body.reminderTimezone ?? user.reminderTimezone;
+        body.timezone ?? body.reminder_timezone ?? body.reminderTimezone ?? user.reminder_timezone;
       tzRaw = (tzCandidate || "Europe/Berlin").toString();
     } else {
       const form = await request.formData();
       enabledRaw = (
         form.get("enabled") ??
+        form.get("reminder_enabled") ??
         form.get("reminderEnabled") ??
         ""
       ).toString();
-      hourRaw = (form.get("hour") ?? form.get("reminderHour") ?? "").toString();
+      hourRaw = (form.get("hour") ?? form.get("reminder_hour") ?? form.get("reminderHour") ?? "").toString();
       minuteRaw = (
         form.get("minute") ??
+        form.get("reminder_minute") ??
         form.get("reminderMinute") ??
         ""
       ).toString();
       const tzCandidate =
         form.get("timezone") ??
+        form.get("reminder_timezone") ??
         form.get("reminderTimezone") ??
-        user.reminderTimezone;
+        user.reminder_timezone;
       tzRaw = (tzCandidate || "Europe/Berlin").toString();
     }
 
@@ -128,19 +134,19 @@ export async function action({
     }
 
     const data: {
-      reminderEnabled: boolean;
-      reminderHour: number;
-      reminderTimezone: string;
+      reminder_enabled: boolean;
+      reminder_hour: number;
+      reminder_timezone: string;
     } = {
-      reminderEnabled: enabled,
-      reminderHour: hour,
-      reminderTimezone: tzRaw,
+      reminder_enabled: enabled,
+      reminder_hour: hour,
+      reminder_timezone: tzRaw,
     };
     let savedMinute: number | null = minute;
     try {
       await prisma.user.update({
         where: { id: user.id },
-        data: { ...data, reminderMinute: minute },
+        data: { ...data, reminder_minute: minute },
       });
     } catch (e: unknown) {
       let message = "Unknown error";
@@ -173,10 +179,10 @@ export async function action({
 
     return Response.json({
       success: true,
-      reminderEnabled: enabled,
-      reminderHour: hour,
-      reminderMinute: savedMinute,
-      reminderTimezone: tzRaw,
+      reminder_enabled: enabled,
+      reminder_hour: hour,
+      reminder_minute: savedMinute,
+      reminder_timezone: tzRaw,
     });
   } catch (err) {
     console.error("reminders.preferences action error", err);

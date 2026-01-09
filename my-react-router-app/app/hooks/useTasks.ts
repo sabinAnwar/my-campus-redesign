@@ -6,10 +6,8 @@ import type {
   TaskUISubmission,
 } from "~/types/tasks";
 
-// ============================================================================
-// TYPES
-// ============================================================================
-
+//// TYPES
+//
 interface AcceptedState {
   honor: boolean;
   privacy: boolean;
@@ -25,10 +23,8 @@ interface SavedStatus {
 type SavedStatusMap = Record<number, SavedStatus>;
 type SavedStatusByCourseMap = Record<string, SavedStatus>;
 
-// ============================================================================
-// STORAGE HELPERS
-// ============================================================================
-
+//// STORAGE HELPERS
+//
 function loadSavedStatus(): SavedStatusMap {
   if (typeof window === "undefined") return {};
   try {
@@ -57,10 +53,8 @@ function persistStatusByCourse(next: SavedStatusByCourseMap): void {
   localStorage.setItem("submissionStatusByCourse", JSON.stringify(next));
 }
 
-// ============================================================================
-// HOOK: useTasks
-// ============================================================================
-
+//// HOOK: useTasks
+//
 interface UseTasksOptions {
   initialSubmissions: TaskLoaderSubmission[];
   initialExams: any[];
@@ -239,10 +233,8 @@ export function useTasks({
   };
 }
 
-// ============================================================================
-// HELPER FUNCTIONS
-// ============================================================================
-
+//// HELPER FUNCTIONS
+//
 export function formatDate(iso: string, language: "de" | "en"): string {
   if (!iso) return "";
   return new Date(iso).toLocaleDateString(

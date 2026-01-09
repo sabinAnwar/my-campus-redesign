@@ -209,7 +209,7 @@ export const ChannelCard = ({ channel }: ChannelCardProps) => {
         >
           <channel.icon className="w-6 h-6 sm:w-7 sm:h-7 md:w-8 md:h-8" />
         </div>
-        <div className="p-2 rounded-full bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-white transition-all duration-500">
+        <div className="p-2 rounded-full bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-foreground dark:text-white transition-all duration-500">
           <Globe size={16} />
         </div>
       </div>

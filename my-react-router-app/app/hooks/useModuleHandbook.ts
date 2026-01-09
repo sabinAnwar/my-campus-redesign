@@ -1,46 +1,62 @@
 import { useMemo, useState } from "react";
 import type { Module, ModuleHandbookLoaderData } from "~/types/module-handbook";
-import { COURSE_META, userProfile } from "~/constants/module-handbook";
+import { COURSE_META } from "~/constants/module-handbook";
 
 interface UseModuleHandbookParams {
   courses: ModuleHandbookLoaderData["courses"];
+  marks: ModuleHandbookLoaderData["marks"];
+  currentSemester: number;
   t: any;
+  language: "de" | "en";
 }
 
-export function useModuleHandbook({ courses, t }: UseModuleHandbookParams) {
+export function useModuleHandbook({
+  courses,
+  marks,
+  currentSemester,
+  t,
+  language,
+}: UseModuleHandbookParams) {
   const [semesterFilter, setSemesterFilter] = useState<number | "all">("all");
-
-  const deriveSemesterFromCode = (code: string) => {
-    const numericPart = code.split("-")[1]?.trim();
-    const leadingDigit = numericPart ? parseInt(numericPart[0], 10) : NaN;
-    return Number.isFinite(leadingDigit) && leadingDigit > 0 ? leadingDigit : 1;
-  };
 
   const modules = useMemo<Module[]>(() => {
     const fallbackMeta = {
       ects: 5,
       exam: t.klausur,
-      semester: 1,
       type: "Pflicht" as const,
       workload: 150,
       skills: [t.generalCompetencies],
-      status: "geplant" as const,
     };
 
     return courses.map((course) => {
       const meta = COURSE_META[course.code] || fallbackMeta;
       const semester =
-        meta.semester && Number.isFinite(meta.semester)
-          ? meta.semester
-          : deriveSemesterFromCode(course.code);
-      const status =
-        meta.status ??
-        (semester <= userProfile.currentSemester ? "laufend" : "geplant");
+        Number.isFinite(course.semester) && course.semester > 0
+          ? course.semester
+          : 1;
+      const courseNames = [
+        course.name,
+        course.name_de,
+        course.name_en,
+        course.code,
+      ]
+        .filter(Boolean)
+        .map((value) => String(value).toLowerCase());
+      const hasPassingMark = marks.some(
+        (mark) =>
+          typeof mark.course === "string" &&
+          courseNames.includes(mark.course.toLowerCase()) &&
+          mark.value <= 4.0
+      );
+      const status = hasPassingMark ? "abgeschlossen" : "laufend";
       return {
         code: course.code,
-        title: course.name,
+        title:
+          language === "de"
+            ? course.name_de || course.name
+            : course.name_en || course.name,
         semester,
-        ects: meta.ects,
+        ects: Number.isFinite(course.credits) ? course.credits : meta.ects,
         type: meta.type,
         exam: meta.exam,
         workload: meta.workload,
@@ -52,14 +68,13 @@ export function useModuleHandbook({ courses, t }: UseModuleHandbookParams) {
           t.noDescription,
       };
     });
-  }, [courses, t]);
+  }, [courses, currentSemester, language, marks, t]);
 
   const ectsCompleted = useMemo(
     () =>
       modules.reduce((sum, mod) => {
-        const isCompleted = mod.semester < userProfile.currentSemester;
-        const isRunning = mod.semester === userProfile.currentSemester;
-        return sum + (isCompleted || isRunning ? mod.ects : 0);
+        const isCompleted = mod.status === "abgeschlossen";
+        return sum + (isCompleted ? mod.ects : 0);
       }, 0),
     [modules]
   );
@@ -78,9 +93,8 @@ export function useModuleHandbook({ courses, t }: UseModuleHandbookParams) {
   }, [modules]);
 
   const currentSemesterModules = useMemo(
-    () =>
-      modules.filter((m) => m.semester === userProfile.currentSemester) || [],
-    [modules]
+    () => modules.filter((m) => m.semester === currentSemester) || [],
+    [currentSemester, modules]
   );
 
   return {

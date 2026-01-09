@@ -16,6 +16,16 @@ export const TRANSLATIONS = {
     upcoming: "Bevorstehend",
     inProgress: "In Bearbeitung",
     searchPlaceholder: "Module suchen...",
+    // Neue Übersetzungen für Noten und Status
+    grade: "Note",
+    noGrade: "Keine Note",
+    passed: "Bestanden",
+    notPassed: "Nicht bestanden",
+    mandatory: "Pflicht",
+    elective: "Vertiefung",
+    planned: "Geplant",
+    gradeLabel: "Note",
+    viewDetails: "Details anzeigen",
   },
   en: {
     title: "Study Plan",
@@ -34,5 +44,15 @@ export const TRANSLATIONS = {
     upcoming: "Upcoming",
     inProgress: "In Progress",
     searchPlaceholder: "Search modules...",
+    // New translations for grades and status
+    grade: "Grade",
+    noGrade: "No Grade",
+    passed: "Passed",
+    notPassed: "Not Passed",
+    mandatory: "Mandatory",
+    elective: "Elective",
+    planned: "Planned",
+    gradeLabel: "Grade",
+    viewDetails: "View Details",
   },
 };

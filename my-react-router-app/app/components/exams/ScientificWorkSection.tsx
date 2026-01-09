@@ -32,16 +32,16 @@ export function ScientificWorkSection({
             <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
               {t.scientificWork}
             </h2>
-            <p className="text-foreground/80 dark:text-white/80 text-sm sm:text-base font-medium">
+            <p className="text-foreground dark:text-white text-sm sm:text-base font-medium">
               {t.scientificWorkSubtitle}
             </p>
           </div>
         </div>
         <div>
           {isOpen ? (
-            <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
+            <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-foreground dark:text-white" />
           ) : (
-            <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
+            <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-foreground dark:text-white" />
           )}
         </div>
       </button>
@@ -57,7 +57,7 @@ export function ScientificWorkSection({
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm font-black text-foreground/80 dark:text-white/80 uppercase tracking-[0.2em] px-1">
+            <h3 className="text-sm font-black text-foreground dark:text-white uppercase tracking-[0.2em] px-1">
               {t.basicsGuidelines}
             </h3>
             <div className="grid gap-4 sm:gap-6 md:grid-cols-2">
@@ -77,11 +77,11 @@ export function ScientificWorkSection({
                       {item.title}
                     </h3>
                     {item.subtitle && (
-                      <p className="text-xs sm:text-sm text-foreground/80 dark:text-white/80 mt-2 font-medium leading-relaxed">
+                      <p className="text-xs sm:text-sm text-foreground dark:text-white mt-2 font-medium leading-relaxed">
                         {item.subtitle}
                       </p>
                     )}
-                    <div className="mt-5 sm:mt-6 flex items-center gap-3 text-[9px] sm:text-[10px] font-black text-foreground/80 dark:text-white/80 uppercase tracking-widest">
+                    <div className="mt-5 sm:mt-6 flex items-center gap-3 text-[9px] sm:text-[10px] font-black text-foreground dark:text-white uppercase tracking-widest">
                       <FileText className="w-4 h-4 text-iu-blue dark:text-white" />
                       <span>{t.openDocument}</span>
                     </div>
@@ -92,7 +92,7 @@ export function ScientificWorkSection({
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm font-black text-foreground/80 dark:text-white/80 uppercase tracking-[0.2em] px-1">
+            <h3 className="text-sm font-black text-foreground dark:text-white uppercase tracking-[0.2em] px-1">
               {t.specialTopics}
             </h3>
             <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -100,7 +100,7 @@ export function ScientificWorkSection({
                 <button
                   key={index}
                   onClick={() => setSelectedDocument(item)}
-                  className="flex items-center gap-4 p-4 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5"
+                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
                 >
                   <div
                     className={`p-2.5 sm:p-3 rounded-xl ${item.bgColor} ${item.color} group-hover:scale-110 transition-transform shadow-md`}
@@ -108,18 +108,18 @@ export function ScientificWorkSection({
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm truncate">
+                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm leading-snug line-clamp-2 sm:truncate">
                       {item.title}
                     </h3>
                   </div>
-                  <FileText className="w-4 h-4 text-foreground/70 dark:text-white/70 transition-colors" />
+                  <FileText className="w-4 h-4 text-foreground dark:text-white transition-colors" />
                 </button>
               ))}
             </div>
           </div>
 
           <div className="space-y-6">
-            <h3 className="text-sm font-black text-foreground/80 dark:text-white/80 uppercase tracking-[0.2em] px-1">
+            <h3 className="text-sm font-black text-foreground dark:text-white uppercase tracking-[0.2em] px-1">
               {t.templates}
             </h3>
             <div className="grid gap-3 sm:gap-4 md:grid-cols-2 lg:grid-cols-3">
@@ -127,17 +127,17 @@ export function ScientificWorkSection({
                 <button
                   key={index}
                   onClick={() => setSelectedDocument(item)}
-                  className="flex items-center gap-4 p-4 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5"
+                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
                 >
                   <div className="p-2.5 sm:p-3 bg-iu-blue rounded-xl text-white transition-all border border-iu-blue/30">
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm truncate">
+                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm leading-snug line-clamp-2 sm:truncate">
                       {item.title}
                     </h3>
                   </div>
-                  <span className="text-[9px] sm:text-[10px] font-black bg-foreground text-background px-2 py-1 rounded border border-foreground uppercase tracking-widest">
+                  <span className="text-[9px] sm:text-[10px] font-black bg-foreground text-background px-2 py-1 rounded border border-foreground uppercase tracking-widest self-start sm:self-auto mt-0.5 sm:mt-0">
                     {item.type}
                   </span>
                 </button>

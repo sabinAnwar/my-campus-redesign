@@ -15,6 +15,8 @@ export interface Course {
   id: number;
   title: string;
   name?: string;
+  name_de?: string;  // German course name
+  name_en?: string;  // English course name
   instructor: string;
   description: string;
   startDate: string;
@@ -29,9 +31,10 @@ export interface Course {
 
 export interface CourseDetailData {
   submissions: CourseSubmission[];
-  course: Course;
-  userId?: number;
+  course: Course | null;
+  user_id?: number;
   studiengangName?: string;
+  error?: string | null;
 }
 
 export interface ResourceSection {
@@ -59,7 +62,7 @@ export interface ForumTopic {
   id: number;
   title: string;
   author: string;
-  lastPost: string;
+  last_post: string;
   replies: number;
   views: number;
   status: "active" | "pinned" | "closed" | "normal";

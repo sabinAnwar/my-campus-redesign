@@ -1,6 +1,6 @@
 import type { ReactElement } from "react";
 import { Link } from "react-router-dom";
-import { X } from "lucide-react";
+import { HelpCircle, X } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 
 /**
@@ -85,7 +85,7 @@ export function Sidebar({
         {/* Close button - mobile only */}
         <button
           onClick={onClose}
-          className="md:hidden p-2 rounded-lg hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white transition-colors"
+          className="md:hidden p-2 rounded-lg hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
           aria-label="Close sidebar"
         >
           <X className="h-5 w-5" />
@@ -97,6 +97,7 @@ export function Sidebar({
         <ul className="space-y-1.5" role="list">
           {navItems.map((item) => {
             const active = isActive(item.to);
+            const ItemIcon = item.icon ?? HelpCircle;
 
             return (
               <li key={item.to}>
@@ -107,7 +108,7 @@ export function Sidebar({
                   className={`group relative flex items-center gap-3 px-5 py-4 text-sm font-bold transition-all duration-200 rounded-r-3xl mr-2 cursor-pointer focus:outline-none focus:ring-2 focus:ring-iu-blue/50 focus:z-10 ${
                     active
                       ? "bg-neutral-100 dark:bg-neutral-800 text-neutral-900 dark:text-white"
-                      : "text-slate-600 dark:text-white/70 hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
+                      : "text-slate-700 dark:text-white hover:bg-neutral-50 dark:hover:bg-neutral-800/50 hover:text-neutral-900 dark:hover:text-white"
                   }`}
                 >
                   {/* Active Indicator Bar */}
@@ -120,7 +121,7 @@ export function Sidebar({
                     <div className="absolute left-0 top-2 bottom-2 w-1 bg-neutral-300 dark:bg-neutral-700 rounded-r-xl opacity-0 group-hover:opacity-100 transition-opacity" />
                   )}
 
-                  <item.icon
+                  <ItemIcon
                     strokeWidth={active ? 2.5 : 2}
                     className={`h-5 w-5 transition-colors ${
                       active

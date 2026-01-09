@@ -11,7 +11,7 @@ export async function loader({ params, request }) {
   const url = new URL(request.url);
   try {
     const res = await fetch(
-      `${url.origin}/api/news/${encodeURIComponent(params.slug)}`
+      `${url.origin}/api/news/${encodeURIComponent(params.slug || "")}`
     );
     if (!res.ok) {
       return {

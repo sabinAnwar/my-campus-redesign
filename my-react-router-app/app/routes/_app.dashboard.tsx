@@ -2,7 +2,6 @@ import { useState, useEffect, useRef, type ReactNode } from "react";
 import { Link } from "react-router";
 import FirstSemesterOnboarding from "~/components/ui/FirstSemesterOnboarding";
 import { useLanguage } from "~/contexts/LanguageContext";
-import { ensureCanonicalTasks } from "~/lib/tasks.server";
 import { getRecentCourses } from "~/lib/recentCourses";
 import { getStudyPlanByStudiengang } from "~/lib/studyPlans";
 import { TRANSLATIONS } from "~/services/translations/dashboard";
@@ -18,6 +17,7 @@ import {
 } from "lucide-react";
 import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/lib/studyPlans";
 import { calculateDaysLeft } from "~/lib/tasksSample";
+import { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma";
 import { useLoaderData } from "react-router";
 import { ACTIVE_COURSES_COUNT } from "~/lib/coursesMeta";
@@ -61,10 +61,10 @@ export const loader = async ({ request }: { request: Request }) => {
     required: 900,
     logged: 0,
     thisWeek: 0,
-    targetPerWeek: 40,
+    target_per_week: 40,
   };
   let scheduleEvents: ScheduleEventData[] = [];
-  let averageGrade: number | null = 1.58;
+  let averageGrade: number | null = null;
   let isFirstSemester = false;
   let userName = "Student";
   let userCampusArea: string | null = null;
@@ -73,6 +73,22 @@ export const loader = async ({ request }: { request: Request }) => {
   let userId: number | undefined;
 
   try {
+    const safeQuery = async <T,>(promise: Promise<T>, fallback: T) => {
+      try {
+        return await promise;
+      } catch (error) {
+        const isMissingTable =
+          error instanceof Prisma.PrismaClientKnownRequestError &&
+          (error.code === "P2021" ||
+            error.message.toLowerCase().includes("does not exist"));
+        if (isMissingTable) {
+          console.warn("Dashboard loader: missing table, using fallback.");
+          return fallback;
+        }
+        console.error("Dashboard loader: query failed, using fallback.", error);
+        return fallback;
+      }
+    };
     // Get logged-in user from session
     const cookieHeader = request.headers.get("Cookie") || "";
     const sessionToken = cookieHeader
@@ -96,10 +112,10 @@ export const loader = async ({ request }: { request: Request }) => {
             select: {
               id: true,
               semester: true,
-              totalSemesters: true,
+              total_semesters: true,
               name: true,
-              studiengang: {
-                select: { name: true },
+              major: {
+                include: { courses: true },
               },
             },
           },
@@ -118,10 +134,10 @@ export const loader = async ({ request }: { request: Request }) => {
         select: {
           id: true,
           semester: true,
-          totalSemesters: true,
+          total_semesters: true,
           name: true,
-          studiengang: {
-            select: { name: true },
+          major: {
+            include: { courses: true },
           },
         },
       });
@@ -137,10 +153,10 @@ export const loader = async ({ request }: { request: Request }) => {
         select: {
           id: true,
           semester: true,
-          totalSemesters: true,
+          total_semesters: true,
           name: true,
-          studiengang: {
-            select: { name: true },
+          major: {
+            include: { courses: true },
           },
         },
       });
@@ -153,7 +169,7 @@ export const loader = async ({ request }: { request: Request }) => {
     isFirstSemester = userSemester === 1;
     userName = loggedInUser?.name || "Student";
     userCampusArea = (loggedInUser as any)?.campusArea || null;
-    studiengangName = (loggedInUser as any)?.studiengang?.name || null;
+    studiengangName = (loggedInUser as any)?.major?.name || null;
 
     // Date calculations for schedule query
     const today = new Date();
@@ -168,7 +184,7 @@ export const loader = async ({ request }: { request: Request }) => {
     startOfWeek.setHours(0, 0, 0, 0);
 
     // Execute ALL database queries in PARALLEL for faster loading
-    const [
+    let [
       tasksResult,
       totalCount,
       partner,
@@ -180,47 +196,71 @@ export const loader = async ({ request }: { request: Request }) => {
     ] = await Promise.all([
       // Tasks
       userId
-        ? await (async () => {
-            // Ensure tasks exist for this user before fetching
-            await ensureCanonicalTasks(userId);
-            return prisma.studentTask.findMany({
-              where: { userId },
-              orderBy: { dueDate: "asc" },
+        ? safeQuery(
+            prisma.studentTask.findMany({
+              where: { user_id: userId },
+              orderBy: { due_date: "asc" },
               take: MAX_TASKS_TO_DISPLAY,
-            });
-          })()
+            }),
+            []
+          )
         : [],
-      userId ? prisma.studentTask.count({ where: { userId } }) : 0,
-      // Praxis Partner
-      userId ? prisma.praxisPartner.findUnique({ where: { userId } }) : null,
+      userId
+        ? safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0)
+        : 0,
+      // Practical Partner
+      userId
+        ? safeQuery(
+            prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
+            null
+          )
+        : null,
       // Hours Target
       userId
-        ? prisma.praxisHoursTarget.findUnique({ where: { userId } })
+        ? safeQuery(
+            prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
+            null
+          )
         : null,
       // Total Hours
       userId
-        ? prisma.praxisHoursLog.aggregate({
-            where: { userId },
-            _sum: { hours: true },
-          })
+        ? safeQuery(
+            prisma.practicalHoursLog.aggregate({
+              where: { user_id: userId },
+              _sum: { hours: true },
+            }),
+            { _sum: { hours: 0 } }
+          )
         : { _sum: { hours: 0 } },
       // Week Hours
       userId
-        ? prisma.praxisHoursLog.aggregate({
-            where: { userId, date: { gte: startOfWeek } },
-            _sum: { hours: true },
-          })
+        ? safeQuery(
+            prisma.practicalHoursLog.aggregate({
+              where: { user_id: userId, date: { gte: startOfWeek } },
+              _sum: { hours: true },
+            }),
+            { _sum: { hours: 0 } }
+          )
         : { _sum: { hours: 0 } },
-      // Schedule Events
+      // Schedule Events (next few days)
       userId
-        ? prisma.scheduleEvent.findMany({
-            where: { userId, date: { gte: today, lt: endDate } },
-            orderBy: [{ date: "asc" }, { startTime: "asc" }],
-          })
+        ? safeQuery(
+            prisma.scheduleEvent.findMany({
+              where: { user_id: userId, date: { gte: today, lt: endDate } },
+              orderBy: [{ date: "asc" }, { start_time: "asc" }],
+            }),
+            []
+          )
         : [],
       // Marks for average grade - filtered by user
       userId
-        ? prisma.mark.findMany({ where: { userId }, select: { value: true } })
+        ? safeQuery(
+            prisma.mark.findMany({
+              where: { user_id: userId },
+              select: { value: true, course: true },
+            }),
+            []
+          )
         : [],
     ]);
 
@@ -231,14 +271,14 @@ export const loader = async ({ request }: { request: Request }) => {
       course: t.course,
       kind: t.kind,
       type: t.type,
-      dueDate: t.dueDate.toISOString(),
+      due_date: t.due_date.toISOString(),
     }));
     tasksTotal = totalCount;
 
     // Process praxis partner
     if (partner) {
       praxisPartner = {
-        companyName: partner.companyName,
+        company_name: partner.company_name,
         department: partner.department,
         supervisor: partner.supervisor,
         email: partner.email,
@@ -249,36 +289,71 @@ export const loader = async ({ request }: { request: Request }) => {
 
     // Process praxis hours
     praxisHours = {
-      required: target?.requiredHours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
+      required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
       logged: Math.round(totalHoursResult._sum.hours ?? 0),
       thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
-      targetPerWeek: target?.targetPerWeek ?? DEFAULT_TARGET_HOURS_PER_WEEK,
+      target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
     };
+
+    // If no events in the short window, fetch the next upcoming events from DB.
+    if (userId && (eventsResult as any[]).length === 0) {
+      eventsResult = await safeQuery(
+        prisma.scheduleEvent.findMany({
+          where: { user_id: userId, date: { gte: today } },
+          orderBy: [{ date: "asc" }, { start_time: "asc" }],
+          take: 10,
+        }),
+        []
+      );
+    }
 
     // Process schedule events
     scheduleEvents = (eventsResult as any[]).map((e: any) => ({
       id: e.id,
       title: e.title,
-      courseCode: e.courseCode,
+      course_code: e.course_code,
       date: e.date.toISOString(),
-      startTime: e.startTime,
-      endTime: e.endTime,
+      start_time: e.start_time,
+      end_time: e.end_time,
       location: e.location,
-      eventType: e.eventType,
+      event_type: e.event_type,
       professor: e.professor,
     }));
 
-    // Calculate average grade
+    // Calculate weighted average grade (Match Notenverwaltung logic)
     if (marksResult.length > 0) {
-      const sum = marksResult.reduce((acc: number, m: any) => acc + m.value, 0);
-      averageGrade = sum / marksResult.length;
+      const dbCourses = (loggedInUser as any)?.major?.courses || [];
+      const passedMarks = marksResult.filter((m: any) => m.value <= 4.0);
+      
+      let totalECTS = 0;
+      let weightedSum = 0;
+
+      passedMarks.forEach((m: any) => {
+        const course = dbCourses.find((c: any) => {
+          const keys = [
+            c.name,
+            c.name_de,
+            c.name_en,
+            c.code,
+          ]
+            .filter(Boolean)
+            .map((val) => String(val).toLowerCase());
+          return typeof m.course === "string" && keys.includes(m.course.toLowerCase());
+        });
+        
+        const credits = course?.credits ?? 5;
+        totalECTS += credits;
+        weightedSum += m.value * credits;
+      });
+
+      averageGrade = totalECTS > 0 ? weightedSum / totalECTS : null;
     }
 
     // Fetch news items server-side for faster LCP
     try {
       const newsResult = await prisma.news.findMany({
         where: { status: "PUBLISHED" },
-        orderBy: { publishedAt: "desc" },
+        orderBy: { published_at: "desc" },
         take: 5,
         select: {
           slug: true,
@@ -286,13 +361,13 @@ export const loader = async ({ request }: { request: Request }) => {
           excerpt: true,
           content: true,
           category: true,
-          publishedAt: true,
+          published_at: true,
           featured: true,
         },
       });
       newsItems = newsResult.map((n: any) => ({
         ...n,
-        publishedAt: n.publishedAt.toISOString(),
+        published_at: n.published_at.toISOString(),
       }));
     } catch {
       // News table might not exist in development - continue with empty array
@@ -339,7 +414,7 @@ export default function Dashboard() {
   const locale = language === "de" ? "de-DE" : "en-US";
 
   // Use server-loaded user data directly - no client fetch needed!
-  const user = { name: userName, campusArea: userCampusArea };
+  const user = { name: userName, campus_area: userCampusArea };
 
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
@@ -510,7 +585,7 @@ export default function Dashboard() {
   // Dual Student Company Info (from database)
   const companyInfo = praxisPartner
     ? {
-        name: praxisPartner.companyName,
+        name: praxisPartner.company_name,
         department: praxisPartner.department || "Abteilung nicht angegeben",
         supervisor: praxisPartner.supervisor || "Nicht angegeben",
         email: praxisPartner.email || "",
@@ -544,8 +619,8 @@ export default function Dashboard() {
         })
         .map((e) => ({
           title: e.title,
-          time: e.startTime,
-          type: e.eventType.charAt(0) + e.eventType.slice(1).toLowerCase(),
+          time: e.start_time,
+          type: e.event_type.charAt(0) + e.event_type.slice(1).toLowerCase(),
         }));
 
       days.push({
@@ -563,7 +638,7 @@ export default function Dashboard() {
   // Upcoming assignments + exams overview (from DB tasks)
   const upcomingAssignments = [
     ...tasks.map((task) => {
-      const daysLeft = calculateDaysLeft(task.dueDate);
+      const daysLeft = calculateDaysLeft(task.due_date);
       return {
         id: `task-${task.id}`,
         title: task.title,
@@ -577,7 +652,7 @@ export default function Dashboard() {
             : language === "de"
               ? "Abgabe"
               : "Submission",
-        dueDate: new Date(task.dueDate).toLocaleDateString(
+        dueDate: new Date(task.due_date).toLocaleDateString(
           language === "de" ? "de-DE" : "en-US"
         ),
         daysLeft,
@@ -659,7 +734,7 @@ export default function Dashboard() {
   };
 
   const handleDragOver = (
-    event: React.DragEvent<HTMLDivElement>,
+    event: React.DragEvent<HTMLElement>,
     key: WidgetKey
   ) => {
     event.preventDefault();
@@ -667,7 +742,7 @@ export default function Dashboard() {
   };
 
   const handleDrop = (
-    event: React.DragEvent<HTMLDivElement>,
+    event: React.DragEvent<HTMLElement>,
     key: WidgetKey
   ) => {
     event.preventDefault();
@@ -685,7 +760,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto dashboard-icons-white">
       <DashboardHeader userName={userName} t={t} getGreeting={getGreeting} />
 
       <NewsSlider
@@ -714,19 +789,22 @@ export default function Dashboard() {
       />
 
       <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
-        <div className="p-5 sm:p-6 rounded-2xl sm:rounded-[2rem] border border-border bg-card/40 backdrop-blur-xl shadow-xl">
-          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
+        <div className="p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-border/60 bg-gradient-to-br from-card via-card/80 to-muted/30 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+          <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
-              <h3 className="text-lg sm:text-xl font-black text-foreground">
+              <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">
+                {t.customizeLabel ?? "Dashboard settings"}
+              </p>
+              <h3 className="text-xl sm:text-2xl font-black text-foreground">
                 {t.customizeDashboard ?? "Customize dashboard"}
               </h3>
-              <p className="text-xs sm:text-sm text-muted-foreground font-semibold">
+              <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-200 font-semibold">
                 {t.dragHint ?? "Drag to reorder"}
               </p>
             </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-2">
-                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+              <div className="space-y-3 rounded-2xl border border-border/60 bg-card/70 p-4 sm:p-5 shadow-sm">
+                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground dark:text-slate-200">
                   {t.widgetVisibility ?? "Widget visibility"}
                 </p>
                 {DEFAULT_WIDGET_ORDER.map((key) => {
@@ -735,7 +813,7 @@ export default function Dashboard() {
                     <label
                       key={id}
                       htmlFor={id}
-                      className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-foreground cursor-pointer group"
+                      className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-foreground cursor-pointer group"
                     >
                       <input
                         id={id}
@@ -747,7 +825,7 @@ export default function Dashboard() {
                             [key]: !prev[key],
                           }))
                         }
-                        className="rounded border-border text-iu-blue focus:ring-iu-blue"
+                        className="h-4 w-4 rounded-md border-2 border-border bg-card text-iu-blue accent-iu-blue focus:ring-2 focus:ring-iu-blue/40 focus:ring-offset-2 focus:ring-offset-card transition-colors"
                       />
                       <span className="group-hover:text-iu-blue transition-colors">
                         {t.showWidget ?? "Show"} {widgetLabelMap[key]}
@@ -756,18 +834,38 @@ export default function Dashboard() {
                   );
                 })}
               </div>
-              <div className="space-y-2">
-                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-widest text-muted-foreground">
+              <div className="space-y-3 rounded-2xl border border-border/60 bg-card/70 p-4 sm:p-5 shadow-sm">
+                <p className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.2em] text-muted-foreground dark:text-slate-200">
                   {t.widgetOrder ?? "Widget order"}
+                </p>
+                <p className="text-[10px] sm:text-xs font-semibold text-foreground">
+                  {t.dragHint ?? "Drag the chips to reorder"}
                 </p>
                 <div className="flex flex-wrap gap-2">
                   {widgetOrder.map((key) => (
-                    <span
+                    <button
                       key={`order-${key}`}
-                      className="px-3 py-1 rounded-full bg-muted text-[10px] sm:text-xs font-bold uppercase tracking-widest text-foreground"
+                      type="button"
+                      draggable
+                      onDragStart={() => handleDragStart(key)}
+                      onDragOver={(event) => handleDragOver(event, key)}
+                      onDrop={(event) => handleDrop(event, key)}
+                      onDragEnd={() => {
+                        setDraggedWidget(null);
+                        setDragOverWidget(null);
+                      }}
+                      className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest border transition-all cursor-grab active:cursor-grabbing inline-flex items-center gap-2 ${
+                        draggedWidget === key
+                          ? "bg-iu-blue text-white border-iu-blue"
+                          : dragOverWidget === key
+                            ? "bg-iu-blue/10 text-iu-blue border-iu-blue/40"
+                            : "bg-muted/80 text-foreground border-border/60"
+                      }`}
+                      aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}
                     >
+                      <GripVertical className="h-3 w-3 opacity-70" aria-hidden="true" />
                       {widgetLabelMap[key]}
-                    </span>
+                    </button>
                   ))}
                 </div>
               </div>
@@ -784,33 +882,23 @@ export default function Dashboard() {
                 ref={(el) => {
                   widgetRefs.current[key] = el;
                 }}
-                onDragOver={(event) => handleDragOver(event, key)}
-                onDrop={(event) => handleDrop(event, key)}
-                className={`rounded-2xl sm:rounded-[2rem] border border-dashed p-3 sm:p-4 transition-all ${
-                  dragOverWidget === key
-                    ? "border-iu-blue/70 bg-iu-blue/5"
-                    : "border-border/60"
-                }`}
+                className="rounded-2xl sm:rounded-[2rem] border border-border/60 p-3 sm:p-4"
               >
+                {praxisPartner ? (
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm font-medium text-muted-foreground uppercase tracking-widest">
+                        {t.praxisPartner}
+                      </span>
+                      <span className="text-xs font-black text-iu-blue dark:text-white uppercase tracking-widest px-2.5 py-1 rounded-full bg-iu-blue/10 dark:bg-iu-blue border border-iu-blue/10">
+                        {praxisPartner.company_name}
+                      </span>
+                    </div>
+                  </div>
+                ) : null}
                 <div className="flex items-center justify-between px-2 pb-3">
                   <span className="text-[10px] sm:text-xs font-black uppercase tracking-widest text-muted-foreground">
                     {widgetLabelMap[key]}
-                  </span>
-                  <span className="inline-flex items-center gap-2 text-[10px] sm:text-xs font-bold text-muted-foreground">
-                    <button
-                      type="button"
-                      draggable
-                      onDragStart={() => handleDragStart(key)}
-                      onDragEnd={() => {
-                        setDraggedWidget(null);
-                        setDragOverWidget(null);
-                      }}
-                      aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}
-                      className="inline-flex items-center gap-2 px-3 py-1.5 rounded-xl bg-muted/50 hover:bg-iu-blue/10 hover:text-iu-blue transition-all cursor-grab active:cursor-grabbing focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
-                    >
-                      <GripVertical className="h-4 w-4" aria-hidden="true" />
-                      <span className="sr-only sm:not-sr-only text-[10px] font-black uppercase tracking-widest">{t.dragHint ?? "Drag to reorder"}</span>
-                    </button>
                   </span>
                 </div>
                 {widgetContent[key]}
@@ -836,8 +924,8 @@ export default function Dashboard() {
             excerpt: newsItems[selectedNewsIndex].excerpt,
             content: newsItems[selectedNewsIndex].content || newsItems[selectedNewsIndex].excerpt,
             category: newsItems[selectedNewsIndex].category,
-            publishedAt: newsItems[selectedNewsIndex].publishedAt,
-            author: null,
+            published_at: newsItems[selectedNewsIndex].published_at,
+            featured: newsItems[selectedNewsIndex].featured,
             coverImage: null,
           }}
           loading={false}

@@ -190,7 +190,7 @@ export async function action({ request }: { request: Request }) {
     // Update user with reset token
     await prisma.user.update({
       where: { id: user.id },
-      data: { resetToken, resetTokenExpiry },
+      data: { reset_token: resetToken, reset_token_expiry: resetTokenExpiry },
     });
 
     console.log(" Sending password reset email...");

@@ -55,12 +55,12 @@ export function NewsCard({
 
         {/* Meta */}
         <div className="flex items-center gap-4 mb-5 sm:mb-6">
-          <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+          <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-700 dark:text-slate-200 font-black uppercase tracking-widest">
             <Calendar className="h-3.5 w-3.5" />
             {new Date(item.publishedAt).toLocaleDateString(locale)}
           </div>
           {item.author && (
-            <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-400 dark:text-slate-500 font-black uppercase tracking-widest">
+            <div className="flex items-center gap-1.5 text-[9px] sm:text-[10px] text-slate-700 dark:text-slate-200 font-black uppercase tracking-widest">
               <User className="h-3.5 w-3.5" />
               {item.author}
             </div>
@@ -69,7 +69,7 @@ export function NewsCard({
 
         {/* Excerpt */}
         {item.excerpt && (
-          <p className="text-xs sm:text-sm text-slate-500 dark:text-slate-400 line-clamp-3 font-medium leading-relaxed mb-6 sm:mb-8">
+          <p className="text-xs sm:text-sm text-slate-700 dark:text-slate-200 line-clamp-3 font-medium leading-relaxed mb-6 sm:mb-8">
             {item.excerpt}
           </p>
         )}

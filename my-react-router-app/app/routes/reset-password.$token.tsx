@@ -8,26 +8,20 @@ import {
 } from "../components/auth";
 import { useResetPassword } from "../hooks/usePasswordReset";
 
-// ============================================================================
-// CONSTANTS
-// ============================================================================
-
+//// CONSTANTS
+//
 const PAGE_TITLE = "Set new password";
 const PAGE_SUBTITLE = "Please enter your new password";
 const INVALID_TOKEN_TITLE = "Invalid Token";
 const INVALID_TOKEN_MESSAGE =
   "This password reset link is invalid or has expired.";
 
-// ============================================================================
-// LOADER
-// ============================================================================
-
+//// LOADER
+//
 export const loader = async () => null;
 
-// ============================================================================
-// SUB-COMPONENTS
-// ============================================================================
-
+//// SUB-COMPONENTS
+//
 /**
  * Invalid token error view
  */
@@ -35,10 +29,10 @@ function InvalidTokenView() {
   return (
     <AuthCard title={INVALID_TOKEN_TITLE}>
       <div className="text-center">
-        <p className="text-gray-600 mb-6">{INVALID_TOKEN_MESSAGE}</p>
+        <p className="text-gray-700 mb-6">{INVALID_TOKEN_MESSAGE}</p>
         <Link
           to="/reset-password"
-          className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white/80 transition-colors"
+          className="text-sm font-black uppercase tracking-widest text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition-colors"
         >
           Request a new password reset
         </Link>
@@ -47,10 +41,8 @@ function InvalidTokenView() {
   );
 }
 
-// ============================================================================
-// MAIN COMPONENT
-// ============================================================================
-
+//// MAIN COMPONENT
+//
 /**
  * Password reset form page
  * Step 2: User enters new password after clicking email link

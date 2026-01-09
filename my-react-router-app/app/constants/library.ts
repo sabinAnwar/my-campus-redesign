@@ -1,9 +1,9 @@
 // Re-export translations from the centralized translations service
 export { TRANSLATIONS } from "~/services/translations/library";
 
-// ============================================================================
+//
 // Library Data (Non-translatable static configuration)
-// ============================================================================
+//
 
 export const DATABASES = [
   {

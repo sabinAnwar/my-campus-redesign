@@ -24,16 +24,16 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
             <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
               {t.repeatExams}
             </h2>
-            <p className="text-foreground/80 dark:text-white/80 text-sm sm:text-base font-medium">
+            <p className="text-foreground dark:text-white text-sm sm:text-base font-medium">
               {t.repeatExamsSubtitle}
             </p>
           </div>
         </div>
         <div>
           {isOpen ? (
-            <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
+            <ChevronUp className="w-6 h-6 sm:w-8 sm:h-8 text-foreground dark:text-white" />
           ) : (
-            <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-foreground/70 dark:text-white/70" />
+            <ChevronDown className="w-6 h-6 sm:w-8 sm:h-8 text-foreground dark:text-white" />
           )}
         </div>
       </button>
@@ -61,12 +61,12 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
               </button>
             </div>
 
-            <div className="p-5 sm:p-10 max-h-[700px] overflow-y-auto bg-card text-foreground/90 dark:text-white/90 space-y-8 sm:space-y-12 scrollbar-thin scrollbar-thumb-border">
+            <div className="p-5 sm:p-10 max-h-[700px] overflow-y-auto bg-card text-foreground dark:text-white space-y-8 sm:space-y-12 scrollbar-thin scrollbar-thumb-border">
               <div className="border-b border-border pb-8">
                 <h1 className="text-2xl sm:text-4xl font-bold text-foreground mb-4 tracking-tight leading-tight">
                   Leitfaden zum Ablauf von Wiederholungsprüfungen
                 </h1>
-                <div className="flex justify-between text-[9px] sm:text-[10px] text-foreground/70 dark:text-white/70 font-black uppercase tracking-[0.2em]">
+                <div className="flex justify-between text-[9px] sm:text-[10px] text-foreground dark:text-white font-black uppercase tracking-[0.2em]">
                   <span>ZPA DS</span>
                   <span>Stand: 01.04.2025</span>
                 </div>

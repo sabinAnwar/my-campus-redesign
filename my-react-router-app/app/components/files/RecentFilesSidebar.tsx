@@ -26,7 +26,7 @@ export function RecentFilesSidebar({
         </h3>
 
         {recentTerms.length === 0 ? (
-          <p className="text-xs text-neutral-500 italic">
+          <p className="text-xs text-neutral-700 italic">
             {t.noSearchTerms}
           </p>
         ) : (
@@ -42,7 +42,7 @@ export function RecentFilesSidebar({
             ))}
             <button
               onClick={onClearTerms}
-              className="text-[10px] text-neutral-400 hover:text-red-500 font-bold uppercase mt-2 w-full text-left ml-1"
+              className="text-[10px] text-neutral-700 hover:text-red-500 font-bold uppercase mt-2 w-full text-left ml-1"
             >
               {t.clear}
             </button>

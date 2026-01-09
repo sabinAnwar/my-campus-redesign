@@ -3,29 +3,29 @@ import { TRANSLATIONS } from "~/services/translations/praxisbericht";
 
 const STATUS_STYLES = {
   DUE: {
-    bg: "bg-amber-500 dark:bg-amber-600",
-    text: "text-amber-700 dark:text-white",
-    border: "border-amber-600 dark:border-amber-500",
+    bg: "bg-amber-900",
+    text: "text-white",
+    border: "border-amber-900",
   },
   DRAFT: {
-    bg: "bg-sky-500 dark:bg-sky-600",
-    text: "text-sky-700 dark:text-white",
-    border: "border-sky-600 dark:border-sky-500",
+    bg: "bg-sky-900",
+    text: "text-white",
+    border: "border-sky-900",
   },
   SUBMITTED: {
-    bg: "bg-emerald-500 dark:bg-emerald-600",
-    text: "text-emerald-700 dark:text-white",
-    border: "border-emerald-600 dark:border-emerald-500",
+    bg: "bg-emerald-900",
+    text: "text-white",
+    border: "border-emerald-900",
   },
   APPROVED: {
-    bg: "bg-violet-500 dark:bg-violet-600",
-    text: "text-violet-700 dark:text-white",
-    border: "border-violet-600 dark:border-violet-500",
+    bg: "bg-violet-900",
+    text: "text-white",
+    border: "border-violet-900",
   },
   KLAUSURPHASE: {
-    bg: "bg-slate-400 dark:bg-slate-600",
-    text: "text-slate-600 dark:text-slate-300",
-    border: "border-slate-500 dark:border-slate-500",
+    bg: "bg-slate-900",
+    text: "text-white",
+    border: "border-slate-900",
   },
 };
 
@@ -53,7 +53,7 @@ export function Legend() {
                 : "bg-card/50 border-border"
             } ${it.ring ? "ring-2 ring-offset-2 ring-offset-background ring-iu-blue" : ""}`}
           />
-          <span className="text-muted-foreground font-bold text-sm group-hover:text-foreground transition-colors">
+          <span className="text-foreground font-bold text-sm">
             {it.label}
           </span>
         </div>

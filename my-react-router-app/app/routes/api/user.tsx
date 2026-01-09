@@ -46,11 +46,11 @@ async function handleRequest({
             id: defaultUser.id,
             name: defaultUser.name || "Demo Student",
             email: defaultUser.email,
-            studyProgram: defaultUser.studyProgram,
-            matriculationNumber: defaultUser.matriculationNumber,
+            study_program: defaultUser.study_program,
+            matriculation_number: defaultUser.matriculation_number,
             semester: defaultUser.semester,
-            campusArea: "Hamburg",
-            roomBookingEnabled: true,
+            campus_area: "Hamburg",
+            room_booking_enabled: true,
           }
         });
       }
@@ -74,11 +74,11 @@ async function handleRequest({
             id: defaultUser.id,
             name: defaultUser.name || "Demo Student",
             email: defaultUser.email,
-            studyProgram: defaultUser.studyProgram,
-            matriculationNumber: defaultUser.matriculationNumber,
+            study_program: defaultUser.study_program,
+            matriculation_number: defaultUser.matriculation_number,
             semester: defaultUser.semester,
-            campusArea: "Hamburg",
-            roomBookingEnabled: true,
+            campus_area: "Hamburg",
+            room_booking_enabled: true,
           }
         });
       }
@@ -86,7 +86,7 @@ async function handleRequest({
     }
 
     // Check if session is expired
-    if (new Date() > session.expiresAt) {
+    if (new Date() > session.expires_at) {
       console.log(" Session expired");
       // Delete expired session
       await prisma.session.delete({ where: { id: session.id } });
@@ -103,12 +103,12 @@ async function handleRequest({
           id: session.user.id,
           name: session.user.name || "Student",
           email: session.user.email,
-          studyProgram: session.user.studyProgram,
-          matriculationNumber: session.user.matriculationNumber,
+          study_program: session.user.study_program,
+          matriculation_number: session.user.matriculation_number,
           semester: session.user.semester,
           // Default values for fields not in DB or derived
-          campusArea: "Hamburg", 
-          roomBookingEnabled: true,
+          campus_area: "Hamburg", 
+          room_booking_enabled: true,
         },
       },
       { status: 200 }

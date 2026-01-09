@@ -16,8 +16,19 @@ export type ModuleHandbookLoaderData = {
     id: number;
     code: string;
     name: string;
+    name_de?: string | null;
+    name_en?: string | null;
     description: string | null;
-    studiengang?: { name: string } | null;
+    credits: number;
+    semester: number;
+    major?: { name: string } | null;
   }>;
+  marks: Array<{
+    id: number;
+    value: number;
+    course: string;
+  }>;
+  currentSemester: number;
   studiengangName: string | null;
+  error?: string | null;
 };

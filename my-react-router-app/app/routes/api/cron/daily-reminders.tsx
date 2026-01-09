@@ -1,5 +1,4 @@
 import nodemailer from "nodemailer";
-
 import { prisma } from "../../../lib/prisma";
 
 function getHourInTimezone(tz: string | null | undefined): number {
@@ -64,7 +63,8 @@ export const loader = async ({ request }: { request: Request }) => {
     const targetUserIdRaw = url.searchParams.get("userId");
     const selfOnly = url.searchParams.get("self") === "1";
 
-    let users;
+    let users: any[] = [];
+    
     if (selfOnly) {
       const token = getSessionTokenFromRequest(request);
       if (!token) return json({ error: "Unauthorized" }, 401);
@@ -72,7 +72,8 @@ export const loader = async ({ request }: { request: Request }) => {
         where: { token },
         include: { user: true },
       });
-      if (!session?.user || !session.user.reminderEnabled) {
+      // Fix: access snake_case properties
+      if (!session?.user || !session.user.reminder_enabled) {
         return json({ success: true, sent: 0, usersChecked: 0 }, 200);
       }
       users = [
@@ -80,9 +81,9 @@ export const loader = async ({ request }: { request: Request }) => {
           id: session.user.id,
           email: session.user.email,
           name: session.user.name,
-          reminderHour: session.user.reminderHour,
-          reminderMinute: session.user.reminderMinute,
-          reminderTimezone: session.user.reminderTimezone,
+          reminderHour: session.user.reminder_hour,
+          reminderMinute: session.user.reminder_minute,
+          reminderTimezone: session.user.reminder_timezone,
         },
       ];
     } else if (targetUserIdRaw) {
@@ -92,37 +93,46 @@ export const loader = async ({ request }: { request: Request }) => {
           id: true,
           email: true,
           name: true,
-          reminderHour: true,
-          reminderMinute: true,
-          reminderTimezone: true,
-          reminderEnabled: true,
+          reminder_hour: true,
+          reminder_minute: true,
+          reminder_timezone: true,
+          reminder_enabled: true,
         },
       });
       users =
-        user && user.reminderEnabled
+        user && user.reminder_enabled
           ? [
               {
                 id: user.id,
                 email: user.email,
                 name: user.name,
-                reminderHour: user.reminderHour,
-                reminderMinute: user.reminderMinute,
-                reminderTimezone: user.reminderTimezone,
+                reminderHour: user.reminder_hour,
+                reminderMinute: user.reminder_minute,
+                reminderTimezone: user.reminder_timezone,
               },
             ]
           : [];
     } else {
-      users = await prisma.user.findMany({
-        where: { reminderEnabled: true },
+      const dbUsers = await prisma.user.findMany({
+        where: { reminder_enabled: true },
         select: {
           id: true,
           email: true,
           name: true,
-          reminderHour: true,
-          reminderMinute: true,
-          reminderTimezone: true,
+          reminder_hour: true,
+          reminder_minute: true,
+          reminder_timezone: true,
         },
       });
+      // Map to camelCase for consistency in the loop
+      users = dbUsers.map(u => ({
+          id: u.id,
+          email: u.email,
+          name: u.name,
+          reminderHour: u.reminder_hour,
+          reminderMinute: u.reminder_minute,
+          reminderTimezone: u.reminder_timezone
+      }));
     }
 
     console.log(" daily-reminders (RR) users loaded", users.length);
@@ -162,35 +172,30 @@ export const loader = async ({ request }: { request: Request }) => {
       });
     }
 
-    for (const u of users) {
+    for (const u of users) { // u has camelCase properties now
       const tz = u.reminderTimezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
       
-      // Round current minute down to nearest 5 to create a 5-minute bucket
-      // This handles cases where the cron runs slightly late (e.g. 18:01 instead of 18:00)
       const currentBucket = Math.floor(currentMinute / 5) * 5;
 
       const targetHour = overrideHour ? parseInt(overrideHour, 10) : u.reminderHour ?? 18;
       const targetMinute = overrideMinute ? parseInt(overrideMinute, 10) : u.reminderMinute ?? 0;
 
-      // Check if target time falls within the current 5-minute bucket
-      // We check if the hour matches AND if the target minute is in [bucket, bucket + 5)
       const hourMatches = currentHour === targetHour;
       const minuteMatches = targetMinute >= currentBucket && targetMinute < currentBucket + 5;
 
       if (!hourMatches || !minuteMatches) {
-        // Debug logging for specific user if needed, or just skip
-        // console.log(`Skipping ${u.email}: Now ${currentHour}:${currentMinute} (Bucket ${currentBucket}), Target ${targetHour}:${targetMinute}`);
         continue;
       }
 
       console.log(` Sending reminder to ${u.email} (Target: ${targetHour}:${targetMinute}, Now: ${currentHour}:${currentMinute})`);
 
-      const submitted = await prisma.praxisReport.findFirst({
+      // Fix: Use correct model and fields
+      const submitted = await prisma.practicalReport.findFirst({
         where: {
-          userId: u.id,
-          isoWeekKey: currentWeekKey,
+          user_id: u.id,
+          iso_week_key: currentWeekKey,
           status: { in: ["SUBMITTED", "APPROVED"] },
         },
       });
@@ -287,6 +292,4 @@ function getSessionTokenFromRequest(request: Request): string | null {
   }
 }
 
-export default function CronDailyReminders() {
-  return null;
-}
+

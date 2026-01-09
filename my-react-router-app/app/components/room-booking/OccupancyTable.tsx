@@ -38,7 +38,7 @@ export function OccupancyTable({
       </div>
       <div className="overflow-x-auto">
         <table className="min-w-full text-sm">
-          <thead className="bg-muted/50 text-muted-foreground">
+          <thead className="bg-muted/50 text-muted-foreground dark:bg-slate-900 dark:text-slate-200">
             <tr>
               <th className="text-left px-3 sm:px-6 md:px-10 py-3 sm:py-4 font-bold text-[10px] sm:text-xs">
                 {labels.room}
@@ -74,16 +74,16 @@ export function OccupancyTable({
                     {row.room}
                   </td>
                   <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 hidden sm:table-cell">
-                    <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-lg bg-muted/50 border border-border text-muted-foreground font-bold text-[10px] sm:text-xs">
+                    <div className="inline-flex items-center gap-2 px-2 sm:px-3 py-1 rounded-lg bg-muted/50 border border-border text-muted-foreground dark:text-slate-200 font-bold text-[10px] sm:text-xs">
                       <MapPin className="h-3 w-3 text-iu-blue dark:text-white" />
                       {selectedLocation}
                     </div>
                   </td>
-                  <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 text-muted-foreground font-medium">
+                  <td className="px-3 sm:px-6 md:px-10 py-3 sm:py-4 md:py-6 text-muted-foreground dark:text-slate-200 font-medium">
                     <span className="text-foreground font-bold text-xs sm:text-sm">
                       {row.purpose}
                     </span>
-                    <div className="text-[10px] sm:text-xs text-muted-foreground mt-1 font-bold">
+                    <div className="text-[10px] sm:text-xs text-muted-foreground dark:text-slate-200 mt-1 font-bold">
                       {row.person}
                     </div>
                   </td>

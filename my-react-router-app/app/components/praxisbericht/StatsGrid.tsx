@@ -17,6 +17,11 @@ const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = 
     border: "border-iu-blue/20 dark:border-iu-blue",
     text: "text-iu-blue dark:text-white",
   },
+  "iu-blue-text": {
+    bg: "bg-iu-blue",
+    border: "border-iu-blue",
+    text: "text-white",
+  },
   "iu-orange": {
     bg: "bg-iu-orange/10 dark:bg-iu-orange",
     border: "border-iu-orange/20 dark:border-iu-orange",
@@ -27,10 +32,20 @@ const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = 
     border: "border-iu-orange/20 dark:border-iu-orange",
     text: "text-iu-orange dark:text-white",
   },
+  "orange-900": {
+    bg: "bg-orange-900",
+    border: "border-orange-900",
+    text: "text-white",
+  },
   "purple-500": {
     bg: "bg-iu-purple/10 dark:bg-iu-purple",
     border: "border-iu-purple/20 dark:border-iu-purple",
     text: "text-iu-purple dark:text-white",
+  },
+  "purple-900": {
+    bg: "bg-purple-900",
+    border: "border-purple-900",
+    text: "text-white",
   },
   "iu-purple": {
     bg: "bg-iu-purple/10 dark:bg-iu-purple",
@@ -42,10 +57,20 @@ const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = 
     border: "border-iu-pink/20 dark:border-iu-pink",
     text: "text-iu-pink dark:text-white",
   },
+  "pink-900": {
+    bg: "bg-pink-900",
+    border: "border-pink-900",
+    text: "text-white",
+  },
   "slate-400": {
     bg: "bg-muted dark:bg-muted",
     border: "border-border",
     text: "text-muted-foreground",
+  },
+  "slate-900": {
+    bg: "bg-slate-900",
+    border: "border-slate-900",
+    text: "text-white",
   },
 };
 
@@ -74,4 +99,3 @@ export function StatsGrid({ stats }: StatsGridProps) {
     </div>
   );
 }
-
