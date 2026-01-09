@@ -47,7 +47,7 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
                 />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-iu-blue/5 dark:bg-iu-blue/20">
-                  <Video size={48} className="text-iu-blue/30 dark:text-white/30" />
+                  <Video size={48} className="text-iu-blue/30 dark:text-white" />
                 </div>
               )}
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60 group-hover:opacity-80 transition-opacity" />
@@ -69,8 +69,8 @@ export function CourseVideosTab({ course, language, t, getThumbnailUrl, onVideoC
                 </h4>
               </div>
               <div className="flex items-center justify-between pt-4 border-t border-border/10">
-                <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
-                  <Users size={12} className="text-iu-blue/50 dark:text-white/50" />
+                <div className="flex items-center gap-2 text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest">
+                  <Users size={12} className="text-iu-blue/50 dark:text-white" />
                   <span>IU Study Content</span>
                 </div>
                 <button className="text-[9px] sm:text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] group-hover:translate-x-1 transition-transform">

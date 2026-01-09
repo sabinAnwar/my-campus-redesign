@@ -26,7 +26,7 @@ export function EmergencyContact({ t }: EmergencyContactProps) {
         </p>
         <a
           href="tel:+4940999999999"
-          className="text-lg sm:text-2xl font-bold text-iu-red dark:text-white hover:text-iu-red/80 dark:hover:text-white/80 transition-all flex items-center gap-2 sm:gap-3 break-all"
+          className="text-lg sm:text-2xl font-bold text-iu-red dark:text-white hover:text-iu-red/80 dark:hover:text-white transition-all flex items-center gap-2 sm:gap-3 break-all"
         >
           <Phone className="w-5 h-5 sm:w-6 sm:h-6 shrink-0" />
           +49 40 999 999 999

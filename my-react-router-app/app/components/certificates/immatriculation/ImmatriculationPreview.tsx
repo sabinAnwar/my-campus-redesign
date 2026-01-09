@@ -29,14 +29,14 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
         <div className="w-16 sm:w-40 h-1 sm:h-1.5 bg-iu-blue mx-auto mt-4 sm:mt-6 rounded-full shadow-lg shadow-iu-blue/20" />
       </div>
 
-      <div className="space-y-4 sm:space-y-8 text-foreground/80 max-w-2xl mx-auto relative z-10 px-2 sm:px-0">
+      <div className="space-y-4 sm:space-y-8 text-foreground max-w-2xl mx-auto relative z-10 px-2 sm:px-0">
         <p className="text-center text-base sm:text-xl font-medium px-2">
           {t.certificateText}
         </p>
         <p className="text-center text-2xl sm:text-4xl font-bold text-foreground tracking-tight break-words">
           {studentData.name}
         </p>
-        <p className="text-center text-[10px] sm:text-base text-muted-foreground/60 font-black tracking-widest uppercase">
+        <p className="text-center text-[10px] sm:text-base text-muted-foreground font-black tracking-widest uppercase">
           {t.studentId}: {studentData.studentId}
         </p>
         <p className="text-center text-sm sm:text-xl font-medium opacity-80">{t.isEnrolled}</p>
@@ -62,7 +62,7 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
             <Shield className="h-7 w-7 sm:h-10 sm:w-10 text-iu-blue dark:text-white" />
           </div>
           <div className="min-w-0">
-            <p className="text-[8px] sm:text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest mb-0.5 sm:mb-1">
+            <p className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest mb-0.5 sm:mb-1">
               {t.officialStamp}
             </p>
             <p className="text-sm sm:text-lg font-bold text-foreground truncate">
@@ -72,13 +72,13 @@ export function ImmatriculationPreview({ t, studentData, today }: Immatriculatio
         </div>
         <div className="text-center sm:text-right w-full sm:w-auto">
           <div className="flex items-center justify-center sm:justify-end gap-2 sm:gap-3 text-[10px] sm:text-sm text-muted-foreground font-bold mb-2 sm:mb-4">
-            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white/60" />
+            <Calendar className="h-4 w-4 sm:h-5 sm:w-5 text-iu-blue/60 dark:text-white" />
             <span>
               {t.issueDate}: {today}
             </span>
           </div>
           <div className="w-24 sm:w-48 h-px bg-border mx-auto sm:ml-auto mb-1 sm:mb-2" />
-          <p className="text-[8px] sm:text-[10px] text-muted-foreground/50 font-black uppercase tracking-widest">
+          <p className="text-[8px] sm:text-[10px] text-muted-foreground font-black uppercase tracking-widest">
             {t.signature}
           </p>
         </div>

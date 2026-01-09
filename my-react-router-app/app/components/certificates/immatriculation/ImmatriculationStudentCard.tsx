@@ -48,7 +48,7 @@ export function ImmatriculationStudentCard({ t, studentData }: ImmatriculationSt
 function InfoItem({ label, value, isMonospaced = false }: { label: string; value: string; isMonospaced?: boolean }) {
   return (
     <div className="p-4 sm:p-5 md:p-6 bg-background/50 border border-border rounded-2xl sm:rounded-3xl group hover:bg-card hover:border-iu-blue/30 transition-all duration-500 shadow-inner">
-      <p className="text-[9px] sm:text-[10px] text-muted-foreground/50 mb-1 sm:mb-2 font-black uppercase tracking-widest">
+      <p className="text-[9px] sm:text-[10px] text-muted-foreground mb-1 sm:mb-2 font-black uppercase tracking-widest">
         {label}
       </p>
       <p className={`text-base sm:text-lg md:text-xl font-bold text-foreground tracking-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors ${isMonospaced ? "tracking-widest" : ""}`}>

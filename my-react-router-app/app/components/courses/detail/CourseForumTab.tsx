@@ -117,7 +117,7 @@ export function CourseForumTab({
                           {topic.title}
                         </h4>
                       </div>
-                      <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-black text-muted-foreground/60 uppercase tracking-[0.15em]">
+                      <div className="flex flex-wrap items-center gap-4 sm:gap-6 text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-[0.15em]">
                         <div className="flex items-center gap-3 py-1.5 px-3 rounded-xl bg-muted/40 border border-border/30">
                           <div className="w-6 h-6 rounded-lg bg-gradient-to-br from-iu-blue to-iu-blue text-white flex items-center justify-center font-black">
                             {topic.author.charAt(0)}
@@ -127,7 +127,7 @@ export function CourseForumTab({
                           </span>
                         </div>
                         <span className="flex items-center gap-2">
-                          <Clock size={12} className="text-iu-blue/40 dark:text-white/40" aria-hidden="true" />
+                          <Clock size={12} className="text-iu-blue/40 dark:text-white" aria-hidden="true" />
                           {topic.lastPost}
                         </span>
                         <span className="flex items-center gap-2 px-3 py-1 bg-iu-blue/5 dark:bg-iu-blue rounded-lg text-iu-blue dark:text-white">
@@ -136,7 +136,7 @@ export function CourseForumTab({
                         </span>
                       </div>
                     </div>
-                    <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-white transition-all duration-500 shadow-inner">
+                    <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-foreground dark:text-white transition-all duration-500 shadow-inner">
                       <ArrowLeft
                         size={22}
                         className="rotate-180 group-hover:translate-x-1 transition-transform"
@@ -157,7 +157,7 @@ export function CourseForumTab({
           <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border/40 flex-shrink-0">
             <button
                onClick={onBackToTopics}
-               className="p-3 sm:p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-white dark:hover:text-white transition-all group shadow-sm active:scale-95"
+               className="p-3 sm:p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-foreground dark:text-white dark:hover:text-foreground dark:text-white transition-all group shadow-sm active:scale-95"
              >
                <ArrowLeft
                  size={18}
@@ -204,14 +204,14 @@ export function CourseForumTab({
                 </div>
               </div>
               <div className="prose prose-base sm:prose-lg dark:prose-invert max-w-none mb-6 sm:mb-8">
-                <p className="text-foreground/90 leading-relaxed font-medium">
+                <p className="text-foreground leading-relaxed font-medium">
                   {selectedTopic.content}
                 </p>
               </div>
               <div className="flex items-center gap-4">
                 <button 
                   onClick={() => onCopyMessage(selectedTopic.content)}
-                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-wider text-muted-foreground dark:text-white/60 active:scale-95 cursor-pointer"
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-wider text-muted-foreground dark:text-white active:scale-95 cursor-pointer"
                 >
                   <Copy size={12} />
                   {language === "de" ? "Kopieren" : "Copy"}
@@ -252,12 +252,12 @@ export function CourseForumTab({
                     </span>
                   </div>
                   <div className="flex items-center justify-between">
-                    <p className="text-foreground/90 font-medium leading-relaxed text-sm sm:text-base">
+                    <p className="text-foreground font-medium leading-relaxed text-sm sm:text-base">
                       {post.content}
                     </p>
                     <button 
                       onClick={() => onCopyMessage(post.content)}
-                      className="ml-4 p-2 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white/60 active:scale-95 cursor-pointer shrink-0"
+                      className="ml-4 p-2 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white active:scale-95 cursor-pointer shrink-0"
                       title={language === "de" ? "Kopieren" : "Copy"}
                     >
                       <Copy size={12} />
@@ -283,7 +283,7 @@ export function CourseForumTab({
                     ? "Schreibe eine Antwort..."
                     : "Write a reply..."
                 }
-                className="w-full bg-card/60 backdrop-blur-xl border border-border/50 rounded-[2rem] pl-14 sm:pl-20 pr-16 sm:pr-20 py-4 sm:py-6 min-h-[90px] sm:min-h-[100px] focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all resize-none shadow-lg text-sm sm:text-lg font-medium placeholder:text-muted-foreground/40"
+                className="w-full bg-card/60 backdrop-blur-xl border border-border/50 rounded-[2rem] pl-14 sm:pl-20 pr-16 sm:pr-20 py-4 sm:py-6 min-h-[90px] sm:min-h-[100px] focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/5 transition-all resize-none shadow-lg text-sm sm:text-lg font-medium placeholder:text-muted-foreground"
               />
               <button
                 type="submit"

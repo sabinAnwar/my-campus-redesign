@@ -20,7 +20,7 @@ export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderPro
               
             </span>
           </h1>
-          <p className="text-muted-foreground text-[10px] sm:text-xs lg:text-sm font-medium max-w-2xl leading-relaxed">
+          <p className="text-muted-foreground dark:text-slate-200 text-[10px] sm:text-xs lg:text-sm font-medium max-w-2xl leading-relaxed">
             {t.overview}
           </p>
         </div>

@@ -72,7 +72,7 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                     </span>
                   </div>
                 </div>
-                <div className={`p-2 rounded-xl bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:text-iu-blue dark:group-hover:text-white ${isExpanded ? "rotate-180 bg-iu-blue/10 dark:bg-iu-blue" : ""}`}>
+                <div className={`p-2 rounded-xl bg-muted/50 text-muted-foreground transition-all duration-300 group-hover:text-iu-blue dark:group-hover:text-foreground dark:text-white ${isExpanded ? "rotate-180 bg-iu-blue/10 dark:bg-iu-blue" : ""}`}>
                   <ChevronDown size={20} />
                 </div>
               </button>
@@ -102,12 +102,12 @@ export function CourseResourcesTab({ course, language, expandedSections, toggleS
                           </div>
                           <div className="flex items-center gap-3 mt-2">
                             {item.size && (
-                              <span className="text-[9px] font-black text-muted-foreground/60 uppercase tracking-widest px-2 py-0.5 rounded bg-muted/50 border border-border/50">
+                              <span className="text-[9px] font-black text-muted-foreground uppercase tracking-widest px-2 py-0.5 rounded bg-muted/50 border border-border/50">
                                 {item.size}
                               </span>
                             )}
                             {item.duration && (
-                             <span className="text-[9px] font-black text-iu-blue dark:text-white/80 uppercase tracking-widest px-2 py-0.5 rounded bg-iu-blue/5 dark:bg-iu-blue/20 border border-iu-blue/10 dark:border-iu-blue/40">
+                             <span className="text-[9px] font-black text-iu-blue dark:text-white uppercase tracking-widest px-2 py-0.5 rounded bg-iu-blue/5 dark:bg-iu-blue/20 border border-iu-blue/10 dark:border-iu-blue/40">
                                 {item.duration}
                               </span>
                             )}

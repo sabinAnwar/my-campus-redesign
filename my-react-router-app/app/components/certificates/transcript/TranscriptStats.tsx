@@ -21,7 +21,7 @@ export function TranscriptStats({ t, stats }: TranscriptStatsProps) {
             <h3 className="text-xl sm:text-2xl font-black tracking-tight">{t.gpa}</h3>
           </div>
           <p className="text-5xl sm:text-7xl font-black mb-2 sm:mb-4">{stats.gpa}</p>
-          <p className="text-white/80 text-base sm:text-lg font-bold">
+          <p className="text-white text-base sm:text-lg font-bold">
             {t.gradeScaleText}
           </p>
         </div>
@@ -41,7 +41,7 @@ export function TranscriptStats({ t, stats }: TranscriptStatsProps) {
             </h3>
           </div>
           <p className="text-5xl sm:text-7xl font-black mb-2 sm:mb-4">{stats.totalCredits}</p>
-          <p className="text-white/80 text-base sm:text-lg font-bold">
+          <p className="text-white text-base sm:text-lg font-bold">
             {t.modulesPassed(stats.passedCount)}
           </p>
         </div>

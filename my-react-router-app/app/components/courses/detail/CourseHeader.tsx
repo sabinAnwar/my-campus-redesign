@@ -26,13 +26,18 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
   const iconBg = colorConfig.bg;
   const iconColor = colorConfig.text;
 
+  // Get bilingual course title
+  const displayTitle = language === "de"
+    ? (course?.name_de || course?.title || course?.name || "Course")
+    : (course?.name_en || course?.title || course?.name || "Course");
+
   return (
     <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl border-b border-border/40 -mx-3 sm:-mx-4 md:-mx-6 lg:-mx-10 transition-all duration-300 mb-6">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
         <PageHeader
           icon={BookOpen}
           aria-hidden="true"
-          title={course?.title || course?.name || "Course"}
+          title={displayTitle}
           subtitle=""
           onBack={onBack}
           backLabel={language === "de" ? "Zurück zu Kursen" : "Back to Courses"}

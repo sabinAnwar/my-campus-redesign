@@ -86,7 +86,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
                       <div className="flex flex-wrap items-center gap-y-2 gap-x-4 sm:gap-6">
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                          <Calendar className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white/60 shrink-0" />
+                          <Calendar className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white shrink-0" />
                           <span className="text-muted-foreground font-bold hidden sm:inline">
                             Deadline:
                           </span>
@@ -97,7 +97,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
-                          <Clock className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white/60 shrink-0" />
+                          <Clock className="w-3.5 h-3.5 sm:w-4 text-iu-blue/60 dark:text-white shrink-0" />
                           <span className="text-muted-foreground font-bold hidden sm:inline">
                             Typ:
                           </span>

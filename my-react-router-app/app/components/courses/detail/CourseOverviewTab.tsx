@@ -118,7 +118,7 @@ function DateCard({ icon: Icon, label, value }: { icon: any, label: string, valu
         {label}
       </div>
       <div className="text-sm sm:text-lg md:text-2xl font-black text-foreground flex items-center gap-2 sm:gap-3">
-        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue/40 dark:text-white/40" />
+        <Icon className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue/40 dark:text-white" />
         {value}
       </div>
     </div>
@@ -132,7 +132,7 @@ function AdvancedStatCard({ icon: Icon, label, value, subLabel }: { icon: any, l
         <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </div>
-        <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground/40 uppercase tracking-wider sm:tracking-widest">
+        <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest">
           {label}
         </div>
       </div>
@@ -153,7 +153,7 @@ function ProgressStatCard({ icon: Icon, label, value, progress, subLabel }: { ic
         <div className="p-2 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:scale-110 group-hover:rotate-6 transition-all duration-500">
           <Icon className="w-4 h-4 sm:w-5 sm:h-5 md:w-6 md:h-6" />
         </div>
-        <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground/40 uppercase tracking-wider sm:tracking-widest">
+        <div className="text-[7px] sm:text-[8px] md:text-[10px] font-black text-muted-foreground uppercase tracking-wider sm:tracking-widest">
           {label}
         </div>
       </div>
@@ -201,7 +201,7 @@ function InstructorCard({ course, language }: { course: Course, language: string
         <div className="w-full space-y-2 sm:space-y-3">
           <a
             href={`mailto:${course.instructor?.toLowerCase().replace(" ", ".")}@iu-fernstudium.de`}
-            className="w-full p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-muted/20 border border-border/30 flex items-center justify-center gap-2 sm:gap-3 hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-white hover:border-iu-blue/20 dark:hover:border-iu-blue transition-all group/mail"
+            className="w-full p-2.5 sm:p-3 md:p-4 rounded-lg sm:rounded-xl md:rounded-2xl bg-muted/20 border border-border/30 flex items-center justify-center gap-2 sm:gap-3 hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white hover:border-iu-blue/20 dark:hover:border-iu-blue transition-all group/mail"
           >
             <Mail className="w-4 h-4 sm:w-5 sm:h-5 text-iu-blue dark:text-white group-hover/mail:scale-110 transition-transform" />
             <span className="text-xs sm:text-sm font-black text-foreground">
@@ -222,7 +222,7 @@ function InstructorCard({ course, language }: { course: Course, language: string
 function QuickLinksCard({ language }: { language: string }) {
   return (
     <div className="rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-sm">
-      <h3 className="text-[9px] sm:text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest sm:tracking-[0.2em] mb-4 sm:mb-6 md:mb-8 px-1 sm:px-2">
+      <h3 className="text-[9px] sm:text-[10px] font-black text-muted-foreground uppercase tracking-widest sm:tracking-[0.2em] mb-4 sm:mb-6 md:mb-8 px-1 sm:px-2">
         {language === "de" ? "Wichtige Dokumente" : "Critical Documents"}
       </h3>
       <div className="space-y-1 sm:space-y-2">
@@ -263,7 +263,7 @@ function LinkItem({ label, icon: Icon, color, href, download }: { label: string,
           {label}
         </span>
       </div>
-      <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground/30 group-hover:text-iu-blue dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
+      <Plus className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-muted-foreground group-hover:text-iu-blue dark:group-hover:text-white group-hover:translate-x-1 transition-all" />
     </div>
   );
 

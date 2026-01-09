@@ -147,7 +147,7 @@ export function ContactForm({ t, language }: ContactFormProps) {
                 onChange={handleChange}
                 required
                 rows={language === "de" ? 6 : 8}
-                className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-border bg-background/50 text-foreground rounded-xl sm:rounded-2xl focus:border-iu-blue/50 focus:bg-background outline-none resize-none transition-all placeholder:text-muted-foreground/30 shadow-inner text-sm sm:text-base font-medium"
+                className="w-full px-4 sm:px-6 py-3 sm:py-4 border border-border bg-background/50 text-foreground rounded-xl sm:rounded-2xl focus:border-iu-blue/50 focus:bg-background outline-none resize-none transition-all placeholder:text-muted-foreground shadow-inner text-sm sm:text-base font-medium"
                 placeholder={t.messagePlaceholder}
               />
             </div>

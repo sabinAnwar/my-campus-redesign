@@ -5,7 +5,7 @@ export function EmptyCertificateState({ t }: { t: any }) {
         <h1 className="text-2xl font-bold text-neutral-900 dark:text-white">
           {t.noUserData}
         </h1>
-        <p className="text-neutral-600 dark:text-neutral-400 mt-2">
+        <p className="text-neutral-700 dark:text-neutral-200 mt-2">
           {t.pleaseLogin}
         </p>
       </div>

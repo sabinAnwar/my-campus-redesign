@@ -47,7 +47,7 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 sm:gap-6 lg:gap-8">
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white uppercase tracking-widest">
                   {language === "de" ? "Datum & Zeit" : "Date & Time"}
                 </p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-black text-foreground">
@@ -55,7 +55,7 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white uppercase tracking-widest">
                   {language === "de" ? "Modus / Ort" : "Mode / Location"}
                 </p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-black text-foreground">
@@ -63,7 +63,7 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
                 </p>
               </div>
               <div className="space-y-2">
-                <p className="text-[10px] font-black text-iu-red/60 dark:text-white/60 uppercase tracking-widest">
+                <p className="text-[10px] font-black text-iu-red/60 dark:text-white uppercase tracking-widest">
                   Anmeldung
                 </p>
                 <p className="text-lg sm:text-xl lg:text-2xl font-black text-iu-blue dark:text-white flex items-center gap-2">
@@ -98,7 +98,7 @@ export function CourseOnlineTestsTab({ course, language }: CourseOnlineTestsTabP
             <h4 className="text-xl sm:text-2xl font-black text-foreground mb-3 sm:mb-4 group-hover:text-iu-blue dark:group-hover:text-white transition-colors tracking-tight">
               {test.title}
             </h4>
-            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-6 sm:mb-8 lg:mb-10 text-[10px] font-black text-muted-foreground/60 uppercase tracking-widest">
+            <div className="flex flex-wrap items-center gap-4 sm:gap-6 mb-6 sm:mb-8 lg:mb-10 text-[10px] font-black text-muted-foreground uppercase tracking-widest">
               <span className="flex items-center gap-1.5">
                 <Clock size={12} className="text-iu-blue dark:text-white" /> 45 Min
               </span>

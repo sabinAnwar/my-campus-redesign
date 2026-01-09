@@ -78,7 +78,7 @@ export function CourseFilters({
                   : t.allMobile}
           </span>
           <span
-            className={`ml-0.5 sm:ml-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[11px] font-bold ${listFilter === tab.id ? "bg-white/20 text-white" : "bg-muted text-foreground"}`}
+            className={`ml-0.5 sm:ml-1 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[11px] font-bold ${listFilter === tab.id ? "bg-white/20 text-foreground dark:text-white" : "bg-muted text-foreground"}`}
           >
             {tab.count}
           </span>
