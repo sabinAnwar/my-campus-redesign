@@ -46,14 +46,12 @@ import { CourseForumTab } from "~/components/courses/detail/CourseForumTab";
 import { UploadModal } from "~/components/courses/detail/UploadModal";
 import { NewTopicModal } from "~/components/courses/detail/NewTopicModal";
 import { VideoModal } from "~/components/courses/detail/VideoModal";
+import publicStudyManifest from "~/data/public-study-files.json";
 
 const COURSE_TIMEOUT_MS = 2500;
-const PUBLIC_STUDY_DIR = path.resolve(
-  process.cwd(),
-  "public",
-  "uploads",
-  "studiengaenge"
-);
+// Note: We no longer scan this directory at runtime to avoid Vercel size limits.
+// See scripts/generate-study-manifest.js and vercel.json.
+// const PUBLIC_STUDY_DIR = path.resolve(...);
 
 const toResourceType = (fileName: string) => {
   const ext = fileName.split(".").pop()?.toLowerCase() || "";
@@ -85,21 +83,6 @@ const titleFromPath = (filePath: string) => {
   const name = base.replace(/\.[^/.]+$/, "");
   return name.replace(/[_-]+/g, " ").trim();
 };
-
-async function collectPublicStudyFiles(dir: string, baseDir: string) {
-  const entries = await fs.readdir(dir, { withFileTypes: true });
-  const results: string[] = [];
-  for (const entry of entries) {
-    const fullPath = path.join(dir, entry.name);
-    if (entry.isDirectory()) {
-      results.push(...(await collectPublicStudyFiles(fullPath, baseDir)));
-    } else if (entry.isFile()) {
-      const rel = path.relative(baseDir, fullPath).split(path.sep).join("/");
-      results.push(rel);
-    }
-  }
-  return results;
-}
 
 export const loader = async ({
   request,
@@ -237,11 +220,10 @@ export const loader = async ({
   // Attach public study materials as dummy resources for current-semester courses
   if (Number(typedCourse.semester) === Number(typedUser.semester)) {
     try {
-      await fs.access(PUBLIC_STUDY_DIR);
-      const relPaths = await collectPublicStudyFiles(
-        PUBLIC_STUDY_DIR,
-        PUBLIC_STUDY_DIR
-      ).then((paths) => paths.filter((p) => !p.endsWith("/.gitkeep") && !p.endsWith(".gitkeep")));
+      // Use pre-generated manifest to avoid scanning large directory on Vercel
+      const relPaths = (publicStudyManifest as string[]).filter(
+        (p) => !p.endsWith("/.gitkeep") && !p.endsWith(".gitkeep")
+      );
       const publicResources: CourseResource[] = relPaths.map((relPath, idx) => {
         const fileName = relPath.split("/").pop() || relPath;
         const type = toPublicResourceType(relPath, fileName);
@@ -259,7 +241,10 @@ export const loader = async ({
         ...publicResources.filter((r) => !existingUrls.has(r.url)),
       ];
     } catch (error) {
-      console.warn("Course Loader: failed to read public study materials", error);
+      console.warn(
+        "Course Loader: failed to attach public study materials from manifest",
+        error
+      );
     }
   }
 

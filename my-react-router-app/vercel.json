@@ -8,6 +8,11 @@
       "destination": "/api/index"
     }
   ],
+  "functions": {
+    "api/index.ts": {
+      "excludeFiles": "public/uploads/**"
+    }
+  },
   "crons": [
     {
       "path": "/api/cron/praxisbericht-reminder",

@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 
@@ -43,6 +44,19 @@ export async function loader({ request }: { request: Request }) {
     );
   } catch (error) {
     console.error(" Error fetching practical reports:", error);
+    const isMissingTable =
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      (error.code === "P2021" ||
+        error.message.toLowerCase().includes("does not exist"));
+    if (isMissingTable) {
+      return Response.json(
+        {
+          error:
+            "Praxisberichte-Tabelle fehlt in der Datenbank. Bitte Migrationen ausführen.",
+        },
+        { status: 503 }
+      );
+    }
     return Response.json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 }

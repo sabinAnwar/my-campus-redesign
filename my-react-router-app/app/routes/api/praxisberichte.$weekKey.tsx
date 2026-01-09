@@ -1,3 +1,4 @@
+import { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma";
 import { getUserFromRequest } from "~/lib/auth.server";
 import { LoaderFunctionArgs } from "react-router-dom";
@@ -84,6 +85,19 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     );
   } catch (error) {
     console.error(" Error updating praxisbericht:", error);
+    const isMissingTable =
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      (error.code === "P2021" ||
+        error.message.toLowerCase().includes("does not exist"));
+    if (isMissingTable) {
+      return Response.json(
+        {
+          error:
+            "Praxisberichte-Tabelle fehlt in der Datenbank. Bitte Migrationen ausführen.",
+        },
+        { status: 503 }
+      );
+    }
     // Surface more context to help diagnose 500s in dev
     const message =
       error instanceof Error

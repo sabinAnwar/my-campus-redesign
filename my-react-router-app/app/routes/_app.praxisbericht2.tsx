@@ -191,7 +191,7 @@ export default function Praxisbericht2() {
       if (e && e.status === 401) {
         navigate("/");
       } else {
-        toast.error("Failed to load Praxisberichte");
+        toast.error(e?.message || "Failed to load Praxisberichte");
       }
       setLoading(false);
     }
