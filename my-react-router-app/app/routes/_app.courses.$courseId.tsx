@@ -1,5 +1,7 @@
 import React, { useEffect, useState, useCallback } from "react";
 import { useLoaderData, useNavigate, useParams, useRevalidator } from "react-router-dom";
+import path from "node:path";
+import fs from "node:fs/promises";
 import {
   ClipboardList,
   FolderOpen,
@@ -46,6 +48,58 @@ import { NewTopicModal } from "~/components/courses/detail/NewTopicModal";
 import { VideoModal } from "~/components/courses/detail/VideoModal";
 
 const COURSE_TIMEOUT_MS = 2500;
+const PUBLIC_STUDY_DIR = path.resolve(
+  process.cwd(),
+  "public",
+  "uploads",
+  "studiengaenge"
+);
+
+const toResourceType = (fileName: string) => {
+  const ext = fileName.split(".").pop()?.toLowerCase() || "";
+  if (["mp4", "webm", "mov"].includes(ext)) return "video";
+  if (["pdf"].includes(ext)) return "pdf";
+  return "file";
+};
+
+const toPublicResourceType = (relPath: string, fileName: string) => {
+  const ext = fileName.split(".").pop()?.toLowerCase() || "";
+  const lowerPath = relPath.toLowerCase();
+  if (["mp4", "webm", "mov"].includes(ext)) return "video";
+  if (["mp3", "wav", "m4a", "aac", "ogg"].includes(ext)) return "podcast";
+  if (lowerPath.includes("/podcasts/")) return "podcast";
+  if (lowerPath.includes("/skript/") || lowerPath.includes("/script/"))
+    return "script";
+  if (lowerPath.includes("/folien/")) return "slides";
+  if (lowerPath.includes("/musterklausuren/")) return "exam";
+  return "reading";
+};
+
+const sizeFromExt = (fileName: string) => {
+  const ext = fileName.split(".").pop()?.toUpperCase();
+  return ext ? ext : undefined;
+};
+
+const titleFromPath = (filePath: string) => {
+  const base = filePath.split("/").pop() || filePath;
+  const name = base.replace(/\.[^/.]+$/, "");
+  return name.replace(/[_-]+/g, " ").trim();
+};
+
+async function collectPublicStudyFiles(dir: string, baseDir: string) {
+  const entries = await fs.readdir(dir, { withFileTypes: true });
+  const results: string[] = [];
+  for (const entry of entries) {
+    const fullPath = path.join(dir, entry.name);
+    if (entry.isDirectory()) {
+      results.push(...(await collectPublicStudyFiles(fullPath, baseDir)));
+    } else if (entry.isFile()) {
+      const rel = path.relative(baseDir, fullPath).split(path.sep).join("/");
+      results.push(rel);
+    }
+  }
+  return results;
+}
 
 export const loader = async ({
   request,
@@ -165,7 +219,7 @@ export const loader = async ({
   console.log(` Course Loader: Course found: ${typedCourse.name}`);
 
   // Map database files to UI resources
-  const resources: CourseResource[] = (typedCourse.files || []).map((f: any) => ({
+  let resources: CourseResource[] = (typedCourse.files || []).map((f: any) => ({
     id: f.id,
     title: f.name,
     url: f.url,
@@ -179,6 +233,35 @@ export const loader = async ({
     duration: f.file_type === "video" ? f.size || "12:45" : undefined,
     date: formatGermanDate(f.uploaded_at),
   }));
+
+  // Attach public study materials as dummy resources for current-semester courses
+  if (Number(typedCourse.semester) === Number(typedUser.semester)) {
+    try {
+      await fs.access(PUBLIC_STUDY_DIR);
+      const relPaths = await collectPublicStudyFiles(
+        PUBLIC_STUDY_DIR,
+        PUBLIC_STUDY_DIR
+      ).then((paths) => paths.filter((p) => !p.endsWith("/.gitkeep") && !p.endsWith(".gitkeep")));
+      const publicResources: CourseResource[] = relPaths.map((relPath, idx) => {
+        const fileName = relPath.split("/").pop() || relPath;
+        const type = toPublicResourceType(relPath, fileName);
+        return {
+          id: `public-${typedCourse.id}-${idx}`,
+          title: titleFromPath(relPath),
+          url: `/uploads/studiengaenge/${relPath}`,
+          type,
+          size: sizeFromExt(fileName),
+        };
+      });
+      const existingUrls = new Set(resources.map((r) => r.url));
+      resources = [
+        ...resources,
+        ...publicResources.filter((r) => !existingUrls.has(r.url)),
+      ];
+    } catch (error) {
+      console.warn("Course Loader: failed to read public study materials", error);
+    }
+  }
 
   // Fetch tasks for this user and this course
   const tasks = await withTimeout(
@@ -712,7 +795,7 @@ export default function CourseDetail() {
   };
 
   return (
-    <div className="pb-20">
+    <div className="pb-20 overflow-x-hidden">
       <CourseHeader 
         course={course} 
         language={language} 
@@ -772,6 +855,7 @@ export default function CourseDetail() {
                 t={t} 
                 submissions={submissions}
                 translate={translate}
+                onTabChange={setActiveTab}
             />
         )}
         

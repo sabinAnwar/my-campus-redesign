@@ -1,4 +1,4 @@
-import { ChevronDown, FileText, Play, Upload } from "lucide-react";
+import { ChevronDown, ClipboardCheck, FileText, Play, Upload } from "lucide-react";
 import type { Course, CourseResource, ResourceSection } from "~/types/courseDetail";
 
 interface CourseResourcesTabProps {
@@ -12,28 +12,44 @@ interface CourseResourcesTabProps {
 export function CourseResourcesTab({ course, language, expandedSections, toggleSection, onFileClick }: CourseResourcesTabProps) {
   const sections: ResourceSection[] = [
     {
-      id: "moduleGuide",
-      label: language === "de" ? "Modulleitfaden" : "Module Guide",
-      icon: FileText,
-      color: "cyan",
-      defaultExpanded: true,
-      items: course.resources?.filter((r) => r.type === "guide") || [],
+      id: "scripts",
+      label: language === "de" ? "Skripte" : "Scripts",
+      icon: Play,
+      color: "amber",
+      defaultExpanded: false,
+      items: course.resources?.filter((r) => r.type === "script") || [],
     },
     {
-      id: "handbook",
-      label: language === "de" ? "Modulhandbuch" : "Module Handbook",
+      id: "slides",
+      label: language === "de" ? "Folien" : "Slides",
       icon: FileText,
-      color: "purple",
+      color: "cyan",
       defaultExpanded: false,
-      items: course.resources?.filter((r) => r.type === "handbook") || [],
+      items: course.resources?.filter((r) => r.type === "slides") || [],
+    },
+    {
+      id: "exams",
+      label: language === "de" ? "Musterklausuren" : "Sample Exams",
+      icon: ClipboardCheck,
+      color: "rose",
+      defaultExpanded: false,
+      items: course.resources?.filter((r) => r.type === "exam") || [],
+    },
+    {
+      id: "podcasts",
+      label: language === "de" ? "Podcasts" : "Podcasts",
+      icon: Play,
+      color: "amber",
+      defaultExpanded: false,
+      items: course.resources?.filter((r) => r.type === "podcast") || [],
     },
     {
       id: "material",
       label: language === "de" ? "Kursmaterial" : "Course Material",
-      icon: Play,
-      color: "amber",
+      icon: FileText,
+      color: "purple",
       defaultExpanded: false,
-      items: course.resources?.filter((r) => r.type === "podcast" || r.type === "reading") || [],
+      items: course.resources?.filter((r) => r.type === "reading") || [],
     },
   ];
 

@@ -9,19 +9,20 @@ interface CourseOverviewTabProps {
   t: TranslationType;
   submissions: CourseSubmission[];
   translate: (val: string) => string;
+  onTabChange: (tabId: string) => void;
 }
 
-export function CourseOverviewTab({ course, language, t, submissions, translate }: CourseOverviewTabProps) {
+export function CourseOverviewTab({ course, language, t, submissions, translate, onTabChange }: CourseOverviewTabProps) {
   const examTask = submissions.find(
     (s) => s.type === "Online-Klausur" || s.type === "Klausur"
   ) || submissions[0];
 
   return (
-    <div className="space-y-8 animate-in fade-in slide-in-from-bottom-5 duration-500">
+    <div className="space-y-5 animate-in fade-in slide-in-from-bottom-5 duration-500">
       {/* ... rest of the component content is identical ... */}
       {/* I will use the exact same logic but typed */}
       {/* Exam Information Banner */}
-      <div className="relative overflow-hidden rounded-xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-iu-blue/20 bg-gradient-to-br from-iu-blue/10 via-background to-background p-4 sm:p-6 md:p-8 lg:p-10 shadow-2xl shadow-iu-blue/5">
+      <div className="relative overflow-hidden rounded-xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-iu-blue/20 bg-gradient-to-br from-iu-blue/10 via-background to-background p-4 sm:p-5 lg:p-6 shadow-2xl shadow-iu-blue/5">
         <div className="absolute top-0 right-0 w-48 sm:w-96 h-48 sm:h-96 bg-iu-blue/10 rounded-full blur-[80px] -mr-24 sm:-mr-48 -mt-24 sm:-mt-48 animate-pulse" />
 
         <div className="relative flex flex-col lg:flex-row lg:items-center justify-between gap-4 sm:gap-6 lg:gap-10">
@@ -43,7 +44,7 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
           </div>
 
           <div className="grid grid-cols-3 gap-2 sm:gap-3 w-full lg:w-auto">
-            <StatItem icon={CalendarDays} label="Datum" value={examTask?.dueDate || "—"} />
+            <StatItem icon={CalendarDays} label="Datum" value={examTask?.due_date || "—"} />
             <StatItem icon={ClipboardCheck} label="Form" value={examTask ? translate(examTask.type) : "—"} />
             <StatItem icon={MapPin} label="Ort" value={examTask?.type === "Online-Klausur" ? "Online" : "Hörsaal H1"} />
           </div>
@@ -86,8 +87,7 @@ export function CourseOverviewTab({ course, language, t, submissions, translate 
 
         {/* Right Column (Instructor & Tools) */}
         <div className="lg:col-span-4 space-y-4 sm:space-y-6 md:space-y-8">
-          {/* Instructor Card removed as requested */}
-          {/* <InstructorCard course={course} language={language} /> */}
+          <ForumCard language={language} onGoToForum={() => onTabChange("forum")} />
           <QuickLinksCard language={language} />
         </div>
       </div>
@@ -171,6 +171,54 @@ function ProgressStatCard({ icon: Icon, label, value, progress, subLabel }: { ic
           {subLabel}
         </p>
       </div>
+    </div>
+  );
+}
+
+function ForumCard({ language, onGoToForum }: { language: string; onGoToForum: () => void }) {
+  return (
+    <div className="rounded-xl sm:rounded-2xl md:rounded-[2.5rem] border border-border/40 bg-card/40 backdrop-blur-xl p-4 sm:p-6 md:p-8 lg:p-10 shadow-sm relative overflow-hidden group">
+      <div className="absolute top-0 right-0 w-32 h-32 bg-iu-blue/5 rounded-full blur-3xl opacity-0 group-hover:opacity-100 transition-opacity" />
+      
+      <div className="flex items-center gap-4 mb-4 sm:mb-6">
+        <div className="p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white group-hover:rotate-6 transition-transform shadow-sm">
+          <MessageSquare size={24} />
+        </div>
+        <div>
+          <h3 className="text-lg sm:text-xl font-black text-foreground">
+            {language === "de" ? "Modulforum" : "Module Forum"}
+          </h3>
+          <p className="text-[10px] font-black text-muted-foreground uppercase tracking-widest mt-1">
+            {language === "de" ? "Aktuelle Diskussionen" : "Live Discussions"}
+          </p>
+        </div>
+      </div>
+
+      <p className="text-xs sm:text-sm font-medium text-muted-foreground mb-6 leading-relaxed">
+        {language === "de"
+          ? "Tausche dich mit Kommilitonen über Kursinhalte aus, stelle Fragen und teile dein Wissen."
+          : "Exchange ideas with fellow students about course content, ask questions and share your knowledge."}
+      </p>
+
+      <div className="flex items-center gap-3 p-3 rounded-xl bg-muted/30 border border-border/40 mb-6">
+        <div className="flex -space-x-2">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="w-6 h-6 rounded-full border-2 border-card bg-muted flex items-center justify-center text-[10px] font-bold">
+              {String.fromCharCode(64 + i)}
+            </div>
+          ))}
+        </div>
+        <span className="text-[10px] font-bold text-muted-foreground uppercase tracking-widest">
+          +12 {language === "de" ? "aktiv" : "active"}
+        </span>
+      </div>
+
+      <button 
+        onClick={onGoToForum}
+        className="w-full py-3 rounded-xl bg-iu-blue text-white font-bold text-xs uppercase tracking-widest hover:bg-iu-blue transition-all shadow-lg shadow-iu-blue/15 active:scale-95"
+      >
+        {language === "de" ? "Zum Forum" : "Go to Forum"}
+      </button>
     </div>
   );
 }

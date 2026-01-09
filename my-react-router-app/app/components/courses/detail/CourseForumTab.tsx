@@ -45,10 +45,10 @@ export function CourseForumTab({
   */
 
   return (
-    <div className="space-y-6 sm:space-y-10 animate-in fade-in duration-600">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in duration-600">
       {forumView === "list" && (
         <>
-          <div className="flex flex-col md:flex-row md:items-end justify-between gap-6 sm:gap-8 mb-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 sm:gap-6 mb-2">
             <div>
               <h3 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tighter mb-2 sm:mb-3">
                 {t.forum}
@@ -61,15 +61,15 @@ export function CourseForumTab({
             </div>
             <button
               onClick={onCreateTopicClick}
-              className="px-6 sm:px-8 py-4 sm:py-5 bg-iu-blue text-white font-black rounded-2xl hover:bg-iu-blue transition-all shadow-xl shadow-iu-blue/25 active:scale-95 flex items-center gap-3 group focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
+              className="px-4 sm:px-5 py-2.5 sm:py-3 bg-iu-blue text-white font-bold rounded-xl hover:bg-iu-blue transition-all shadow-lg shadow-iu-blue/20 active:scale-95 flex items-center gap-2 group focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
               aria-label={t.createTopic}
             >
               <Plus
-                size={20}
+                size={18}
                 className="group-hover:rotate-90 transition-transform duration-300"
                 aria-hidden="true"
               />
-              {t.createTopic}
+              <span className="text-sm">{t.createTopic}</span>
             </button>
           </div>
 
@@ -128,7 +128,7 @@ export function CourseForumTab({
                         </div>
                         <span className="flex items-center gap-2">
                           <Clock size={12} className="text-iu-blue/40 dark:text-white" aria-hidden="true" />
-                          {topic.lastPost}
+                          {topic.last_post}
                         </span>
                         <span className="flex items-center gap-2 px-3 py-1 bg-iu-blue/5 dark:bg-iu-blue rounded-lg text-iu-blue dark:text-white">
                           <MessageCircle size={12} aria-hidden="true" />
@@ -183,7 +183,7 @@ export function CourseForumTab({
           </div>
 
           {/* Messages Area - Scrollable */}
-          <div className="flex-1 overflow-y-auto pr-4 space-y-6 sm:space-y-8 -mr-4 pb-4 scroll-smooth">
+          <div className="flex-1 overflow-y-auto space-y-6 sm:space-y-8 pb-4 scroll-smooth no-scrollbar">
             {/* Original Post */}
             <div className="bg-card/40 backdrop-blur-md rounded-[2.5rem] border border-border/40 p-6 sm:p-10 shadow-sm">
               <div className="flex items-center justify-between mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border/30">
@@ -198,7 +198,7 @@ export function CourseForumTab({
                     <div className="text-[10px] sm:text-xs font-bold text-muted-foreground flex items-center gap-2">
                       <span>Student</span>
                       <span className="w-1 h-1 rounded-full bg-border" />
-                      <span>{selectedTopic.lastPost}</span>
+                      <span>{selectedTopic.last_post}</span>
                     </div>
                   </div>
                 </div>

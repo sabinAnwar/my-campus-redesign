@@ -32,8 +32,8 @@ export function CourseHeader({ course, language, onBack }: CourseHeaderProps) {
     : (course?.name_en || course?.title || course?.name || "Course");
 
   return (
-    <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl border-b border-border/40 -mx-3 sm:-mx-4 md:-mx-6 lg:-mx-10 transition-all duration-300 mb-6">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-6">
+    <div className="sticky top-0 z-30 bg-background/90 backdrop-blur-xl border-b border-border/40 -mx-4 sm:-mx-6 lg:-mx-8 -mt-4 sm:-mt-6 transition-all duration-300 mb-2 sm:mb-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 lg:py-5">
         <PageHeader
           icon={BookOpen}
           aria-hidden="true"

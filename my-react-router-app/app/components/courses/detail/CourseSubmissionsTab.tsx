@@ -12,8 +12,8 @@ interface CourseSubmissionsTabProps {
 
 export function CourseSubmissionsTab({ language, t, submissions, translate, openModal }: CourseSubmissionsTabProps) {
   return (
-    <div className="space-y-6 sm:space-y-8 md:space-y-12 animate-in fade-in slide-in-from-bottom-6 duration-700">
-      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-5 sm:gap-8 mb-4 sm:mb-6">
+    <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
+      <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-2">
         <div className="max-w-2xl">
           <h3 className="text-2xl sm:text-3xl md:text-4xl font-black text-foreground tracking-tight mb-2 sm:mb-3 break-words [hyphens:auto]">
             {t.submissions}
@@ -24,8 +24,8 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
               : "Keep track of your deadlines and manage your written assignments in one central place."}
           </p>
         </div>
-        <button className="w-full lg:w-auto px-6 sm:px-8 py-3.5 sm:py-4 md:py-5 rounded-xl md:rounded-2xl bg-iu-blue text-white font-bold sm:font-black text-sm hover:bg-iu-blue/90 transition-all shadow-xl shadow-iu-blue/25 flex items-center justify-center gap-2 sm:gap-3 active:scale-95 group shrink-0">
-          <Plus className="w-5 h-5 group-hover:rotate-90 transition-transform duration-300" />
+        <button className="w-full lg:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-iu-blue text-white font-bold text-sm hover:bg-iu-blue/90 transition-all shadow-lg shadow-iu-blue/20 flex items-center justify-center gap-2 active:scale-95 group shrink-0">
+          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
           <span>
             {language === "de" ? "Hausarbeit abgeben" : "Submit Assignment"}
           </span>
@@ -91,9 +91,9 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                             Deadline:
                           </span>
                           <span
-                            className={`font-black tracking-tight ${assignment.daysUntilDue < 7 ? "text-iu-red dark:text-white" : "text-foreground"}`}
+                            className={`font-black tracking-tight ${assignment.days_until_due < 7 ? "text-iu-red dark:text-white" : "text-foreground"}`}
                           >
-                            {assignment.dueDate}
+                            {assignment.due_date}
                           </span>
                         </div>
                         <div className="flex items-center gap-1.5 sm:gap-2 text-xs sm:text-sm">
@@ -106,18 +106,18 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                           </span>
                         </div>
                       </div>
-                      {isSubmitted && assignment.submittedFileName && (
+                      {isSubmitted && assignment.submitted_file_name && (
                         <div className="flex items-center gap-3 rounded-xl bg-muted/40 border border-border/50 px-3 py-2 w-fit">
                           <div className="p-2 rounded-lg bg-iu-blue text-white">
                             <FileText className="w-4 h-4" />
                           </div>
                           <div className="text-xs font-bold text-foreground">
                             <div className="truncate max-w-[220px]">
-                              {assignment.submittedFileName}
+                              {assignment.submitted_file_name}
                             </div>
-                            {typeof assignment.submittedFileSize === "number" && (
+                            {typeof assignment.submitted_file_size === "number" && (
                               <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                                {(assignment.submittedFileSize / 1024 / 1024).toFixed(2)} MB
+                                {(assignment.submitted_file_size / 1024 / 1024).toFixed(2)} MB
                               </div>
                             )}
                           </div>
