@@ -64,23 +64,21 @@ export async function action({ request }: ActionFunctionArgs) {
 
     if (action === "like" && postId) {
       try {
-        // Check if user already liked this post
         const existingLike = await prisma.forumPostLike.findUnique({
           where: {
-            postId_userId: {
-              postId: Number(postId),
-              userId: Number(user.id),
+            post_id_user_id: {
+              post_id: Number(postId),
+              user_id: Number(user.id),
             },
           },
         });
 
         if (!existingLike) {
-          // Create like record and increment count
           await prisma.$transaction([
             prisma.forumPostLike.create({
               data: {
-                postId: Number(postId),
-                userId: Number(user.id),
+                post_id: Number(postId),
+                user_id: Number(user.id),
               },
             }),
             prisma.forumPost.update({
@@ -90,7 +88,11 @@ export async function action({ request }: ActionFunctionArgs) {
           ]);
         }
 
-        return Response.json({ success: true });
+        const current = await prisma.forumPost.findUnique({
+          where: { id: Number(postId) },
+          select: { likes: true },
+        });
+        return Response.json({ success: true, likes: current?.likes ?? 0, alreadyLiked: !!existingLike });
       } catch (error) {
         console.error("Error liking post:", error);
         return Response.json({ error: "Failed to like post" }, { status: 500 });

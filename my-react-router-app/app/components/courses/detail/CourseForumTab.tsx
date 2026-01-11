@@ -16,6 +16,8 @@ interface CourseForumTabProps {
   onBackToTopics: () => void;
   onPostReply: (e: React.FormEvent) => void;
   onCopyMessage: (content: string) => void;
+  onLikePost: (postId: number) => void;
+  onLikeTopic: (topicId: number) => void;
 }
 
 export function CourseForumTab({
@@ -32,6 +34,8 @@ export function CourseForumTab({
   onBackToTopics,
   onPostReply,
   onCopyMessage,
+  onLikePost,
+  onLikeTopic,
 }: CourseForumTabProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -136,7 +140,7 @@ export function CourseForumTab({
                         </span>
                       </div>
                     </div>
-                    <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-foreground dark:text-white transition-all duration-500 shadow-inner">
+                    <div className="p-3 sm:p-4 rounded-2xl bg-muted/30 group-hover:bg-iu-blue group-hover:text-white dark:text-white transition-all duration-500 shadow-inner">
                       <ArrowLeft
                         size={22}
                         className="rotate-180 group-hover:translate-x-1 transition-transform"
@@ -157,7 +161,7 @@ export function CourseForumTab({
           <div className="flex items-center gap-4 sm:gap-6 mb-6 sm:mb-8 pb-6 sm:pb-8 border-b border-border/40 flex-shrink-0">
             <button
                onClick={onBackToTopics}
-               className="p-3 sm:p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-foreground dark:text-white dark:hover:text-foreground dark:text-white transition-all group shadow-sm active:scale-95"
+               className="p-3 sm:p-4 rounded-2xl bg-muted/50 hover:bg-iu-blue dark:hover:bg-iu-blue hover:text-white dark:text-white dark:hover:text-white transition-all group shadow-sm active:scale-95"
              >
                <ArrowLeft
                  size={18}
@@ -216,6 +220,13 @@ export function CourseForumTab({
                   <Copy size={12} />
                   {language === "de" ? "Kopieren" : "Copy"}
                 </button>
+                <button
+                  onClick={() => onLikeTopic(selectedTopic.id)}
+                  className="flex items-center gap-2 px-4 py-2 rounded-xl bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-[10px] font-black uppercase tracking-wider text-muted-foreground dark:text-white active:scale-95 cursor-pointer"
+                >
+                  <ThumbsUp size={12} />
+                  {(selectedTopic.likes ?? 0).toString()}
+                </button>
               </div>
             </div>
 
@@ -255,13 +266,25 @@ export function CourseForumTab({
                     <p className="text-foreground font-medium leading-relaxed text-sm sm:text-base">
                       {post.content}
                     </p>
-                    <button 
-                      onClick={() => onCopyMessage(post.content)}
-                      className="ml-4 p-2 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white active:scale-95 cursor-pointer shrink-0"
-                      title={language === "de" ? "Kopieren" : "Copy"}
-                    >
-                      <Copy size={12} />
-                    </button>
+                    <div className="ml-4 flex items-center gap-2 shrink-0">
+                      <button
+                        onClick={() => onLikePost(post.id)}
+                        className="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white active:scale-95 cursor-pointer"
+                        title={language === "de" ? "Gefällt mir" : "Like"}
+                      >
+                        <ThumbsUp size={12} />
+                        <span className="text-[10px] font-black uppercase tracking-wider">
+                          {post.likes ?? 0}
+                        </span>
+                      </button>
+                      <button
+                        onClick={() => onCopyMessage(post.content)}
+                        className="p-2 rounded-lg bg-muted/30 hover:bg-iu-blue/10 dark:hover:bg-iu-blue/20 hover:text-iu-blue dark:hover:text-white transition-colors text-muted-foreground dark:text-white active:scale-95 cursor-pointer"
+                        title={language === "de" ? "Kopieren" : "Copy"}
+                      >
+                        <Copy size={12} />
+                      </button>
+                    </div>
                   </div>
                 </div>
               </div>

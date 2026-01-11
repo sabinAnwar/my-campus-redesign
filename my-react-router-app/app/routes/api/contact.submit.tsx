@@ -152,7 +152,7 @@ export async function action({ request }: ActionFunctionArgs) {
     `;
 
     // Send email to your address
-    await sendEmail("demoanwar2@gmail.com", emailSubject, emailHtml);
+    await sendEmail("sabinanwar2@gmail.com", emailSubject, emailHtml);
 
     // Also send confirmation email to the user
     const userConfirmationHtml = `

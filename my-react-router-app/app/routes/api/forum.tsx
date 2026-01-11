@@ -34,6 +34,7 @@ export async function loader({ request }: LoaderFunctionArgs) {
       author: topic.author.name || "Unknown",
       replies: topic.posts.length,
       views: topic.views,
+      likes: topic.likes ?? 0,
       lastPost: topic.updated_at.toLocaleDateString("de-DE"),
       status: topic.pinned ? "pinned" : "active",
       content: topic.content,
@@ -97,6 +98,7 @@ export async function action({ request }: ActionFunctionArgs) {
           author: topic.author?.name || "Unknown",
           replies: 0,
           views: 0,
+          likes: topic.likes ?? 0,
           lastPost: topic.created_at.toLocaleDateString("de-DE"),
           status: "active",
           content: topic.content,
@@ -112,17 +114,40 @@ export async function action({ request }: ActionFunctionArgs) {
   if (request.method === "PUT") {
     const { topicId, action } = data;
     
-    if (action === "view" && topicId) {
+    if (action === "like" && topicId) {
       try {
-        await prisma.forumTopic.update({
-          where: { id: Number(topicId) },
-          data: { views: { increment: 1 } }
+        const existingLike = await prisma.forumTopicLike.findUnique({
+          where: {
+            topic_id_user_id: {
+              topic_id: Number(topicId),
+              user_id: Number(user.id),
+            },
+          },
         });
-        
-        return Response.json({ success: true });
+
+        if (!existingLike) {
+          await prisma.$transaction([
+            prisma.forumTopicLike.create({
+              data: {
+                topic_id: Number(topicId),
+                user_id: Number(user.id),
+              },
+            }),
+            prisma.forumTopic.update({
+              where: { id: Number(topicId) },
+              data: { likes: { increment: 1 } },
+            }),
+          ]);
+        }
+
+        const current = await prisma.forumTopic.findUnique({
+          where: { id: Number(topicId) },
+          select: { likes: true },
+        });
+        return Response.json({ success: true, likes: current?.likes ?? 0, alreadyLiked: !!existingLike });
       } catch (error) {
-        console.error("Error updating view:", error);
-        return Response.json({ error: "Failed to update view" }, { status: 500 });
+        console.error("Error liking topic:", error);
+        return Response.json({ error: "Failed to like topic" }, { status: 500 });
       }
     }
   }

@@ -532,6 +532,8 @@ export default function CourseDetail() {
   const [replyContent, setReplyContent] = useState("");
   const [forumTopics, setForumTopics] = useState<any[]>([]);
   const [currentUser, setCurrentUser] = useState<string>("Student");
+  const [likedPostIds, setLikedPostIds] = useState<number[]>([]);
+  const [likedTopicIds, setLikedTopicIds] = useState<number[]>([]);
 
   // Fetch current user
   useEffect(() => {
@@ -654,23 +656,7 @@ export default function CourseDetail() {
   };
 
   const handleTopicClick = (topic: any) => {
-    if (topic.id) {
-        fetch("/api/forum", {
-          method: "PUT",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            topicId: topic.id,
-            action: "view",
-          }),
-        }).catch(console.error);
-    }
-    const updatedTopics = forumTopics.map((t) => {
-        if (t.id === topic.id)
-          return { ...t, views: (t.views || 0) + 1 };
-        return t;
-    });
-    setForumTopics(updatedTopics);
-    const updatedTopic = updatedTopics.find((t) => t.id === topic.id);
+    const updatedTopic = forumTopics.find((t) => t.id === topic.id);
     setSelectedTopic(updatedTopic);
     setForumView("thread");
   };
@@ -720,6 +706,62 @@ export default function CourseDetail() {
       showErrorToast(
         language === "de" ? "Antwort konnte nicht gepostet werden" : "Failed to post reply"
       );
+    }
+  };
+
+  const handleLikePost = async (postId: number) => {
+    if (!postId || likedPostIds.includes(postId)) return;
+    try {
+      const res = await fetch("/api/forum/posts", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ postId, action: "like" }),
+      });
+      if (!res.ok) return;
+      const data = await res.json().catch(() => null);
+      setLikedPostIds((prev) => [...prev, postId]);
+      if (selectedTopic) {
+        const updatedTopic = {
+          ...selectedTopic,
+          posts: selectedTopic.posts.map((post: any) =>
+            post.id === postId
+              ? { ...post, likes: data?.likes ?? (post.likes || 0) + 1 }
+              : post
+          ),
+        };
+        setSelectedTopic(updatedTopic);
+        setForumTopics(
+          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to like post", error);
+    }
+  };
+
+  const handleLikeTopic = async (topicId: number) => {
+    if (!topicId || likedTopicIds.includes(topicId)) return;
+    try {
+      const res = await fetch("/api/forum", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ topicId, action: "like" }),
+      });
+      if (!res.ok) return;
+      const data = await res.json().catch(() => null);
+      setLikedTopicIds((prev) => [...prev, topicId]);
+      if (selectedTopic && selectedTopic.id === topicId) {
+        const updatedTopic = {
+          ...selectedTopic,
+          likes: data?.likes ?? (selectedTopic.likes || 0) + 1,
+        };
+        setSelectedTopic(updatedTopic);
+        setForumTopics(
+          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t))
+        );
+      }
+    } catch (error) {
+      console.error("Failed to like topic", error);
     }
   };
 
@@ -887,7 +929,7 @@ export default function CourseDetail() {
         )}
 
         {activeTab === "forum" && (
-            <CourseForumTab
+              <CourseForumTab
                 language={language}
                 t={t}
                 forumView={forumView}
@@ -901,7 +943,9 @@ export default function CourseDetail() {
                 onBackToTopics={handleBackToTopics}
                 onPostReply={handlePostReply}
                 onCopyMessage={handleCopyMessage}
-            />
+                onLikePost={handleLikePost}
+                onLikeTopic={handleLikeTopic}
+              />
         )}
       </main>
 
