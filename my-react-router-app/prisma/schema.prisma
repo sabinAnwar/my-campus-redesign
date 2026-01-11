@@ -53,6 +53,8 @@ model User {
   // Forum relations
   forum_topics       ForumTopic[]
   forum_posts        ForumPost[]
+  forum_post_likes   ForumPostLike[]
+  forum_topic_likes  ForumTopicLike[]
   
   // Contact submissions
   contact_submissions ContactSubmission[]
@@ -297,10 +299,12 @@ model ForumTopic {
   author     User        @relation(fields: [author_id], references: [id])
   author_id  Int
   views      Int         @default(0)
+  likes      Int         @default(0)
   pinned     Boolean     @default(false)
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
   posts      ForumPost[]
+  topic_likes ForumTopicLike[]
 
   @@index([course_id])
   @@map("forum_topics")
@@ -316,8 +320,35 @@ model ForumPost {
   likes      Int        @default(0)
   created_at DateTime   @default(now())
   updated_at DateTime   @updatedAt
+  post_likes ForumPostLike[]
 
   @@map("forum_posts")
+}
+
+model ForumPostLike {
+  id         Int      @id @default(autoincrement())
+  post       ForumPost @relation(fields: [post_id], references: [id], onDelete: Cascade)
+  post_id    Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  created_at DateTime @default(now())
+
+  @@unique([post_id, user_id])
+  @@index([user_id])
+  @@map("forum_post_likes")
+}
+
+model ForumTopicLike {
+  id         Int      @id @default(autoincrement())
+  topic      ForumTopic @relation(fields: [topic_id], references: [id], onDelete: Cascade)
+  topic_id   Int
+  user       User     @relation(fields: [user_id], references: [id], onDelete: Cascade)
+  user_id    Int
+  created_at DateTime @default(now())
+
+  @@unique([topic_id, user_id])
+  @@index([user_id])
+  @@map("forum_topic_likes")
 }
 
 // Contact Form Submissions

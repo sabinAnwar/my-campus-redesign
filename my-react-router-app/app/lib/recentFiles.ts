@@ -1,7 +1,7 @@
 // Utility functions for managing recent files in localStorage
 // This allows recent files tracking to work even when /files route is removed
 
-const LS_KEYS = {
+const RECENT_FILES_STORAGE_KEYS = {
   recentFiles: 'recentFilesList',
   readingStates: 'fileReadingStates',
   lastOpened: 'lastOpenedFile'
@@ -15,7 +15,7 @@ const LS_KEYS = {
  */
 export function saveRecentFile(file: { id: string | number; name: string; type: any; url: any; duration?: string; }, moduleLabel: any, studiengangName: any) {
   try {
-    const stored = JSON.parse(localStorage.getItem(LS_KEYS.recentFiles) || '[]');
+    const stored = JSON.parse(localStorage.getItem(RECENT_FILES_STORAGE_KEYS.recentFiles) || '[]');
     const recentFiles = Array.isArray(stored) ? stored : [];
     
     // Generate unique ID if not provided
@@ -42,11 +42,11 @@ export function saveRecentFile(file: { id: string | number; name: string; type: 
     };
     
     // Remove duplicates (same file ID) and add new entry at top
-    const dedup = recentFiles.filter((f) => f.id !== entry.id);
-    const next = [entry, ...dedup].slice(0, 30); // Increased to 30 for better history
+    const uniqueRecentFiles = recentFiles.filter((f) => f.id !== entry.id);
+    const next = [entry, ...uniqueRecentFiles].slice(0, 30); // Increased to 30 for better history
     
-    localStorage.setItem(LS_KEYS.recentFiles, JSON.stringify(next));
-    localStorage.setItem(LS_KEYS.lastOpened, JSON.stringify(entry));
+    localStorage.setItem(RECENT_FILES_STORAGE_KEYS.recentFiles, JSON.stringify(next));
+    localStorage.setItem(RECENT_FILES_STORAGE_KEYS.lastOpened, JSON.stringify(entry));
     
     return next;
   } catch (error) {
@@ -61,7 +61,7 @@ export function saveRecentFile(file: { id: string | number; name: string; type: 
  */
 export function getRecentFiles() {
   try {
-    const stored = JSON.parse(localStorage.getItem(LS_KEYS.recentFiles) || '[]');
+    const stored = JSON.parse(localStorage.getItem(RECENT_FILES_STORAGE_KEYS.recentFiles) || '[]');
     return Array.isArray(stored) ? stored : [];
   } catch (error) {
     console.error('Error getting recent files:', error);
@@ -76,13 +76,13 @@ export function getRecentFiles() {
  */
 export function updateReadingState(fileId: string | number, readingState: any) {
   try {
-    const states = JSON.parse(localStorage.getItem(LS_KEYS.readingStates) || '{}');
+    const states = JSON.parse(localStorage.getItem(RECENT_FILES_STORAGE_KEYS.readingStates) || '{}');
     states[fileId] = {
       ...states[fileId],
       ...readingState,
       lastUpdated: Date.now()
     };
-    localStorage.setItem(LS_KEYS.readingStates, JSON.stringify(states));
+    localStorage.setItem(RECENT_FILES_STORAGE_KEYS.readingStates, JSON.stringify(states));
   } catch (error) {
     console.error('Error updating reading state:', error);
   }
@@ -95,7 +95,7 @@ export function updateReadingState(fileId: string | number, readingState: any) {
  */
 export function getReadingState(fileId: string | number) {
   try {
-    const states = JSON.parse(localStorage.getItem(LS_KEYS.readingStates) || '{}');
+    const states = JSON.parse(localStorage.getItem(RECENT_FILES_STORAGE_KEYS.readingStates) || '{}');
     return states[fileId] || null;
   } catch (error) {
     console.error('Error getting reading state:', error);
@@ -108,10 +108,9 @@ export function getReadingState(fileId: string | number) {
  */
 export function clearRecentFiles() {
   try {
-    localStorage.setItem(LS_KEYS.recentFiles, '[]');
-    localStorage.removeItem(LS_KEYS.lastOpened);
+    localStorage.setItem(RECENT_FILES_STORAGE_KEYS.recentFiles, '[]');
+    localStorage.removeItem(RECENT_FILES_STORAGE_KEYS.lastOpened);
   } catch (error) {
     console.error('Error clearing recent files:', error);
   }
 }
-

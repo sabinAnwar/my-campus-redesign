@@ -172,8 +172,8 @@ export const loader = async ({ request }: { request: Request }) => {
       });
     }
 
-    for (const u of users) { // u has camelCase properties now
-      const tz = u.reminderTimezone || "Europe/Berlin";
+    for (const u of users) {
+      const tz = u.reminder_timezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
       
@@ -189,8 +189,6 @@ export const loader = async ({ request }: { request: Request }) => {
         continue;
       }
 
-      console.log(` Sending reminder to ${u.email} (Target: ${targetHour}:${targetMinute}, Now: ${currentHour}:${currentMinute})`);
-
       // Fix: Use correct model and fields
       const submitted = await prisma.practicalReport.findFirst({
         where: {
@@ -200,7 +198,6 @@ export const loader = async ({ request }: { request: Request }) => {
         },
       });
       if (submitted) {
-        console.log(`- Already submitted: ${u.email}`);
         continue;
       }
 

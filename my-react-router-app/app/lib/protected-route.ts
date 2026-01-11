@@ -5,7 +5,7 @@ export async function requireAuth(request: any) {
   const user = await getUser(request);
 
   if (!user) {
-    throw redirect('/login');
+    throw redirect('/');
   }
 
   return user;

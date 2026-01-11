@@ -854,7 +854,7 @@ export default function Dashboard() {
                         setDraggedWidget(null);
                         setDragOverWidget(null);
                       }}
-                      className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest border transition-all cursor-grab active:cursor-grabbing inline-flex items-center gap-2 ${
+                      className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest border transition-all !cursor-grab active:!cursor-grabbing inline-flex items-center gap-2 ${
                         draggedWidget === key
                           ? "bg-iu-blue text-white border-iu-blue"
                           : dragOverWidget === key

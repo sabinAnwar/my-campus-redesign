@@ -56,6 +56,7 @@ export interface ForumPost {
   date: string;
   content: string;
   timestamp?: string;
+  likes?: number;
 }
 
 export interface ForumTopic {
@@ -65,6 +66,7 @@ export interface ForumTopic {
   last_post: string;
   replies: number;
   views: number;
+  likes?: number;
   status: "active" | "pinned" | "closed" | "normal";
   content: string;
   posts: ForumPost[];

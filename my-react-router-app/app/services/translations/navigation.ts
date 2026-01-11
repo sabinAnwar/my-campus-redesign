@@ -29,8 +29,10 @@ export const SHELL_TRANSLATIONS: Record<
         library: string;
         grades: string;
         account: string;
+        immatriculation: string;
       };
       items: {
+        immatriculation: string;
         examRegulations: string;
         moduleHandbook: string;
         faq: string;
@@ -86,6 +88,7 @@ export const SHELL_TRANSLATIONS: Record<
         library: "Bibliothek",
         grades: "Noten",
         account: "Konto",
+        immatriculation: "Immatrikulation",
       },
       items: {
         examRegulations: "Prüfungsordnung",
@@ -93,6 +96,7 @@ export const SHELL_TRANSLATIONS: Record<
         faq: "Häufig gestellte Fragen (FAQ)",
         library: "Bibliothek / Library",
         transcript: "Notenübersicht (Transcript)",
+        immatriculation: "Immatrikulationsbescheinigung",
         performanceOverview: "Notenverwaltung / Leistungsübersicht",
         studentId: "Studentenausweis",
       },
@@ -142,6 +146,7 @@ export const SHELL_TRANSLATIONS: Record<
         library: "Library",
         grades: "Grades",
         account: "Account",
+        immatriculation: "Enrollment Certificate",
       },
       items: {
         examRegulations: "Exam Regulations",
@@ -149,6 +154,7 @@ export const SHELL_TRANSLATIONS: Record<
         faq: "Frequently Asked Questions (FAQ)",
         library: "Library",
         transcript: "Transcript of Records",
+        immatriculation: "Enrollment Certificate",
         performanceOverview: "Performance Overview",
         studentId: "Student ID Card",
       },
