@@ -1,4 +1,5 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
+import { useLanguage } from '~/contexts/LanguageContext';
 
 interface ScreenReaderContextType {
   isEnabled: boolean;
@@ -27,6 +28,7 @@ export function ScreenReaderProvider({ children }: { children: React.ReactNode }
   const [isEnabled, setIsEnabled] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [speechRate, setSpeechRate] = useState(1.0);
+  const { language } = useLanguage();
   
   // Get speech synthesis (only in browser)
   const getSpeechSynthesis = () => {
@@ -49,10 +51,8 @@ export function ScreenReaderProvider({ children }: { children: React.ReactNode }
     
     const utterance = new SpeechSynthesisUtterance(cleanedText);
     
-    // Try to detect language from text
-    const hasGermanChars = /[äöüßÄÖÜ]/.test(text);
-    const hasGermanWords = /\b(und|oder|der|die|das|ein|eine|ist|sind|werden|wurde|haben|hat|bei|für|mit|nach|von|zu)\b/i.test(text);
-    utterance.lang = (hasGermanChars || hasGermanWords) ? 'de-DE' : 'en-US';
+    // Use app language for consistent speech output
+    utterance.lang = language === 'de' ? 'de-DE' : 'en-US';
     
     utterance.rate = speechRate;
     utterance.pitch = 1.0;
@@ -63,7 +63,7 @@ export function ScreenReaderProvider({ children }: { children: React.ReactNode }
     utterance.onerror = () => setIsSpeaking(false);
     
     synthesis.speak(utterance);
-  }, [speechRate]);
+  }, [speechRate, language]);
 
   // Stop speaking
   const stop = useCallback(() => {
@@ -97,9 +97,9 @@ export function ScreenReaderProvider({ children }: { children: React.ReactNode }
   // Announce when screen reader is toggled
   useEffect(() => {
     if (isEnabled) {
-      speak('Screen Reader aktiviert.');
+      speak(language === 'de' ? 'Screenreader aktiviert.' : 'Screen reader enabled.');
     }
-  }, [isEnabled]);
+  }, [isEnabled, language, speak]);
 
   // Global hover-to-read functionality
   useEffect(() => {

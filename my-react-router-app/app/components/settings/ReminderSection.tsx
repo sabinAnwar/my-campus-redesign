@@ -55,14 +55,22 @@ export function ReminderSection({
 
           <label className="inline-flex items-center gap-3 px-4 sm:px-6 py-3 rounded-2xl bg-background/50 border border-border hover:border-iu-blue/30 transition-all cursor-pointer group/toggle">
             <div
-              className={`w-10 h-6 rounded-full p-1 transition-colors ${reminderEnabled ? "bg-iu-blue" : "bg-muted"}`}
+              className={`relative w-12 h-6 rounded-full transition-colors border-2 ${
+                reminderEnabled
+                  ? "bg-iu-blue border-iu-blue"
+                  : "bg-white border-slate-400 dark:bg-slate-950 dark:border-slate-500"
+              }`}
             >
               <div
-                className={`w-4 h-4 rounded-full bg-white transition-transform ${reminderEnabled ? "translate-x-4" : "translate-x-0"}`}
+                className={`absolute left-1 top-1/2 h-4 w-4 -translate-y-1/2 rounded-full shadow-sm transition-transform ${
+                  reminderEnabled
+                    ? "translate-x-6 bg-white"
+                    : "translate-x-0 bg-slate-600 dark:bg-slate-300"
+                }`}
               />
             </div>
             <span className="text-sm font-black uppercase tracking-widest text-foreground">
-              {labels.activate}
+              {reminderEnabled ? labels.activate : "Deaktiviert"}
             </span>
             <input
               type="checkbox"

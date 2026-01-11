@@ -1,6 +1,7 @@
 import React from 'react';
 import { Volume2, VolumeX, Settings } from 'lucide-react';
 import { useScreenReaderSafe } from '~/contexts/ScreenReaderContext';
+import { useLanguage } from '~/contexts/LanguageContext';
 
 interface ScreenReaderToggleProps {
   variant?: 'floating' | 'inline' | 'compact';
@@ -9,29 +10,39 @@ interface ScreenReaderToggleProps {
 
 export function ScreenReaderToggle({ variant = 'floating', className = '' }: ScreenReaderToggleProps) {
   const { isEnabled, isSpeaking, speechRate, toggleScreenReader, stop, setSpeechRate } = useScreenReaderSafe();
+  const { language } = useLanguage();
   const [showSettings, setShowSettings] = React.useState(false);
 
   if (variant === 'compact') {
     return (
-      <button
-        onClick={toggleScreenReader}
-        className={`p-2 rounded-lg transition-all ${
-          isEnabled
-            ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
-            : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
-        } ${className}`}
-        aria-label={isEnabled ? 'Screen Reader deaktivieren' : 'Screen Reader aktivieren'}
-        aria-pressed={isEnabled}
-        title={isEnabled ? 'Vorlesen aktiv' : 'Vorlesen aktivieren'}
-      >
-        <Volume2 className={`w-4 h-4 ${isSpeaking ? 'animate-pulse' : ''}`} />
-      </button>
+      <div className={`relative ${className}`}>
+        <button
+          onClick={toggleScreenReader}
+          className={`p-2 rounded-lg transition-all ${
+            isEnabled
+              ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
+              : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'
+          }`}
+          aria-label={isEnabled ? 'Screen Reader deaktivieren' : 'Screen Reader aktivieren'}
+          aria-pressed={isEnabled}
+          title={isEnabled ? 'Vorlesen aktiv' : 'Vorlesen aktivieren'}
+        >
+          <Volume2 className={`w-4 h-4 ${isSpeaking ? 'animate-pulse' : ''}`} />
+        </button>
+        {isEnabled && (
+          <div className="absolute right-0 top-full mt-2 w-56 rounded-lg border border-border/60 bg-card/90 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground shadow-lg">
+            {language === 'de'
+              ? 'Hinweis: Über Texte fahren oder antippen, um Inhalte vorlesen zu lassen.'
+              : 'Tip: Hover or tap text to have it read aloud.'}
+          </div>
+        )}
+      </div>
     );
   }
 
   if (variant === 'inline') {
     return (
-      <div className={`flex items-center gap-2 ${className}`}>
+      <div className={`flex flex-col items-start gap-2 ${className}`}>
         <button
           onClick={toggleScreenReader}
           className={`flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-sm transition-all ${
@@ -45,6 +56,11 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
           <Volume2 className={`w-4 h-4 ${isSpeaking ? 'animate-pulse' : ''}`} />
           <span>{isEnabled ? 'Vorlesen An' : 'Vorlesen'}</span>
         </button>
+        <div className="w-full rounded-lg border border-border/60 bg-muted/30 px-3 py-2 text-[11px] leading-relaxed text-muted-foreground">
+          {language === 'de'
+            ? 'Hinweis: Aktivieren und dann über Texte fahren oder antippen, um Inhalte vorlesen zu lassen.'
+            : 'Tip: Enable and then hover or tap text to have it read aloud.'}
+        </div>
         
         {isEnabled && (
           <>

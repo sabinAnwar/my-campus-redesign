@@ -72,6 +72,13 @@ export function useAppShellSearch(searchQuery: string) {
         link: "/notenverwaltung",
       },
       {
+        id: "g3",
+        title: s.items.immatriculation,
+        category: s.categories.grades,
+        icon: Award,
+        link: "/certificates/immatriculation",
+      },
+      {
         id: "st1",
         title: s.items.studentId,
         category: s.categories.account,
@@ -90,12 +97,39 @@ export function useAppShellSearch(searchQuery: string) {
   const filteredResults = useMemo(() => {
     if (!searchQuery.trim()) return [];
 
-    const query = searchQuery.toLowerCase();
-    return searchableData.filter(
-      (item) =>
-        item.title.toLowerCase().includes(query) ||
-        item.category.toLowerCase().includes(query)
-    );
+    const normalize = (value: string) =>
+      value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/ß/g, "ss")
+        .trim()
+        .replace(/\s+/g, " ");
+    const splitTerms = (value: string) =>
+      normalize(value)
+        .split(/[^a-z0-9äöüß]+/i)
+        .filter(Boolean);
+    const normalizedQuery = normalize(searchQuery);
+    const queryTerms = normalizedQuery.split(/\s+/).filter(Boolean);
+    
+    if (queryTerms.length === 0) return [];
+
+    const matches = searchableData.filter((item) => {
+      const normalizedTitle = normalize(item.title);
+      const normalizedCategory = normalize(item.category);
+      
+      return queryTerms.every((term) => 
+        normalizedTitle.includes(term) || normalizedCategory.includes(term)
+      );
+    });
+
+    const seen = new Set<string>();
+    return matches.filter((item) => {
+      const key = `${item.category}:${item.title}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
   }, [searchQuery, searchableData]);
 
   return {

@@ -208,3 +208,13 @@ export function useFeedback() {
     showLoading,
   };
 }
+// my-react-router-app/app/hooks/useChat.ts:10-20
+function findLearningAnswer(query: string, language: "de" | "en"): string | null {
+  const normalized = query.toLowerCase();
+  const knowledge = LEARNING_KNOWLEDGE[language];
+  for (const item of knowledge) {
+    const matchCount = item.keywords.filter(k => normalized.includes(k)).length;
+    if (matchCount >= 1) return item.answer;
+  }
+  return null;
+}
