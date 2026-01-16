@@ -1,4 +1,4 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { TRANSLATIONS, getFormDefinitions, MOCK_ITEMS } from "~/constants/antragsverwaltung";
@@ -19,51 +19,70 @@ export default function AntragsVerwaltung() {
   const [activeStatus, setActiveStatus] = useState("all");
   const [activeCategory, setActiveCategory] = useState("all");
   const [selectedForm, setSelectedForm] = useState<FormDefinition | null>(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  const [formData, setFormData] = useState<Record<string, any>>({});
+  const [activeApplicationId, setActiveApplicationId] = useState<string | null>(null);
+  const [applications, setApplications] = useState<ApplicationItem[]>([]);
+  const [isLoaded, setIsLoaded] = useState(false);
+
+  // Load from LocalStorage
+  useEffect(() => {
+    const saved = localStorage.getItem("iu_applications_state");
+    if (saved) {
+      setApplications(JSON.parse(saved));
+    } else {
+      setApplications(MOCK_ITEMS);
+    }
+    setIsLoaded(true);
+  }, []);
+
+  // Save to LocalStorage
+  useEffect(() => {
+    if (isLoaded) {
+      localStorage.setItem("iu_applications_state", JSON.stringify(applications));
+    }
+  }, [applications, isLoaded]);
 
   const FORM_DEFINITIONS = useMemo(() => getFormDefinitions(t), [t]);
 
   const stats = useMemo(() => {
     return {
-      total: MOCK_ITEMS.length,
-      pending: MOCK_ITEMS.filter((i) => i.status === "pending").length,
-      approved: MOCK_ITEMS.filter((i) => i.status === "approved").length,
-      rejected: MOCK_ITEMS.filter((i) => i.status === "rejected").length,
+      total: applications.length,
+      new: applications.filter((i) => i.status === "new").length,
+      pending: applications.filter((i) => i.status === "pending").length,
+      approved: applications.filter((i) => i.status === "approved").length,
+      rejected: applications.filter((i) => i.status === "rejected").length,
     };
-  }, []);
+  }, [applications]);
 
   const filteredItems = useMemo(() => {
-    return MOCK_ITEMS.filter((item) => {
+    return applications.filter((item) => {
       const title = t.itemTitles[item.id as keyof typeof t.itemTitles] || item.titleKey;
       const matchesSearch = title.toLowerCase().includes(searchQuery.toLowerCase());
-
       const matchesStatus = activeStatus === "all" || item.status === activeStatus;
       const matchesCategory = activeCategory === "all" || item.categoryKey === activeCategory;
-
       return matchesSearch && matchesStatus && matchesCategory;
     });
-  }, [searchQuery, activeStatus, activeCategory, t]);
+  }, [searchQuery, activeStatus, activeCategory, t, applications]);
+
+  // Split items for logical separation
+  const activeApplications = filteredItems.filter(i => i.status !== "new");
+  const allApplications = filteredItems; // Shows all 17 files as default library
 
   const handleOpenForm = (application: ApplicationItem) => {
     const form = (FORM_DEFINITIONS as any)[application.id] || (FORM_DEFINITIONS as any).default;
     setSelectedForm(form);
-    setFormData({});
+    setActiveApplicationId(application.id);
   };
 
-  const handleInputChange = (name: string, value: any) => {
-    setFormData((prev) => ({ ...prev, [name]: value }));
+  const handleStartApplication = () => {
+    if (!activeApplicationId) return;
+    setApplications(prev => prev.map(app => 
+      app.id === activeApplicationId && app.status === "new"
+        ? { ...app, status: "pending", updatedAt: new Date().toISOString() }
+        : app
+    ));
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSubmitting(true);
-    await new Promise((resolve) => setTimeout(resolve, 2000));
-    setIsSubmitting(false);
-    setSelectedForm(null);
-    setFormData({});
-    alert(t.submitSuccess);
-  };
+  if (!isLoaded) return null;
 
   return (
     <div className="min-h-screen bg-background relative overflow-hidden">
@@ -72,13 +91,10 @@ export default function AntragsVerwaltung() {
       <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-iu-blue/3 blur-[100px] rounded-full pointer-events-none" />
 
       <main className="relative z-10 max-w-[1400px] mx-auto py-2">
-        {/* Navigation */}
         <AntragsHeader t={t} language={language} />
-
 
         <ApplicationStats stats={stats} t={t} />
 
-        {/* Filters Section */}
         <div className="my-6 sm:my-8">
           <FilterBar
             t={t}
@@ -91,17 +107,44 @@ export default function AntragsVerwaltung() {
           />
         </div>
 
-        {/* Applications Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
-          {filteredItems.map((application) => (
-            <ApplicationCard
-              key={application.id}
-              application={application}
-              t={t}
-              language={language}
-              onOpen={handleOpenForm}
-            />
-          ))}
+        {/* Section 1: Active Applications */}
+        {activeApplications.length > 0 && (
+          <div className="mb-12">
+            <div className="flex items-center gap-3 mb-6">
+              <h2 className="text-sm font-bold uppercase tracking-widest text-iu-blue">Meine Aktiven Anträge</h2>
+              <div className="h-px flex-1 bg-iu-blue/10" />
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
+              {activeApplications.map((application) => (
+                <ApplicationCard
+                  key={`active-${application.id}`}
+                  application={application}
+                  t={t}
+                  language={language}
+                  onOpen={handleOpenForm}
+                />
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* Section 2: All Default Applications */}
+        <div className="mb-12">
+          <div className="flex items-center gap-3 mb-6">
+            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Alle Anträge</h2>
+            <div className="h-px flex-1 bg-border/50" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
+            {allApplications.map((application) => (
+              <ApplicationCard
+                key={`all-${application.id}`}
+                application={application}
+                t={t}
+                language={language}
+                onOpen={handleOpenForm}
+              />
+            ))}
+          </div>
         </div>
 
         {/* Empty State */}
@@ -117,14 +160,12 @@ export default function AntragsVerwaltung() {
         <ApplicationFormModal
           t={t}
           formDef={selectedForm}
-          formData={formData}
           onClose={() => setSelectedForm(null)}
-          onInputChange={handleInputChange}
-          onSubmit={handleSubmit}
-          isSubmitting={isSubmitting}
+          onStarted={handleStartApplication}
           language={language}
         />
       )}
     </div>
   );
 }
+

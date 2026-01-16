@@ -15,6 +15,8 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
         return t.approved;
       case "rejected":
         return t.rejected;
+      case "new":
+        return t.new;
       default:
         return t.pending;
     }
@@ -33,7 +35,9 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
                   ? "bg-iu-blue"
                   : application.status === "rejected"
                     ? "bg-rose-500"
-                    : "bg-amber-500"
+                    : application.status === "pending"
+                      ? "bg-amber-500"
+                      : "bg-blue-500"
               }`}
             />
             <span className="text-xs font-medium text-muted-foreground">
@@ -45,17 +49,27 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
           </h2>
         </div>
         <div
-          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border ${
+          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all duration-300 ${
             application.status === "approved"
               ? "border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue"
               : application.status === "rejected"
-                ? "border-rose-500/20 dark:border-rose-500 text-rose-500 dark:text-white bg-rose-500/10 dark:bg-rose-500"
-                : "border-amber-500/20 dark:border-amber-500 text-amber-500 dark:text-white bg-amber-500/10 dark:bg-amber-500"
+                ? "border-rose-500/20 dark:border-rose-500 text-rose-500 dark:text-white bg-rose-500/10 dark:bg-rose-500 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.2)]"
+                : application.status === "pending"
+                  ? "border-amber-500/20 dark:border-amber-500 text-amber-500 dark:text-white bg-amber-500/10 dark:bg-amber-500"
+                  : "border-blue-500/20 text-blue-500 bg-blue-500/10"
           }`}
         >
           {getStatusText(application.status)}
         </div>
       </div>
+
+      {application.status === "rejected" && (
+        <div className="mb-6 p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl">
+          <p className="text-xs text-rose-600 dark:text-rose-400 font-medium leading-relaxed">
+            <span className="font-bold underline">Ablehnungsgrund:</span> Die hochgeladenen Dokumente sind unvollständig oder unleserlich. Bitte erneut prüfen.
+          </p>
+        </div>
+      )}
 
       <div className="flex items-center justify-between mt-auto pt-6 border-t border-border/50">
         <div className="flex items-center gap-2 text-xs text-muted-foreground">

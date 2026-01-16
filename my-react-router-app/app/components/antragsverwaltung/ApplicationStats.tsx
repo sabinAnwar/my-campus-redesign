@@ -4,6 +4,7 @@ interface ApplicationStatsProps {
   t: any;
   stats: {
     total: number;
+    new: number;
     pending: number;
     approved: number;
     rejected: number;
@@ -18,6 +19,13 @@ export function ApplicationStats({ t, stats }: ApplicationStatsProps) {
       icon: FileText,
       color: "text-blue-500 dark:text-white",
       bgColor: "bg-blue-500/10 dark:bg-iu-blue",
+    },
+    {
+      label: t.newCount,
+      value: stats.new,
+      icon: Clock,
+      color: "text-blue-500 dark:text-white",
+      bgColor: "bg-blue-500/10 dark:bg-blue-500",
     },
     {
       label: t.pendingCount,
@@ -43,7 +51,7 @@ export function ApplicationStats({ t, stats }: ApplicationStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-12">
       {statConfig.map((stat, i) => (
         <div
           key={i}

@@ -1,34 +1,29 @@
-import { X, FileText, ExternalLink, Upload, Send } from "lucide-react";
+import { X, FileText, ExternalLink } from "lucide-react";
 import type { FormDefinition } from "~/types/antragsverwaltung";
 
 interface ApplicationFormModalProps {
   t: any;
   formDef: FormDefinition;
-  formData: Record<string, any>;
   onClose: () => void;
-  onInputChange: (name: string, value: any) => void;
-  onSubmit: (e: React.FormEvent) => void;
-  isSubmitting: boolean;
+  onStarted: () => void;
   language: string;
 }
 
 export function ApplicationFormModal({
   t,
   formDef,
-  formData,
   onClose,
-  onInputChange,
-  onSubmit,
-  isSubmitting,
+  onStarted,
   language,
 }: ApplicationFormModalProps) {
   const handleOpenMicrosoftForm = (formUrl: string) => {
+    onStarted();
     window.open(formUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
     <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100] flex items-center justify-center sm:p-4 p-0 animate-in fade-in duration-300">
-      <div className="bg-card border border-border sm:max-w-2xl w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[90vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none">
+      <div className="bg-card border border-border sm:max-w-xl w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[80vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none">
         {/* Modal Header */}
         <div className="sm:p-8 p-6 border-b border-border flex justify-between items-start">
           <div className="space-y-1">
@@ -50,95 +45,54 @@ export function ApplicationFormModal({
 
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto sm:p-8 p-6 custom-scrollbar">
-          {formDef.microsoftFormUrl && (
-            <div className="mb-10 p-6 bg-iu-blue/5 border border-iu-blue/10 rounded-2xl flex items-center justify-between gap-4">
-              <div className="space-y-1">
-                <p className="text-sm font-bold text-foreground">
-                  Microsoft Forms
-                </p>
-                <p className="text-xs text-muted-foreground">
-                  {t.msFormsAvailable}
+          {formDef.microsoftFormUrl ? (
+            <div className="space-y-6">
+              <div className="p-8 bg-iu-blue/5 border border-iu-blue/10 rounded-3xl flex flex-col items-center text-center gap-6">
+                <div className="w-16 h-16 bg-iu-blue/10 rounded-2xl flex items-center justify-center text-iu-blue">
+                  <ExternalLink size={32} />
+                </div>
+                <div className="space-y-2">
+                  <p className="text-lg font-bold text-foreground">
+                    Microsoft Forms
+                  </p>
+                  <p className="text-sm text-muted-foreground max-w-[300px] mx-auto">
+                    {t.msFormsAvailable}
+                  </p>
+                </div>
+                <button
+                  onClick={() => handleOpenMicrosoftForm(formDef.microsoftFormUrl!)}
+                  className="w-full py-4 bg-iu-blue text-white font-bold rounded-2xl hover:bg-iu-blue transition-all flex items-center justify-center gap-3 shadow-lg shadow-iu-blue/20"
+                >
+                  <ExternalLink size={20} />
+                  {t.open}
+                </button>
+              </div>
+              
+              <div className="p-6 bg-muted/30 rounded-2xl border border-border">
+                <p className="text-xs text-muted-foreground leading-relaxed text-center">
+                  Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert.
                 </p>
               </div>
-              <button
-                onClick={() => handleOpenMicrosoftForm(formDef.microsoftFormUrl!)}
-                className="px-4 py-2 bg-iu-blue text-white text-xs font-bold rounded-xl hover:bg-iu-blue transition-colors flex items-center gap-2 shrink-0"
-              >
-                <ExternalLink size={14} />
-                {t.open}
-              </button>
+            </div>
+          ) : (
+            <div className="py-12 text-center space-y-4">
+              <div className="w-12 h-12 bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 mx-auto">
+                <X size={24} />
+              </div>
+              <p className="text-muted-foreground font-medium">
+                Für diesen Antrag ist aktuell keine Online-Einreichung verfügbar.
+              </p>
             </div>
           )}
 
-          <form onSubmit={onSubmit} className="space-y-6">
-            {formDef.fields.map((field) => (
-              <div key={field.name} className="space-y-2">
-                <label className="text-sm font-semibold text-foreground ml-1">
-                  {field.label}{" "}
-                  {field.required && <span className="text-rose-500">*</span>}
-                </label>
-
-                {field.type === "textarea" ? (
-                  <textarea
-                    required={field.required}
-                    value={formData[field.name] || ""}
-                    onChange={(e) => onInputChange(field.name, e.target.value)}
-                    rows={4}
-                    className="w-full bg-muted/30 border border-border rounded-2xl p-4 text-sm focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/10 transition-all resize-none shadow-inner"
-                  />
-                ) : field.type === "file" ? (
-                  <div className="relative">
-                    <input
-                      type="file"
-                      required={field.required}
-                      onChange={(e) =>
-                        onInputChange(field.name, e.target.files?.[0])
-                      }
-                      className="w-full opacity-0 absolute inset-0 cursor-pointer z-10"
-                    />
-                    <div className="w-full bg-muted/30 border border-border border-dashed rounded-2xl p-8 flex flex-col items-center gap-2 hover:bg-muted/50 transition-colors">
-                      <Upload className="w-6 h-6 text-muted-foreground" />
-                      <span className="text-sm font-medium text-muted-foreground">
-                        {t.uploadFile}
-                      </span>
-                    </div>
-                  </div>
-                ) : (
-                  <input
-                    type={field.type}
-                    required={field.required}
-                    value={formData[field.name] || ""}
-                    onChange={(e) => onInputChange(field.name, e.target.value)}
-                    className="w-full bg-muted/30 border border-border rounded-2xl p-4 text-sm focus:outline-none focus:border-iu-blue/50 focus:ring-4 focus:ring-iu-blue/10 transition-all shadow-inner"
-                  />
-                )}
-              </div>
-            ))}
-
-            <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 pt-6">
-              <button
-                type="button"
-                onClick={onClose}
-                className="flex-1 py-3.5 sm:py-4 text-sm font-bold hover:bg-muted rounded-2xl transition-all border border-transparent hover:border-border"
-              >
-                {t.cancel}
-              </button>
-              <button
-                type="submit"
-                disabled={isSubmitting}
-                className="flex-1 py-3.5 sm:py-4 bg-iu-blue text-white text-sm font-bold rounded-2xl hover:bg-iu-blue transition-all flex items-center justify-center gap-2 shadow-lg shadow-iu-blue/20"
-              >
-                {isSubmitting ? (
-                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin" />
-                ) : (
-                  <>
-                    <Send size={18} />
-                    {t.submitApplication}
-                  </>
-                )}
-              </button>
-            </div>
-          </form>
+          <div className="mt-8">
+            <button
+              onClick={onClose}
+              className="w-full py-4 text-sm font-bold hover:bg-muted rounded-2xl transition-all border border-transparent hover:border-border"
+            >
+              {t.cancel}
+            </button>
+          </div>
         </div>
       </div>
     </div>
