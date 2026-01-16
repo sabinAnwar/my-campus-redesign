@@ -51,21 +51,21 @@ export function ApplicationStats({ t, stats }: ApplicationStatsProps) {
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 sm:gap-6 mb-12">
+    <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-3 sm:gap-6 mb-8 sm:mb-12">
       {statConfig.map((stat, i) => (
         <div
           key={i}
-          className="bg-card/50 backdrop-blur-xl border border-border rounded-2xl p-6 transition-all hover:scale-[1.02] shadow-sm hover:shadow-md duration-300"
+          className="bg-card/50 backdrop-blur-xl border border-border rounded-xl sm:rounded-2xl p-4 sm:p-6 transition-all hover:scale-[1.02] shadow-sm hover:shadow-md duration-300"
         >
-          <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center justify-between mb-3 sm:mb-4">
             <div className={`p-2 rounded-xl ${stat.bgColor} ${stat.color}`}>
-              <stat.icon size={20} />
+              <stat.icon size={18} className="sm:size-5" />
             </div>
-            <span className="text-2xl font-bold text-foreground">
+            <span className="text-xl sm:text-2xl font-bold text-foreground">
               {stat.value}
             </span>
           </div>
-          <div className="text-sm font-medium text-muted-foreground">
+          <div className="text-xs sm:text-sm font-medium text-muted-foreground">
             {stat.label}
           </div>
         </div>
