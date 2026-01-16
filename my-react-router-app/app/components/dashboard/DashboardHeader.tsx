@@ -10,7 +10,10 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ userName, t, getGreeting }: DashboardHeaderProps) {
   return (
-    <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 md:gap-8 pb-4 sm:pb-6 border-b border-border/10 mb-6 sm:mb-8">
+    <div
+      data-onboard="dashboard-header"
+      className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4 sm:gap-6 md:gap-8 pb-4 sm:pb-6 border-b border-border/10 mb-6 sm:mb-8"
+    >
       <div className="flex-1 space-y-3 sm:space-y-4">
         <div className="space-y-3 sm:space-y-4">
           <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-foreground tracking-tight mb-1 sm:mb-2">

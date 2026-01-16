@@ -54,7 +54,7 @@ export function StudyProgressWidget({
   t,
 }: StudyProgressWidgetProps) {
   return (
-    <div className="mb-6 sm:mb-8">
+    <div data-onboard="dashboard-progress" className="mb-6 sm:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-iu-pink/10 text-iu-pink shadow-sm border border-iu-pink/10 dark:bg-iu-pink dark:text-white dark:border-iu-pink/40">
           <Activity className="h-5 w-5 sm:h-6 sm:w-6" />

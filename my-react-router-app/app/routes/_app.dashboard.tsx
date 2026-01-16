@@ -177,156 +177,146 @@ export const loader = async ({ request }: { request: Request }) => {
         }
       };
 
-      if (!userId) {
-        return {
-          tasks,
-          tasksTotal,
-          praxisPartner,
-          praxisHours,
-          scheduleEvents,
-          averageGrade,
-          newsItems,
+      if (userId) {
+        // Date calculations for schedule query
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+        const endDate = new Date(today);
+        endDate.setDate(endDate.getDate() + SCHEDULE_DAYS_AHEAD);
+
+        // Week calculation for hours
+        const now = new Date();
+        const startOfWeek = new Date(now);
+        startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+        startOfWeek.setHours(0, 0, 0, 0);
+
+        // Execute ALL database queries in PARALLEL for faster loading
+        let [
+          tasksResult,
+          totalCount,
+          partner,
+          target,
+          totalHoursResult,
+          weekHoursResult,
+          eventsResult,
+          marksResult,
+        ] = await Promise.all([
+          safeQuery(
+            prisma.studentTask.findMany({
+              where: { user_id: userId },
+              orderBy: { due_date: "asc" },
+              take: MAX_TASKS_TO_DISPLAY,
+            }),
+            []
+          ),
+          safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0),
+          safeQuery(
+            prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
+            null
+          ),
+          safeQuery(
+            prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
+            null
+          ),
+          safeQuery(
+            prisma.practicalHoursLog.aggregate({
+              where: { user_id: userId },
+              _sum: { hours: true },
+            }),
+            { _sum: { hours: 0 } }
+          ),
+          safeQuery(
+            prisma.practicalHoursLog.aggregate({
+              where: { user_id: userId, date: { gte: startOfWeek } },
+              _sum: { hours: true },
+            }),
+            { _sum: { hours: 0 } }
+          ),
+          safeQuery(
+            prisma.scheduleEvent.findMany({
+              where: { user_id: userId, date: { gte: today, lt: endDate } },
+              orderBy: [{ date: "asc" }, { start_time: "asc" }],
+            }),
+            []
+          ),
+          safeQuery(
+            prisma.mark.findMany({
+              where: { user_id: userId },
+              select: { value: true, course: true },
+            }),
+            []
+          ),
+        ]);
+
+        // Process tasks
+        tasks = tasksResult.map((t: any) => ({
+          id: t.id,
+          title: t.title,
+          course: t.course,
+          kind: t.kind,
+          type: t.type,
+          due_date: t.due_date.toISOString(),
+        }));
+        tasksTotal = totalCount;
+
+        // Process praxis partner
+        if (partner) {
+          praxisPartner = {
+            company_name: partner.company_name,
+            department: partner.department,
+            supervisor: partner.supervisor,
+            email: partner.email,
+            phone: partner.phone,
+            address: partner.address,
+          };
+        }
+
+        // Process praxis hours
+        praxisHours = {
+          required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
+          logged: Math.round(totalHoursResult._sum.hours ?? 0),
+          thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
+          target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
         };
+
+        // If no events in the short window, fetch the next upcoming events from DB.
+        if ((eventsResult as any[]).length === 0) {
+          eventsResult = await safeQuery(
+            prisma.scheduleEvent.findMany({
+              where: { user_id: userId, date: { gte: today } },
+              orderBy: [{ date: "asc" }, { start_time: "asc" }],
+              take: 10,
+            }),
+            []
+          );
+        }
+
+        // Process schedule events
+        scheduleEvents = (eventsResult as any[]).map((e: any) => ({
+          id: e.id,
+          title: e.title,
+          course_code: e.course_code,
+          date: e.date.toISOString(),
+          start_time: e.start_time,
+          end_time: e.end_time,
+          location: e.location,
+          event_type: e.event_type,
+          professor: e.professor,
+        }));
+
+        // Process average grade
+        if (marksResult.length > 0) {
+          const grades = marksResult.map((m: any) => parseFloat(m.value));
+          averageGrade =
+            grades.reduce((a: number, b: number) => a + b, 0) / grades.length;
+        }
       }
 
-      // Date calculations for schedule query
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-      const endDate = new Date(today);
-      endDate.setDate(endDate.getDate() + SCHEDULE_DAYS_AHEAD);
-
-      // Week calculation for hours
-      const now = new Date();
-      const startOfWeek = new Date(now);
-      startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-      startOfWeek.setHours(0, 0, 0, 0);
-
-      // Execute ALL database queries in PARALLEL for faster loading
-      let [
-        tasksResult,
-        totalCount,
-        partner,
-        target,
-        totalHoursResult,
-        weekHoursResult,
-        eventsResult,
-        marksResult,
-      ] = await Promise.all([
-        safeQuery(
-          prisma.studentTask.findMany({
-            where: { user_id: userId },
-            orderBy: { due_date: "asc" },
-            take: MAX_TASKS_TO_DISPLAY,
-          }),
-          []
-        ),
-        safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0),
-        safeQuery(
-          prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
-          null
-        ),
-        safeQuery(
-          prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
-          null
-        ),
-        safeQuery(
-          prisma.practicalHoursLog.aggregate({
-            where: { user_id: userId },
-            _sum: { hours: true },
-          }),
-          { _sum: { hours: 0 } }
-        ),
-        safeQuery(
-          prisma.practicalHoursLog.aggregate({
-            where: { user_id: userId, date: { gte: startOfWeek } },
-            _sum: { hours: true },
-          }),
-          { _sum: { hours: 0 } }
-        ),
-        safeQuery(
-          prisma.scheduleEvent.findMany({
-            where: { user_id: userId, date: { gte: today, lt: endDate } },
-            orderBy: [{ date: "asc" }, { start_time: "asc" }],
-          }),
-          []
-        ),
-        safeQuery(
-          prisma.mark.findMany({
-            where: { user_id: userId },
-            select: { value: true, course: true },
-          }),
-          []
-        ),
-      ]);
-
-      // Process tasks
-      tasks = tasksResult.map((t: any) => ({
-        id: t.id,
-        title: t.title,
-        course: t.course,
-        kind: t.kind,
-        type: t.type,
-        due_date: t.due_date.toISOString(),
-      }));
-      tasksTotal = totalCount;
-
-      // Process praxis partner
-      if (partner) {
-        praxisPartner = {
-          company_name: partner.company_name,
-          department: partner.department,
-          supervisor: partner.supervisor,
-          email: partner.email,
-          phone: partner.phone,
-          address: partner.address,
-        };
-      }
-
-      // Process praxis hours
-      praxisHours = {
-        required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
-        logged: Math.round(totalHoursResult._sum.hours ?? 0),
-        thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
-        target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
-      };
-
-      // If no events in the short window, fetch the next upcoming events from DB.
-      if ((eventsResult as any[]).length === 0) {
-        eventsResult = await safeQuery(
-          prisma.scheduleEvent.findMany({
-            where: { user_id: userId, date: { gte: today } },
-            orderBy: [{ date: "asc" }, { start_time: "asc" }],
-            take: 10,
-          }),
-          []
-        );
-      }
-
-      // Process schedule events
-      scheduleEvents = (eventsResult as any[]).map((e: any) => ({
-        id: e.id,
-        title: e.title,
-        course_code: e.course_code,
-        date: e.date.toISOString(),
-        start_time: e.start_time,
-        end_time: e.end_time,
-        location: e.location,
-        event_type: e.event_type,
-        professor: e.professor,
-      }));
-
-      // Process average grade
-      if (marksResult.length > 0) {
-        const grades = marksResult.map((m: any) => parseFloat(m.value));
-        averageGrade =
-          grades.reduce((a: number, b: number) => a + b, 0) / grades.length;
-      }
-
-      // Load news
+      // Load news (does not require a user session)
       try {
         const newsResult = await prisma.news.findMany({
-          where: { published_at: { not: null } },
-          orderBy: { published_at: "desc" },
+          where: { status: "PUBLISHED" },
+          orderBy: [{ featured: "desc" }, { published_at: "desc" }],
           take: 5,
           select: {
             id: true,
@@ -341,7 +331,9 @@ export const loader = async ({ request }: { request: Request }) => {
         });
         newsItems = newsResult.map((n: any) => ({
           ...n,
-          published_at: n.published_at.toISOString(),
+          published_at: n.published_at
+            ? new Date(n.published_at).toISOString()
+            : new Date().toISOString(),
         }));
       } catch {
         // News table might not exist in development - continue with empty array
@@ -453,6 +445,7 @@ function DashboardDeferredContent({
 
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
+  const [showTour, setShowTour] = useState(false);
   
   // News modal state
   const [showNewsModal, setShowNewsModal] = useState(false);
@@ -487,6 +480,102 @@ function DashboardDeferredContent({
     tasks: null,
     appointments: null,
   });
+
+  useEffect(() => {
+    if (!isFirstSemester) return;
+    try {
+      const dismissed = localStorage.getItem("dashboard-onboarding-tour");
+      if (dismissed !== "done") setShowTour(true);
+    } catch {
+      setShowTour(true);
+    }
+  }, [isFirstSemester]);
+
+  const handleTourClose = () => {
+    try {
+      localStorage.setItem("dashboard-onboarding-tour", "done");
+    } catch {}
+    setShowTour(false);
+  };
+
+  const tourSteps =
+    language === "de"
+      ? [
+          {
+            id: "header",
+            selector: '[data-onboard="dashboard-header"]',
+            title: "Begruessung und Ueberblick",
+            body: "Hier siehst du deinen persoenlichen Einstieg mit Begruessung und kurzem Kontext zum Dashboard.",
+          },
+          {
+            id: "news",
+            selector: '[data-onboard="dashboard-news"]',
+            title: "Aktuelle News",
+            body: "Wichtige Updates und Hinweise der Hochschule findest du hier.",
+          },
+          {
+            id: "actions",
+            selector: '[data-onboard="dashboard-quick-actions"]',
+            title: "Schnellzugriffe",
+            body: "Springe direkt zu den meist genutzten Bereichen wie Kurse, Aufgaben oder Bibliothek.",
+          },
+          {
+            id: "progress",
+            selector: '[data-onboard="dashboard-progress"]',
+            title: "Studienfortschritt",
+            body: "Dein aktueller Status, Stunden und die naechsten Phasen werden hier angezeigt.",
+          },
+          {
+            id: "customize",
+            selector: '[data-onboard="dashboard-customize"]',
+            title: "Dashboard anpassen",
+            body: "Widgets ein- oder ausblenden und die Reihenfolge per Drag and Drop festlegen.",
+          },
+          {
+            id: "widgets",
+            selector: '[data-onboard="dashboard-widgets"]',
+            title: "Widgets",
+            body: "Diese Karten zeigen dir Aufgaben, Termine, Noten und weitere wichtige Infos.",
+          },
+        ]
+      : [
+          {
+            id: "header",
+            selector: '[data-onboard="dashboard-header"]',
+            title: "Greeting and overview",
+            body: "Your personal dashboard entry with a quick overview.",
+          },
+          {
+            id: "news",
+            selector: '[data-onboard="dashboard-news"]',
+            title: "Latest news",
+            body: "Important updates and announcements appear here.",
+          },
+          {
+            id: "actions",
+            selector: '[data-onboard="dashboard-quick-actions"]',
+            title: "Quick actions",
+            body: "Jump directly to key areas like courses, tasks, or the library.",
+          },
+          {
+            id: "progress",
+            selector: '[data-onboard="dashboard-progress"]',
+            title: "Study progress",
+            body: "Your current status, logged hours, and upcoming phases.",
+          },
+          {
+            id: "customize",
+            selector: '[data-onboard="dashboard-customize"]',
+            title: "Customize dashboard",
+            body: "Show or hide widgets and reorder them with drag and drop.",
+          },
+          {
+            id: "widgets",
+            selector: '[data-onboard="dashboard-widgets"]',
+            title: "Widgets",
+            body: "These cards show tasks, appointments, grades, and more.",
+          },
+        ];
   // Load recent courses from localStorage (client-side only)
   useEffect(() => {
     if (userId) {
@@ -814,7 +903,10 @@ function DashboardDeferredContent({
       />
 
       <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
-        <div className="p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-border/60 bg-gradient-to-br from-card via-card/80 to-muted/30 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)]">
+        <div
+          data-onboard="dashboard-customize"
+          className="p-6 sm:p-8 rounded-2xl sm:rounded-[2rem] border border-border/60 bg-gradient-to-br from-card via-card/80 to-muted/30 backdrop-blur-xl shadow-[0_20px_60px_rgba(15,23,42,0.08)]"
+        >
           <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-6">
             <div>
               <p className="text-[10px] sm:text-xs font-black uppercase tracking-[0.3em] text-muted-foreground mb-2">
@@ -826,6 +918,15 @@ function DashboardDeferredContent({
               <p className="text-xs sm:text-sm text-muted-foreground dark:text-slate-200 font-semibold">
                 {t.dragHint ?? "Drag to reorder"}
               </p>
+              {isFirstSemester ? (
+                <button
+                  type="button"
+                  onClick={() => setShowTour(true)}
+                  className="mt-4 inline-flex items-center justify-center rounded-full border border-iu-blue/40 bg-iu-blue/5 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-iu-blue hover:bg-iu-blue/10 transition-colors"
+                >
+                  {language === "de" ? "Tour starten" : "Start tour"}
+                </button>
+              ) : null}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <div className="space-y-3 rounded-2xl border border-border/60 bg-card/70 p-4 sm:p-5 shadow-sm">
@@ -850,7 +951,7 @@ function DashboardDeferredContent({
                             [key]: !prev[key],
                           }))
                         }
-                        className="h-4 w-4 rounded-md border-2 border-border bg-card text-iu-blue accent-iu-blue focus:ring-2 focus:ring-iu-blue/40 focus:ring-offset-2 focus:ring-offset-card transition-colors"
+                        className="h-4 w-4 rounded-md border-2 border-slate-900/80 bg-white text-slate-900 accent-slate-900 focus:ring-2 focus:ring-slate-900/40 focus:ring-offset-2 focus:ring-offset-white transition-colors dark:border-slate-100/80 dark:bg-slate-950 dark:text-slate-100 dark:accent-white dark:focus:ring-white/40 dark:focus:ring-offset-slate-950"
                       />
                       <span className="group-hover:text-iu-blue transition-colors">
                         {t.showWidget ?? "Show"} {widgetLabelMap[key]}
@@ -883,8 +984,8 @@ function DashboardDeferredContent({
                         draggedWidget === key
                           ? "bg-iu-blue text-white border-iu-blue"
                           : dragOverWidget === key
-                            ? "bg-iu-blue/10 text-iu-blue border-iu-blue/40"
-                            : "bg-muted/80 text-foreground border-border/60"
+                            ? "bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100"
+                            : "bg-slate-100 text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-slate-50 dark:border-slate-700"
                       }`}
                       aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}
                     >
@@ -898,7 +999,7 @@ function DashboardDeferredContent({
           </div>
         </div>
 
-        <div className="space-y-6 sm:space-y-8">
+        <div data-onboard="dashboard-widgets" className="space-y-6 sm:space-y-8">
           {widgetOrder
             .filter((key) => widgetVisibility[key])
             .map((key) => (
@@ -931,14 +1032,6 @@ function DashboardDeferredContent({
             ))}
         </div>
       </div>
-
-      {/* Onboarding für Erstis */}
-      <FirstSemesterOnboarding
-        isFirstSemester={isFirstSemester}
-        onComplete={() => {
-          console.log(" Onboarding abgeschlossen!");
-        }}
-      />
 
       {/* News Modal */}
       {showNewsModal && newsItems[selectedNewsIndex] && (
@@ -973,6 +1066,12 @@ function DashboardDeferredContent({
           }}
         />
       )}
+
+      <FirstSemesterOnboarding
+        isOpen={showTour}
+        steps={tourSteps}
+        onClose={handleTourClose}
+      />
     </>
   );
 }

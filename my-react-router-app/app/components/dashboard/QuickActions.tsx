@@ -17,7 +17,7 @@ interface QuickActionsProps {
 
 export function QuickActions({ quickActions, t }: QuickActionsProps) {
   return (
-    <div className="mb-6 sm:mb-8">
+    <div data-onboard="dashboard-quick-actions" className="mb-6 sm:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="p-2 sm:p-2.5 rounded-xl sm:rounded-2xl bg-iu-purple/10 text-iu-purple shadow-sm border border-iu-purple/10 dark:bg-iu-purple dark:text-white dark:border-iu-purple/40">
           <LayoutGrid className="h-5 w-5 sm:h-6 sm:w-6" />

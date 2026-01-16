@@ -52,7 +52,7 @@ export function NewsSlider({
   if (newsItems.length === 0) return null;
 
   return (
-    <div className="mb-6 sm:mb-8">
+    <div data-onboard="dashboard-news" className="mb-6 sm:mb-8">
       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
         <div className="p-2 sm:p-3 rounded-xl sm:rounded-2xl bg-iu-blue/10 text-iu-blue shadow-sm border border-iu-blue/10 dark:bg-iu-blue dark:text-white dark:border-iu-blue/40">
           <Newspaper className="h-5 w-5 sm:h-6 sm:w-6" />
