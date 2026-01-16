@@ -32,12 +32,12 @@ export const links: Route.LinksFunction = () => [
   // Preload critical font with swap display
   {
     rel: "preload",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;600;700&display=swap",
     as: "style",
   },
   {
     rel: "stylesheet",
-    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+    href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Source+Sans+Pro:wght@300;400;600;700&display=swap",
   },
   { rel: "stylesheet", href: appStyles },
   { rel: "stylesheet", href: toastifyStyles },

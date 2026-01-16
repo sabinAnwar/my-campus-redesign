@@ -44,17 +44,13 @@ export type RecentCourse = {
   color?: string;
 };
 
-export type DashboardLoaderData = {
+export type DashboardDeferredData = {
   tasks: DashboardTask[];
   tasksTotal: number;
   praxisPartner: PraxisPartnerData | null;
   praxisHours: PraxisHoursData;
   scheduleEvents: ScheduleEventData[];
   averageGrade: number | null;
-  isFirstSemester: boolean;
-  userName: string;
-  userCampusArea: string | null;
-  studiengangName: string | null;
   newsItems: Array<{
     slug: string;
     title: string;
@@ -64,5 +60,13 @@ export type DashboardLoaderData = {
     published_at: string;
     featured: boolean;
   }>;
-  userId: number;
+};
+
+export type DashboardLoaderData = {
+  isFirstSemester: boolean;
+  userName: string;
+  userCampusArea: string | null;
+  studiengangName: string | null;
+  userId?: number;
+  deferred: Promise<DashboardDeferredData>;
 };

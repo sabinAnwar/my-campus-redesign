@@ -24,6 +24,17 @@ import {
 
 import { useLogin, useQuoteRotation } from "~/hooks/useAuth";
 import type { LoginLoaderData as LoaderData } from "~/types/login";
+import type { Route } from "./+types/login";
+
+export const links: Route.LinksFunction = () => [
+  {
+    rel: "preload",
+    as: "image",
+    href: "/iu-students-football.webp",
+    imageSrcSet: "/iu-students-football-mobile.webp 640w, /iu-students-football.webp 1280w",
+    imageSizes: "(max-width: 1024px) 100vw, 50vw",
+  },
+];
 
 // LOADER
 

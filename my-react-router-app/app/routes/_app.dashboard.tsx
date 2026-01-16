@@ -1,5 +1,4 @@
-import { useState, useEffect, useRef, type ReactNode } from "react";
-import { Link } from "react-router";
+import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import FirstSemesterOnboarding from "~/components/ui/FirstSemesterOnboarding";
 import { useLanguage } from "~/contexts/LanguageContext";
 import { getRecentCourses } from "~/lib/recentCourses";
@@ -19,10 +18,11 @@ import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/lib/studyPlans";
 import { calculateDaysLeft } from "~/lib/tasksSample";
 import { Prisma } from "@prisma/client";
 import { prisma } from "~/lib/prisma";
-import { useLoaderData } from "react-router";
+import { Await, useAsyncValue, useLoaderData } from "react-router";
 import { ACTIVE_COURSES_COUNT } from "~/lib/coursesMeta";
 import type {
   DashboardTask,
+  DashboardDeferredData,
   PraxisPartnerData,
   PraxisHoursData,
   ScheduleEventData,
@@ -53,42 +53,13 @@ import { GradesWidget } from "~/components/dashboard/GradesWidget";
 import { NewsModal } from "~/components/news/NewsModal";
 
 export const loader = async ({ request }: { request: Request }) => {
-  // Initialize default values
-  let tasks: DashboardTask[] = [];
-  let tasksTotal = 0;
-  let praxisPartner: PraxisPartnerData | null = null;
-  let praxisHours: PraxisHoursData = {
-    required: 900,
-    logged: 0,
-    thisWeek: 0,
-    target_per_week: 40,
-  };
-  let scheduleEvents: ScheduleEventData[] = [];
-  let averageGrade: number | null = null;
   let isFirstSemester = false;
   let userName = "Student";
   let userCampusArea: string | null = null;
   let studiengangName: string | null = null;
-  let newsItems: DashboardLoaderData["newsItems"] = [];
   let userId: number | undefined;
 
   try {
-    const safeQuery = async <T,>(promise: Promise<T>, fallback: T) => {
-      try {
-        return await promise;
-      } catch (error) {
-        const isMissingTable =
-          error instanceof Prisma.PrismaClientKnownRequestError &&
-          (error.code === "P2021" ||
-            error.message.toLowerCase().includes("does not exist"));
-        if (isMissingTable) {
-          console.warn("Dashboard loader: missing table, using fallback.");
-          return fallback;
-        }
-        console.error("Dashboard loader: query failed, using fallback.", error);
-        return fallback;
-      }
-    };
     // Get logged-in user from session
     const cookieHeader = request.headers.get("Cookie") || "";
     const sessionToken = cookieHeader
@@ -170,251 +141,315 @@ export const loader = async ({ request }: { request: Request }) => {
     userName = loggedInUser?.name || "Student";
     userCampusArea = (loggedInUser as any)?.campusArea || null;
     studiengangName = (loggedInUser as any)?.major?.name || null;
-
-    // Date calculations for schedule query
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    const endDate = new Date(today);
-    endDate.setDate(endDate.getDate() + SCHEDULE_DAYS_AHEAD);
-
-    // Week calculation for hours
-    const now = new Date();
-    const startOfWeek = new Date(now);
-    startOfWeek.setDate(now.getDate() - now.getDay() + 1);
-    startOfWeek.setHours(0, 0, 0, 0);
-
-    // Execute ALL database queries in PARALLEL for faster loading
-    let [
-      tasksResult,
-      totalCount,
-      partner,
-      target,
-      totalHoursResult,
-      weekHoursResult,
-      eventsResult,
-      marksResult,
-    ] = await Promise.all([
-      // Tasks
-      userId
-        ? safeQuery(
-            prisma.studentTask.findMany({
-              where: { user_id: userId },
-              orderBy: { due_date: "asc" },
-              take: MAX_TASKS_TO_DISPLAY,
-            }),
-            []
-          )
-        : [],
-      userId
-        ? safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0)
-        : 0,
-      // Practical Partner
-      userId
-        ? safeQuery(
-            prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
-            null
-          )
-        : null,
-      // Hours Target
-      userId
-        ? safeQuery(
-            prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
-            null
-          )
-        : null,
-      // Total Hours
-      userId
-        ? safeQuery(
-            prisma.practicalHoursLog.aggregate({
-              where: { user_id: userId },
-              _sum: { hours: true },
-            }),
-            { _sum: { hours: 0 } }
-          )
-        : { _sum: { hours: 0 } },
-      // Week Hours
-      userId
-        ? safeQuery(
-            prisma.practicalHoursLog.aggregate({
-              where: { user_id: userId, date: { gte: startOfWeek } },
-              _sum: { hours: true },
-            }),
-            { _sum: { hours: 0 } }
-          )
-        : { _sum: { hours: 0 } },
-      // Schedule Events (next few days)
-      userId
-        ? safeQuery(
-            prisma.scheduleEvent.findMany({
-              where: { user_id: userId, date: { gte: today, lt: endDate } },
-              orderBy: [{ date: "asc" }, { start_time: "asc" }],
-            }),
-            []
-          )
-        : [],
-      // Marks for average grade - filtered by user
-      userId
-        ? safeQuery(
-            prisma.mark.findMany({
-              where: { user_id: userId },
-              select: { value: true, course: true },
-            }),
-            []
-          )
-        : [],
-    ]);
-
-    // Process tasks
-    tasks = tasksResult.map((t: any) => ({
-      id: t.id,
-      title: t.title,
-      course: t.course,
-      kind: t.kind,
-      type: t.type,
-      due_date: t.due_date.toISOString(),
-    }));
-    tasksTotal = totalCount;
-
-    // Process praxis partner
-    if (partner) {
-      praxisPartner = {
-        company_name: partner.company_name,
-        department: partner.department,
-        supervisor: partner.supervisor,
-        email: partner.email,
-        phone: partner.phone,
-        address: partner.address,
-      };
-    }
-
-    // Process praxis hours
-    praxisHours = {
-      required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
-      logged: Math.round(totalHoursResult._sum.hours ?? 0),
-      thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
-      target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
-    };
-
-    // If no events in the short window, fetch the next upcoming events from DB.
-    if (userId && (eventsResult as any[]).length === 0) {
-      eventsResult = await safeQuery(
-        prisma.scheduleEvent.findMany({
-          where: { user_id: userId, date: { gte: today } },
-          orderBy: [{ date: "asc" }, { start_time: "asc" }],
-          take: 10,
-        }),
-        []
-      );
-    }
-
-    // Process schedule events
-    scheduleEvents = (eventsResult as any[]).map((e: any) => ({
-      id: e.id,
-      title: e.title,
-      course_code: e.course_code,
-      date: e.date.toISOString(),
-      start_time: e.start_time,
-      end_time: e.end_time,
-      location: e.location,
-      event_type: e.event_type,
-      professor: e.professor,
-    }));
-
-    // Calculate weighted average grade (Match Notenverwaltung logic)
-    if (marksResult.length > 0) {
-      const dbCourses = (loggedInUser as any)?.major?.courses || [];
-      const passedMarks = marksResult.filter((m: any) => m.value <= 4.0);
-      
-      let totalECTS = 0;
-      let weightedSum = 0;
-
-      passedMarks.forEach((m: any) => {
-        const course = dbCourses.find((c: any) => {
-          const keys = [
-            c.name,
-            c.name_de,
-            c.name_en,
-            c.code,
-          ]
-            .filter(Boolean)
-            .map((val) => String(val).toLowerCase());
-          return typeof m.course === "string" && keys.includes(m.course.toLowerCase());
-        });
-        
-        const credits = course?.credits ?? 5;
-        totalECTS += credits;
-        weightedSum += m.value * credits;
-      });
-
-      averageGrade = totalECTS > 0 ? weightedSum / totalECTS : null;
-    }
-
-    // Fetch news items server-side for faster LCP
-    try {
-      const newsResult = await prisma.news.findMany({
-        where: { status: "PUBLISHED" },
-        orderBy: { published_at: "desc" },
-        take: 5,
-        select: {
-          slug: true,
-          title: true,
-          excerpt: true,
-          content: true,
-          category: true,
-          published_at: true,
-          featured: true,
-        },
-      });
-      newsItems = newsResult.map((n: any) => ({
-        ...n,
-        published_at: n.published_at.toISOString(),
-      }));
-    } catch {
-      // News table might not exist in development - continue with empty array
-    }
   } catch (error) {
     console.error("Dashboard loader error:", error);
-    // Keep default values on error
   }
 
+  const deferredData = (async () => {
+    let tasks: DashboardTask[] = [];
+    let tasksTotal = 0;
+    let praxisPartner: PraxisPartnerData | null = null;
+    let praxisHours: PraxisHoursData = {
+      required: 900,
+      logged: 0,
+      thisWeek: 0,
+      target_per_week: 40,
+    };
+    let scheduleEvents: ScheduleEventData[] = [];
+    let averageGrade: number | null = null;
+    let newsItems: DashboardDeferredData["newsItems"] = [];
+
+    try {
+      const safeQuery = async <T,>(promise: Promise<T>, fallback: T) => {
+        try {
+          return await promise;
+        } catch (error) {
+          const isMissingTable =
+            error instanceof Prisma.PrismaClientKnownRequestError &&
+            (error.code === "P2021" ||
+              error.message.toLowerCase().includes("does not exist"));
+          if (isMissingTable) {
+            console.warn("Dashboard loader: missing table, using fallback.");
+            return fallback;
+          }
+          console.error("Dashboard loader: query failed, using fallback.", error);
+          return fallback;
+        }
+      };
+
+      if (!userId) {
+        return {
+          tasks,
+          tasksTotal,
+          praxisPartner,
+          praxisHours,
+          scheduleEvents,
+          averageGrade,
+          newsItems,
+        };
+      }
+
+      // Date calculations for schedule query
+      const today = new Date();
+      today.setHours(0, 0, 0, 0);
+      const endDate = new Date(today);
+      endDate.setDate(endDate.getDate() + SCHEDULE_DAYS_AHEAD);
+
+      // Week calculation for hours
+      const now = new Date();
+      const startOfWeek = new Date(now);
+      startOfWeek.setDate(now.getDate() - now.getDay() + 1);
+      startOfWeek.setHours(0, 0, 0, 0);
+
+      // Execute ALL database queries in PARALLEL for faster loading
+      let [
+        tasksResult,
+        totalCount,
+        partner,
+        target,
+        totalHoursResult,
+        weekHoursResult,
+        eventsResult,
+        marksResult,
+      ] = await Promise.all([
+        safeQuery(
+          prisma.studentTask.findMany({
+            where: { user_id: userId },
+            orderBy: { due_date: "asc" },
+            take: MAX_TASKS_TO_DISPLAY,
+          }),
+          []
+        ),
+        safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0),
+        safeQuery(
+          prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
+          null
+        ),
+        safeQuery(
+          prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
+          null
+        ),
+        safeQuery(
+          prisma.practicalHoursLog.aggregate({
+            where: { user_id: userId },
+            _sum: { hours: true },
+          }),
+          { _sum: { hours: 0 } }
+        ),
+        safeQuery(
+          prisma.practicalHoursLog.aggregate({
+            where: { user_id: userId, date: { gte: startOfWeek } },
+            _sum: { hours: true },
+          }),
+          { _sum: { hours: 0 } }
+        ),
+        safeQuery(
+          prisma.scheduleEvent.findMany({
+            where: { user_id: userId, date: { gte: today, lt: endDate } },
+            orderBy: [{ date: "asc" }, { start_time: "asc" }],
+          }),
+          []
+        ),
+        safeQuery(
+          prisma.mark.findMany({
+            where: { user_id: userId },
+            select: { value: true, course: true },
+          }),
+          []
+        ),
+      ]);
+
+      // Process tasks
+      tasks = tasksResult.map((t: any) => ({
+        id: t.id,
+        title: t.title,
+        course: t.course,
+        kind: t.kind,
+        type: t.type,
+        due_date: t.due_date.toISOString(),
+      }));
+      tasksTotal = totalCount;
+
+      // Process praxis partner
+      if (partner) {
+        praxisPartner = {
+          company_name: partner.company_name,
+          department: partner.department,
+          supervisor: partner.supervisor,
+          email: partner.email,
+          phone: partner.phone,
+          address: partner.address,
+        };
+      }
+
+      // Process praxis hours
+      praxisHours = {
+        required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
+        logged: Math.round(totalHoursResult._sum.hours ?? 0),
+        thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
+        target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
+      };
+
+      // If no events in the short window, fetch the next upcoming events from DB.
+      if ((eventsResult as any[]).length === 0) {
+        eventsResult = await safeQuery(
+          prisma.scheduleEvent.findMany({
+            where: { user_id: userId, date: { gte: today } },
+            orderBy: [{ date: "asc" }, { start_time: "asc" }],
+            take: 10,
+          }),
+          []
+        );
+      }
+
+      // Process schedule events
+      scheduleEvents = (eventsResult as any[]).map((e: any) => ({
+        id: e.id,
+        title: e.title,
+        course_code: e.course_code,
+        date: e.date.toISOString(),
+        start_time: e.start_time,
+        end_time: e.end_time,
+        location: e.location,
+        event_type: e.event_type,
+        professor: e.professor,
+      }));
+
+      // Process average grade
+      if (marksResult.length > 0) {
+        const grades = marksResult.map((m: any) => parseFloat(m.value));
+        averageGrade =
+          grades.reduce((a: number, b: number) => a + b, 0) / grades.length;
+      }
+
+      // Load news
+      try {
+        const newsResult = await prisma.news.findMany({
+          where: { published_at: { not: null } },
+          orderBy: { published_at: "desc" },
+          take: 5,
+          select: {
+            id: true,
+            slug: true,
+            title: true,
+            excerpt: true,
+            content: true,
+            category: true,
+            published_at: true,
+            featured: true,
+          },
+        });
+        newsItems = newsResult.map((n: any) => ({
+          ...n,
+          published_at: n.published_at.toISOString(),
+        }));
+      } catch {
+        // News table might not exist in development - continue with empty array
+      }
+    } catch (error) {
+      console.error("Dashboard loader error:", error);
+    }
+
+    return {
+      tasks,
+      tasksTotal,
+      praxisPartner,
+      praxisHours,
+      scheduleEvents,
+      averageGrade,
+      newsItems,
+    };
+  })();
+
   return {
-    tasks,
-    tasksTotal,
-    praxisPartner,
-    praxisHours,
-    scheduleEvents,
-    averageGrade,
     isFirstSemester,
     userName,
     userCampusArea,
     studiengangName,
-    newsItems,
-    userId, // Return userId for client-side storage keys
+    userId,
+    deferred: deferredData,
   };
 };
 
 export default function Dashboard() {
   const {
-    tasks,
-    tasksTotal,
-    praxisPartner,
-    praxisHours,
-    scheduleEvents,
-    averageGrade,
-    isFirstSemester,
     userName,
     userCampusArea,
     studiengangName,
-    newsItems,
+    isFirstSemester,
     userId,
+    deferred,
   } = useLoaderData() as DashboardLoaderData;
 
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
   const locale = language === "de" ? "de-DE" : "en-US";
 
-  // Use server-loaded user data directly - no client fetch needed!
-  const user = { name: userName, campus_area: userCampusArea };
+  // Get greeting based on time of day
+  const getGreeting = () => {
+    const hour = new Date().getHours();
+    if (hour < 12) return t.goodMorning;
+    if (hour < 18) return t.goodAfternoon;
+    return t.goodEvening;
+  };
+
+  return (
+    <div className="max-w-7xl mx-auto dashboard-icons-white">
+      <DashboardHeader userName={userName} t={t} getGreeting={getGreeting} />
+
+      <Suspense fallback={<DashboardDeferredFallback />}>
+        <Await resolve={deferred}>
+          <DashboardDeferredContent
+            userId={userId}
+            userCampusArea={userCampusArea}
+            studiengangName={studiengangName}
+            isFirstSemester={isFirstSemester}
+            t={t}
+            language={language}
+            locale={locale}
+          />
+        </Await>
+      </Suspense>
+    </div>
+  );
+}
+
+type DashboardDeferredContentProps = {
+  userId?: number;
+  userCampusArea: string | null;
+  studiengangName: string | null;
+  isFirstSemester: boolean;
+  t: any;
+  language: string;
+  locale: string;
+};
+
+function DashboardDeferredFallback() {
+  return (
+    <div className="mt-6 sm:mt-8 space-y-6 sm:space-y-8">
+      <div className="h-40 sm:h-48 rounded-2xl sm:rounded-[2rem] border border-border/40 bg-card/40 animate-pulse" />
+      <div className="h-64 sm:h-72 rounded-2xl sm:rounded-[2rem] border border-border/40 bg-card/40 animate-pulse" />
+    </div>
+  );
+}
+
+function DashboardDeferredContent({
+  userId,
+  userCampusArea,
+  studiengangName,
+  isFirstSemester,
+  t,
+  language,
+  locale,
+}: DashboardDeferredContentProps) {
+  const {
+    tasks,
+    praxisPartner,
+    praxisHours,
+    scheduleEvents,
+    averageGrade,
+    newsItems,
+  } = useAsyncValue() as DashboardDeferredData;
 
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
@@ -532,14 +567,6 @@ export default function Dashboard() {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
-  };
-
-  // Get greeting based on time of day
-  const getGreeting = () => {
-    const hour = new Date().getHours();
-    if (hour < 12) return t.goodMorning;
-    if (hour < 18) return t.goodAfternoon;
-    return t.goodEvening;
   };
 
   // Dual Student Logic
@@ -760,9 +787,7 @@ export default function Dashboard() {
   };
 
   return (
-    <div className="max-w-7xl mx-auto dashboard-icons-white">
-      <DashboardHeader userName={userName} t={t} getGreeting={getGreeting} />
-
+    <>
       <NewsSlider
         newsItems={newsItems}
         currentNewsIndex={currentNewsIndex}
@@ -948,6 +973,6 @@ export default function Dashboard() {
           }}
         />
       )}
-    </div>
+    </>
   );
 }
