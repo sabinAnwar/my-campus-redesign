@@ -1,9 +1,9 @@
-import { Link, useLoaderData, redirect } from "react-router";
+import { useEffect } from "react";
+import { useLoaderData, redirect, useNavigate } from "react-router";
+import { useAuth0 } from "@auth0/auth0-react";
 import { getUserFromRequest } from "~/lib/auth.server";
-import { MOTIVATIONAL_QUOTES } from "~/data/quotes";
 import {
   Mail,
-  Lock,
   AlertCircle,
   Loader2,
   ArrowRight,
@@ -18,11 +18,10 @@ import {
   LoginCampusLocations,
   LoginUserStats,
   LoginHeader,
-  LoginFormInput,
   LoginSupportLink,
 } from "~/components/login";
 
-import { useLogin, useQuoteRotation } from "~/hooks/useAuth";
+import { useQuoteRotation } from "~/hooks/useAuth";
 import type { LoginLoaderData as LoaderData } from "~/types/login";
 import type { Route } from "./+types/login";
 
@@ -68,53 +67,32 @@ function LoginErrorAlert({ error }: { error: string }) {
   );
 }
 
-function LoginSubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
+function LoginSubmitButton({
+  isSubmitting,
+  onClick,
+}: {
+  isSubmitting: boolean;
+  onClick: () => void;
+}) {
   return (
     <button
-      type="submit"
+      type="button"
       disabled={isSubmitting}
+      onClick={onClick}
       className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 dark:from-iu-blue via-slate-800 dark:via-iu-blue to-slate-900 dark:to-iu-blue hover:from-slate-800 dark:hover:from-iu-blue hover:via-slate-700 dark:hover:via-iu-blue hover:to-slate-800 dark:hover:to-iu-blue text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl dark:shadow-iu-blue/20 dark:hover:shadow-iu-blue/40 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 border border-slate-700 dark:border-iu-blue/30"
     >
       {isSubmitting ? (
         <>
           <Loader2 className="animate-spin h-6 w-6" />
-          <span>Signing in...</span>
+          <span>Opening Auth0...</span>
         </>
       ) : (
         <>
-          <span id="login-button-text">Sign In</span>
+          <span id="login-button-text">Continue with Auth0</span>
           <ArrowRight className="w-6 h-6" />
         </>
       )}
     </button>
-  );
-}
-
-function RememberMeSection() {
-  return (
-    <div className="flex items-center justify-between pt-4">
-      <div className="flex items-center gap-2">
-        <input
-          id="remember"
-          name="remember"
-          type="checkbox"
-          className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-iu-blue dark:text-iu-blue focus:ring-2 focus:ring-iu-blue cursor-pointer transition-all"
-        />
-        <label
-          htmlFor="remember"
-          className="text-base text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
-        >
-          Keep me signed in
-        </label>
-      </div>
-      <Link
-        to="/reset-password"
-        title="Forgot password link"
-        className="text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition duration-200 underline-offset-4 hover:underline"
-      >
-        Forgot password?
-      </Link>
-    </div>
   );
 }
 
@@ -173,9 +151,20 @@ function LoginFooter() {
  */
 export default function Login() {
   const { totalUsers, onlineUsers } = useLoaderData() as LoaderData;
-  const { error, isSubmitting, handleSubmit } = useLogin();
+  const navigate = useNavigate();
+  const { loginWithRedirect, isAuthenticated, isLoading, error } = useAuth0();
   const { currentQuote, currentIndex, isFading, handleDotClick } =
     useQuoteRotation();
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      navigate("/dashboard");
+    }
+  }, [isAuthenticated, navigate]);
+
+  const handleAuth0Login = () => {
+    void loginWithRedirect();
+  };
 
   return (
     <div className="iu-premium-login-grid bg-gradient-to-br from-slate-50 via-white to-slate-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
@@ -206,33 +195,35 @@ export default function Login() {
           <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-xl bg-white/95 dark:bg-slate-800/95">
             <LoginHeader />
 
-            <form onSubmit={handleSubmit} className="space-y-7">
-              <LoginFormInput
-                id="email"
-                label="Email Address"
-                icon={Mail}
-                type="email"
-                placeholder="your.email@iu-study.org"
-                autoComplete="email"
+            <div className="space-y-7">
+              <div className="rounded-2xl border border-slate-200 dark:border-slate-700 bg-slate-50/70 dark:bg-slate-900/40 p-6 text-center space-y-4">
+                <div className="flex items-center justify-center">
+                  <img
+                    src="https://cdn.auth0.com/quantum-assets/dist/latest/logos/auth0/auth0-logo-color.png"
+                    alt="Auth0"
+                    className="h-8"
+                    onError={(event) => {
+                      event.currentTarget.style.display = "none";
+                    }}
+                  />
+                </div>
+                <p className="text-base text-slate-700 dark:text-slate-200 font-medium">
+                  Sign in securely with Auth0 to access your personalized IU dashboard.
+                </p>
+                <div className="text-sm text-slate-600 dark:text-slate-400">
+                  Single sign-on, multi-factor ready, and enterprise-grade security.
+                </div>
+              </div>
+
+              {error && <LoginErrorAlert error={error.message} />}
+
+              <LoginSubmitButton
+                isSubmitting={isLoading}
+                onClick={handleAuth0Login}
               />
-
-              <LoginFormInput
-                id="password"
-                label="Password"
-                icon={Lock}
-                type="password"
-                placeholder="Enter your password"
-                autoComplete="current-password"
-              />
-
-              <RememberMeSection />
-
-              {error && <LoginErrorAlert error={error} />}
-
-              <LoginSubmitButton isSubmitting={isSubmitting} />
 
               <SupportSection />
-            </form>
+            </div>
           </div>
 
           <LoginFooter />

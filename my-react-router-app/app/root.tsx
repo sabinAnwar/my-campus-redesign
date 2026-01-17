@@ -9,6 +9,7 @@ import {
 import { ToastContainer } from "react-toastify";
 import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
+import { Auth0Provider } from "@auth0/auth0-react";
 
 import type { Route } from "./+types/root";
 import appStyles from "./app.css?url";
@@ -74,11 +75,26 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // APP ROOT (HIER MUSS DER PROVIDER SEIN!)
 // ---------------------------------------------
 export default function App() {
+  const auth0Domain = import.meta.env.VITE_AUTH0_DOMAIN;
+  const auth0ClientId = import.meta.env.VITE_AUTH0_CLIENT_ID;
+  const redirectUri =
+    typeof window === "undefined" ? "" : window.location.origin;
+
+  if (!auth0Domain || !auth0ClientId) {
+    console.error("Auth0 configuration missing. Check your .env values.");
+  }
+
   return (
-   
+    <Auth0Provider
+      domain={auth0Domain ?? ""}
+      clientId={auth0ClientId ?? ""}
+      authorizationParams={{
+        redirect_uri: redirectUri,
+      }}
+    >
       <ThemeProvider defaultTheme="system" storageKey="iu-theme">
         <LanguageProvider storageKey="iu-language">
-          <ToastContainer 
+          <ToastContainer
             position="top-right"
             autoClose={5000}
             hideProgressBar={false}
@@ -93,7 +109,7 @@ export default function App() {
           <Outlet />
         </LanguageProvider>
       </ThemeProvider>
-  
+    </Auth0Provider>
   );
 }
 

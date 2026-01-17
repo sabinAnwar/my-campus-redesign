@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useFetcher } from "react-router";
+import { useAuth0 } from "@auth0/auth0-react";
 import { showErrorToast, showSuccessToast } from "../lib/toast";
 import { MOTIVATIONAL_QUOTES } from "../data/quotes";
 
@@ -122,32 +123,19 @@ export function useQuoteRotation() {
 //
 
 const LOGOUT_REDIRECT_DELAY = 2000;
-const SESSION_COOKIES = ["session", "auth_session"];
-
 /**
  * Hook for handling logout logic
- * Clears cookies, calls API, and redirects
+ * Redirects to Auth0 logout after the animation
  */
 export function useLogout() {
+  const { logout } = useAuth0();
+
   useEffect(() => {
-    // Clear session cookies immediately
-    SESSION_COOKIES.forEach((name) => {
-      document.cookie = `${name}=; path=/; expires=Thu, 01 Jan 1970 00:00:01 GMT;`;
-    });
-
-    // Call logout API in background (fire and forget)
-    fetch("/api/logout.data", {
-      method: "POST",
-      credentials: "include",
-    }).catch(() => {
-      // Ignore errors - cookies already cleared
-    });
-
     // Redirect after animation completes
     const timer = setTimeout(() => {
-      window.location.replace("/");
+      logout({ logoutParams: { returnTo: window.location.origin } });
     }, LOGOUT_REDIRECT_DELAY);
 
     return () => clearTimeout(timer);
-  }, []);
+  }, [logout]);
 }
