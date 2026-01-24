@@ -2,7 +2,7 @@ import { useMemo } from "react";
 import type { LucideIcon } from "lucide-react";
 import { BookOpen, Award, BadgeCheck, Library } from "lucide-react";
 
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { getCourseConfig } from "~/data/coursesConfig";
 import { SHELL_TRANSLATIONS } from "~/services/translations/navigation";
 

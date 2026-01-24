@@ -1,4 +1,4 @@
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/social-media";
 import { getOfficialChannels, getFacultyChannels } from "~/utils/social-media/channel-data";
 

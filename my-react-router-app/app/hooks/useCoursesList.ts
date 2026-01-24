@@ -1,7 +1,7 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { saveRecentCourse } from "~/lib/recentCourses";
-import type { FilterType } from "~/components/courses/CourseFilters";
+import { saveRecentCourse } from "~/utils/recentCourses";
+import type { FilterType } from "~/features/courses/CourseFilters";
 
 interface UseCourseListParams {
   dbCourses: any[];

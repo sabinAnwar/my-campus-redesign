@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import { ZUSATZKURSE_CATEGORIES } from "~/constants/exam-registration";
+import { ZUSATZKURSE_CATEGORIES } from "~/config/exam-registration";
 
 export function useCourseSelection() {
   const navigate = useNavigate();

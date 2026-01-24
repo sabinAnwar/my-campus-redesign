@@ -1,6 +1,6 @@
 import { useMemo, useState } from "react";
 import type { Module, ModuleHandbookLoaderData } from "~/types/module-handbook";
-import { COURSE_META } from "~/constants/module-handbook";
+import { COURSE_META } from "~/config/module-handbook";
 
 interface UseModuleHandbookParams {
   courses: ModuleHandbookLoaderData["courses"];

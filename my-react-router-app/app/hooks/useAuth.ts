@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useFetcher } from "react-router";
-import { showErrorToast, showSuccessToast } from "../lib/toast";
-import { MOTIVATIONAL_QUOTES } from "../data/quotes";
+import { showErrorToast, showSuccessToast } from "~/utils/toast";
+import { MOTIVATIONAL_QUOTES } from "~/data/quotes";
 
 //
 // CONSTANTS

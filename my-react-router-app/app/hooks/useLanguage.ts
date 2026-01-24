@@ -1,3 +1,3 @@
 // Re-export useLanguage hook from context for convenience
-export { useLanguage } from "~/contexts/LanguageContext";
-export type { Language } from "~/contexts/LanguageContext";
+export { useLanguage } from "~/store/LanguageContext";
+export type { Language } from "~/store/LanguageContext";

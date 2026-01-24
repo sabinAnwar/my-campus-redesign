@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import type { VertiefungId } from "~/types/specialization";
-import { VERTIEFUNGEN } from "~/constants/specialization";
+import { VERTIEFUNGEN } from "~/config/specialization";
 
 //
 // TYPES

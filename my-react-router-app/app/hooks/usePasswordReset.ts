@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, type FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import { showSuccessToast, showErrorToast } from "../lib/toast";
+import { showSuccessToast, showErrorToast } from "~/utils/toast";
 
 //
 // CONSTANTS

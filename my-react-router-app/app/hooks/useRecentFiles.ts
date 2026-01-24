@@ -3,7 +3,7 @@ import {
   getRecentFiles,
   clearRecentFiles,
   saveRecentFile as saveRecentFileLib,
-} from "~/lib/recentFiles";
+} from "~/utils/recentFiles";
 import type { ModuleFile, RecentFileEntry } from "~/types/file";
 
 const LS_KEYS = {

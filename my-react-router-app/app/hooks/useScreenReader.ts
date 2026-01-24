@@ -1,2 +1,2 @@
 // Re-export useScreenReader hook from context for convenience
-export { useScreenReader } from "~/contexts/ScreenReaderContext";
+export { useScreenReader } from "~/store/ScreenReaderContext";

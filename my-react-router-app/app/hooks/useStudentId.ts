@@ -1,7 +1,7 @@
 import { useRef, useCallback } from "react";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
-import { showSuccessToast, showErrorToast } from "~/lib/toast";
+import { showSuccessToast, showErrorToast } from "~/utils/toast";
 
 //// TYPES
 //
