@@ -15,8 +15,29 @@ import newsRoutes from "./routes/news";
 import praxisRoutes from "./routes/praxisberichte";
 import cronRoutes from "./routes/cron";
 
-// In Vercel, use __dirname relative path to locate build
-const clientBuildPath = path.join(__dirname, "../build/client");
+// Helper to find build directory in Vercel environment
+// Vercel structure can be flat (/var/task) or nested (/var/task/project-name)
+function findClientBuildPath(startDir: string): string | null {
+  let current = startDir;
+  // Limit traversal to avoid infinite loops or going too high
+  for (let i = 0; i < 5; i++) {
+    // Check direct build/client
+    let attempt = path.join(current, "build/client");
+    if (require("fs").existsSync(attempt)) return attempt;
+    
+    // Check nested in project name (heuristic)
+    attempt = path.join(current, "my-react-router-app/build/client");
+    if (require("fs").existsSync(attempt)) return attempt;
+    
+    // Go up
+    const parent = path.dirname(current);
+    if (parent === current) break;
+    current = parent;
+  }
+  return null;
+}
+
+const clientBuildPath = findClientBuildPath(__dirname) || path.join(__dirname, "../build/client");
 
 const app = express();
 
