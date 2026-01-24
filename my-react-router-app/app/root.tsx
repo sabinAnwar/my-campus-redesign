@@ -11,10 +11,10 @@ import { Analytics } from "@vercel/analytics/react";
 import { SpeedInsights } from "@vercel/speed-insights/react";
 
 import type { Route } from "./+types/root";
-import appStyles from "./app.css?url";
+import appStyles from "./styles/index.css?url";
 import toastifyStyles from "react-toastify/dist/ReactToastify.css?url";
-import { ThemeProvider } from "./contexts/ThemeContext";
-import { LanguageProvider } from "./contexts/LanguageContext";
+import { ThemeProvider } from "./store/ThemeContext";
+import { LanguageProvider } from "./store/LanguageContext";
 
 // ---------------------------------------------
 // DOCUMENT LAYOUT 
