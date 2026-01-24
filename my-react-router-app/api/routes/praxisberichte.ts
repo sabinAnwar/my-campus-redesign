@@ -86,7 +86,8 @@ router.put("/:weekKey", express.json(), async (req: Request, res: Response) => {
     // Send confirmation email if status is SUBMITTED
     if ((status || "").toUpperCase() === "SUBMITTED") {
       try {
-        const { createTransporter } = await import("../utils/email");
+       
+        const { createTransporter } = require("../utils/email");
         const transporter = await createTransporter();
         const emailSubject = `Praxisbericht eingereicht: Woche ${weekKey}`;
         
