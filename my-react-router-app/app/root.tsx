@@ -17,7 +17,7 @@ import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 
 // ---------------------------------------------
-// DOCUMENT LAYOUT (keine App-Logik hier)
+// DOCUMENT LAYOUT 
 // ---------------------------------------------
 export const links: Route.LinksFunction = () => [
   // Favicon

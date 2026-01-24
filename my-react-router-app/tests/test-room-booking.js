@@ -3,7 +3,7 @@ import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function runTest() {
-  console.log("🚀 Starting Room Booking DB Test...");
+  console.log("Starting Room Booking DB Test...");
 
   try {
     // 1. Setup: Find a test user
@@ -15,11 +15,11 @@ async function runTest() {
     }
 
     if (!user) {
-      console.error("❌ No users found in database. Run seed first.");
+      console.error("No users found in database. Run seed first.");
       return;
     }
 
-    console.log(`👤 Using User: ${user.name || user.username} (ID: ${user.id})`);
+    console.log(`Using User: ${user.name || user.username} (ID: ${user.id})`);
 
     // 2. Define Booking Data
     const today = new Date().toISOString().split("T")[0]; // YYYY-MM-DD

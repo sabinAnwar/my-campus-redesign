@@ -1,0 +1,10 @@
+{
+    "codesnap.backgroundColor": "transparent",
+    "codesnap.containerPadding": "0",
+    "codesnap.showLineNumbers": false,
+    "codesnap.boxShadow": "0",
+    "codesnap.roundedCorners": false,
+    "codesnap.transparentBackground": true,
+    "editor.defaultFormatter": "esbenp.prettier-vscode",
+    "notebook.defaultFormatter": "esbenp.prettier-vscode"
+}

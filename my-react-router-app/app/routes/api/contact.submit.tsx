@@ -101,50 +101,49 @@ export async function action({ request }: ActionFunctionArgs) {
       <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; }
-            .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
-            .info-box { background: white; padding: 15px; margin: 15px 0; border-left: 4px solid #667eea; border-radius: 4px; }
-            .label { font-weight: bold; color: #667eea; margin-bottom: 5px; }
-            .footer { background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 12px; border-radius: 0 0 10px 10px; }
+             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header">
-              <h1 style="margin: 0;"> Neue Support-Anfrage</h1>
-              <p style="margin: 10px 0 0 0; opacity: 0.9;">IU Student Portal</p>
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #111f60; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+              <h1 style="margin: 0; font-size: 26px;">Neue Support-Anfrage</h1>
+              <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">IU Student Portal</p>
             </div>
-            <div class="content">
-              <div class="info-box">
-                <div class="label">Von:</div>
-                <div>${user.name} (${user.email})</div>
+            <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+              <div style="background: white; padding: 20px; margin: 15px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Von</div>
+                <div style="font-size: 16px;">${user.name} (<a href="mailto:${user.email}" style="color: #111f60; text-decoration: none;">${user.email}</a>)</div>
               </div>
               
-              <div class="info-box">
-                <div class="label">Betreff:</div>
-                <div>${subject}</div>
+              <div style="background: white; padding: 20px; margin: 15px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Betreff</div>
+                <div style="font-size: 18px; font-weight: 500;">${subject}</div>
               </div>
               
-              <div class="info-box">
-                <div class="label">Nachricht:</div>
-                <div style="white-space: pre-wrap;">${message}</div>
+              <div style="background: white; padding: 20px; margin: 15px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Nachricht</div>
+                <div style="white-space: pre-wrap; color: #4b5563; font-size: 16px;">${message}</div>
               </div>
               
-              <div class="info-box">
-                <div class="label">Eingereicht am:</div>
-                <div>${new Date().toLocaleString('de-DE')}</div>
-              </div>
-              
-              <div class="info-box">
-                <div class="label">Submission ID:</div>
-                <div>${contactSubmission.id}</div>
+              <div style="background: white; padding: 20px; margin: 15px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <table width="100%" cellpadding="0" cellspacing="0" border="0">
+                  <tr>
+                    <td align="left" valign="top">
+                      <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Eingereicht am</div>
+                      <div style="font-size: 15px;">${new Date().toLocaleString('de-DE')}</div>
+                    </td>
+                    <td align="right" valign="top">
+                       <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">ID</div>
+                       <div style="font-family: monospace; background: #eee; padding: 4px 8px; border-radius: 4px; font-size: 15px; display: inline-block;">#${contactSubmission.id}</div>
+                    </td>
+                  </tr>
+                </table>
               </div>
             </div>
-            <div class="footer">
-              <p>Diese E-Mail wurde automatisch vom IU Student Portal generiert.</p>
-              <p>Bitte antworten Sie direkt an ${user.email}</p>
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
+              <p>Diese E-Mail wurde automatisch generiert.</p>
+              <p>&copy; ${new Date().getFullYear()} IU Student Portal</p>
             </div>
           </div>
         </body>
@@ -160,31 +159,28 @@ export async function action({ request }: ActionFunctionArgs) {
       <html>
         <head>
           <style>
-            body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
-            .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-            .header { background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center; }
-            .content { background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb; }
-            .success-icon { font-size: 48px; margin-bottom: 10px; }
-            .footer { background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 12px; border-radius: 0 0 10px 10px; }
+             body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
           </style>
         </head>
         <body>
-          <div class="container">
-            <div class="header">
-              <div class="success-icon"></div>
-              <h1 style="margin: 0;">Nachricht erhalten!</h1>
+          <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+            <div style="background: #174f26; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+              <span style="font-size: 48px; margin-bottom: 10px; display: block;">✓</span>
+              <h1 style="margin: 0; font-size: 26px;">Anfrage erhalten!</h1>
             </div>
-            <div class="content">
-              <p>Hallo ${user.name},</p>
-              <p>Vielen Dank für deine Nachricht. Wir haben deine Anfrage erhalten und werden uns schnellstmöglich bei dir melden.</p>
-              <p><strong>Deine Anfrage:</strong></p>
-              <p style="background: white; padding: 15px; border-left: 4px solid #10b981; border-radius: 4px;">
-                <strong>Betreff:</strong> ${subject}<br>
-                <strong>Nachricht:</strong> ${message.substring(0, 200)}${message.length > 200 ? '...' : ''}
-              </p>
-              <p>Durchschnittliche Antwortzeit: <strong>1 Stunde</strong></p>
+            <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+              <p style="font-size: 18px; margin-bottom: 20px;">Hallo ${user.name},</p>
+              <p style="font-size: 16px;">Wir haben deine Nachricht erhalten. Unser Support-Team wird sich schnellstmöglich bei dir melden.</p>
+              
+              <div style="background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #174f26; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                <div style="font-weight: bold; color: #174f26; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #eee; padding-bottom: 5px;">Deine Nachricht</div>
+                <div style="margin-bottom: 10px; font-size: 16px;"><strong>Betreff:</strong> ${subject}</div>
+                <div style="color: #555; font-style: italic; font-size: 15px;">"${message.substring(0, 300)}${message.length > 300 ? '...' : ''}"</div>
+              </div>
+              
+              <p style="font-size: 15px; color: #555;">Durchschnittliche Antwortzeit: <strong>< 24 Stunden</strong></p>
             </div>
-            <div class="footer">
+            <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
               <p>IU Student Portal - Support Team</p>
             </div>
           </div>

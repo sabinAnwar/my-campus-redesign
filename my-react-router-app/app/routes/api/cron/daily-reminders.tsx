@@ -1,5 +1,6 @@
 import nodemailer from "nodemailer";
 import { prisma } from "../../../lib/prisma";
+import { createTransporter } from "../../../../api/utils/email";
 
 function getHourInTimezone(tz: string | null | undefined): number {
   try {
@@ -141,36 +142,11 @@ export const loader = async ({ request }: { request: Request }) => {
     const currentWeekKey = getIsoWeekKey(now);
 
     let sent = 0;
-    const emailService = process.env.EMAIL_SERVICE || "test";
-    console.log(` Email service: ${emailService}`);
-
+    // Use shared transporter (Gmail only)
+    const transporter = await createTransporter();
+    
+    // Default preview urls array, although createTransporter (Gmail) won't generate test URLs
     const previewUrls: string[] = [];
-    let transporter;
-    if (emailService === "gmail") {
-      transporter = nodemailer.createTransport({
-        host: "smtp.gmail.com",
-        port: 465,
-        secure: true,
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
-        },
-      });
-    } else if (emailService === "sendgrid") {
-      transporter = nodemailer.createTransport({
-        host: "smtp.sendgrid.net",
-        port: 587,
-        auth: { user: "apikey", pass: process.env.SENDGRID_API_KEY },
-      });
-    } else {
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: "smtp.ethereal.email",
-        port: 587,
-        secure: false,
-        auth: { user: testAccount.user, pass: testAccount.pass },
-      });
-    }
 
     for (const u of users) {
       const tz = u.reminder_timezone || "Europe/Berlin";
@@ -206,28 +182,51 @@ export const loader = async ({ request }: { request: Request }) => {
       const mailOptions = {
         from: process.env.EMAIL_FROM || process.env.EMAIL_USER || "noreply@iu-portal.com",
         to: u.email,
-        subject: " Erinnerung: Praxisbericht heute noch ausfüllen",
+        subject: "Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
-          <div style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
-            <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
-            <p>kurze Erinnerung für heute: Bitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.</p>
-            <p>
-              <a href="${portalLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
-            </p>
-            <p style="color:#999;font-size:12px;">Diese Erinnerung wurde um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}) gesendet.</p>
-          </div>
-        `,
+            <!DOCTYPE html>
+            <html>
+              <head>
+                <style>
+                   body { font-family: Arial, sans-serif; line-height: 1.6; color: #333333; margin: 0; padding: 0; }
+                </style>
+              </head>
+              <body>
+                <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+                  <div style="background: #111f60; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
+                    <h1 style="margin: 0; font-size: 26px;">Erinnerung</h1>
+                    <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">Praxisbericht fällig</p>
+                  </div>
+                  <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
+                    <p style="font-size: 18px; margin-bottom: 20px;">Hallo ${u.name || "Student"},</p>
+                    
+                    <div style="background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
+                      <p style="margin: 0; font-size: 16px;">Dies ist eine kurze Erinnerung für heute: Bitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.</p>
+                    </div>
+
+                    <div style="text-align: center; margin: 30px 0;">
+                      <a href="${portalLink}" style="display: inline-block; background: #111f60; color: #ffffff !important; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 16px;">Praxisbericht öffnen</a>
+                    </div>
+                    
+                    <p style="font-size: 14px; color: #999; text-align: center;">
+                      Diese Erinnerung wurde um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}) gesendet.
+                    </p>
+                  </div>
+                  <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
+                    <p>&copy; ${new Date().getFullYear()} IU Student Portal</p>
+                    <p style="margin-top: 5px;">Dies ist eine automatische Benachrichtigung.</p>
+                  </div>
+                </div>
+              </body>
+            </html>
+          `,
         text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${portalLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
       };
 
       try {
         const info = await transporter.sendMail(mailOptions);
         sent++;
-        if (emailService === "test") {
-          const preview = nodemailer.getTestMessageUrl(info);
-          if (preview) previewUrls.push(preview);
-          console.log("Preview:", preview);
-        }
+        // Remove emailService check since we only support Gmail now
       } catch (err) {
         console.error(`Failed to send reminder to ${u.email}:`, err);
       }
@@ -273,10 +272,6 @@ function getSessionTokenFromRequest(request: Request): string | null {
         .map((c) => c.trim())
         .filter(Boolean)
         .map((c) => {
-          const idx = c.indexOf("=");
-          return idx === -1
-            ? [c, ""]
-            : [c.slice(0, idx), decodeURIComponent(c.slice(idx + 1))];
         })
     ) as Record<string, string>;
     const headerToken =

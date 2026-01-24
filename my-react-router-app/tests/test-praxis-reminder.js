@@ -4,11 +4,11 @@ const prisma = new PrismaClient();
 const API_URL = "http://localhost:5173/api/cron/daily-reminders";
 
 async function runTest() {
-  console.log("🚀 Starting Praxis Report Reminder API Test...");
+  console.log("Starting Praxis Report Reminder API Test...");
 
   // 1. Setup User
   const userId = 82;
-  console.log(`👤 preparing User ${userId}...`);
+  console.log(`preparing User ${userId}...`);
   
   // Ensure user exists
   let user = await prisma.user.findUnique({ where: { id: userId } });
