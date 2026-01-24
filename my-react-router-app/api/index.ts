@@ -90,19 +90,36 @@ app.use(
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   try {
     const buildPath = path.join(process.cwd(), "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
+    const exists = require("fs").existsSync(buildPath);
+    console.log(`[Debug] CWD: ${process.cwd()}`);
+    console.log(`[Debug] Build path: ${buildPath}`);
+    console.log(`[Debug] Build exists: ${exists}`);
+
+    if (!exists) {
+      throw new Error(`Build file not found at ${buildPath}`);
+    }
+
     const { pathToFileURL } = await import("url");
     // @ts-ignore - build path depends on build process
     const build = await import(pathToFileURL(buildPath).href);
     
+    console.log("[Debug] Build loaded. Keys:", Object.keys(build));
+
     return createRequestHandler({
       build,
       mode: "production",
     })(req, res, next);
   } catch (error) {
     console.error("Failed to load server build:", error);
-    next(error);
+    // Send a visible error to the browser
+    res.status(500).send(`
+      <h1>Server Error</h1>
+      <pre>${error instanceof Error ? error.stack : String(error)}</pre>
+      <hr>
+      <p>Check the server logs for more details.</p>
+    `);
   }
 });
 
-// Vercel expects export, not app.listen()
-export default app;
+// Vercel CJS entry point requirement
+module.exports = app;
