@@ -1480,12 +1480,18 @@ app.use(
   })
 );
 
-// Note: Do NOT add a catch-all 404 for /api/* here.
-// React Router's data API uses paths like /route.data and query params under /api/*,
-// which must be handled by createRequestHandler below. A catch-all here would
-// intercept those requests and cause 404s (e.g., /api/login.data).
+// Prevent HTML from being cached so new asset hashes are always picked up.
+app.use((req: Request, res: Response, next: NextFunction) => {
+  const accept = req.headers.accept || "";
+  if (req.method === "GET" && accept.includes("text/html")) {
+    res.setHeader("Cache-Control", "no-store");
+    res.setHeader("Pragma", "no-cache");
+    res.setHeader("Expires", "0");
+  }
+  next();
+});
 
-// React Router handler (catches everything else)
+
 app.use(
   createRequestHandler({
     // Cast to avoid type mismatch between generated build and ServerBuild interface
