@@ -1,7 +1,7 @@
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { useSpecialization } from "~/hooks/useSpecialization";
 
-import { TRANSLATIONS, VERTIEFUNGEN } from "~/constants/specialization";
+import { TRANSLATIONS, VERTIEFUNGEN } from "~/config/specialization";
 import {
   SuccessToast,
   PageHeader,
@@ -10,7 +10,7 @@ import {
   SpecializationDetails,
   ConfirmationModal,
   getColorClasses,
-} from "~/components/specialization";
+} from "~/features/specialization";
 
 import type { VertiefungId } from "~/types/specialization";
 

@@ -10,12 +10,12 @@ import {
   CheckCircle2,
   AlertCircle,
 } from "lucide-react";
-import { showSuccessToast, showErrorToast } from "../lib/toast";
+import { showSuccessToast, showErrorToast } from "~/utils/toast";
 import jsPDF from "jspdf";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/student-id";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { PageHeader } from "~/components/shared/PageHeader";
 
 export const loader = async ({ request }: { request: Request }) => {

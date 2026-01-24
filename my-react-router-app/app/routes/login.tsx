@@ -1,5 +1,5 @@
 import { Link, useLoaderData, redirect } from "react-router";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { getUserFromRequest } from "~/services/auth.server";
 import { MOTIVATIONAL_QUOTES } from "~/data/quotes";
 import {
   Mail,
@@ -20,7 +20,7 @@ import {
   LoginHeader,
   LoginFormInput,
   LoginSupportLink,
-} from "~/components/login";
+} from "~/features/login";
 
 import { useLogin, useQuoteRotation } from "~/hooks/useAuth";
 import type { LoginLoaderData as LoaderData } from "~/types/login";

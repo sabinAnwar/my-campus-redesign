@@ -1,4 +1,4 @@
-import { useLogout } from "../hooks/useAuth";
+import { useLogout } from "~/hooks/useAuth";
 import {
   LogoutBackground,
   LogoutIcon,
@@ -8,7 +8,7 @@ import {
   FloatingSparkles,
   CardShine,
   LOGOUT_ANIMATION_STYLES,
-} from "../components/logout";
+} from "~/features/logout";
 
 //// CONSTANTS
 //

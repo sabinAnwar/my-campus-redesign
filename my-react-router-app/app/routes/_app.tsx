@@ -3,14 +3,14 @@ import { Link, Outlet, useLocation, useNavigation, useRevalidator } from "react-
 import { DoorOpen, Menu, X, Headphones } from "lucide-react";
 import { isRouteErrorResponse } from "react-router";
 
-import { useLanguage } from "~/contexts/LanguageContext";
-import { ScreenReaderProvider } from "~/contexts/ScreenReaderContext";
-import { BASE_NAV_ITEMS } from "~/constants/navigation";
+import { useLanguage } from "~/store/LanguageContext";
+import { ScreenReaderProvider } from "~/store/ScreenReaderContext";
+import { BASE_NAV_ITEMS } from "~/config/navigation";
 import { SHELL_TRANSLATIONS } from "~/services/translations/navigation";
 import LanguageToggle from "~/components/ui/LanguageToggle";
 import ThemeToggle from "~/components/ui/ThemeToggle";
 import { ScreenReaderToggle } from "~/components/ui/ScreenReaderToggle";
-import { Sidebar, SearchBar, ProfileMenu } from "~/components/shell";
+import { Sidebar, SearchBar, ProfileMenu } from "~/layouts/shell";
 import { useUserData } from "~/hooks/useUserData";
 import { useAppShellSearch } from "~/hooks/useAppShellSearch";
 

@@ -5,8 +5,8 @@ import {
   AlertMessage,
   SubmitButton,
   LoadingSpinner,
-} from "../components/auth";
-import { useResetPassword } from "../hooks/usePasswordReset";
+} from "~/features/auth";
+import { useResetPassword } from "~/hooks/usePasswordReset";
 
 //// CONSTANTS
 //

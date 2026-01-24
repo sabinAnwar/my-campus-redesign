@@ -1,17 +1,17 @@
 import { Users, GraduationCap, Globe } from "lucide-react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/social-media";
 import {
   getOfficialChannels,
   getFacultyChannels,
-} from "~/lib/socialMediaUtils";
+} from "~/utils/socialMediaUtils";
 import {
   AlumniConnect,
   AlumniDiscounts,
   BrandAmbassador,
   ChannelCard,
   FacultyCard,
-} from "~/components/socialmedia";
+} from "~/features/socialmedia";
 import { PageHeader, SectionHeader } from "~/components/shared/PageHeader";
 
 export default function SocialMedia() {

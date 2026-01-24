@@ -1,5 +1,5 @@
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import type { ActionFunctionArgs } from "react-router";
 
 export async function action({ request }: ActionFunctionArgs) {

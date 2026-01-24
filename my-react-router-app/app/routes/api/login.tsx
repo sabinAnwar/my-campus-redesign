@@ -1,6 +1,6 @@
 import bcryptjs from "bcryptjs";
 
-import { prisma } from "~/lib/prisma";
+import { prisma } from "~/services/prisma";
 import crypto from "crypto";
 
 // Loader for GET requests (just blocks HTML)

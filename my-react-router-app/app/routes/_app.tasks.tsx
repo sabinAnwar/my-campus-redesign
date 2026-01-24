@@ -1,12 +1,12 @@
 
 import { useLoaderData } from "react-router";
 
-import { prisma } from "~/lib/prisma";
-import { ensureCanonicalTasks } from "~/lib/tasks.server";
-import { calculateDaysLeft } from "~/lib/tasksSample";
-import { getUserFromRequest } from "~/lib/auth.server";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { WRITING_TYPES } from "~/constants/tasks";
+import { prisma } from "~/services/prisma";
+import { ensureCanonicalTasks } from "~/services/tasks.server";
+import { calculateDaysLeft } from "~/utils/tasksSample";
+import { getUserFromRequest } from "~/services/auth.server";
+import { useLanguage } from "~/store/LanguageContext";
+import { WRITING_TYPES } from "~/config/tasks";
 import { TRANSLATIONS } from "~/services/translations/tasks";
 import { useTasks } from "~/hooks/useTasks";
 import {
@@ -15,7 +15,7 @@ import {
   ExamCard,
   UploadModal,
   SectionHeader,
-} from "~/components/tasks";
+} from "~/features/tasks";
 
 import type { TaskLoaderSubmission } from "~/types/tasks";
 import { Route } from "~/+types/root";

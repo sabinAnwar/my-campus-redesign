@@ -4,8 +4,8 @@ import {
   FormInput,
   AlertMessage,
   SubmitButton,
-} from "../components/auth";
-import { useRequestReset } from "../hooks/usePasswordReset";
+} from "~/features/auth";
+import { useRequestReset } from "~/hooks/usePasswordReset";
 
 //// CONSTANTS
 //

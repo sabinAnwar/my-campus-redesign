@@ -1,11 +1,11 @@
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/study-organization";
-import { NAVIGATION_CARDS, QUICK_LINKS } from "~/constants/study-organization";
+import { NAVIGATION_CARDS, QUICK_LINKS } from "~/config/study-organization";
 import {
   PageHeader,
   NavigationCardComponent,
   QuickLinksSection,
-} from "~/components/study-organization";
+} from "~/features/study-organization";
 
 //// COMPONENT
 //
