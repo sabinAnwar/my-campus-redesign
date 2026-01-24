@@ -1,6 +1,6 @@
 import { Prisma } from "@prisma/client";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { LoaderFunctionArgs } from "react-router-dom";
 
 export async function action({ request, params }: LoaderFunctionArgs) {

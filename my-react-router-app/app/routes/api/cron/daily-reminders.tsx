@@ -1,5 +1,5 @@
 import nodemailer from "nodemailer";
-import { prisma } from "../../../lib/prisma";
+import { prisma } from "~/services/prisma";
 import { createTransporter } from "../../../../api/utils/email";
 
 function getHourInTimezone(tz: string | null | undefined): number {

@@ -1,4 +1,4 @@
-import { prisma } from "../../lib/prisma";
+import { prisma } from "~/services/prisma";
 
 function toInt(value: string | null, def: number) {
   const n = parseInt(String(value), 10);

@@ -1,6 +1,6 @@
 import type { ActionFunctionArgs } from "react-router";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 
 //// HELPER FUNCTIONS
 //
