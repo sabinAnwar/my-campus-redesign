@@ -15,8 +15,8 @@ import newsRoutes from "./routes/news";
 import praxisRoutes from "./routes/praxisberichte";
 import cronRoutes from "./routes/cron";
 
-// In Vercel, process.cwd() is the project root
-const clientBuildPath = path.join(process.cwd(), "build/client");
+// In Vercel, use __dirname relative path to locate build
+const clientBuildPath = path.join(__dirname, "../build/client");
 
 const app = express();
 
@@ -89,9 +89,11 @@ app.use(
 // Use pathToFileURL to ensure Windows compatibility and correct URL format for dynamic import
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const buildPath = path.join(process.cwd(), "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
+    // On Vercel, __dirname for this file should be .../api
+    // So build should be ../build
+    const buildPath = path.join(__dirname, "../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
     const exists = require("fs").existsSync(buildPath);
-    console.log(`[Debug] CWD: ${process.cwd()}`);
+    console.log(`[Debug] __dirname: ${__dirname}`);
     console.log(`[Debug] Build path: ${buildPath}`);
     console.log(`[Debug] Build exists: ${exists}`);
 
