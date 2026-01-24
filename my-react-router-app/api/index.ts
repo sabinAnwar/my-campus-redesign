@@ -102,8 +102,9 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     }
 
     const { pathToFileURL } = await import("url");
-    // @ts-ignore - build path depends on build process
-    const build = await import(pathToFileURL(buildPath).href);
+
+    const dynamicImport = new Function("specifier", "return import(specifier)");
+    const build = await dynamicImport(pathToFileURL(buildPath).href);
     
     console.log("[Debug] Build loaded. Keys:", Object.keys(build));
 
