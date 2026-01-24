@@ -16,4 +16,8 @@ export default defineConfig({
   ssr: {
     noExternal: ["@vercel/analytics", "@vercel/speed-insights"],
   },
+  esbuild: {
+    // Force ESM output for client build, ignoring tsconfig "module": "Node16"
+    format: "esm", 
+  },
 });

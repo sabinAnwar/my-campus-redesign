@@ -140,6 +140,26 @@ app.use(async (req: Request, res: Response, next: NextFunction) => {
     
     console.log("[Debug] Build loaded. Keys:", Object.keys(build));
 
+    // Debug: List directory structure to find where client assets are hiding
+    try {
+      const fs = require("fs");
+      const rootSearch = path.join(__dirname, ".."); // ../api -> app root
+      console.log(`[Debug] Listing contents of ${rootSearch}:`);
+      const files = fs.readdirSync(rootSearch);
+      console.log(files.join(", "));
+      
+      if (files.includes("build")) {
+        console.log("[Debug] Listing contents of build:");
+        console.log(fs.readdirSync(path.join(rootSearch, "build")).join(", "));
+        if (fs.existsSync(path.join(rootSearch, "build/client"))) {
+           console.log("[Debug] Listing contents of build/client:");
+           console.log(fs.readdirSync(path.join(rootSearch, "build/client")).join(", "));
+        }
+      }
+    } catch (e) {
+      console.error("[Debug] FS Error:", e);
+    }
+
     return createRequestHandler({
       build,
       mode: "production",
