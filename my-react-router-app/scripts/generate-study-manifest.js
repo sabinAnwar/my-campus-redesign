@@ -1,5 +1,5 @@
-import fs from "fs/promises";
-import path from "path";
+const fs = require("fs/promises");
+const path = require("path");
 
 const PUBLIC_STUD_DIR = path.resolve("public", "uploads", "studiengaenge");
 const OUTPUT_FILE = path.resolve("app", "data", "public-study-files.json");

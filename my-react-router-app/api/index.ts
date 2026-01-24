@@ -5,10 +5,7 @@ import express, {
 } from "express";
 import cookieParser from "cookie-parser";
 import { createRequestHandler } from "@react-router/express";
-// @ts-ignore - generated server build has no TypeScript types
-import * as serverBuild from "../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js";
 import path from "path";
-import { fileURLToPath } from "url";
 
 // Route imports
 import authRoutes from "./routes/auth";
@@ -18,8 +15,6 @@ import newsRoutes from "./routes/news";
 import praxisRoutes from "./routes/praxisberichte";
 import cronRoutes from "./routes/cron";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 const clientBuildPath = path.join(__dirname, "../build/client");
 
 const app = express();
@@ -89,13 +84,21 @@ app.use(
 );
 
 // React Router handler (catches everything else)
-app.use(
-  createRequestHandler({
-    // Cast to avoid type mismatch between generated build and ServerBuild interface
-    build: serverBuild as any,
-    mode: "production",
-  })
-);
+// Dynamically import the build to avoid require()ing ESM
+app.use(async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    // @ts-ignore - build path depends on build process
+    const build = await import("../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
+    
+    return createRequestHandler({
+      build,
+      mode: "production",
+    })(req, res, next);
+  } catch (error) {
+    console.error("Failed to load server build:", error);
+    next(error);
+  }
+});
 
 // Vercel expects export, not app.listen()
 export default app;
