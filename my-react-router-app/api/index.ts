@@ -77,12 +77,23 @@ app.use("/api/praxisberichte", praxisRoutes);
 app.use("/api/cron", cronRoutes);
 
 // Serve static files from build/client BEFORE React Router handler
-app.use(
-  express.static(clientBuildPath, {
-    maxAge: "1d",
-    etag: false,
-  })
-);
+// Serve static files from build/client BEFORE React Router handler
+if (require("fs").existsSync(clientBuildPath)) {
+  console.log(`[Debug] Serving static files from: ${clientBuildPath}`);
+  // Explicitly serve /assets to ensure they aren't missed
+  app.use("/assets", express.static(path.join(clientBuildPath, "assets"), {
+    maxAge: "1y",
+    immutable: true,
+  }));
+  app.use(
+    express.static(clientBuildPath, {
+      maxAge: "1d",
+      etag: false,
+    })
+  );
+} else {
+  console.error(`[Error] Client build path does not exist: ${clientBuildPath}`);
+}
 
 // React Router handler (catches everything else)
 // Dynamically import the build to avoid require()ing ESM
