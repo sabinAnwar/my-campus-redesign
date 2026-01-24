@@ -1,7 +1,7 @@
 {
   "name": "my-react-router-app",
   "private": true,
-
+"type": "module",
   "scripts": {
     "build": "react-router build",
     "prebuild": "node scripts/generate-study-manifest.js",
