@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 
 export default function LanguageToggle() {
   const { language, setLanguage } = useLanguage();

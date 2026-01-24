@@ -1,7 +1,7 @@
 import React from 'react';
 import { Volume2, VolumeX, Settings } from 'lucide-react';
-import { useScreenReaderSafe } from '~/contexts/ScreenReaderContext';
-import { useLanguage } from '~/contexts/LanguageContext';
+import { useScreenReaderSafe } from '~/store/ScreenReaderContext';
+import { useLanguage } from '~/store/LanguageContext';
 
 interface ScreenReaderToggleProps {
   variant?: 'floating' | 'inline' | 'compact';
