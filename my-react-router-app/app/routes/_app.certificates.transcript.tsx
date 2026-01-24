@@ -1,21 +1,21 @@
 import { useState, useMemo } from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { useLoaderData, Link } from "react-router-dom";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { TRANSLATIONS } from "~/services/translations/transcript";
-import { showSuccessToast, showErrorToast, showInfoToast } from "~/lib/toast";
+import { showSuccessToast, showErrorToast, showInfoToast } from "~/utils/toast";
 import { FEEDBACK_TRANSLATIONS } from "~/services/translations/feedback";
 
 // Components
-import { TranscriptHeader } from "~/components/certificates/transcript/TranscriptHeader";
-import { TranscriptStudentCard } from "~/components/certificates/transcript/TranscriptStudentCard";
-import { TranscriptStats } from "~/components/certificates/transcript/TranscriptStats";
-import { TranscriptFilter } from "~/components/certificates/transcript/TranscriptFilter";
-import { GradesTable } from "~/components/certificates/transcript/GradesTable";
-import { GradeScaleInfo } from "~/components/certificates/transcript/GradeScaleInfo";
-import { TranscriptDownloadSection } from "~/components/certificates/transcript/TranscriptDownloadSection";
-import { EmptyCertificateState } from "~/components/certificates/EmptyCertificateState";
+import { TranscriptHeader } from "~/features/certificates/transcript/TranscriptHeader";
+import { TranscriptStudentCard } from "~/features/certificates/transcript/TranscriptStudentCard";
+import { TranscriptStats } from "~/features/certificates/transcript/TranscriptStats";
+import { TranscriptFilter } from "~/features/certificates/transcript/TranscriptFilter";
+import { GradesTable } from "~/features/certificates/transcript/GradesTable";
+import { GradeScaleInfo } from "~/features/certificates/transcript/GradeScaleInfo";
+import { TranscriptDownloadSection } from "~/features/certificates/transcript/TranscriptDownloadSection";
+import { EmptyCertificateState } from "~/features/certificates/EmptyCertificateState";
 
 // Services
 import { generateTranscriptPDF } from "~/services/pdf/transcript";

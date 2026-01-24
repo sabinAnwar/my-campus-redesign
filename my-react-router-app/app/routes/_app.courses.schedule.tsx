@@ -10,7 +10,7 @@ import {
   MessageSquare,
   Flag,
 } from "lucide-react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { useLoaderData } from "react-router-dom";
 import {
   STUDY_PLANS,
@@ -21,28 +21,28 @@ import {
   addMonths,
   getStudyPlanByStudiengang,
   getBlockStatusForDate,
-} from "~/lib/studyPlans";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+} from "~/utils/studyPlans";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import type { LoaderFunctionArgs } from "react-router-dom";
 import { TRANSLATIONS } from "~/services/translations/schedule";
 import type { ScheduleEvent } from "~/types/schedule";
 
 // Extracted utilities and constants
-import { TIME_SLOTS, EVENT_COLORS } from "~/constants/schedule";
+import { TIME_SLOTS, EVENT_COLORS } from "~/config/schedule";
 import {
   getWeekDates,
   getEventStyle,
   isEventLive as checkEventLive,
   generateICSContent,
-} from "~/lib/scheduleUtils";
+} from "~/utils/scheduleUtils";
 
 // Extracted components
-import { EventIcon } from "~/components/schedule/EventIcon";
-import { ScheduleHeader } from "~/components/schedule/ScheduleHeader";
-import { ScheduleListView } from "~/components/schedule/ScheduleListView";
-import { ScheduleLegend } from "~/components/schedule/ScheduleLegend";
-import { ScheduleEventModal } from "~/components/schedule/ScheduleEventModal";
+import { EventIcon } from "~/features/schedule/EventIcon";
+import { ScheduleHeader } from "~/features/schedule/ScheduleHeader";
+import { ScheduleListView } from "~/features/schedule/ScheduleListView";
+import { ScheduleLegend } from "~/features/schedule/ScheduleLegend";
+import { ScheduleEventModal } from "~/features/schedule/ScheduleEventModal";
 
 export { type ScheduleEvent };
 

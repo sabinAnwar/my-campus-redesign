@@ -12,40 +12,40 @@ import {
   ClipboardCheck,
   Video,
 } from "lucide-react";
-import { saveRecentFile } from "../lib/recentFiles";
-import { saveRecentCourse } from "../lib/recentCourses";
-import { showErrorToast, showSuccessToast } from "../lib/toast";
-import { prisma } from "~/lib/prisma";
-import { TimeoutError, withTimeout } from "~/lib/loaderUtils";
-import { calculateDaysLeft } from "~/lib/tasksSample";
+import { saveRecentFile } from "~/utils/recentFiles";
+import { saveRecentCourse } from "~/utils/recentCourses";
+import { showErrorToast, showSuccessToast } from "~/utils/toast";
+import { prisma } from "~/services/prisma";
+import { TimeoutError, withTimeout } from "~/utils/loaderUtils";
+import { calculateDaysLeft } from "~/utils/tasksSample";
 import {
   TRANSLATIONS,
   getCourseConfig,
 } from "../data/coursesConfig";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import type { CourseSubmission } from "~/types/course";
 import type { Course, CourseDetailData, CourseResource, VideoResource } from "~/types/courseDetail";
 
 // New Extractions
-import { COURSE_TYPE_MAP } from "~/constants/course";
-import { formatGermanDate } from "~/lib/dateUtils";
-import { getVideoThumbnailUrl } from "~/lib/videoUtils";
+import { COURSE_TYPE_MAP } from "~/config/course";
+import { formatGermanDate } from "~/utils/dateUtils";
+import { getVideoThumbnailUrl } from "~/utils/videoUtils";
 import { useSubmissionStatus } from "~/hooks/useSubmissionStatus";
 
 // Components
-import { CourseHeader } from "~/components/courses/detail/CourseHeader";
-import { CourseTabNavigation } from "~/components/courses/detail/CourseTabNavigation";
-import { CourseOverviewTab } from "~/components/courses/detail/CourseOverviewTab";
-import { CourseResourcesTab } from "~/components/courses/detail/CourseResourcesTab";
-import { CourseVideosTab } from "~/components/courses/detail/CourseVideosTab";
-import { CourseFeedTab } from "~/components/courses/detail/CourseFeedTab";
-import { CourseSubmissionsTab } from "~/components/courses/detail/CourseSubmissionsTab";
-import { CourseOnlineTestsTab } from "~/components/courses/detail/CourseOnlineTestsTab";
-import { CourseNotesTab } from "~/components/courses/detail/CourseNotesTab";
-import { CourseForumTab } from "~/components/courses/detail/CourseForumTab";
-import { UploadModal } from "~/components/courses/detail/UploadModal";
-import { NewTopicModal } from "~/components/courses/detail/NewTopicModal";
-import { VideoModal } from "~/components/courses/detail/VideoModal";
+import { CourseHeader } from "~/features/courses/detail/CourseHeader";
+import { CourseTabNavigation } from "~/features/courses/detail/CourseTabNavigation";
+import { CourseOverviewTab } from "~/features/courses/detail/CourseOverviewTab";
+import { CourseResourcesTab } from "~/features/courses/detail/CourseResourcesTab";
+import { CourseVideosTab } from "~/features/courses/detail/CourseVideosTab";
+import { CourseFeedTab } from "~/features/courses/detail/CourseFeedTab";
+import { CourseSubmissionsTab } from "~/features/courses/detail/CourseSubmissionsTab";
+import { CourseOnlineTestsTab } from "~/features/courses/detail/CourseOnlineTestsTab";
+import { CourseNotesTab } from "~/features/courses/detail/CourseNotesTab";
+import { CourseForumTab } from "~/features/courses/detail/CourseForumTab";
+import { UploadModal } from "~/features/courses/detail/UploadModal";
+import { NewTopicModal } from "~/features/courses/detail/NewTopicModal";
+import { VideoModal } from "~/features/courses/detail/VideoModal";
 import publicStudyManifest from "~/data/public-study-files.json";
 
 const COURSE_TIMEOUT_MS = 2500;

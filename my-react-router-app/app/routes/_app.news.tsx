@@ -2,8 +2,8 @@
 
 import { useLoaderData, useSearchParams, useSubmit } from "react-router-dom";
 import { useEffect, useRef, useState } from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { CATEGORY_COLORS } from "~/constants/news";
+import { useLanguage } from "~/store/LanguageContext";
+import { CATEGORY_COLORS } from "~/config/news";
 import { TRANSLATIONS } from "~/services/translations/news";
 import {
   NewsHeader,
@@ -11,7 +11,7 @@ import {
   NewsPagination,
   NewsEmptyState,
   NewsModal,
-} from "~/components/news";
+} from "~/features/news";
 
 /* -----------------------------------
    Types

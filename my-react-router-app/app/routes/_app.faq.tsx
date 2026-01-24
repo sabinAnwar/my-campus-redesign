@@ -1,13 +1,13 @@
 import { useState } from "react";
 import { useLoaderData } from "react-router-dom";
-import { prisma } from "../lib/prisma";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/faq";
 
 // Components
-import { FAQBackground } from "~/components/faq/FAQBackground";
-import { ChatHomePage } from "~/components/faq/ChatHomePage";
-import { ChatInterface } from "~/components/faq/ChatInterface";
+import { FAQBackground } from "~/features/faq/FAQBackground";
+import { ChatHomePage } from "~/features/faq/ChatHomePage";
+import { ChatInterface } from "~/features/faq/ChatInterface";
 
 export const loader = async () => {
   try {

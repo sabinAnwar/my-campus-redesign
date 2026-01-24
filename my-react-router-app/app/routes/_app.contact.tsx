@@ -1,14 +1,14 @@
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/contact";
 
 // Components
-import { ContactHeader } from "~/components/contact/ContactHeader";
-import { ContactForm } from "~/components/contact/ContactForm";
-import { SupportHours } from "~/components/contact/SupportHours";
-import { EmergencyContact } from "~/components/contact/EmergencyContact";
-import { ContactMethods } from "~/components/contact/ContactMethods";
-import { FAQLink } from "~/components/contact/FAQLink";
-import { CampusLocations } from "~/components/contact/CampusLocations";
+import { ContactHeader } from "~/features/contact/ContactHeader";
+import { ContactForm } from "~/features/contact/ContactForm";
+import { SupportHours } from "~/features/contact/SupportHours";
+import { EmergencyContact } from "~/features/contact/EmergencyContact";
+import { ContactMethods } from "~/features/contact/ContactMethods";
+import { FAQLink } from "~/features/contact/FAQLink";
+import { CampusLocations } from "~/features/contact/CampusLocations";
 
 export default function Contact() {
   const { language } = useLanguage();

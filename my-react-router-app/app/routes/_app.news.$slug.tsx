@@ -1,11 +1,11 @@
 import { useLoaderData, useLocation } from "react-router-dom";
 import { useState } from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import {
   NewsDetailError,
   NewsDetailHero,
   NewsDetailContent,
-} from "~/components/news";
+} from "~/features/news";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);

@@ -1,17 +1,17 @@
 import React from "react";
 import { useLoaderData, useLocation, Outlet } from "react-router-dom";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { TRANSLATIONS } from "~/services/translations/courses";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { useCoursesList } from "~/hooks/useCoursesList";
 import type { CoursesLoaderData as LoaderData } from "~/types/course";
 
 // Components
-import { CoursesHeader } from "~/components/courses/CoursesHeader";
-import { CourseFilters } from "~/components/courses/CourseFilters";
-import { CourseCard } from "~/components/courses/CourseCard";
-import { CoursesEmptyState } from "~/components/courses/CoursesEmptyState";
+import { CoursesHeader } from "~/features/courses/CoursesHeader";
+import { CourseFilters } from "~/features/courses/CourseFilters";
+import { CourseCard } from "~/features/courses/CourseCard";
+import { CoursesEmptyState } from "~/features/courses/CoursesEmptyState";
 
 // Loader for courses page - Unified loader
 export const loader = async ({ request }: { request: Request }) => {

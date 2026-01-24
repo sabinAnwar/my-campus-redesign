@@ -2,17 +2,17 @@ import React from "react";
 import { useLoaderData, useRevalidator } from "react-router-dom";
 import { Clock } from "lucide-react";
 import { Prisma } from "@prisma/client";
-import { prisma } from "~/lib/prisma";
-import { TimeoutError, withTimeout } from "~/lib/loaderUtils";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { TimeoutError, withTimeout } from "~/utils/loaderUtils";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/recent-files";
 import { useRecentFiles } from "~/hooks/useRecentFiles";
 
 // Components
-import { RecentFilesHeader } from "~/components/files/RecentFilesHeader";
-import { RecentFilesSearch } from "~/components/files/RecentFilesSearch";
-import { RecentFilesList } from "~/components/files/RecentFilesList";
-import { RecentFilesSidebar } from "~/components/files/RecentFilesSidebar";
+import { RecentFilesHeader } from "~/features/files/RecentFilesHeader";
+import { RecentFilesSearch } from "~/features/files/RecentFilesSearch";
+import { RecentFilesList } from "~/features/files/RecentFilesList";
+import { RecentFilesSidebar } from "~/features/files/RecentFilesSidebar";
 
 const FILES_TIMEOUT_MS = 2000;
 

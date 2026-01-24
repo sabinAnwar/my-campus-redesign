@@ -1,8 +1,8 @@
 import { useMemo, useState } from "react";
 import type { Course } from "@prisma/client";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { useLanguage } from "~/store/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { useLoaderData } from "react-router-dom";
 import {
   TrendingUp,
@@ -18,7 +18,7 @@ import {
   GradesStatsGrid,
   GradesFilterControls,
   GradesLegend,
-} from "~/components/grades";
+} from "~/features/grades";
 
 export const loader = async ({ request }: { request: Request }) => {
   // 1. Try session user

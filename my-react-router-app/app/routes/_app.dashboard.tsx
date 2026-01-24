@@ -1,8 +1,8 @@
 import { Suspense, useEffect, useRef, useState, type ReactNode } from "react";
 import FirstSemesterOnboarding from "~/components/ui/FirstSemesterOnboarding";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { getRecentCourses } from "~/lib/recentCourses";
-import { getStudyPlanByStudiengang } from "~/lib/studyPlans";
+import { useLanguage } from "~/store/LanguageContext";
+import { getRecentCourses } from "~/utils/recentCourses";
+import { getStudyPlanByStudiengang } from "~/utils/studyPlans";
 import { TRANSLATIONS } from "~/services/translations/dashboard";
 
 import {
@@ -14,12 +14,12 @@ import {
   GraduationCap,
   GripVertical,
 } from "lucide-react";
-import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/lib/studyPlans";
-import { calculateDaysLeft } from "~/lib/tasksSample";
+import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/utils/studyPlans";
+import { calculateDaysLeft } from "~/utils/tasksSample";
 import { Prisma } from "@prisma/client";
-import { prisma } from "~/lib/prisma";
+import { prisma } from "~/services/prisma";
 import { Await, useAsyncValue, useLoaderData } from "react-router";
-import { ACTIVE_COURSES_COUNT } from "~/lib/coursesMeta";
+import { ACTIVE_COURSES_COUNT } from "~/utils/coursesMeta";
 import type {
   DashboardTask,
   DashboardDeferredData,
@@ -39,18 +39,18 @@ import {
   WEEK_DAYS_TO_DISPLAY,
   DEFAULT_REQUIRED_PRAXIS_HOURS,
   DEFAULT_TARGET_HOURS_PER_WEEK,
-} from "~/constants/dashboard";
+} from "~/config/dashboard";
 
 // Components
-import { DashboardHeader } from "~/components/dashboard/DashboardHeader";
-import { NewsSlider } from "~/components/dashboard/NewsSlider";
-import { QuickActions } from "~/components/dashboard/QuickActions";
-import { StudyProgressWidget } from "~/components/dashboard/StudyProgressWidget";
-import { WeekOverview } from "~/components/dashboard/WeekOverview";
-import { UpcomingTasks } from "~/components/dashboard/UpcomingTasks";
-import { RecentCourses } from "~/components/dashboard/RecentCourses";
-import { GradesWidget } from "~/components/dashboard/GradesWidget";
-import { NewsModal } from "~/components/news/NewsModal";
+import { DashboardHeader } from "~/features/dashboard/DashboardHeader";
+import { NewsSlider } from "~/features/dashboard/NewsSlider";
+import { QuickActions } from "~/features/dashboard/QuickActions";
+import { StudyProgressWidget } from "~/features/dashboard/StudyProgressWidget";
+import { WeekOverview } from "~/features/dashboard/WeekOverview";
+import { UpcomingTasks } from "~/features/dashboard/UpcomingTasks";
+import { RecentCourses } from "~/features/dashboard/RecentCourses";
+import { GradesWidget } from "~/features/dashboard/GradesWidget";
+import { NewsModal } from "~/features/news/NewsModal";
 
 export const loader = async ({ request }: { request: Request }) => {
   let isFirstSemester = false;
@@ -1039,15 +1039,14 @@ function DashboardDeferredContent({
           article={{
             slug: newsItems[selectedNewsIndex].slug,
             title: newsItems[selectedNewsIndex].title,
-            excerpt: newsItems[selectedNewsIndex].excerpt,
-            content: newsItems[selectedNewsIndex].content || newsItems[selectedNewsIndex].excerpt,
-            category: newsItems[selectedNewsIndex].category,
-            published_at: newsItems[selectedNewsIndex].published_at,
+            excerpt: newsItems[selectedNewsIndex].excerpt ?? undefined,
+            content: (newsItems[selectedNewsIndex].content || newsItems[selectedNewsIndex].excerpt) ?? undefined,
+            category: newsItems[selectedNewsIndex].category ?? undefined,
+            publishedAt: newsItems[selectedNewsIndex].publishedAt || newsItems[selectedNewsIndex].published_at,
             featured: newsItems[selectedNewsIndex].featured,
-            coverImage: null,
           }}
           loading={false}
-          error={null}
+          error=""
           atStart={selectedNewsIndex === 0}
           atEnd={selectedNewsIndex === newsItems.length - 1}
           copied={copied}

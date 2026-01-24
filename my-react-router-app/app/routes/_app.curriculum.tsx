@@ -1,15 +1,15 @@
 import React from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { useLanguage } from "~/store/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
 import { useLoaderData } from "react-router-dom";
 import { TRANSLATIONS } from "~/services/translations/curriculum";
 import { useCurriculumData } from "~/hooks/useCurriculumData";
 
 // Components
-import { CurriculumHeader } from "~/components/curriculum/CurriculumHeader";
-import { CurriculumStats } from "~/components/curriculum/CurriculumStats";
-import { SemesterSection } from "~/components/curriculum/SemesterSection";
+import { CurriculumHeader } from "~/features/curriculum/CurriculumHeader";
+import { CurriculumStats } from "~/features/curriculum/CurriculumStats";
+import { SemesterSection } from "~/features/curriculum/SemesterSection";
 
 export const loader = async ({ request }: { request: Request }) => {
   const user = await getUserFromRequest(request);

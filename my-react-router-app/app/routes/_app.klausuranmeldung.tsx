@@ -1,15 +1,14 @@
 import React from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/exam-registration";
 import { useCourseSelection } from "~/hooks/useCourseSelection";
 
-// Components
-import { KlausuranmeldungHeader } from "~/components/klausuranmeldung/KlausuranmeldungHeader";
-import { HowItWorksSection } from "~/components/klausuranmeldung/HowItWorksSection";
-import { CourseCategoryList } from "~/components/klausuranmeldung/CourseCategoryList";
-import { StudentInfoPanel } from "~/components/klausuranmeldung/StudentInfoPanel";
-import { SelectionSummary } from "~/components/klausuranmeldung/SelectionSummary";
-import { ImportantNote } from "~/components/klausuranmeldung/ImportantNote";
+import { KlausuranmeldungHeader } from "~/features/klausuranmeldung/KlausuranmeldungHeader";
+import { HowItWorksSection } from "~/features/klausuranmeldung/HowItWorksSection";
+import { CourseCategoryList } from "~/features/klausuranmeldung/CourseCategoryList";
+import { StudentInfoPanel } from "~/features/klausuranmeldung/StudentInfoPanel";
+import { SelectionSummary } from "~/features/klausuranmeldung/SelectionSummary";
+import { ImportantNote } from "~/features/klausuranmeldung/ImportantNote";
 
 export const loader = async () => null;
 

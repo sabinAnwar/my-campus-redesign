@@ -1,17 +1,17 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLoaderData, useActionData, useRevalidator, useSubmit } from "react-router-dom";
 
-import { prisma } from "../lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
-import { showSuccessToast, showErrorToast, showInfoToast } from "../lib/toast";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
+import { showSuccessToast, showErrorToast, showInfoToast } from "~/utils/toast";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/room-booking";
 import {
   RoomBookingHeader,
   CampusSelector,
   OccupancyTable,
   RoomCard,
-} from "~/components/room-booking";
+} from "~/features/room-booking";
 
 const TIME_SLOTS = [
   "08:00",
@@ -33,8 +33,8 @@ const TODAY_ISO = new Date().toISOString().split("T")[0];
 const LECTURES = [
   {
     id: 1,
-    campus: "Hammerbrook",
-    roomName: "Michel A",
+    campus: "Christoph-Probst-Weg",
+    roomName: "Raum 1.01",
     title: "Mathe – Analysis I",
     startTime: "08:00",
     endTime: "10:00",
@@ -42,66 +42,37 @@ const LECTURES = [
   },
   {
     id: 2,
-    campus: "Hammerbrook",
-    roomName: "Michel B",
+    campus: "Christoph-Probst-Weg",
+    roomName: "Raum 1.02",
     title: "Data Analytics",
     startTime: "11:00",
     endTime: "13:00",
     date: TODAY_ISO,
   },
-  {
-    id: 3,
-    campus: "Waterloohain",
-    roomName: "Jenischhaus",
-    title: "Webentwicklung",
-    startTime: "09:30",
-    endTime: "11:30",
-    date: TODAY_ISO,
-  },
-  {
-    id: 4,
-    campus: "Waterloohain",
-    roomName: "Christoph-Probst-Weg",
-    title: "Datenbanken",
-    startTime: "10:00",
-    endTime: "12:00",
-    date: TODAY_ISO,
-  },
 ];
 
 const CAMPUS_DETAILS: Record<string, { subtitle: string; note: string }> = {
-  Hammerbrook: {
-    subtitle: "Tech-Hub rund um den Michel",
-    note: "Michel A/B/E + Christoph-Probst-Weg – moderne Lernräume mit Screens und Pods.",
-  },
-  Waterloohain: {
-    subtitle: "Green Campus",
-    note: "Jenischhaus & Christoph-Probst-Weg – ruhige Lernräume im Park.",
+  "Christoph-Probst-Weg": {
+    subtitle: "Zentraler Campus",
+    note: "Alle Standorte wurden am Christoph-Probst-Weg gebündelt.",
   },
 };
 
 // Demo occupancy table for a quick view (blended with live bookings)
 const DEMO_OCCUPANCY = [
   {
-    campus: "Hammerbrook",
-    room: "Michel A",
+    campus: "Christoph-Probst-Weg",
+    room: "Raum 1.01",
     purpose: "Mathe-Tutorium",
     person: "Lea Schmidt",
     until: "10:00",
   },
   {
-    campus: "Hammerbrook",
-    room: "HH – Christoph-Probst-Weg",
+    campus: "Christoph-Probst-Weg",
+    room: "Raum 2.01",
     purpose: "Projekt Meeting",
     person: "Finn Reimer",
     until: "12:00",
-  },
-  {
-    campus: "Waterloohain",
-    room: "Jenischhaus",
-    purpose: "Webentwicklung Study Group",
-    person: "Mara Elmas",
-    until: "11:30",
   },
 ];
 
@@ -396,16 +367,11 @@ function generateSeats(
 
 // Campus → Rooms (Raum A1, A2, A3, B1, B2, C1, C2, etc.)
 const CAMPUS_ROOMS = {
-  Hammerbrook: [
-    { id: "HB-MA", name: "Michel A", capacity: 18 },
-    { id: "HB-MB", name: "Michel B", capacity: 16 },
-    { id: "HB-E", name: "Michel E", capacity: 12 },
-    { id: "HB-HH", name: "HH – Christoph-Probst-Weg", capacity: 20 },
-  ],
-  Waterloohain: [
-    { id: "WL-JH", name: "Jenischhaus", capacity: 18 },
-    { id: "WL-CPW", name: "Christoph-Probst-Weg", capacity: 15 },
-    { id: "WL-M2", name: "Michel B", capacity: 20 },
+  "Christoph-Probst-Weg": [
+    { id: "CPW-01", name: "Raum 1.01", capacity: 20 },
+    { id: "CPW-02", name: "Raum 1.02", capacity: 15 },
+    { id: "CPW-03", name: "Raum 2.01", capacity: 25 },
+    { id: "CPW-04", name: "Raum 2.02", capacity: 12 },
   ],
 };
 
@@ -419,7 +385,7 @@ export default function RoomBooking() {
 
   type CampusKey = keyof typeof CAMPUS_ROOMS;
   const [selectedLocation, setSelectedLocation] =
-    useState<CampusKey>("Hammerbrook");
+    useState<CampusKey>("Christoph-Probst-Weg");
   const [startTime, setStartTime] = useState("09:00");
   const [endTime, setEndTime] = useState("11:00");
   const [isLoading, setIsLoading] = useState(false);

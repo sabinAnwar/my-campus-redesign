@@ -1,21 +1,21 @@
 import React, { useState } from "react";
 import { Database, BookOpen, Newspaper, Play } from "lucide-react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import {
   TRANSLATIONS,
   DATABASES,
   SERVICES,
   TUTORIALS,
-} from "~/constants/library";
+} from "~/config/library";
 
 // Components
-import { LibraryHeader } from "~/components/library/LibraryHeader";
-import { LibrarySearch } from "~/components/library/LibrarySearch";
-import { QuickAccessCards } from "~/components/library/QuickAccessCards";
-import { DatabasesSection } from "~/components/library/DatabasesSection";
-import { ServicesSection } from "~/components/library/ServicesSection";
-import { TutorialsSection } from "~/components/library/TutorialsSection";
-import { LibrarySidebar } from "~/components/library/LibrarySidebar";
+import { LibraryHeader } from "~/features/library/LibraryHeader";
+import { LibrarySearch } from "~/features/library/LibrarySearch";
+import { QuickAccessCards } from "~/features/library/QuickAccessCards";
+import { DatabasesSection } from "~/features/library/DatabasesSection";
+import { ServicesSection } from "~/features/library/ServicesSection";
+import { TutorialsSection } from "~/features/library/TutorialsSection";
+import { LibrarySidebar } from "~/features/library/LibrarySidebar";
 
 export const loader = async () => null;
 

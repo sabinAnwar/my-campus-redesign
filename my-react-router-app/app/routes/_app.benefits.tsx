@@ -1,13 +1,13 @@
 import { useState, useMemo } from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { TRANSLATIONS, getToolCategories } from "~/constants/benefits";
+import { useLanguage } from "~/store/LanguageContext";
+import { TRANSLATIONS, getToolCategories } from "~/config/benefits";
 import type { BenefitTool, ToolCategory, FeaturedTool } from "~/types/benefits";
 
 // Components
-import { BenefitsHeader } from "~/components/benefits/BenefitsHeader";
-import { FeaturedTools } from "~/components/benefits/FeaturedTools";
-import { BenefitsSearch } from "~/components/benefits/BenefitsSearch";
-import { ToolCategoryGrid } from "~/components/benefits/ToolCategoryGrid";
+import { BenefitsHeader } from "~/features/benefits/BenefitsHeader";
+import { FeaturedTools } from "~/features/benefits/FeaturedTools";
+import { BenefitsSearch } from "~/features/benefits/BenefitsSearch";
+import { ToolCategoryGrid } from "~/features/benefits/ToolCategoryGrid";
 
 const ALL_CATEGORIES = "all";
 

@@ -1,11 +1,11 @@
 import React from "react";
 import { useLoaderData, useRevalidator } from "react-router-dom";
-import { prisma } from "~/lib/prisma";
-import { getUserFromRequest } from "~/lib/auth.server";
-import { TimeoutError, withTimeout } from "~/lib/loaderUtils";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { prisma } from "~/services/prisma";
+import { getUserFromRequest } from "~/services/auth.server";
+import { TimeoutError, withTimeout } from "~/utils/loaderUtils";
+import { useLanguage } from "~/store/LanguageContext";
 import { TEXT } from "~/services/translations/module-handbook";
-import { userProfile, RECOMMENDATIONS } from "~/constants/module-handbook";
+import { userProfile, RECOMMENDATIONS } from "~/config/module-handbook";
 import { useModuleHandbook } from "~/hooks/useModuleHandbook";
 
 import type { ModuleHandbookLoaderData as LoaderData } from "~/types/module-handbook";
@@ -13,13 +13,13 @@ import type { ModuleHandbookLoaderData as LoaderData } from "~/types/module-hand
 const MODULES_TIMEOUT_MS = 2000;
 
 // Components
-import { ModuleHandbookHeader } from "~/components/module-handbook/ModuleHandbookHeader";
-import { QuickFactsSection } from "~/components/module-handbook/QuickFactsSection";
-import { SemesterFilter } from "~/components/module-handbook/SemesterFilter";
-import { CurrentSemesterModules } from "~/components/module-handbook/CurrentSemesterModules";
-import { ModuleGrid } from "~/components/module-handbook/ModuleGrid";
-import { RecommendationsSection } from "~/components/module-handbook/RecommendationsSection";
-import { DownloadsSection } from "~/components/module-handbook/DownloadsSection";
+import { ModuleHandbookHeader } from "~/features/module-handbook/ModuleHandbookHeader";
+import { QuickFactsSection } from "~/features/module-handbook/QuickFactsSection";
+import { SemesterFilter } from "~/features/module-handbook/SemesterFilter";
+import { CurrentSemesterModules } from "~/features/module-handbook/CurrentSemesterModules";
+import { ModuleGrid } from "~/features/module-handbook/ModuleGrid";
+import { RecommendationsSection } from "~/features/module-handbook/RecommendationsSection";
+import { DownloadsSection } from "~/features/module-handbook/DownloadsSection";
 
 export const loader = async ({ request }: { request: Request }) => {
   const user = await getUserFromRequest(request);

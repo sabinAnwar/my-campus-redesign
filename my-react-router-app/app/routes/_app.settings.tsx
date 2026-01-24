@@ -1,15 +1,15 @@
 import { useState, useEffect } from "react";
 import { useFetcher } from "react-router-dom";
-import { showSuccessToast, showErrorToast } from "../lib/toast";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { REMINDER_CACHE_KEY } from "~/constants/settings";
+import { showSuccessToast, showErrorToast } from "~/utils/toast";
+import { useLanguage } from "~/store/LanguageContext";
+import { REMINDER_CACHE_KEY } from "~/config/settings";
 import { TRANSLATIONS } from "~/services/translations/settings";
 import {
   SettingsHeader,
   ProfileSection,
   NotificationsSection,
   ReminderSection,
-} from "~/components/settings";
+} from "~/features/settings";
 
 export const loader = async () => {
   return null;

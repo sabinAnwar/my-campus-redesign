@@ -1,17 +1,17 @@
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { useLoaderData, Link } from "react-router-dom";
-import { prisma } from "~/lib/prisma";
+import { prisma } from "~/services/prisma";
 import { TRANSLATIONS } from "~/services/translations/immatriculation";
-import { getUserFromRequest } from "~/lib/auth.server";
+import { getUserFromRequest } from "~/services/auth.server";
 import type { LoaderFunctionArgs } from "react-router";
 
 // Components
-import { ImmatriculationHeader } from "~/components/certificates/immatriculation/ImmatriculationHeader";
-import { ImmatriculationStudentCard } from "~/components/certificates/immatriculation/ImmatriculationStudentCard";
-import { ImmatriculationPreview } from "~/components/certificates/immatriculation/ImmatriculationPreview";
-import { ImmatriculationValidityInfo } from "~/components/certificates/immatriculation/ImmatriculationValidityInfo";
-import { EmptyCertificateState } from "~/components/certificates/EmptyCertificateState";
-import { DownloadButton } from "~/components/certificates/DownloadButton";
+import { ImmatriculationHeader } from "~/features/certificates/immatriculation/ImmatriculationHeader";
+import { ImmatriculationStudentCard } from "~/features/certificates/immatriculation/ImmatriculationStudentCard";
+import { ImmatriculationPreview } from "~/features/certificates/immatriculation/ImmatriculationPreview";
+import { ImmatriculationValidityInfo } from "~/features/certificates/immatriculation/ImmatriculationValidityInfo";
+import { EmptyCertificateState } from "~/features/certificates/EmptyCertificateState";
+import { DownloadButton } from "~/features/certificates/DownloadButton";
 
 // Services
 import { generateImmatriculationPDF } from "~/services/pdf/immatriculation";

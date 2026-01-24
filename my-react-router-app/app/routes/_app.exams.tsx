@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useLoaderData } from "react-router";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { prisma } from "~/lib/prisma";
+import { useLanguage } from "~/store/LanguageContext";
+import { prisma } from "~/services/prisma";
 // TaskKind is imported from @prisma/client, but we use string literals to avoid client generation issues
 const TaskKind = {
   ABGABE: "ABGABE" as any,
@@ -10,12 +10,12 @@ const TaskKind = {
 import { TRANSLATIONS } from "~/services/translations/exams";
 
 // Components
-import { ExamsHeader } from "~/components/exams/ExamsHeader";
-import { ExamsList } from "~/components/exams/ExamsList";
-import { SickNoteSection } from "~/components/exams/SickNoteSection";
-import { RepeatExamsSection } from "~/components/exams/RepeatExamsSection";
-import { ScientificWorkSection } from "~/components/exams/ScientificWorkSection";
-import { DocumentPreviewModal } from "~/components/exams/DocumentPreviewModal";
+import { ExamsHeader } from "~/features/exams/ExamsHeader";
+import { ExamsList } from "~/features/exams/ExamsList";
+import { SickNoteSection } from "~/features/exams/SickNoteSection";
+import { RepeatExamsSection } from "~/features/exams/RepeatExamsSection";
+import { ScientificWorkSection } from "~/features/exams/ScientificWorkSection";
+import { DocumentPreviewModal } from "~/features/exams/DocumentPreviewModal";
 
 export const loader = async () => {
   try {

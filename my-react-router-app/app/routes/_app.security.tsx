@@ -8,13 +8,13 @@ import {
   Users,
   ShieldAlert,
 } from "lucide-react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/security";
 import {
   SecurityCard,
   SecurityHeader,
   SecurityReportNote,
-} from "~/components/security";
+} from "~/features/security";
 
 const iconMap = [
   Users,

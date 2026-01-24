@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import { TRANSLATIONS } from "~/services/translations/lernassistent";
 
 // Hooks
@@ -7,12 +7,12 @@ import { useChat } from "~/hooks/useChat";
 import { usePomodoro } from "~/hooks/usePomodoro";
 
 // Components
-import { LernassistentHeader } from "~/components/lernassistent/LernassistentHeader";
-import { ChatPanel } from "~/components/lernassistent/ChatPanel";
-import { PomodoroTimer } from "~/components/lernassistent/PomodoroTimer";
-import { LearningStreak } from "~/components/lernassistent/LearningStreak";
-import { QuickAccessLinks } from "~/components/lernassistent/QuickAccessLinks";
-import { StudyTips } from "~/components/lernassistent/StudyTips";
+import { LernassistentHeader } from "~/features/lernassistent/LernassistentHeader";
+import { ChatPanel } from "~/features/lernassistent/ChatPanel";
+import { PomodoroTimer } from "~/features/lernassistent/PomodoroTimer";
+import { LearningStreak } from "~/features/lernassistent/LearningStreak";
+import { QuickAccessLinks } from "~/features/lernassistent/QuickAccessLinks";
+import { StudyTips } from "~/features/lernassistent/StudyTips";
 
 export const loader = async () => null;
 

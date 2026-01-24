@@ -1,15 +1,15 @@
 import { useState, useMemo, useEffect } from "react";
 import { Link } from "react-router-dom";
-import { useLanguage } from "~/contexts/LanguageContext";
-import { TRANSLATIONS, getFormDefinitions, MOCK_ITEMS } from "~/constants/antragsverwaltung";
+import { useLanguage } from "~/store/LanguageContext";
+import { TRANSLATIONS, getFormDefinitions, MOCK_ITEMS } from "~/config/antragsverwaltung";
 import type { ApplicationItem, FormDefinition } from "~/types/antragsverwaltung";
 
 // Components
-import { AntragsHeader } from "~/components/antragsverwaltung/AntragsHeader";
-import { ApplicationStats } from "~/components/antragsverwaltung/ApplicationStats";
-import { FilterBar } from "~/components/antragsverwaltung/FilterBar";
-import { ApplicationCard } from "~/components/antragsverwaltung/ApplicationCard";
-import { ApplicationFormModal } from "~/components/antragsverwaltung/ApplicationFormModal";
+import { AntragsHeader } from "~/features/antragsverwaltung/AntragsHeader";
+import { ApplicationStats } from "~/features/antragsverwaltung/ApplicationStats";
+import { FilterBar } from "~/features/antragsverwaltung/FilterBar";
+import { ApplicationCard } from "~/features/antragsverwaltung/ApplicationCard";
+import { ApplicationFormModal } from "~/features/antragsverwaltung/ApplicationFormModal";
 
 export default function AntragsVerwaltung() {
   const { language } = useLanguage();

@@ -1,5 +1,5 @@
 import React from "react";
-import { useLanguage } from "~/contexts/LanguageContext";
+import { useLanguage } from "~/store/LanguageContext";
 import {
   FileText,
   ShieldCheck,
@@ -10,9 +10,9 @@ import {
 import { TRANSLATIONS } from "~/services/translations/info-center";
 
 // Components
-import { InfoCenterHeader } from "~/components/info-center/InfoCenterHeader";
-import { InfoCenterCard } from "~/components/info-center/InfoCenterCard";
-import { InfoCenterFooter } from "~/components/info-center/InfoCenterFooter";
+import { InfoCenterHeader } from "~/features/info-center/InfoCenterHeader";
+import { InfoCenterCard } from "~/features/info-center/InfoCenterCard";
+import { InfoCenterFooter } from "~/features/info-center/InfoCenterFooter";
 
 export default function InfoCenterPage() {
   const { language } = useLanguage();
