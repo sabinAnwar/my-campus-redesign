@@ -24,7 +24,7 @@ import {
 } from "~/utils/studyPlans";
 import { prisma } from "~/services/prisma";
 import { getUserFromRequest } from "~/services/auth.server";
-import type { LoaderFunctionArgs } from "react-router-dom";
+import type { LoaderFunctionArgs } from "react-router";
 import { TRANSLATIONS } from "~/services/translations/schedule";
 import type { ScheduleEvent } from "~/types/schedule";
 

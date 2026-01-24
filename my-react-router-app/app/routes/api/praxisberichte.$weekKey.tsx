@@ -1,7 +1,7 @@
 import { Prisma } from "@prisma/client";
 import { prisma } from "~/services/prisma";
 import { getUserFromRequest } from "~/services/auth.server";
-import { LoaderFunctionArgs } from "react-router-dom";
+import type { LoaderFunctionArgs } from "react-router";
 
 export async function action({ request, params }: LoaderFunctionArgs) {
   if (request.method !== "PUT") {

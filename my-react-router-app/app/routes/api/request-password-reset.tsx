@@ -1,43 +1,12 @@
-import nodemailer from 'nodemailer';
 import { PrismaClient } from '@prisma/client';
 import crypto from 'crypto';
+import { createTransporter } from "~/services/email.server";
 
 const prisma = new PrismaClient();
 
 async function sendPasswordResetEmail(email: string, resetLink: string) {
   try {
-    let transporter;
-    
-    if (process.env.EMAIL_SERVICE === 'gmail') {
-      transporter = nodemailer.createTransport({
-        service: 'gmail',
-        auth: {
-          user: process.env.EMAIL_USER,
-          pass: process.env.EMAIL_PASSWORD,
-        }
-      });
-    } else if (process.env.EMAIL_SERVICE === 'sendgrid') {
-      transporter = nodemailer.createTransport({
-        host: 'smtp.sendgrid.net',
-        port: 587,
-        auth: {
-          user: 'apikey',
-          pass: process.env.SENDGRID_API_KEY,
-        }
-      });
-    } else {
-      // Development mode - use Ethereal Email
-      const testAccount = await nodemailer.createTestAccount();
-      transporter = nodemailer.createTransport({
-        host: 'smtp.ethereal.email',
-        port: 587,
-        secure: false,
-        auth: {
-          user: testAccount.user,
-          pass: testAccount.pass,
-        }
-      });
-    }
+    const transporter = await createTransporter();
 
     const mailOptions = {
       from: process.env.EMAIL_FROM || 'noreply@iu-portal.com',

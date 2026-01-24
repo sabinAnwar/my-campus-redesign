@@ -1,5 +1,5 @@
 import { prisma } from "~/services/prisma";
-import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router-dom";
+import type { LoaderFunctionArgs, ActionFunctionArgs } from "react-router";
 
 export async function loader({ params, request }: LoaderFunctionArgs) {
   if (request.method !== "GET") {

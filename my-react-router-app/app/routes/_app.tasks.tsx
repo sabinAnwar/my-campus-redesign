@@ -18,7 +18,7 @@ import {
 } from "~/features/tasks";
 
 import type { TaskLoaderSubmission } from "~/types/tasks";
-import { Route } from "~/+types/root";
+import type { Route } from "~/+types/root";
 
 //// LOADER
 //

@@ -1,6 +1,5 @@
-import nodemailer from "nodemailer";
 import { prisma } from "~/services/prisma";
-import { createTransporter } from "../../../../api/utils/email";
+import { createTransporter } from "~/services/email.server";
 
 function getHourInTimezone(tz: string | null | undefined): number {
   try {
@@ -283,5 +282,4 @@ function getSessionTokenFromRequest(request: Request): string | null {
     return null;
   }
 }
-
 

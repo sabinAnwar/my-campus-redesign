@@ -1,4 +1,5 @@
-import { LucideIcon, Presentation, Trophy, Users } from "lucide-react";
+import { Presentation, Trophy, Users } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import { Globe, Linkedin } from "lucide-react";
 import { ChannelConfig, FacultyChannelConfig } from "~/utils/socialMediaUtils";
 
