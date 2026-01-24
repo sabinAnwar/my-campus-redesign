@@ -10,7 +10,8 @@
       }
     },
     "routeIdToServerBundleId": {
-      "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "index-login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "explicit-login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/reset-password": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/reset-password.$token": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -73,11 +74,20 @@
         "path": "",
         "config": {}
       },
-      "routes/login": {
-        "id": "routes/login",
+      "index-login": {
+        "id": "index-login",
         "parentId": "root",
         "file": "app/routes/login.tsx",
         "index": true,
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "explicit-login": {
+        "id": "explicit-login",
+        "parentId": "root",
+        "file": "app/routes/login.tsx",
+        "path": "login",
         "config": {
           "runtime": "nodejs"
         }
@@ -525,11 +535,17 @@
         "file": "root.tsx",
         "path": ""
       },
-      "routes/login": {
-        "id": "routes/login",
+      "index-login": {
+        "id": "index-login",
         "parentId": "root",
         "file": "routes/login.tsx",
         "index": true
+      },
+      "explicit-login": {
+        "id": "explicit-login",
+        "parentId": "root",
+        "file": "routes/login.tsx",
+        "path": "login"
       },
       "routes/logout": {
         "id": "routes/logout",
@@ -871,7 +887,13 @@
         "children": [
           {
             "file": "routes/login.tsx",
-            "index": true
+            "index": true,
+            "id": "index-login"
+          },
+          {
+            "file": "routes/login.tsx",
+            "path": "login",
+            "id": "explicit-login"
           },
           {
             "file": "routes/logout.tsx",
