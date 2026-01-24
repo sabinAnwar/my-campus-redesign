@@ -13,7 +13,7 @@ export const LoginQuoteSection = ({ currentQuote, isFading, onDotClick, activeIn
         <p className="text-xs text-white font-semibold drop-shadow-md">— {currentQuote.author}</p>
       </div>
     </div>
-    <div className="flex justify-center gap-1.5 mt-4">
+    <div className="flex items-center justify-center gap-1.5 mt-4">
       {MOTIVATIONAL_QUOTES.slice(0, VISIBLE_QUOTE_DOTS).map((_, idx) => (
         <button
           key={idx}
@@ -22,7 +22,7 @@ export const LoginQuoteSection = ({ currentQuote, isFading, onDotClick, activeIn
           aria-label={`Zitat ${idx + 1}`}
         />
       ))}
-      <span className="text-white text-xs ml-2">+{MOTIVATIONAL_QUOTES.length - VISIBLE_QUOTE_DOTS}</span>
+      <span className="text-white text-xs leading-none ml-2">+{MOTIVATIONAL_QUOTES.length - VISIBLE_QUOTE_DOTS}</span>
     </div>
   </div>
 );
