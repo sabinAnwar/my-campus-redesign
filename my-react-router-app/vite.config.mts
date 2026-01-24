@@ -13,4 +13,7 @@ export default defineConfig({
       "~": resolve(__dirname, "./app"),
     },
   },
+  ssr: {
+    noExternal: ["@vercel/analytics", "@vercel/speed-insights"],
+  },
 });
