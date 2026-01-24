@@ -15,7 +15,8 @@ import newsRoutes from "./routes/news";
 import praxisRoutes from "./routes/praxisberichte";
 import cronRoutes from "./routes/cron";
 
-const clientBuildPath = path.join(__dirname, "../build/client");
+// In Vercel, process.cwd() is the project root
+const clientBuildPath = path.join(process.cwd(), "build/client");
 
 const app = express();
 
@@ -85,10 +86,13 @@ app.use(
 
 // React Router handler (catches everything else)
 // Dynamically import the build to avoid require()ing ESM
+// Use pathToFileURL to ensure Windows compatibility and correct URL format for dynamic import
 app.use(async (req: Request, res: Response, next: NextFunction) => {
   try {
+    const buildPath = path.join(process.cwd(), "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
+    const { pathToFileURL } = await import("url");
     // @ts-ignore - build path depends on build process
-    const build = await import("../build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js");
+    const build = await import(pathToFileURL(buildPath).href);
     
     return createRequestHandler({
       build,
