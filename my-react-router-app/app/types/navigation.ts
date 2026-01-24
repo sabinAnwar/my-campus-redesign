@@ -16,7 +16,8 @@ export type NavKey =
   | "contact"
   | "roomBooking"
   | "library"
-  | "lernassistent";
+  | "lernassistent"
+  | "antragsverwaltung";
 
 import type { LucideIcon } from "lucide-react";
 

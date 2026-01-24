@@ -38,6 +38,7 @@ export const BASE_NAV_ITEMS: Array<{
   { to: "/library", key: "library", icon: Library },
   { to: "/lernassistent", key: "lernassistent", icon: Brain },
   { to: "/contact", key: "contact", icon: UserIcon },
+  { to: "/antragsverwaltung", key: "antragsverwaltung", icon: FileSearch },
 ];
 
 export const SHELL_TRANSLATIONS: Record<
@@ -90,6 +91,7 @@ export const SHELL_TRANSLATIONS: Record<
       lernassistent: "KI Lernassistent",
       contact: "Kontakt",
       roomBooking: "Raumbuchung",
+      antragsverwaltung: "Antragsverwaltung",
     },
     menu: {
       settings: "Einstellungen",
@@ -134,6 +136,7 @@ export const SHELL_TRANSLATIONS: Record<
       lernassistent: "AI Learning Assistant",
       contact: "Contact",
       roomBooking: "Room Booking",
+      antragsverwaltung: "Application Management",
     },
     menu: {
       settings: "Settings",

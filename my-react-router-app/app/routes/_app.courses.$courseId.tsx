@@ -151,22 +151,18 @@ export const loader = async ({
   const typedUser = user as any;
   console.log(` Course Loader: User found: ${typedUser.email} (ID: ${typedUser.id})`);
 
-  const courseIdNum = Number(params.courseId);
-  if (isNaN(courseIdNum)) {
-    return Response.json({
-      submissions: [],
-      course: null,
-      user_id: typedUser.id,
-      studiengangName: typedUser.major?.name,
-      error: errorMessage || "Invalid course ID",
-    });
-  }
+  const courseIdParam = params.courseId || "";
+  const courseIdNum = Number(courseIdParam);
+  const isNumeric = !isNaN(courseIdNum) && courseIdParam.trim() !== "";
 
   // Fetch course from DB with files
-  console.log(` Course Loader: Fetching course ID ${courseIdNum}...`);
+  console.log(` Course Loader: Fetching course with param ${courseIdParam}...`);
+  
   const course = await withTimeout(
-    prisma.course.findUnique({
-      where: { id: courseIdNum },
+    prisma.course.findFirst({
+      where: isNumeric 
+        ? { OR: [{ id: courseIdNum }, { code: courseIdParam }] } 
+        : { code: { equals: courseIdParam, mode: "insensitive" } },
       include: {
         files: {
           where: { user_id: typedUser.id },
@@ -190,15 +186,52 @@ export const loader = async ({
   const typedCourse = course as any;
 
   if (!typedCourse) {
-    console.warn(` Course Loader: Course ID ${courseIdNum} not found.`);
-    return Response.json({
+    console.warn(` Course Loader: Course ${courseIdParam} not found in DB.`);
+    
+    // Attempt fallback to static config if not in DB
+    const configCourses = getCourseConfig("de");
+    const configMatch = configCourses.find(c => 
+      c.id === courseIdNum || c.code?.toLowerCase() === courseIdParam.toLowerCase()
+    );
+
+    if (!configMatch) {
+      return Response.json({
+        submissions: [],
+        course: null,
+        user_id: typedUser.id,
+        studiengangName: (typedUser as any).major?.name || "IU Studium",
+        error: errorMessage || "Course not found",
+      });
+    }
+
+    // Return static config data as course
+    const fallbackData: Course = {
+      id: configMatch.id,
+      title: configMatch.title,
+      name_de: configMatch.title,
+      name_en: configMatch.title,
+      instructor: "Dozent",
+      description: "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
+      startDate: "01.10.2024",
+      endDate: "31.03.2025",
+      progress: configMatch.progress || 0,
+      credits: configMatch.credits || 5,
+      semester: parseInt(configMatch.semester as string) || 1,
+      color: configMatch.color || "cyan",
+      resources: [],
+      code: configMatch.code,
+      name: configMatch.title
+    };
+
+    return {
       submissions: [],
-      course: null,
+      course: fallbackData,
       user_id: typedUser.id,
-      studiengangName: typedUser.major?.name,
-      error: errorMessage || "Course not found",
-    });
+      studiengangName: (typedUser as any).major?.name || "IU Studium",
+      error: errorMessage,
+    };
   }
+  
   console.log(` Course Loader: Course found: ${typedCourse.name}`);
 
   // Map database files to UI resources
@@ -279,7 +312,7 @@ export const loader = async ({
       title: row.title,
       course: row.course,
       type: row.type || "Abgabe",
-      courseCode: `MOD-${course.id}`, // Placeholder
+      courseCode: typedCourse.code || `MOD-${typedCourse.id}`,
       professor: "Dozent", // Placeholder as we don't have this in Course model yet
       due_date_iso: new Date(row.due_date).toISOString().slice(0, 10),
       due_date: formatGermanDate(new Date(row.due_date)),
@@ -297,7 +330,7 @@ export const loader = async ({
     }));
 
   // Enforce rule: 'Wissenschaftliches Arbeiten' has only ONE submission
-  const isScientificWork = course.name === "Wissenschaftliches Arbeiten";
+  const isScientificWork = typedCourse.name === "Wissenschaftliches Arbeiten";
   const submissions =
     isScientificWork && baseSubmissions.length > 0
       ? [baseSubmissions[0]]
@@ -305,21 +338,21 @@ export const loader = async ({
 
   // Augment course object for UI
   const courseData: Course = {
-    id: course.id,
-    title: course.name,
-    name_de: (course as any).name_de || course.name,
-    name_en: (course as any).name_en || course.name,
+    id: typedCourse.id,
+    title: typedCourse.name,
+    name_de: typedCourse.name_de || typedCourse.name,
+    name_en: typedCourse.name_en || typedCourse.name,
     instructor: "Dozent",
-    description: course.description || "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
+    description: typedCourse.description || "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
     startDate: "01.10.2024",
     endDate: "31.03.2025",
-    progress: Number(course.progress) || 0, // Ensure strictly number
-    credits: Number(course.credits) || 5, // Ensure strictly number
-    semester: Number(course.semester) || 1, // Ensure strictly number
-    color: course.color || "cyan",
+    progress: Number(typedCourse.progress) || 0,
+    credits: Number(typedCourse.credits) || 5,
+    semester: Number(typedCourse.semester) || 1,
+    color: typedCourse.color || "cyan",
     resources: resources,
-    code: course.code,
-    name: course.name
+    code: typedCourse.code,
+    name: typedCourse.name
   };
 
   return {
@@ -343,15 +376,25 @@ export default function CourseDetail() {
   const t = TRANSLATIONS[language as keyof typeof TRANSLATIONS];
   const retryLabel = language === "de" ? "Erneut versuchen" : "Try again";
 
-  // Find the course by ID (from loader or fallback to config)
-  // Casting partial course from config to full Course type if needed, or prefer loaderData
-  const fallbackCourse = courses.find((c) => c.id === Number(courseId));
+  // Find the course by ID or Code (from loader or fallback to config)
+  const courseIdParam = courseId || "";
+  const courseIdNum = Number(courseIdParam);
+  const fallbackCourse = courses.find((c) => 
+    c.id === courseIdNum || (c.code && c.code.toLowerCase() === courseIdParam.toLowerCase())
+  );
   const course: Course | null = loaderData?.course || (fallbackCourse ? {
     ...fallbackCourse,
+    id: fallbackCourse.id,
+    title: fallbackCourse.title,
+    name: fallbackCourse.title,
     instructor: "Dozent", // defaults for fallback
     startDate: "01.10.2024",
     endDate: "31.03.2025",
-    resources: []
+    resources: [],
+    credits: fallbackCourse.credits || 5,
+    semester: parseInt(fallbackCourse.semester as string) || 1,
+    color: fallbackCourse.color || "cyan",
+    progress: fallbackCourse.progress || 0
   } as unknown as Course : null);
 
   useEffect(() => {

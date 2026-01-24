@@ -10,7 +10,7 @@ export function FeaturedTools({ t, featuredTools }: FeaturedToolsProps) {
   if (featuredTools.length === 0) return null;
 
   return (
-    <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-card dark:bg-card/30 border border-border/50 dark:border-white/5 shadow-2xl mb-8 sm:mb-12 md:mb-16 group/section">
+    <div className="relative overflow-hidden rounded-[2rem] sm:rounded-[2.5rem] bg-card dark:bg-card/30 border border-border/50 dark:border-white/5 shadow-2xl mb-4 sm:mb-6 md:mb-8 group/section">
       {/* Background Decorative Elements */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-iu-blue/5 dark:bg-iu-blue/10 blur-[80px] rounded-full -translate-y-1/2 translate-x-1/2" />
       <div className="absolute bottom-0 left-0 w-64 h-64 bg-iu-purple/5 dark:bg-iu-purple/10 blur-[80px] rounded-full translate-y-1/2 -translate-x-1/2" />
@@ -63,7 +63,7 @@ export function FeaturedTools({ t, featuredTools }: FeaturedToolsProps) {
                 </div>
               </div>
 
-              <div className="p-2 rounded-xl bg-muted/50 dark:bg-white/5 border border-border dark:border-white/5 group-hover:border-iu-blue/30 dark:group-hover:border-iu-blue/50 text-muted-foreground dark:text-white group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all shrink-0">
+              <div className="p-2 rounded-xl bg-white/90 dark:bg-slate-900 border border-slate-300/70 dark:border-white/10 text-slate-900 dark:text-white group-hover:border-iu-blue/40 dark:group-hover:border-iu-blue/60 group-hover:text-iu-blue dark:group-hover:text-white group-hover:scale-110 transition-all shrink-0 shadow-sm">
                 <ExternalLink className="w-3.5 h-3.5" />
               </div>
             </a>

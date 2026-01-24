@@ -62,6 +62,7 @@ export default [
   route("api/logout", "routes/api/logout.tsx"),
   route("api/news", "routes/api/news.tsx"),
   route("api/news/:slug", "routes/api/news.$slug.tsx"),
+  route("api/courses", "routes/api.courses.tsx"),
   route("api/praxisberichte", "routes/api/praxisberichte.tsx"),
   route(
     "api/praxisberichte/:weekKey",

@@ -1,8 +1,10 @@
 import type { ReactElement } from "react";
-import { Link } from "react-router-dom";
+import { useState, useRef, useEffect } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Search, FileSearch, ArrowRight } from "lucide-react";
 
 import type { SearchItem } from "~/hooks/useAppShellSearch";
+import { useClickOutside } from "~/hooks/useClickOutside";
 
 interface SearchBarProps {
   /** Current search query value */
@@ -21,18 +23,6 @@ interface SearchBarProps {
   };
 }
 
-/**
- * Global search bar component with dropdown results.
- * Displays filtered results when user types a query.
- *
- * @example
- * <SearchBar
- *   query={searchQuery}
- *   onQueryChange={setSearchQuery}
- *   results={filteredResults}
- *   translations={shellText.search}
- * />
- */
 export function SearchBar({
   query,
   onQueryChange,
@@ -40,19 +30,64 @@ export function SearchBar({
   results,
   translations,
 }: SearchBarProps): ReactElement {
+  const navigate = useNavigate();
+  const [selectedIndex, setSelectedIndex] = useState(-1);
+  const [isOpen, setIsOpen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  // Close search when clicking outside
+  useClickOutside(containerRef as React.RefObject<HTMLElement>, () => {
+    setIsOpen(false);
+  }, isOpen);
+
+  // Reset selected index when results change or query is cleared
+  useEffect(() => {
+    setSelectedIndex(-1);
+    if (query.trim()) {
+      setIsOpen(true);
+    } else {
+      setIsOpen(false);
+    }
+  }, [results, query]);
+
   const handleResultClick = () => {
     onQueryChange(""); // Clear search on navigation
+    setIsOpen(false);
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev + 1 < results.length ? prev + 1 : prev));
+    } else if (e.key === "ArrowUp") {
+      e.preventDefault();
+      setSelectedIndex((prev) => (prev > 0 ? prev - 1 : 0));
+    } else if (e.key === "Enter") {
+      if (selectedIndex >= 0 && results[selectedIndex]) {
+        e.preventDefault();
+        navigate(results[selectedIndex].link);
+        handleResultClick();
+      }
+    } else if (e.key === "Escape") {
+      setIsOpen(false);
+      inputRef.current?.blur();
+    }
   };
 
   return (
-    <div className="flex-1 w-full max-w-full sm:max-w-sm md:max-w-md mx-1 sm:mx-4 md:mx-8 relative">
+    <div 
+      ref={containerRef}
+      className="flex-[2] w-full min-w-[140px] sm:min-w-[280px] max-w-full sm:max-w-sm md:max-w-md mx-1 sm:mx-2 md:mx-4 relative"
+    >
       <div className="relative group">
         {/* Search Input */}
         <input
+          ref={inputRef}
           type="text"
           role="combobox"
           aria-autocomplete="list"
-          aria-expanded={query.trim().length > 0}
+          aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-controls="search-results"
           aria-label={translations.placeholder}
@@ -60,7 +95,11 @@ export function SearchBar({
           placeholder={translations.placeholder}
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
-          onFocus={onFocus}
+          onFocus={() => {
+            if (query.trim()) setIsOpen(true);
+            onFocus?.();
+          }}
+          onKeyDown={handleKeyDown}
         />
 
         {/* Search Icon */}
@@ -69,8 +108,8 @@ export function SearchBar({
         </div>
 
         {/* Results Dropdown */}
-        {query.trim() && (
-          <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-0 top-[4.5rem] sm:top-full mt-0 sm:mt-2 bg-card text-card-foreground border border-border rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden z-[200] animate-in fade-in zoom-in-95 duration-200">
+        {isOpen && query.trim() && (
+          <div className="fixed sm:absolute left-2 right-2 sm:left-0 sm:right-0 top-20 sm:top-full mt-0 sm:mt-2 bg-card text-card-foreground border border-border rounded-xl sm:rounded-2xl shadow-2xl overflow-hidden z-[200] animate-in fade-in zoom-in-95 duration-200">
             {/* Results Header */}
             <div className="p-2 sm:p-3 border-b border-border bg-muted/30 flex justify-between items-center text-[10px] sm:text-xs font-bold text-iu-blue dark:text-white">
               <span>
@@ -85,17 +124,24 @@ export function SearchBar({
               className="max-h-[250px] sm:max-h-[300px] overflow-y-auto p-1.5 sm:p-2 space-y-0.5 sm:space-y-1 custom-scrollbar"
             >
               {results.length > 0 ? (
-                results.map((result) => {
+                results.map((result, index) => {
                   const ResultIcon = result.icon ?? FileSearch;
+                  const isSelected = index === selectedIndex;
                   return (
-                    <li key={result.id} role="option">
+                    <li key={result.id} role="option" aria-selected={isSelected}>
                       <Link
                         to={result.link}
                         onClick={handleResultClick}
-                        className="flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg hover:bg-iu-blue/10 group/item transition-all border border-transparent hover:border-iu-blue/20 cursor-pointer focus:outline-none focus:bg-iu-blue/10 focus:border-iu-blue/20"
+                        className={`flex items-center gap-2 sm:gap-3 p-2 sm:p-3 rounded-lg group/item transition-all border ${
+                          isSelected 
+                            ? "bg-iu-blue/10 border-iu-blue/20" 
+                            : "hover:bg-iu-blue/10 border-transparent hover:border-iu-blue/20"
+                        } cursor-pointer focus:outline-none`}
                       >
                         {/* Icon */}
-                        <div className="flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border border-border text-muted-foreground group-hover/item:text-iu-blue dark:group-hover/item:text-foreground dark:text-white group-hover/item:border-iu-blue/30 transition-colors">
+                        <div className={`flex-shrink-0 p-1.5 sm:p-2 rounded-lg bg-background border transition-colors ${
+                          isSelected ? "border-iu-blue/30 text-iu-blue" : "border-border text-muted-foreground group-hover/item:text-iu-blue dark:text-white"
+                        }`}>
                           <ResultIcon className="h-3.5 w-3.5 sm:h-4 sm:w-4" aria-hidden="true" />
                         </div>
 
@@ -110,7 +156,9 @@ export function SearchBar({
                         </div>
 
                         {/* Arrow Icon */}
-                        <ArrowRight className="h-3.5 w-3.5 sm:h-4 sm:w-4 opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1 transition-all text-iu-blue dark:text-white hidden sm:block" aria-hidden="true" />
+                        <ArrowRight className={`h-3.5 w-3.5 sm:h-4 sm:w-4 transition-all text-iu-blue dark:text-white hidden sm:block ${
+                          isSelected ? "opacity-100 translate-x-1" : "opacity-0 group-hover/item:opacity-100 group-hover/item:translate-x-1"
+                        }`} aria-hidden="true" />
                       </Link>
                     </li>
                   );

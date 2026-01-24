@@ -147,38 +147,29 @@ function getCookieOptions(req: Request): CookieOptions {
 // Simple current user endpoint (used by dashboard)
 app.get("/api/user", async (req: Request, res: Response) => {
   try {
-    console.log(" /api/user headers", {
-      cookie: req.headers?.cookie || null,
-      xSession:
-        req.get("x-session-token") || req.get("X-Session-Token") || null,
-    });
     const token = getSessionToken(req);
-    console.log(" /api/user resolved token", token);
     if (!token) return res.status(401).json({ error: "Not authenticated" });
 
     const session = await prisma.session.findUnique({
       where: { token },
-      include: { user: true },
+      include: { user: { include: { major: true } } },
     });
-    console.log(
-      " /api/user session lookup",
-      !!session,
-      session?.user ? "has-user" : "no-user"
-    );
     if (!session || !session.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    // Derive campus/location info (placeholder until real data available)
-    // In the future, replace with actual user campus fields from DB or an external API
+    
     const campusCity = process.env.DEFAULT_CAMPUS_CITY || "Hamburg";
     const campusArea = process.env.DEFAULT_CAMPUS_AREA || "Hammerbrook";
-    const roomBookingEnabled = process.env.ROOM_BOOKING_ENABLED !== "0"; // default true
+    const roomBookingEnabled = process.env.ROOM_BOOKING_ENABLED !== "0";
 
     return res.json({
       user: {
         id: session.user.id,
         name: session.user.name || "Student",
         email: session.user.email,
+        majorId: session.user.major_id,
+        majorName: session.user.major?.name,
+        semester: session.user.semester,
         campusCity,
         campusArea,
         roomBookingEnabled,
@@ -187,6 +178,33 @@ app.get("/api/user", async (req: Request, res: Response) => {
   } catch (err: unknown) {
     console.error("/api/user error", err);
     return res.status(500).json({ error: "Failed to fetch user" });
+  }
+});
+
+// Endpoint to fetch all courses for the user's major (for search etc)
+app.get("/api/courses", async (req: Request, res: Response) => {
+  try {
+    const token = getSessionToken(req);
+    if (!token) return res.status(401).json({ error: "Not authenticated" });
+
+    const session = await prisma.session.findUnique({
+      where: { token },
+      include: { user: true },
+    });
+    if (!session?.user) return res.status(401).json({ error: "Not authenticated" });
+
+    let dbCourses: any[] = [];
+    if (session.user.major_id) {
+      dbCourses = await prisma.course.findMany({
+        where: { major_id: session.user.major_id },
+        orderBy: { semester: "asc" },
+      });
+    }
+
+    return res.json({ courses: dbCourses });
+  } catch (err: unknown) {
+    console.error("/api/courses error", err);
+    return res.status(500).json({ error: "Failed to fetch courses" });
   }
 });
 
