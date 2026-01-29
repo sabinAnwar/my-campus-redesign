@@ -36,15 +36,15 @@ export function CurriculumCourseCard({
   // Status styling
   const getStatusStyles = () => {
     if (isFailed) {
-      return "bg-red-500/10 border-red-500/30 hover:border-red-500/50";
+      return "bg-card border-red-500/50 hover:border-red-600 shadow-sm";
     }
     if (isCompleted || isPassed) {
-      return "bg-emerald-500/5 border-emerald-500/20 hover:border-emerald-500/40";
+      return "bg-card border-emerald-500/50 hover:border-emerald-600 shadow-sm";
     }
     if (isCurrent) {
-      return "bg-iu-blue/5 border-iu-blue/20 hover:border-iu-blue/40 shadow-xl shadow-iu-blue/5";
+      return "bg-card border-slate-600 dark:border-slate-400 shadow-xl ring-2 ring-slate-400/20";
     }
-    return "bg-card/40 border-border hover:border-iu-blue/30";
+    return "bg-card border-border hover:border-slate-400 dark:hover:border-slate-500 shadow-sm";
   };
 
   // Grade badge colors
@@ -131,7 +131,7 @@ export function CurriculumCourseCard({
           </div>
         </div>
 
-        <h3 className="text-lg sm:text-xl font-black text-foreground mb-2 leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+        <h3 className="text-lg sm:text-xl font-black text-foreground mb-2 leading-tight group-hover:translate-x-1 transition-transform">
           {course.title}
         </h3>
         <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-widest mb-4 sm:mb-6">
@@ -147,7 +147,7 @@ export function CurriculumCourseCard({
           </div>
           <Link 
             to={`/courses/${course.id}`}
-            className="p-2 hover:bg-iu-blue/10 dark:hover:bg-iu-blue rounded-lg transition-colors text-foreground"
+            className="p-2 hover:bg-muted dark:hover:bg-slate-800 rounded-lg transition-colors text-foreground"
           >
             <ChevronRight size={18} />
           </Link>

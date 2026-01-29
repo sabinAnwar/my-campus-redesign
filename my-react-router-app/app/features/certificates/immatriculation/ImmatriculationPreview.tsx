@@ -9,18 +9,18 @@ interface ImmatriculationPreviewProps {
 
 export function ImmatriculationPreview({ t, studentData, today }: ImmatriculationPreviewProps) {
   return (
-    <div className="relative bg-card/40 backdrop-blur-xl sm:rounded-[2.5rem] rounded-2xl border-4 border-iu-blue/20 p-6 sm:p-12 shadow-2xl overflow-hidden mb-8 sm:mb-12">
+    <div className="relative bg-card sm:rounded-[2.5rem] rounded-2xl border-4 border-slate-300 dark:border-slate-700 p-6 sm:p-12 shadow-2xl overflow-hidden mb-8 sm:mb-12">
       {/* Decorative corners */}
-      <div className="absolute top-6 left-6 w-16 h-16 border-t-4 border-l-4 border-iu-blue/20 rounded-tl-2xl hidden sm:block" />
-      <div className="absolute top-6 right-6 w-16 h-16 border-t-4 border-r-4 border-iu-blue/20 rounded-tr-2xl hidden sm:block" />
-      <div className="absolute bottom-6 left-6 w-16 h-16 border-b-4 border-l-4 border-iu-blue/20 rounded-bl-2xl hidden sm:block" />
-      <div className="absolute bottom-6 right-6 w-16 h-16 border-b-4 border-r-4 border-iu-blue/20 rounded-br-2xl hidden sm:block" />
+      <div className="absolute top-6 left-6 w-16 h-16 border-t-4 border-l-4 border-slate-300 dark:border-slate-700 rounded-tl-2xl hidden sm:block" />
+      <div className="absolute top-6 right-6 w-16 h-16 border-t-4 border-r-4 border-slate-300 dark:border-slate-700 rounded-tr-2xl hidden sm:block" />
+      <div className="absolute bottom-6 left-6 w-16 h-16 border-b-4 border-l-4 border-slate-300 dark:border-slate-700 rounded-bl-2xl hidden sm:block" />
+      <div className="absolute bottom-6 right-6 w-16 h-16 border-b-4 border-r-4 border-slate-300 dark:border-slate-700 rounded-br-2xl hidden sm:block" />
 
       <div className="text-center mb-8 sm:mb-12 relative z-10">
         <div className="inline-flex items-center justify-center w-16 h-16 sm:w-24 sm:h-24 bg-iu-blue rounded-2xl sm:rounded-3xl mb-4 sm:mb-8 shadow-2xl shadow-iu-blue/30 transition-transform hover:rotate-12">
           <Building2 className="h-8 w-8 sm:h-12 sm:w-12 text-white" />
         </div>
-        <h2 className="text-xl sm:text-4xl font-bold text-foreground mb-2 sm:mb-4 tracking-tight px-2">
+        <h2 className="text-xl sm:text-4xl font-black text-foreground mb-2 sm:mb-4 tracking-tight px-2 uppercase">
           {t.certificateTitle}
         </h2>
         <p className="text-muted-foreground text-sm sm:text-xl font-medium">

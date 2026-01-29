@@ -19,8 +19,8 @@ export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
   const isPassed = (grade: number) => grade <= 4.0;
 
   return (
-    <div className="bg-card/60 backdrop-blur-xl sm:rounded-[2.5rem] rounded-2xl border border-border shadow-2xl overflow-hidden mb-8 sm:mb-12">
-      <div className="p-6 sm:p-10 border-b border-border/50 bg-iu-blue/5">
+    <div className="bg-card sm:rounded-[2.5rem] rounded-2xl border border-slate-300 dark:border-slate-700 shadow-2xl overflow-hidden mb-8 sm:mb-12">
+      <div className="p-6 sm:p-10 border-b border-slate-300 dark:border-slate-700 bg-slate-50 dark:bg-slate-900/50">
         <div className="flex items-center gap-3 sm:gap-4">
           <div className="p-2 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-xl sm:rounded-2xl">
             <FileText className="h-6 w-6 sm:h-8 sm:w-8 text-iu-blue dark:text-white" />
@@ -58,10 +58,10 @@ export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
           <tbody className="divide-y divide-border/50">
             {groupedMarks.map(([semester, semesterMarks]) => (
               <React.Fragment key={semester}>
-                <tr className="bg-iu-blue/5 dark:bg-iu-blue/20">
+                <tr className="bg-slate-100 dark:bg-slate-900">
                   <td
                     colSpan={6}
-                    className="px-4 sm:px-8 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-iu-blue dark:text-white uppercase tracking-[0.2em] sm:tracking-[0.3em]"
+                    className="px-4 sm:px-8 py-3 sm:py-4 text-[10px] sm:text-xs font-black text-foreground uppercase tracking-[0.2em] sm:tracking-[0.3em] border-y border-slate-300 dark:border-slate-700"
                   >
                     {semester}
                   </td>
@@ -72,9 +72,9 @@ export function GradesTable({ t, groupedMarks, language }: GradesTableProps) {
                   return (
                     <tr
                       key={row.id}
-                      className="hover:bg-iu-blue/5 transition-colors group"
+                      className="hover:bg-slate-50 dark:hover:bg-slate-800/50 transition-colors group"
                     >
-                      <td className="px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                      <td className="px-4 sm:px-8 py-4 sm:py-6 text-sm sm:text-base font-bold text-foreground group-hover:translate-x-1 transition-transform">
                         <div className="flex flex-col gap-1">
                           <span>{row.name}</span>
                           <div className="flex sm:hidden items-center gap-2 text-[10px] text-muted-foreground">

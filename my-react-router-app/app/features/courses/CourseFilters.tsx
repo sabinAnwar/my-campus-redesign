@@ -60,10 +60,10 @@ export function CourseFilters({
         <button
           key={tab.id}
           onClick={() => setListFilter(tab.id)}
-          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-xl sm:rounded-2xl font-bold text-[10px] sm:text-xs md:text-sm transition-all whitespace-nowrap border ${
+          className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 md:px-6 py-2 sm:py-2.5 md:py-3 rounded-xl sm:rounded-2xl font-black text-[10px] sm:text-xs md:text-sm transition-all whitespace-nowrap border ${
             listFilter === tab.id
-              ? "bg-iu-blue text-white border-iu-blue shadow-lg shadow-iu-blue/20"
-              : "bg-card text-foreground border-border hover:border-iu-blue/50 hover:bg-card/80"
+              ? "bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100 shadow-xl"
+              : "bg-card text-foreground border-border hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50 dark:hover:bg-slate-900/50"
           }`}
         >
           <tab.icon className="w-3 h-3 sm:w-3.5 sm:h-3.5 md:w-4 md:h-4" />

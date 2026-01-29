@@ -50,7 +50,7 @@ export function SemesterSection({
   return (
     <div className="space-y-5 sm:space-y-6">
       <div className="flex items-center gap-3 sm:gap-4 px-2 sm:px-4">
-        <div className="h-1 w-12 bg-iu-blue rounded-full" />
+        <div className="h-1 w-12 bg-slate-400 dark:bg-slate-600 rounded-full" />
         <h2 className="text-2xl sm:text-3xl font-black text-foreground tracking-tight uppercase">
           {t.semester || "Semester"} {semesterName}
         </h2>

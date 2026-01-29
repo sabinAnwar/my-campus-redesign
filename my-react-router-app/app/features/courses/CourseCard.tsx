@@ -27,7 +27,7 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
   return (
     <div
       onClick={onClick}
-      className="group relative flex flex-col rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-iu-blue/50 hover:shadow-2xl hover:shadow-iu-blue/10 cursor-pointer"
+      className="group relative flex flex-col rounded-2xl sm:rounded-[2rem] md:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl overflow-hidden transition-all duration-500 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-slate-50/50 dark:hover:bg-slate-900/50 hover:shadow-2xl hover:shadow-slate-400/5 cursor-pointer"
     >
       {/* Progress Bar at Top */}
       <div className="absolute top-0 left-0 w-full h-1.5 bg-muted">
@@ -59,7 +59,7 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
         </div>
 
         {/* Title */}
-        <h3 className="text-base sm:text-lg md:text-xl font-bold text-foreground mb-2 sm:mb-3 md:mb-4 dark:group-hover:text-white group-hover:text-iu-blue transition-colors line-clamp-2 leading-tight">
+        <h3 className="text-base sm:text-lg md:text-xl font-black text-foreground mb-2 sm:mb-3 md:mb-4 group-hover:translate-x-1 transition-transform line-clamp-2 leading-tight">
           {course.title}
         </h3>
 
@@ -78,15 +78,15 @@ export function CourseCard({ course, language, t, onClick }: CourseCardProps) {
 
         {/* Footer */}
         <div className="flex items-center justify-between pt-3 sm:pt-4 md:pt-6 border-t border-border mt-auto">
-          <div className="flex items-center gap-1.5 sm:gap-2 text-iu-blue dark:text-white font-bold text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">
+          <div className="flex items-center gap-1.5 sm:gap-2 text-foreground font-black text-[10px] sm:text-xs uppercase tracking-wider sm:tracking-widest">
             <span className="hidden sm:inline">{t.openCourse}</span>
             <span className="sm:hidden">{t.openMobile}</span>
             <ArrowRight className="w-3 h-3 sm:w-3.5 sm:h-3.5 group-hover:translate-x-2 transition-transform" />
           </div>
 
-          <div className="flex items-center gap-1 sm:gap-1.5 px-2 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-iu-blue/10 text-iu-blue border border-iu-blue/20 dark:bg-iu-blue dark:text-white dark:border-iu-blue">
-            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 animate-pulse" />
-            <span className="text-[9px] sm:text-[10px] font-bold">
+          <div className="flex items-center gap-1.5 sm:gap-1.5 px-2.5 sm:px-3 py-1 sm:py-1.5 rounded-lg sm:rounded-xl bg-slate-100 dark:bg-slate-800 text-foreground border border-slate-300 dark:border-slate-700 shadow-sm">
+            <Sparkles className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-amber-500" />
+            <span className="text-[9px] sm:text-[10px] font-black uppercase tracking-widest">
               {course.credits} CP
             </span>
           </div>
