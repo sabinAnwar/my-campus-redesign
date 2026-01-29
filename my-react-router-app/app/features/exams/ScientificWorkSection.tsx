@@ -19,7 +19,7 @@ export function ScientificWorkSection({
   const topicGuidelines = guidelines.slice(3);
 
   return (
-    <section className="bg-card/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-xl transition-all hover:bg-card/80">
+    <section className="bg-card border border-slate-300 dark:border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-xl transition-all hover:border-slate-400 dark:hover:border-slate-500">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-5 sm:p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
@@ -65,7 +65,7 @@ export function ScientificWorkSection({
                 <button
                   key={index}
                   onClick={() => setSelectedDocument(item)}
-                  className="flex flex-col items-start gap-4 p-5 sm:p-8 bg-card/60 border border-border rounded-[2.5rem] hover:border-primary/50 hover:bg-card transition-all cursor-pointer group text-left shadow-lg hover:-translate-y-1 duration-300"
+                  className="flex flex-col items-start gap-4 p-5 sm:p-8 bg-card border border-slate-300 dark:border-slate-700 rounded-[2.5rem] hover:border-slate-400 dark:hover:border-slate-500 transition-all cursor-pointer group text-left shadow-lg hover:-translate-y-1 duration-300"
                 >
                   <div
                     className={`p-3 sm:p-4 rounded-2xl ${item.bgColor} ${item.color} group-hover:scale-110 transition-transform shadow-xl`}
@@ -73,7 +73,7 @@ export function ScientificWorkSection({
                     <item.icon className="w-6 h-6 sm:w-8 sm:h-8" />
                   </div>
                   <div>
-                    <h3 className="text-lg sm:text-xl font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                    <h3 className="text-lg sm:text-xl font-black text-foreground group-hover:translate-x-1 transition-transform">
                       {item.title}
                     </h3>
                     {item.subtitle && (
@@ -100,7 +100,7 @@ export function ScientificWorkSection({
                 <button
                   key={index}
                   onClick={() => setSelectedDocument(item)}
-                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
+                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card border border-slate-300 dark:border-slate-700 rounded-2xl hover:border-slate-400 dark:hover:border-slate-500 transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
                 >
                   <div
                     className={`p-2.5 sm:p-3 rounded-xl ${item.bgColor} ${item.color} group-hover:scale-110 transition-transform shadow-md`}
@@ -108,11 +108,11 @@ export function ScientificWorkSection({
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm leading-snug line-clamp-2 sm:truncate">
+                    <h3 className="font-black text-foreground group-hover:translate-x-1 transition-transform text-sm leading-snug line-clamp-2 sm:truncate">
                       {item.title}
                     </h3>
                   </div>
-                  <FileText className="w-4 h-4 text-foreground dark:text-white transition-colors" />
+                  <FileText className="w-4 h-4 text-foreground transition-colors" />
                 </button>
               ))}
             </div>
@@ -127,13 +127,13 @@ export function ScientificWorkSection({
                 <button
                   key={index}
                   onClick={() => setSelectedDocument(item)}
-                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card/50 border border-border rounded-2xl hover:border-primary/40 hover:bg-card transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
+                  className="flex items-start sm:items-center gap-4 p-3 sm:p-5 bg-card border border-slate-300 dark:border-slate-700 rounded-2xl hover:border-slate-400 dark:hover:border-slate-500 transition-all cursor-pointer group text-left shadow-sm hover:-translate-y-0.5 min-w-0"
                 >
-                  <div className="p-2.5 sm:p-3 bg-iu-blue rounded-xl text-white transition-all border border-iu-blue/30">
+                  <div className="p-2.5 sm:p-3 bg-iu-blue rounded-xl text-white transition-all border border-iu-blue/30 shadow-md group-hover:scale-110">
                     <item.icon className="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="font-bold text-foreground group-hover:text-iu-blue dark:group-hover:text-white transition-colors text-sm leading-snug line-clamp-2 sm:truncate">
+                    <h3 className="font-black text-foreground group-hover:translate-x-1 transition-transform text-sm leading-snug line-clamp-2 sm:truncate">
                       {item.title}
                     </h3>
                   </div>

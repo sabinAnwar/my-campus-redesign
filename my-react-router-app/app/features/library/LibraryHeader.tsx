@@ -20,7 +20,7 @@ export function LibraryHeader({ title, subtitle }: LibraryHeaderProps) {
               {title}
             </h1>
           </div>
-          <p className="text-sm sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+          <p className="text-sm sm:text-lg text-foreground font-bold max-w-2xl leading-relaxed">
             {subtitle}
           </p>
         </div>

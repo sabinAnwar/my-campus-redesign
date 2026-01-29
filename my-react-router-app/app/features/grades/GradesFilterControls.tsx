@@ -43,7 +43,7 @@ export function GradesFilterControls({
   labels,
 }: GradesFilterControlsProps) {
   return (
-    <div className="bg-card/60 backdrop-blur-xl rounded-xl sm:rounded-2xl border border-border p-4 sm:p-6 shadow-lg">
+    <div className="bg-card rounded-xl sm:rounded-2xl border border-slate-300 dark:border-slate-700 p-4 sm:p-6 shadow-lg">
       <div className="flex items-center gap-2 sm:gap-3 mb-4 sm:mb-6">
         <div className="p-2 sm:p-2.5 bg-iu-blue/10 rounded-lg">
           <Filter className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue" />
@@ -63,7 +63,7 @@ export function GradesFilterControls({
             value={search}
             onChange={(e) => onSearchChange(e.target.value)}
             placeholder={labels.searchPlaceholder}
-            className="w-full pl-10 pr-3 py-3 sm:py-3 rounded-lg border border-border bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-2 focus:ring-iu-blue/10 focus:border-iu-blue transition-all text-sm sm:text-base font-medium"
+            className="w-full pl-10 pr-3 py-3 sm:py-3 rounded-lg border border-slate-300 dark:border-slate-700 bg-background/50 text-foreground placeholder-muted-foreground focus:outline-none focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800/20 focus:border-slate-400 dark:focus:border-slate-500 transition-all text-sm sm:text-base font-black"
           />
         </div>
 

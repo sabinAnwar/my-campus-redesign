@@ -11,7 +11,7 @@ interface RepeatExamsSectionProps {
 
 export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionProps) {
   return (
-    <section className="bg-card/50 border border-border rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-xl transition-all hover:bg-card/80">
+    <section className="bg-card border border-slate-300 dark:border-slate-700 rounded-[2.5rem] overflow-hidden shadow-2xl backdrop-blur-xl transition-all hover:border-slate-400 dark:hover:border-slate-500">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="w-full flex items-center justify-between p-5 sm:p-8 hover:bg-muted/30 transition-colors text-left cursor-pointer group"
@@ -21,10 +21,10 @@ export function RepeatExamsSection({ t, isOpen, setIsOpen }: RepeatExamsSectionP
             <RefreshCw className="w-6 h-6 sm:w-8 sm:h-8 text-iu-blue dark:text-white" />
           </div>
           <div>
-            <h2 className="text-xl sm:text-2xl font-bold text-foreground mb-1">
+            <h2 className="text-xl sm:text-2xl font-black text-foreground mb-1">
               {t.repeatExams}
             </h2>
-            <p className="text-foreground dark:text-white text-sm sm:text-base font-medium">
+            <p className="text-foreground text-sm sm:text-base font-bold">
               {t.repeatExamsSubtitle}
             </p>
           </div>

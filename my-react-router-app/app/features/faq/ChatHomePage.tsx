@@ -29,7 +29,7 @@ export function ChatHomePage({ onNavigate, t, features }: ChatHomePageProps) {
 
         <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold tracking-tight text-foreground leading-tight">
           {t.heroLine1} <br />
-          <span className="bg-gradient-to-r from-iu-blue via-iu-purple to-iu-pink bg-clip-text text-transparent">
+          <span className="text-foreground">
             {t.heroLine2}
           </span>
         </h1>

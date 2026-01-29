@@ -39,7 +39,7 @@ export function GradesStatsGrid({ stats }: GradesStatsGridProps) {
         return (
           <div
             key={idx}
-            className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-card/60 backdrop-blur-xl border border-border p-4 sm:p-5 shadow-lg hover:shadow-iu-blue/10 transition-all duration-500 hover:-translate-y-1"
+            className="group relative overflow-hidden rounded-xl sm:rounded-2xl bg-card border border-slate-300 dark:border-slate-700 p-4 sm:p-5 shadow-lg hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-500 hover:-translate-y-1"
           >
             <div className="absolute top-0 right-0 p-4 opacity-5 group-hover:scale-110 transition-transform duration-700">
               <stat.icon className="h-16 w-16 sm:h-20 sm:w-20" />

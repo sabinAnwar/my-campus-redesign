@@ -42,7 +42,7 @@ export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProp
               key={idx}
               className="flex items-center justify-between py-3 border-b border-border/50 last:border-0"
             >
-              <span className="text-sm text-muted-foreground font-black uppercase tracking-widest">
+              <span className="text-sm text-foreground font-black uppercase tracking-widest">
                 {item.day}
               </span>
               <span
@@ -118,7 +118,7 @@ export function LibrarySidebar({ t, language, openingHours }: LibrarySidebarProp
           <Globe className="h-12 w-12 text-iu-blue/40 group-hover:scale-110 transition-transform duration-700" />
         </div>
 
-        <p className="text-sm text-muted-foreground font-bold leading-relaxed">
+        <p className="text-sm text-foreground font-bold leading-relaxed">
           <span className="text-foreground font-black block mb-1">
             IU Campus Bibliothek
           </span>
