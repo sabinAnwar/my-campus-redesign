@@ -22,13 +22,14 @@ export function FilterBar({
   return (
     <div className="flex flex-col lg:flex-row gap-4 mb-8 sm:mb-12">
       <div className="flex-1 relative group">
-        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground group-focus-within:text-iu-blue transition-colors z-10" />
+        <Search className="absolute left-5 top-1/2 -translate-y-1/2 h-5 w-5 text-foreground group-focus-within:text-iu-blue transition-colors z-10" />
         <input
           type="text"
           placeholder={t.search}
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
-          className="w-full bg-card/40 backdrop-blur-md border border-border rounded-2xl py-4 pl-14 pr-6 text-sm focus:outline-none focus:border-iu-blue/40 focus:ring-4 focus:ring-iu-blue/5 transition-all font-medium text-foreground placeholder:text-muted-foreground/60 shadow-sm"
+          className="w-full bg-card/40 backdrop-blur-md border border-border rounded-2xl py-4 pl-14 pr-6 text-sm focus:outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800/20 transition-all font-black text-foreground placeholder:text-foreground/60 shadow-sm"
+          aria-label={t.search}
         />
       </div>
       <div className="flex flex-col sm:flex-row gap-4">
@@ -36,7 +37,7 @@ export function FilterBar({
           <select
             value={activeStatus}
             onChange={(e) => setActiveStatus(e.target.value)}
-            className="w-full appearance-none bg-card/40 backdrop-blur-md border border-border rounded-2xl pl-6 pr-12 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-iu-blue/40 focus:ring-4 focus:ring-iu-blue/5 cursor-pointer shadow-sm transition-all"
+            className="w-full appearance-none bg-card/40 backdrop-blur-md border border-border rounded-2xl pl-6 pr-12 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800/20 cursor-pointer shadow-sm transition-all"
           >
             <option value="all">{t.allStatus}</option>
             <option value="new">{t.new}</option>
@@ -44,7 +45,7 @@ export function FilterBar({
             <option value="approved">{t.approved}</option>
             <option value="rejected">{t.rejected}</option>
           </select>
-          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-foreground">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
             </svg>
@@ -54,13 +55,13 @@ export function FilterBar({
           <select
             value={activeCategory}
             onChange={(e) => setActiveCategory(e.target.value)}
-            className="w-full appearance-none bg-card/40 backdrop-blur-md border border-border rounded-2xl pl-6 pr-12 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-iu-blue/40 focus:ring-4 focus:ring-iu-blue/5 cursor-pointer shadow-sm transition-all"
+            className="w-full appearance-none bg-card/40 backdrop-blur-md border border-border rounded-2xl pl-6 pr-12 py-4 text-sm font-bold text-foreground focus:outline-none focus:border-slate-400 focus:ring-4 focus:ring-slate-100 dark:focus:ring-slate-800/20 cursor-pointer shadow-sm transition-all"
           >
             <option value="all">{t.allCategories}</option>
             <option value="examOffice">{t.categories.examOffice}</option>
             <option value="studentOffice">{t.categories.studentOffice}</option>
           </select>
-          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-muted-foreground">
+          <div className="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-foreground">
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2.5" d="M19 9l-7 7-7-7" />
             </svg>

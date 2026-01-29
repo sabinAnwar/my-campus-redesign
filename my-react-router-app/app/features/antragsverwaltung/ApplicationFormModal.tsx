@@ -27,17 +27,17 @@ export function ApplicationFormModal({
         {/* Modal Header */}
         <div className="sm:p-8 p-6 border-b border-border flex justify-between items-start">
           <div className="space-y-1">
-            <div className="flex items-center gap-2 text-iu-blue font-bold text-xs uppercase tracking-wider">
-              <FileText size={14} />
+            <div className="flex items-center gap-2 text-foreground font-black text-xs uppercase tracking-wider">
+              <FileText size={14} className="text-iu-blue" />
               {t.task}
             </div>
-            <h3 className="text-xl sm:text-2xl font-bold text-foreground tracking-tight">
+            <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
               {formDef.title}
             </h3>
           </div>
           <button
             onClick={onClose}
-            className="p-2 hover:bg-muted rounded-full transition-colors shrink-0"
+            className="p-2 hover:bg-muted rounded-full transition-colors shrink-0 text-foreground"
           >
             <X className="w-5 h-5" />
           </button>
@@ -47,29 +47,29 @@ export function ApplicationFormModal({
         <div className="flex-1 overflow-y-auto sm:p-8 p-6 custom-scrollbar">
           {formDef.microsoftFormUrl ? (
             <div className="space-y-6">
-              <div className="p-8 bg-iu-blue/5 border border-iu-blue/10 rounded-3xl flex flex-col items-center text-center gap-6">
+              <div className="p-8 bg-slate-50 dark:bg-slate-900/50 border border-border rounded-3xl flex flex-col items-center text-center gap-6">
                 <div className="w-16 h-16 bg-iu-blue/10 rounded-2xl flex items-center justify-center text-iu-blue">
                   <ExternalLink size={32} />
                 </div>
                 <div className="space-y-2">
-                  <p className="text-lg font-bold text-foreground">
+                  <p className="text-lg font-black text-foreground">
                     Microsoft Forms
                   </p>
-                  <p className="text-sm text-muted-foreground max-w-[300px] mx-auto">
+                  <p className="text-sm text-foreground font-bold max-w-[300px] mx-auto">
                     {t.msFormsAvailable}
                   </p>
                 </div>
                 <button
                   onClick={() => handleOpenMicrosoftForm(formDef.microsoftFormUrl!)}
-                  className="w-full py-4 bg-iu-blue text-white font-bold rounded-2xl hover:bg-iu-blue transition-all flex items-center justify-center gap-3 shadow-lg shadow-iu-blue/20"
+                  className="w-full py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
                 >
                   <ExternalLink size={20} />
                   {t.open}
                 </button>
               </div>
               
-              <div className="p-6 bg-muted/30 rounded-2xl border border-border">
-                <p className="text-xs text-muted-foreground leading-relaxed text-center">
+              <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-border">
+                <p className="text-xs text-foreground font-bold leading-relaxed text-center">
                   Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert.
                 </p>
               </div>
@@ -79,7 +79,7 @@ export function ApplicationFormModal({
               <div className="w-12 h-12 bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 mx-auto">
                 <X size={24} />
               </div>
-              <p className="text-muted-foreground font-medium">
+              <p className="text-foreground font-black">
                 Für diesen Antrag ist aktuell keine Online-Einreichung verfügbar.
               </p>
             </div>
@@ -88,7 +88,7 @@ export function ApplicationFormModal({
           <div className="mt-8">
             <button
               onClick={onClose}
-              className="w-full py-4 text-sm font-bold hover:bg-muted rounded-2xl transition-all border border-transparent hover:border-border"
+              className="w-full py-4 text-sm font-black text-foreground hover:bg-muted rounded-2xl transition-all border border-transparent hover:border-border"
             >
               {t.cancel}
             </button>

@@ -15,8 +15,8 @@ export function AntragsHeader({ t, language }: AntragsHeaderProps) {
       backTo="/study-organization"
       backLabel={language === "de" ? "Zurück zu Studienorganisation" : "Back to Study Organization"}
     >
-      <div className="flex items-center gap-2 text-sm font-bold text-muted-foreground bg-card/50 backdrop-blur-xl px-4 py-2 rounded-full border border-border transition-all hover:border-iu-blue/30 shadow-sm">
-        <Calendar size={16} />
+      <div className="flex items-center gap-2 text-sm font-black text-foreground bg-card/60 backdrop-blur-xl px-4 py-2 rounded-full border border-border transition-all hover:border-slate-400 dark:hover:border-slate-500 shadow-sm">
+        <Calendar size={16} className="text-iu-blue" />
         <span>
           {new Date().toLocaleDateString(
             language === "de" ? "de-DE" : "en-US",

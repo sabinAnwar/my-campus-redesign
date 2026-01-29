@@ -24,7 +24,7 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
 
   return (
     <div
-      className="group bg-card/50 backdrop-blur-xl border border-border rounded-2xl p-6 hover:border-iu-blue/50 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col h-full"
+      className="group bg-card/50 backdrop-blur-xl border border-border rounded-2xl p-6 hover:border-slate-400 dark:hover:border-slate-500 transition-all duration-300 shadow-sm hover:shadow-md flex flex-col h-full"
     >
       <div className="flex items-start justify-between mb-6">
         <div className="space-y-1">
@@ -32,31 +32,31 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
             <span
               className={`w-2 h-2 rounded-full ${
                 application.status === "approved"
-                  ? "bg-iu-blue"
+                  ? "bg-iu-green"
                   : application.status === "rejected"
-                    ? "bg-rose-500"
+                    ? "bg-iu-red"
                     : application.status === "pending"
-                      ? "bg-amber-500"
-                      : "bg-blue-500"
+                      ? "bg-iu-orange"
+                      : "bg-iu-blue"
               }`}
             />
-            <span className="text-xs font-medium text-muted-foreground">
+            <span className="text-xs font-black text-foreground">
               {t.categories[application.categoryKey as keyof typeof t.categories]}
             </span>
           </div>
-          <h2 className="text-xl font-bold text-foreground leading-tight group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+          <h2 className="text-xl font-black text-foreground leading-tight group-hover:translate-x-1 transition-transform">
             {t.itemTitles[application.id as keyof typeof t.itemTitles] || application.titleKey}
           </h2>
         </div>
         <div
-          className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider border transition-all duration-300 ${
+          className={`px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider border transition-all duration-300 ${
             application.status === "approved"
-              ? "border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white bg-iu-blue/10 dark:bg-iu-blue"
+              ? "border-iu-green/20 text-iu-green bg-iu-green/10"
               : application.status === "rejected"
-                ? "border-rose-500/20 dark:border-rose-500 text-rose-500 dark:text-white bg-rose-500/10 dark:bg-rose-500 animate-pulse shadow-[0_0_12px_rgba(244,63,94,0.2)]"
+                ? "border-iu-red/20 text-iu-red bg-iu-red/10 animate-pulse"
                 : application.status === "pending"
-                  ? "border-amber-500/20 dark:border-amber-500 text-amber-500 dark:text-white bg-amber-500/10 dark:bg-amber-500"
-                  : "border-blue-500/20 text-blue-500 bg-blue-500/10"
+                  ? "border-iu-orange/20 text-iu-orange bg-iu-orange/10"
+                  : "border-iu-blue/20 text-iu-blue bg-iu-blue/10"
           }`}
         >
           {getStatusText(application.status)}
@@ -72,8 +72,8 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
       )}
 
       <div className="flex items-center justify-between mt-auto pt-6 border-t border-border/50">
-        <div className="flex items-center gap-2 text-xs text-muted-foreground">
-          <Clock size={14} />
+        <div className="flex items-center gap-2 text-xs text-foreground font-black">
+          <Clock size={14} className="text-iu-blue" />
           <span>
             {new Date(application.updatedAt).toLocaleDateString(
               language === "de" ? "de-DE" : "en-US"
@@ -82,7 +82,7 @@ export function ApplicationCard({ t, application, language, onOpen }: Applicatio
         </div>
         <button
           onClick={() => onOpen(application)}
-          className="flex items-center gap-2 text-sm font-bold text-iu-blue dark:text-white hover:text-iu-blue transition-colors"
+          className="flex items-center gap-2 text-sm font-black text-foreground hover:text-slate-600 dark:hover:text-slate-400 transition-colors"
         >
           <span>{t.startApplication}</span>
           <ArrowRight
