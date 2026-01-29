@@ -48,7 +48,7 @@ export function PageHeader({
       return (
         <Link
           to={backTo}
-          className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          className="inline-flex items-center gap-2 text-sm text-foreground hover:bg-muted transition-colors mb-4 group font-black focus:outline-none focus:ring-2 focus:ring-slate-400 focus:rounded-lg px-2 -ml-2"
           aria-label={backLabel}
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
@@ -60,7 +60,7 @@ export function PageHeader({
       return (
         <button
           onClick={onBack}
-          className="inline-flex items-center gap-2 text-sm text-slate-700 dark:text-slate-200 hover:text-iu-blue dark:hover:text-white transition-colors mb-4 group font-bold focus:outline-none focus:ring-2 focus:ring-iu-blue focus:rounded-lg"
+          className="inline-flex items-center gap-2 text-sm text-foreground hover:bg-muted transition-colors mb-4 group font-black focus:outline-none focus:ring-2 focus:ring-slate-400 focus:rounded-lg px-2 -ml-2"
           aria-label={backLabel}
         >
           <ArrowLeft className="w-4 h-4 group-hover:-translate-x-1 transition-transform" aria-hidden="true" />
@@ -85,7 +85,7 @@ export function PageHeader({
             </h1>
           </div>
           {subtitle && (
-            <p className="text-base sm:text-lg text-muted-foreground max-w-2xl leading-relaxed">
+            <p className="text-base sm:text-lg text-foreground font-medium max-w-2xl leading-relaxed">
               {subtitle}
             </p>
           )}
@@ -135,7 +135,7 @@ export function SectionHeader({
             {title}
           </h2>
           {subtitle && (
-            <p className="text-xs sm:text-sm text-muted-foreground font-bold uppercase tracking-widest mt-1">
+            <p className="text-xs sm:text-sm text-foreground font-black uppercase tracking-widest mt-1">
               {subtitle}
             </p>
           )}

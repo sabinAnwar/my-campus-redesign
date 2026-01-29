@@ -51,6 +51,7 @@ export default [
 
     route("settings", "routes/_app.settings.tsx"),
     route("library", "routes/_app.library.tsx"),
+    route("library/databases", "routes/_app.library.databases.tsx"),
     route("vertiefungswahl", "routes/_app.vertiefungswahl.tsx"),
     route("klausuranmeldung", "routes/_app.klausuranmeldung.tsx"),
     route("lernassistent", "routes/_app.lernassistent.tsx"),
