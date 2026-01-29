@@ -70,12 +70,12 @@ export function ScheduleListView({
             <div className="flex flex-col md:flex-row">
               {/* Date Sidebar */}
               <div
-                className={`md:w-48 p-5 sm:p-8 flex flex-col items-center justify-center text-center border-b md:border-b-0 md:border-r border-border/50 ${
+                className={`md:w-48 p-4 sm:p-8 flex flex-row md:flex-col items-center md:items-center justify-between md:justify-center text-center md:text-center gap-3 md:gap-0 border-b md:border-b-0 md:border-r border-border/50 ${
                   isToday ? "bg-iu-blue/5" : "bg-muted/10"
                 }`}
               >
                 <span
-                  className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${
+                  className={`text-[9px] sm:text-[10px] font-bold uppercase tracking-[0.2em] mb-0 md:mb-2 ${
                     isToday
                       ? "text-iu-blue dark:text-white"
                       : "text-muted-foreground dark:text-white"
@@ -84,7 +84,7 @@ export function ScheduleListView({
                   {dayNames[idx]}
                 </span>
                 <span
-                  className={`text-3xl sm:text-4xl font-black mb-1 ${
+                  className={`text-2xl sm:text-4xl font-black mb-0 md:mb-1 ${
                     isToday ? "text-iu-blue dark:text-white" : "text-foreground"
                   }`}
                 >
@@ -95,7 +95,7 @@ export function ScheduleListView({
                 </span>
                 {phaseConfig && (
                   <div
-                    className={`mt-3 sm:mt-4 inline-flex items-center gap-1 px-3 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
+                    className={`mt-0 md:mt-3 sm:mt-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
                   >
                     {status === "feiertag" && (
                       <Flag className="h-3 w-3" />
@@ -106,12 +106,15 @@ export function ScheduleListView({
               </div>
 
               {/* Events List */}
-              <div className="flex-1 p-5 sm:p-6 md:p-8">
+              <div className="flex-1 p-4 sm:p-6 md:p-8">
                 {events.length > 0 ? (
                   <div className="grid gap-4">
                     {events.map((event, eIdx) => {
                       const isLive = isEventLive(event);
                       const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      const isOtherType =
+                        typeof event.type === "string" &&
+                        event.type.toLowerCase() === "other";
                       
                       // Use Legend Colors strictly for the card
                       const colors = {
@@ -124,7 +127,7 @@ export function ScheduleListView({
                         <div
                           key={eIdx}
                           onClick={() => setSelectedEvent(event)}
-                          className={`group relative flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-6 p-4 sm:p-6 rounded-2xl bg-background/50 border transition-all cursor-pointer ${
+                          className={`group relative flex flex-col lg:flex-row lg:items-center gap-3 lg:gap-6 p-3 sm:p-6 rounded-2xl bg-background/50 border transition-all cursor-pointer ${
                             isLive
                               ? "border-iu-blue shadow-lg shadow-iu-blue/10 ring-1 ring-iu-blue/20"
                               : "border-border/50 hover:border-iu-blue/30 hover:shadow-lg hover:shadow-iu-blue/5"
@@ -142,7 +145,7 @@ export function ScheduleListView({
                           )}
 
                           {/* Time */}
-                          <div className="flex items-center gap-3 sm:w-32 shrink-0">
+                          <div className="flex items-center gap-3 lg:w-28 shrink-0">
                             <div
                               className={`p-2.5 rounded-xl ${isLive ? "bg-iu-blue text-white" : "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue/20 dark:text-white"}`}
                             >
@@ -160,8 +163,8 @@ export function ScheduleListView({
 
                           {/* Content */}
                           <div className="flex-1 min-w-0">
-                            <div className="flex items-center gap-2 mb-2">
-                              <h3 className="font-bold text-base sm:text-lg text-foreground truncate group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+                            <div className="flex flex-wrap items-center gap-2 mb-2">
+                              <h3 className="font-bold text-base sm:text-lg text-foreground line-clamp-2 sm:line-clamp-1 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
                                 {event.title}
                               </h3>
                               {event.isOptional && (
@@ -191,7 +194,11 @@ export function ScheduleListView({
                               </div>
                               {event.type && (
                                 <div
-                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${colors.bg} ${colors.text} border-current/10`}
+                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
+                                    isOtherType
+                                      ? "bg-iu-gold text-slate-900 border-iu-gold/50"
+                                      : `${colors.bg} ${colors.text} border-current/10`
+                                  }`}
                                 >
                                   <EventIcon
                                     type={event.type}
@@ -206,9 +213,13 @@ export function ScheduleListView({
                           </div>
 
                           {/* Action */}
-                          <div className="sm:ml-auto">
+                          <div className="lg:ml-auto self-end lg:self-auto">
                             <div
-                              className={`p-2.5 sm:p-3 rounded-xl transition-all ${isLive ? "bg-iu-blue text-foreground dark:text-white" : "bg-muted/50 text-muted-foreground group-hover:bg-iu-blue group-hover:text-foreground dark:text-white"}`}
+                              className={`p-2.5 sm:p-3 rounded-xl border transition-all ${
+                                isLive
+                                  ? "bg-iu-blue text-white border-iu-blue/60"
+                                  : "bg-white text-slate-900 border-slate-300/70 group-hover:bg-iu-blue group-hover:text-white group-hover:border-iu-blue/60"
+                              } dark:bg-slate-900 dark:text-white dark:border-white/10`}
                             >
                               <ChevronRight size={18} />
                             </div>

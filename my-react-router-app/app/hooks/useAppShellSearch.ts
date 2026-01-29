@@ -12,13 +12,17 @@ import {
   Gift, 
   Newspaper, 
   Brain, 
-  BookOpenCheck 
+  BookOpenCheck,
+  Database,
+  Play
 } from "lucide-react";
 
 import { useLanguage } from "~/store/LanguageContext";
 import { getCourseConfig } from "~/data/coursesConfig";
 import { SHELL_TRANSLATIONS } from "~/services/translations/navigation";
 import { TRANSLATIONS as ANTRAG_TRANSLATIONS } from "~/services/translations/antragsverwaltung";
+import { TRANSLATIONS as LIB_TRANSLATIONS } from "~/services/translations/library";
+import { DATABASES, TUTORIALS } from "~/config/library";
 
 /**
  * Represents a searchable item in the global search.
@@ -30,6 +34,7 @@ export interface SearchItem {
   icon: LucideIcon;
   link: string;
   code?: string;
+  description?: string;
 }
 
 export function useAppShellSearch(searchQuery: string) {
@@ -118,8 +123,36 @@ export function useAppShellSearch(searchQuery: string) {
       link: `/antragsverwaltung#${id}`,
     }));
 
+    // Library Resources specific items
+    const libT = LIB_TRANSLATIONS[language as keyof typeof LIB_TRANSLATIONS];
+    
+    const databaseItems: SearchItem[] = DATABASES.map((db: any) => ({
+      id: `lib-db-${db.id}`,
+      title: db.name,
+      category: libT[db.type as keyof typeof libT] || s.categories.library,
+      icon: db.type === "journals" ? Newspaper : (db.type === "ebooks" ? BookOpen : Database),
+      link: db.url && db.url !== "#" ? db.url : "/library",
+      description: language === "de" ? db.description : db.descriptionEn,
+    }));
+
+    const tutorialItems: SearchItem[] = TUTORIALS.map((tut) => ({
+      id: `lib-tut-${tut.id}`,
+      title: language === "de" ? tut.titleDe : tut.titleEn,
+      category: libT.tutorials,
+      icon: Play,
+      link: "/library", // Or separate link if available
+    }));
+
     // Combine all sources, prioritizing database items
-    const combined = [...dbSearchItems, ...configCourseItems, ...navItems, ...menuItems, ...antragItems];
+    const combined = [
+      ...dbSearchItems, 
+      ...configCourseItems, 
+      ...navItems, 
+      ...menuItems, 
+      ...antragItems, 
+      ...databaseItems,
+      ...tutorialItems
+    ];
     
     // Deduplicate by link
     const seenLinks = new Set<string>();
@@ -162,11 +195,13 @@ export function useAppShellSearch(searchQuery: string) {
       const normalizedTitle = normalize(item.title);
       const normalizedCategory = normalize(item.category);
       const normalizedCode = normalize(item.code);
+      const normalizedDesc = normalize(item.description);
       
       return queryTerms.every((term: string) => 
         normalizedTitle.includes(term) || 
         normalizedCategory.includes(term) ||
-        normalizedCode.includes(term)
+        normalizedCode.includes(term) ||
+        normalizedDesc.includes(term)
       );
     });
 

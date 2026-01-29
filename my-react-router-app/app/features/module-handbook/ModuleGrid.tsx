@@ -15,7 +15,7 @@ export function ModuleGrid({ t, language, filteredModules }: ModuleGridProps) {
       {filteredModules.map((module) => (
         <article
           key={module.code}
-          className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-sm hover:border-iu-blue transition-all group"
+          className="relative overflow-hidden rounded-2xl border border-slate-300 dark:border-slate-700 bg-card p-6 shadow-sm hover:border-slate-400 dark:hover:border-slate-500 transition-all group"
         >
           <div
             className={`absolute right-0 top-0 text-[10px] font-black uppercase tracking-widest px-4 py-1.5 border-l border-b rounded-bl-xl ${
@@ -49,7 +49,7 @@ export function ModuleGrid({ t, language, filteredModules }: ModuleGridProps) {
             </span>
           </div>
 
-          <h3 className="text-xl font-black text-foreground mb-3 group-hover:text-iu-blue dark:group-hover:text-white transition-colors">
+          <h3 className="text-xl font-black text-foreground mb-3 group-hover:translate-x-1 transition-transform">
             {module.title}
           </h3>
 

@@ -101,14 +101,14 @@ export function SubmissionCard({
   onManage,
 }: SubmissionCardProps) {
   return (
-    <div className="group bg-card/60 border border-border sm:rounded-[2.5rem] rounded-2xl p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 hover:border-iu-orange/30 hover:bg-card transition-all shadow-xl">
+    <div className="group bg-card border border-slate-300 dark:border-slate-700 sm:rounded-[2.5rem] rounded-2xl p-5 sm:p-8 flex flex-col lg:flex-row lg:items-center justify-between gap-6 sm:gap-8 hover:border-slate-400 dark:hover:border-slate-500 transition-all shadow-xl">
       <div className="flex items-start gap-4 sm:gap-6 min-w-0">
         <div className="mt-1 p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-orange/10 dark:bg-iu-orange border border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white shadow-lg shrink-0">
           <Clock className="h-5 w-5 sm:h-7 sm:w-7" />
         </div>
         <div className="min-w-0 flex-1">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 sm:mb-3 flex-wrap sm:flex-nowrap">
-            <h3 className="text-base sm:text-lg font-bold text-foreground group-hover:text-iu-orange dark:group-hover:text-white transition-colors break-words [hyphens:auto] min-w-0">
+            <h3 className="text-base sm:text-lg font-black text-foreground group-hover:translate-x-1 transition-transform break-words [hyphens:auto] min-w-0">
               {translateValue(submission.title, "titles", t)}
             </h3>
             <div className="flex items-center gap-1.5 shrink-0">
@@ -169,7 +169,7 @@ export function SubmissionCard({
 
 export function ExamCard({ exam, translations: t }: ExamCardProps) {
   return (
-    <div className="group bg-card/60 border border-border sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 hover:border-iu-blue/30 hover:bg-card transition-all shadow-xl flex flex-col justify-between gap-6">
+    <div className="group bg-card border border-slate-300 dark:border-slate-700 sm:rounded-[2.5rem] rounded-2xl p-6 sm:p-8 hover:border-slate-400 dark:hover:border-slate-500 transition-all shadow-xl flex flex-col justify-between gap-6">
       <div>
         <div className="flex items-center justify-between mb-4 sm:mb-6">
           <div className="p-2.5 sm:p-3.5 rounded-xl sm:rounded-2xl bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue shadow-lg shrink-0">
@@ -179,7 +179,7 @@ export function ExamCard({ exam, translations: t }: ExamCardProps) {
             {exam.type}
           </span>
         </div>
-        <h3 className="text-base sm:text-lg font-bold text-foreground mb-4 sm:mb-6 group-hover:text-iu-blue dark:group-hover:text-white transition-colors break-words [hyphens:auto]">
+        <h3 className="text-base sm:text-lg font-black text-foreground mb-4 sm:mb-6 group-hover:translate-x-1 transition-transform break-words [hyphens:auto]">
           {exam.title}
         </h3>
         <div className="space-y-3 sm:space-y-4">
@@ -396,8 +396,8 @@ export function SectionHeader({
   
   return (
     <div className="flex items-center gap-3 mb-2">
-      <div className={`h-8 w-1 ${colorClass} rounded-full`} />
-      <h2 className="text-xl font-black text-foreground">{title}</h2>
+      <div className={`h-8 w-1 bg-slate-900 dark:bg-slate-100 rounded-full`} />
+      <h2 className="text-xl font-black text-foreground uppercase tracking-widest">{title}</h2>
     </div>
   );
 }

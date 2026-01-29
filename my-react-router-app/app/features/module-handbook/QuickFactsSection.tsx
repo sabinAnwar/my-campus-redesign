@@ -19,7 +19,7 @@ export function QuickFactsSection({
 }: QuickFactsSectionProps) {
   return (
     <section className="grid gap-6 md:grid-cols-3">
-      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm">
+      <div className="rounded-2xl bg-card border border-slate-300 dark:border-slate-700 p-6 shadow-sm">
         <p className="text-[10px] font-black text-iu-blue dark:text-white uppercase tracking-widest mb-2">
           {t.programLabel}
         </p>
@@ -30,7 +30,7 @@ export function QuickFactsSection({
           {t.programDesc}
         </p>
       </div>
-      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm">
+      <div className="rounded-2xl bg-card border border-slate-300 dark:border-slate-700 p-6 shadow-sm">
         <p className="text-[10px] font-black text-iu-pink dark:text-white uppercase tracking-widest mb-2">
           {t.profileLabel}
         </p>
@@ -41,7 +41,7 @@ export function QuickFactsSection({
           {t.focusAdvisor(userProfile.focus, userProfile.advisor, userProfile.currentSemester)}
         </p>
       </div>
-      <div className="rounded-2xl bg-card border border-border p-6 shadow-sm">
+      <div className="rounded-2xl bg-card border border-slate-300 dark:border-slate-700 p-6 shadow-sm">
         <p className="text-[10px] font-black text-iu-orange dark:text-white uppercase tracking-widest mb-2">
           {t.trackLabel}
         </p>

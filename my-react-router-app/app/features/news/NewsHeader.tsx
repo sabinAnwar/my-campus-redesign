@@ -29,7 +29,7 @@ export function NewsHeader({
     >
       <form
         method="get"
-        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto bg-card backdrop-blur-xl p-2 rounded-[2rem] border border-border shadow-xl"
+        className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto bg-card p-2 rounded-[2rem] border border-slate-300 dark:border-slate-700 shadow-xl"
       >
         <div className="relative flex-1 md:w-64">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
@@ -47,7 +47,7 @@ export function NewsHeader({
           />
         </div>
 
-        <button className="px-5 sm:px-6 py-3 bg-iu-blue text-white rounded-2xl text-xs sm:text-sm font-black hover:bg-iu-blue/90 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-iu-blue/20 uppercase tracking-widest w-full sm:w-auto">
+        <button className="px-5 sm:px-6 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl text-xs sm:text-sm font-black transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg uppercase tracking-widest w-full sm:w-auto">
           {searchButtonLabel}
         </button>
 

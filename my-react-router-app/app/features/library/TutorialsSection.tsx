@@ -56,10 +56,10 @@ export function TutorialsSection({
               )}
             </div>
             <div className="flex-1">
-              <h3 className="text-lg font-black text-foreground group-hover:text-iu-blue transition-colors">
+              <h3 className="text-lg font-black text-foreground group-hover:translate-x-1 transition-transform">
                 {language === "de" ? tutorial.titleDe : tutorial.titleEn}
               </h3>
-              <p className="text-sm text-muted-foreground font-bold uppercase tracking-widest mt-1">
+              <p className="text-sm text-foreground font-black uppercase tracking-widest mt-1">
                 {tutorial.type === "video" ? "Video" : "Guide"} · {tutorial.duration}
               </p>
             </div>

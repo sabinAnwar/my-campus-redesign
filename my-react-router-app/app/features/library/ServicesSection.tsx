@@ -41,10 +41,10 @@ export function ServicesSection({ services, language, title }: ServicesSectionPr
             >
               <DynamicIcon name={service.icon} className={`h-6 w-6 sm:h-7 sm:w-7 text-${service.color}`} />
             </div>
-            <h3 className="font-black text-foreground text-base mb-2 group-hover:text-iu-blue transition-colors">
+            <h3 className="font-black text-foreground text-base mb-2 group-hover:translate-x-1 transition-transform">
               {language === "de" ? service.titleDe : service.titleEn}
             </h3>
-            <p className="text-xs text-muted-foreground font-bold leading-relaxed">
+            <p className="text-xs text-foreground font-bold leading-relaxed">
               {language === "de" ? service.descDe : service.descEn}
             </p>
           </div>
