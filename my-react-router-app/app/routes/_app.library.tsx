@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { Database, BookOpen, Newspaper, Play } from "lucide-react";
+import { Link } from "react-router";
+import { Database, BookOpen, Newspaper, Play, ArrowRight } from "lucide-react";
 import { useLanguage } from "~/store/LanguageContext";
 import {
   TRANSLATIONS,
@@ -35,10 +36,10 @@ export default function LibraryPage() {
   };
 
   const quickAccessItems = [
-    { icon: Database, label: t.databases, color: "iu-blue", count: DATABASES.length },
-    { icon: BookOpen, label: t.ebooks, color: "success", count: "50k+" },
-    { icon: Newspaper, label: t.journals, color: "iu-purple", count: "10k+" },
-    { icon: Play, label: t.tutorials, color: "warning", count: TUTORIALS.length },
+    { id: "databases", icon: Database, label: t.databases, color: "iu-blue", count: "95", link: "/library/databases" },
+    { id: "ebooks", icon: BookOpen, label: t.ebooks, color: "success", count: "50k+" },
+    { id: "journals", icon: Newspaper, label: t.journals, color: "iu-purple", count: "10k+" },
+    { id: "tutorials", icon: Play, label: t.tutorials, color: "warning", count: TUTORIALS.length },
   ];
 
   const openingHours = [
@@ -60,11 +61,18 @@ export default function LibraryPage() {
         setSearchQuery={setSearchQuery}
         onSearch={handleSearch}
         placeholder={t.searchPlaceholder}
-        searchLabel={language === "de" ? "Suchen" : "Search"}
+        searchLabel={t.search}
       />
 
       <QuickAccessCards
-        items={quickAccessItems}
+        items={quickAccessItems as any}
+        activeId={null}
+        onSelect={(id) => {
+          const item = quickAccessItems.find(i => i.id === id);
+          if (item?.link) {
+             window.location.href = item.link;
+          }
+        }}
         availableLabel={language === "de" ? "verfügbar" : "available"}
       />
 
@@ -72,12 +80,23 @@ export default function LibraryPage() {
         {/* Main Content */}
         <div className="lg:col-span-2 space-y-6 sm:space-y-8">
           <DatabasesSection
-            databases={DATABASES}
+            databases={DATABASES as any}
+            activeFilter={null}
             language={language}
             title={t.popularDatabases}
-            subtitle={language === "de" ? "Deine wichtigsten Recherche-Tools" : "Your essential research tools"}
+            subtitle={t.researchToolsSubtitle}
             viewAllLabel={t.viewAll}
           />
+          
+          <div className="flex justify-end pr-4">
+              <Link 
+                to="/library/databases" 
+                className="flex items-center gap-2 text-sm font-black text-foreground hover:gap-3 transition-all"
+              >
+                {t.viewAllDatabases}
+                <ArrowRight className="h-4 w-4" />
+              </Link>
+          </div>
 
           <ServicesSection
             services={SERVICES}
@@ -89,7 +108,7 @@ export default function LibraryPage() {
             tutorials={TUTORIALS as any}
             language={language}
             title={t.helpGuides}
-            subtitle={language === "de" ? "Lerne, unsere Ressourcen optimal zu nutzen" : "Learn to make the most of our resources"}
+            subtitle={t.learnResourcesSubtitle}
           />
         </div>
 

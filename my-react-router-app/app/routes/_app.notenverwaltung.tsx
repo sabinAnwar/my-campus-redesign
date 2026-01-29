@@ -528,8 +528,8 @@ export default function GradesDashboardIU() {
               key={section.name}
               className={`group rounded-xl sm:rounded-2xl border transition-all duration-500 overflow-hidden ${
                 isOpen
-                  ? "border-iu-blue/30 bg-card/80 shadow-lg shadow-iu-blue/10"
-                  : "border-border bg-card/40 hover:border-iu-blue/30 hover:bg-card/60"
+                  ? "border-slate-500 bg-card shadow-lg shadow-slate-400/5"
+                  : "border-border bg-card/40 hover:border-slate-400 dark:hover:border-slate-500 hover:bg-card/60"
               }`}
             >
               <button
@@ -617,8 +617,8 @@ export default function GradesDashboardIU() {
                               key={j}
                               className="group/row bg-background/40 hover:bg-iu-blue/5 transition-all duration-300 rounded-lg"
                             >
-                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 rounded-l-lg border-y border-l border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="font-medium text-foreground text-xs sm:text-sm leading-tight group-hover/row:text-iu-blue dark:group-hover/row:text-white transition-colors">
+                              <td className="px-2 sm:px-4 py-2.5 sm:py-3 rounded-l-lg border-y border-l border-border/50 group-hover/row:border-slate-400">
+                                <div className="font-bold text-foreground text-xs sm:text-sm leading-tight group-hover/row:translate-x-1 transition-transform">
                                   {m.name}
                                 </div>
                               </td>
@@ -626,7 +626,7 @@ export default function GradesDashboardIU() {
                                 <span
                                   className={`inline-flex items-center gap-1 rounded px-2 py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wide shadow-sm ${
                                     m.status === "P"
-                                      ? "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue"
+                                      ? "bg-iu-green/10 dark:bg-iu-green text-iu-green dark:text-white border border-iu-green/20 dark:border-iu-green"
                                       : m.status === "F"
                                         ? "bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white border border-iu-red/20 dark:border-iu-red"
                                         : m.status === "M"

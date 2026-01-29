@@ -919,13 +919,13 @@ function DashboardDeferredContent({
                 {t.dragHint ?? "Drag to reorder"}
               </p>
               {isFirstSemester ? (
-                <button
-                  type="button"
-                  onClick={() => setShowTour(true)}
-                  className="mt-4 inline-flex items-center justify-center rounded-full border border-iu-blue/40 bg-iu-blue/5 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-iu-blue hover:bg-iu-blue/10 transition-colors"
-                >
-                  {language === "de" ? "Tour starten" : "Start tour"}
-                </button>
+                  <button
+                    type="button"
+                    onClick={() => setShowTour(true)}
+                    className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-foreground hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                  >
+                    {language === "de" ? "Tour starten" : "Start tour"}
+                  </button>
               ) : null}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -939,7 +939,7 @@ function DashboardDeferredContent({
                     <label
                       key={id}
                       htmlFor={id}
-                      className="flex items-center gap-3 text-xs sm:text-sm font-semibold text-foreground cursor-pointer group"
+                      className="flex items-center gap-3 p-2.5 rounded-xl border border-transparent hover:border-slate-300 dark:hover:border-slate-700 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all text-xs sm:text-sm font-semibold text-foreground cursor-pointer group"
                     >
                       <input
                         id={id}
@@ -951,9 +951,9 @@ function DashboardDeferredContent({
                             [key]: !prev[key],
                           }))
                         }
-                        className="h-4 w-4 rounded-md border-2 border-slate-900/80 bg-white text-slate-900 accent-slate-900 focus:ring-2 focus:ring-slate-900/40 focus:ring-offset-2 focus:ring-offset-white transition-colors dark:border-slate-100/80 dark:bg-slate-950 dark:text-slate-100 dark:accent-white dark:focus:ring-white/40 dark:focus:ring-offset-slate-950"
+                        className="h-4 w-4 rounded-md border-2 border-slate-900 bg-white text-slate-900 accent-slate-900 focus:ring-2 focus:ring-slate-900/40 focus:ring-offset-2 focus:ring-offset-white transition-colors dark:border-slate-100 dark:bg-slate-950 dark:text-slate-100 dark:accent-white dark:focus:ring-white/40 dark:focus:ring-offset-slate-950"
                       />
-                      <span className="group-hover:text-iu-blue transition-colors">
+                      <span className="group-hover:translate-x-1 transition-transform">
                         {t.showWidget ?? "Show"} {widgetLabelMap[key]}
                       </span>
                     </label>
@@ -982,9 +982,9 @@ function DashboardDeferredContent({
                       }}
                       className={`px-3 py-1 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest border transition-all !cursor-grab active:!cursor-grabbing inline-flex items-center gap-2 ${
                         draggedWidget === key
-                          ? "bg-iu-blue text-white border-iu-blue"
+                          ? "bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100"
                           : dragOverWidget === key
-                            ? "bg-slate-900 text-white border-slate-900 dark:bg-slate-100 dark:text-slate-900 dark:border-slate-100"
+                            ? "bg-slate-200 text-slate-900 border-slate-400 dark:bg-slate-800 dark:text-white dark:border-slate-600"
                             : "bg-slate-100 text-slate-900 border-slate-300 dark:bg-slate-900 dark:text-slate-50 dark:border-slate-700"
                       }`}
                       aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}

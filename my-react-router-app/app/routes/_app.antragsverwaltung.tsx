@@ -131,7 +131,7 @@ export default function AntragsVerwaltung() {
         {/* Section 2: All Default Applications */}
         <div className="mb-12">
           <div className="flex items-center gap-3 mb-6">
-            <h2 className="text-sm font-bold uppercase tracking-widest text-muted-foreground">Alle Anträge</h2>
+            <h2 className="text-sm font-black uppercase tracking-widest text-foreground">Alle Anträge</h2>
             <div className="h-px flex-1 bg-border/50" />
           </div>
           <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5 sm:gap-6">
@@ -150,7 +150,7 @@ export default function AntragsVerwaltung() {
         {/* Empty State */}
         {filteredItems.length === 0 && (
           <div className="text-center py-10 sm:py-16 bg-card/50 backdrop-blur-xl border border-border border-dashed rounded-[2rem] sm:rounded-[3rem]">
-            <p className="text-sm sm:text-base text-muted-foreground font-medium">{t.noResults}</p>
+            <p className="text-sm sm:text-base text-foreground font-bold">{t.noResults}</p>
           </div>
         )}
       </main>

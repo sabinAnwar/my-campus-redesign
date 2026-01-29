@@ -220,7 +220,7 @@ html, body {
   --apple-bg: 240 8% 96%;
   --apple-white: 0 0% 100%;
 
-  /* Semantic Mapping - Updated to Apple Neutrals */
+  /* Semantic Mapping */
   --background: var(--apple-bg); /* #F3F3F5 */
   --foreground: var(--apple-dark-grey); /* #1D1D1F */
 
@@ -349,6 +349,12 @@ html, body {
 
 .dark .text-iu-purple {
   color: hsl(var(--iu-purple-text));
+}
+
+/* Disable native password reveal/clear icons (Edge/IE) */
+input::-ms-reveal,
+input::-ms-clear {
+  display: none;
 }
 
 .dark .text-iu-red {
@@ -579,6 +585,11 @@ p, span, div {
   padding-top: 2rem;
   border-top-width: 1px;
   border-color: rgb(34 211 238 / 0.3); /* cyan-400/30 */
+}
+
+.login-campus-card {
+  grid-column: 2 / 3;
+  justify-self: end;
 }
 
 /* Login Support Links Grid */
