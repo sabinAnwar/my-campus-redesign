@@ -1,8 +1,10 @@
 import { useEffect, useRef, useState } from "react";
 
 export function usePomodoro() {
-  const focusDuration = 10;
-  const breakDuration = 10;
+  const focusDurationMinutes = 25;
+  const breakDurationMinutes = 5;
+  const focusDuration = focusDurationMinutes * 60;
+  const breakDuration = breakDurationMinutes * 60;
   const [pomodoroTime, setPomodoroTime] = useState(focusDuration);
   const [isRunning, setIsRunning] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
@@ -24,7 +26,14 @@ export function usePomodoro() {
     setIsRunning(storedRunning);
 
     const baseTime = storedBreak ? breakDuration : focusDuration;
-    let nextTime = Number.isNaN(storedTime) ? baseTime : storedTime;
+    const normalizeStoredTime = (value: number) => {
+      if (Number.isNaN(value)) return baseTime;
+      if (value > 0 && value <= 60) {
+        return value * 60;
+      }
+      return value;
+    };
+    let nextTime = normalizeStoredTime(storedTime);
     if (storedRunning && !Number.isNaN(storedLastTick)) {
       const elapsed = Math.floor((Date.now() - storedLastTick) / 1000);
       let remaining = nextTime - elapsed;
