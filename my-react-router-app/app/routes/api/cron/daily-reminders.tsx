@@ -125,7 +125,7 @@ export const loader = async ({ request }: { request: Request }) => {
         },
       });
       // Map to camelCase for consistency in the loop
-      users = dbUsers.map(u => ({
+      users = dbUsers.map((u: { id: any; email: any; name: any; reminder_hour: any; reminder_minute: any; reminder_timezone: any; }) => ({
           id: u.id,
           email: u.email,
           name: u.name,
