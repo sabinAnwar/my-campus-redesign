@@ -167,13 +167,8 @@ This project is part of a Bachelor's thesis and is provided for educational purp
 
 ## 👥 Authors
 
-- **Sabin Anwar** - Initial work and thesis implementation
+- **Sabin El Anwar** - Initial work and thesis implementation
 
-## 🙏 Acknowledgments
-
-- IU International University of Applied Sciences
-- React Router team for the excellent v7 framework
-- All open-source contributors whose libraries made this possible
 
 ## 📞 Contact & Support
 
