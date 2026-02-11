@@ -42,6 +42,9 @@ Visit `http://localhost:5173` to see the application.
 
 ## 📚 Documentation
 
+### 🚀 Start Here
+- **[📚 Wiki Overview](./WIKI_OVERVIEW.md)** - Your guide to navigating all documentation
+
 ### Core Documentation
 - **[📖 Documentation Index](./DOCS_INDEX.md)** - Complete documentation directory
 - **[⚡ Quick Reference](./QUICK_REFERENCE.md)** - Common tasks and code snippets
