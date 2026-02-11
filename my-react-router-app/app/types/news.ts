@@ -1,6 +1,7 @@
 import React from "react";
 
 export interface NewsItem {
+  id?: number;
   slug: string;
   title: string;
   excerpt?: string;
@@ -9,6 +10,8 @@ export interface NewsItem {
   author?: string;
   featured?: boolean;
   publishedAt: string;
+  coverImageUrl?: string;
+  tags?: string;
 }
 
 export interface NewsResponse {
@@ -31,4 +34,3 @@ export interface NewsModalProps {
   onNext: () => void;
   closeBtnRef: React.RefObject<HTMLButtonElement | null>;
 }
-

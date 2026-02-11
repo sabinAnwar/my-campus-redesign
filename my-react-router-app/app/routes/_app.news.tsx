@@ -18,6 +18,7 @@ import {
 ------------------------------------*/
 
 import type { NewsItem, NewsResponse } from "~/types/news";
+import { normalizeNewsItem, normalizeNewsResponse } from "~/utils/news";
 export type { NewsItem, NewsResponse };
 
 /* -----------------------------------
@@ -49,7 +50,8 @@ export async function loader({
 ------------------------------------*/
 
 export default function NewsList() {
-  const { items, total, page, pageSize } = useLoaderData() as NewsResponse;
+  const data = normalizeNewsResponse(useLoaderData() as NewsResponse);
+  const { items, total, page, pageSize } = data;
   const { language } = useLanguage();
   const locale = language === "de" ? "de-DE" : "en-US";
   const t = TRANSLATIONS[language];
@@ -84,6 +86,11 @@ export default function NewsList() {
   }
 
   async function openModal(slug: string, index?: number) {
+    if (!slug) {
+      setError("Article link is missing.");
+      setIsOpen(true);
+      return;
+    }
     try {
       setLoading(true);
       setError("");
@@ -105,7 +112,7 @@ export default function NewsList() {
       }
 
       const data = await res.json();
-      setArticle(data.item ?? null);
+      setArticle(data.item ? normalizeNewsItem(data.item) : null);
     } catch {
       setError("Network error while loading the article.");
     } finally {

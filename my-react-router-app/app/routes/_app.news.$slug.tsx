@@ -6,12 +6,17 @@ import {
   NewsDetailHero,
   NewsDetailContent,
 } from "~/features/news";
+import { normalizeNewsItem } from "~/utils/news";
 
 export async function loader({ params, request }) {
   const url = new URL(request.url);
+  const langParam = url.searchParams.get("lang");
+  const acceptLanguage = request.headers.get("accept-language") || "";
+  const inferredLang = acceptLanguage.toLowerCase().startsWith("en") ? "en" : "de";
+  const lang = langParam || inferredLang;
   try {
     const res = await fetch(
-      `${url.origin}/api/news/${encodeURIComponent(params.slug || "")}`
+      `${url.origin}/api/news/${encodeURIComponent(params.slug || "")}?lang=${lang}`
     );
     if (!res.ok) {
       return {
@@ -20,6 +25,9 @@ export async function loader({ params, request }) {
       };
     }
     const data = await res.json();
+    if (data?.item) {
+      return { ...data, item: normalizeNewsItem(data.item) };
+    }
     return data;
   } catch (err) {
     return { error: "Network error while loading the article." };
