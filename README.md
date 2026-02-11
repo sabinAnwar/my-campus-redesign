@@ -42,12 +42,23 @@ Visit `http://localhost:5173` to see the application.
 
 ## 📚 Documentation
 
-- **[Code Wiki](./CODE_WIKI.md)** - Comprehensive technical documentation
+### Core Documentation
+- **[📖 Documentation Index](./DOCS_INDEX.md)** - Complete documentation directory
+- **[⚡ Quick Reference](./QUICK_REFERENCE.md)** - Common tasks and code snippets
+- **[📘 Code Wiki](./CODE_WIKI.md)** - Comprehensive technical documentation
+- **[🏗️ Architecture](./my-react-router-app/docs/ARCHITECTURE.md)** - System design and patterns
+- **[🔌 API Documentation](./my-react-router-app/docs/API.md)** - Backend endpoints and services
+- **[🎨 Component Library](./my-react-router-app/docs/COMPONENTS.md)** - UI components guide
+- **[🤝 Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
+
+### Getting Started
 - **[Installation Guide](./my-react-router-app/docs/INSTALLATION.md)** - Detailed setup instructions
-- **[Architecture Overview](./my-react-router-app/docs/ARCHITECTURE.md)** - System design and patterns
-- **[API Documentation](./my-react-router-app/docs/API.md)** - Backend endpoints and services
-- **[Component Library](./my-react-router-app/docs/COMPONENTS.md)** - UI components guide
-- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
+- **[Implementation Guide](./my-react-router-app/Implementierung_Thesis_Begleitdokument.md)** - Thesis documentation (German)
+
+### Reference
+- **[Requirements & Code Snippets](./my-react-router-app/docs/ANFORDERUNGEN_CODE_SNIPPETS.md)** - Feature requirements
+- **[Clean Code Analysis](./my-react-router-app/docs/CLEAN_CODE_ANALYSE.md)** - Code quality guidelines
+- **[WCAG AAA Tokens](./my-react-router-app/docs/WCAG_AAA_TOKENS.md)** - Accessibility standards
 
 ## 🏗️ Tech Stack
 
