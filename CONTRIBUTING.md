@@ -19,7 +19,7 @@ Thank you for your interest in contributing to the My Campus Redesign project! T
 
 ### Our Pledge
 
-We are committed to providing a welcoming and inspiring community for all. Please be respectful and constructive in your interactions.
+I am committed to providing a welcoming and inspiring community for all. Please be respectful and constructive in your interactions.
 
 ### Expected Behavior
 
@@ -224,7 +224,7 @@ features/
 
 ### Code Formatting
 
-We use Prettier and ESLint:
+I use Prettier and ESLint:
 
 ```bash
 # Format code
@@ -263,7 +263,7 @@ npm run lint:fix
 
 ## Commit Guidelines
 
-We follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
+I follow the [Conventional Commits](https://www.conventionalcommits.org/) specification.
 
 ### Commit Message Format
 
@@ -602,6 +602,6 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ## Thank You!
 
-Your contributions make this project better for everyone. We appreciate your time and effort! 🎉
+Your contributions make this project better for everyone. I appreciate your time and effort! 🎉
 
 For questions about contributing, feel free to open an issue or reach out to the maintainers.
