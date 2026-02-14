@@ -17,8 +17,10 @@ import {
 import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/utils/studyPlans";
 import { calculateDaysLeft } from "~/utils/tasksSample";
 import { Prisma } from "@prisma/client";
+import type { PracticalPartner, PracticalHoursTarget } from "@prisma/client";
 import { prisma } from "~/services/prisma";
 import { Await, useAsyncValue, useLoaderData } from "react-router";
+import { useSearchParams } from "react-router-dom";
 import { ACTIVE_COURSES_COUNT } from "~/utils/coursesMeta";
 import type {
   DashboardTask,
@@ -53,6 +55,13 @@ import { GradesWidget } from "~/features/dashboard/GradesWidget";
 import { NewsModal } from "~/features/news/NewsModal";
 
 export const loader = async ({ request }: { request: Request }) => {
+  const url = new URL(request.url);
+  const langParam = url.searchParams.get("lang");
+  const acceptLanguage = request.headers.get("accept-language") || "";
+  const inferredLang = acceptLanguage.toLowerCase().startsWith("en")
+    ? "en"
+    : "de";
+  const lang = langParam || inferredLang;
   let isFirstSemester = false;
   let userName = "Student";
   let userCampusArea: string | null = null;
@@ -172,7 +181,10 @@ export const loader = async ({ request }: { request: Request }) => {
             console.warn("Dashboard loader: missing table, using fallback.");
             return fallback;
           }
-          console.error("Dashboard loader: query failed, using fallback.", error);
+          console.error(
+            "Dashboard loader: query failed, using fallback.",
+            error,
+          );
           return fallback;
         }
       };
@@ -194,8 +206,8 @@ export const loader = async ({ request }: { request: Request }) => {
         let [
           tasksResult,
           totalCount,
-          partner,
-          target,
+          partnerResult,
+          targetResult,
           totalHoursResult,
           weekHoursResult,
           eventsResult,
@@ -207,44 +219,49 @@ export const loader = async ({ request }: { request: Request }) => {
               orderBy: { due_date: "asc" },
               take: MAX_TASKS_TO_DISPLAY,
             }),
-            []
+            [],
           ),
-          safeQuery(prisma.studentTask.count({ where: { user_id: userId } }), 0),
+          safeQuery(
+            prisma.studentTask.count({ where: { user_id: userId } }),
+            0,
+          ),
           safeQuery(
             prisma.practicalPartner.findUnique({ where: { user_id: userId } }),
-            null
+            null,
           ),
           safeQuery(
-            prisma.practicalHoursTarget.findUnique({ where: { user_id: userId } }),
-            null
+            prisma.practicalHoursTarget.findUnique({
+              where: { user_id: userId },
+            }),
+            null,
           ),
           safeQuery(
             prisma.practicalHoursLog.aggregate({
               where: { user_id: userId },
               _sum: { hours: true },
             }),
-            { _sum: { hours: 0 } }
+            { _sum: { hours: 0 } },
           ),
           safeQuery(
             prisma.practicalHoursLog.aggregate({
               where: { user_id: userId, date: { gte: startOfWeek } },
               _sum: { hours: true },
             }),
-            { _sum: { hours: 0 } }
+            { _sum: { hours: 0 } },
           ),
           safeQuery(
             prisma.scheduleEvent.findMany({
               where: { user_id: userId, date: { gte: today, lt: endDate } },
               orderBy: [{ date: "asc" }, { start_time: "asc" }],
             }),
-            []
+            [],
           ),
           safeQuery(
             prisma.mark.findMany({
               where: { user_id: userId },
               select: { value: true, course: true },
             }),
-            []
+            [],
           ),
         ]);
 
@@ -258,6 +275,10 @@ export const loader = async ({ request }: { request: Request }) => {
           due_date: t.due_date.toISOString(),
         }));
         tasksTotal = totalCount;
+
+        // Type assertions for nullable results
+        const partner = partnerResult as PracticalPartner | null;
+        const target = targetResult as PracticalHoursTarget | null;
 
         // Process praxis partner
         if (partner) {
@@ -276,7 +297,8 @@ export const loader = async ({ request }: { request: Request }) => {
           required: target?.required_hours ?? DEFAULT_REQUIRED_PRAXIS_HOURS,
           logged: Math.round(totalHoursResult._sum.hours ?? 0),
           thisWeek: Math.round(weekHoursResult._sum.hours ?? 0),
-          target_per_week: target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
+          target_per_week:
+            target?.target_per_week ?? DEFAULT_TARGET_HOURS_PER_WEEK,
         };
 
         // If no events in the short window, fetch the next upcoming events from DB.
@@ -287,7 +309,7 @@ export const loader = async ({ request }: { request: Request }) => {
               orderBy: [{ date: "asc" }, { start_time: "asc" }],
               take: 10,
             }),
-            []
+            [],
           );
         }
 
@@ -322,15 +344,36 @@ export const loader = async ({ request }: { request: Request }) => {
             id: true,
             slug: true,
             title: true,
+            title_de: true,
+            title_en: true,
             excerpt: true,
+            excerpt_de: true,
+            excerpt_en: true,
             content: true,
+            content_de: true,
+            content_en: true,
             category: true,
+            category_de: true,
+            category_en: true,
             published_at: true,
             featured: true,
           },
         });
         newsItems = newsResult.map((n: any) => ({
           ...n,
+          title: lang === "en" ? n.title_en || n.title : n.title_de || n.title,
+          excerpt:
+            lang === "en"
+              ? n.excerpt_en || n.excerpt
+              : n.excerpt_de || n.excerpt,
+          content:
+            lang === "en"
+              ? n.content_en || n.content
+              : n.content_de || n.content,
+          category:
+            lang === "en"
+              ? n.category_en || n.category
+              : n.category_de || n.category,
           published_at: n.published_at
             ? new Date(n.published_at).toISOString()
             : new Date().toISOString(),
@@ -376,6 +419,14 @@ export default function Dashboard() {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
   const locale = language === "de" ? "de-DE" : "en-US";
+  const [params, setParams] = useSearchParams();
+
+  useEffect(() => {
+    if (params.get("lang") === language) return;
+    const next = new URLSearchParams(params);
+    next.set("lang", language);
+    setParams(next, { replace: true });
+  }, [language, params, setParams]);
 
   // Get greeting based on time of day
   const getGreeting = () => {
@@ -446,7 +497,7 @@ function DashboardDeferredContent({
   const [recentCourses, setRecentCourses] = useState<RecentCourse[]>([]);
   const [currentNewsIndex, setCurrentNewsIndex] = useState(0);
   const [showTour, setShowTour] = useState(false);
-  
+
   // News modal state
   const [showNewsModal, setShowNewsModal] = useState(false);
   const [selectedNewsIndex, setSelectedNewsIndex] = useState(0);
@@ -466,9 +517,8 @@ function DashboardDeferredContent({
     tasks: true,
     appointments: true,
   };
-  const [widgetOrder, setWidgetOrder] = useState<WidgetKey[]>(
-    DEFAULT_WIDGET_ORDER
-  );
+  const [widgetOrder, setWidgetOrder] =
+    useState<WidgetKey[]>(DEFAULT_WIDGET_ORDER);
   const [widgetVisibility, setWidgetVisibility] = useState<
     Record<WidgetKey, boolean>
   >(DEFAULT_WIDGET_VISIBILITY);
@@ -594,7 +644,9 @@ function DashboardDeferredContent({
       const parsed = JSON.parse(raw);
       if (Array.isArray(parsed.order)) {
         setWidgetOrder(
-          parsed.order.filter((k: WidgetKey) => DEFAULT_WIDGET_ORDER.includes(k))
+          parsed.order.filter((k: WidgetKey) =>
+            DEFAULT_WIDGET_ORDER.includes(k),
+          ),
         );
       }
       if (parsed.visibility && typeof parsed.visibility === "object") {
@@ -617,7 +669,7 @@ function DashboardDeferredContent({
         JSON.stringify({
           order: widgetOrder,
           visibility: widgetVisibility,
-        })
+        }),
       );
     } catch {}
   }, [userId, widgetOrder, widgetVisibility]);
@@ -652,7 +704,9 @@ function DashboardDeferredContent({
   const handleCopyLink = () => {
     const article = newsItems[selectedNewsIndex];
     if (article) {
-      navigator.clipboard.writeText(`${window.location.origin}/news/${article.slug}`);
+      navigator.clipboard.writeText(
+        `${window.location.origin}/news/${article.slug}`,
+      );
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
     }
@@ -660,7 +714,7 @@ function DashboardDeferredContent({
 
   // Dual Student Logic
   const currentPlan = getStudyPlanByStudiengang(
-    studiengangName || userCampusArea
+    studiengangName || userCampusArea,
   );
   const today = new Date();
   const todayIso = toISODate(today);
@@ -677,7 +731,7 @@ function DashboardDeferredContent({
 
   // Find next phase
   const nextBlock = currentPlan.blocks.find(
-    (b) => b.start > todayIso && b.status !== currentStatus
+    (b) => b.start > todayIso && b.status !== currentStatus,
   );
 
   // Calculate progress
@@ -694,7 +748,7 @@ function DashboardDeferredContent({
     phaseDaysLeft = Math.max(0, phaseTotalDays - daysPassed);
     phaseProgress = Math.min(
       100,
-      Math.max(0, (daysPassed / phaseTotalDays) * 100)
+      Math.max(0, (daysPassed / phaseTotalDays) * 100),
     );
   }
 
@@ -769,7 +823,7 @@ function DashboardDeferredContent({
               ? "Abgabe"
               : "Submission",
         dueDate: new Date(task.due_date).toLocaleDateString(
-          language === "de" ? "de-DE" : "en-US"
+          language === "de" ? "de-DE" : "en-US",
         ),
         daysLeft,
         color: task.kind === "KLAUSUR" ? "blue" : "orange",
@@ -822,25 +876,17 @@ function DashboardDeferredContent({
 
   const widgetContent: Record<WidgetKey, ReactNode> = {
     modules: (
-      <RecentCourses
-        recentCourses={recentCourses}
-        language={language}
-        t={t}
-      />
+      <RecentCourses recentCourses={recentCourses} language={language} t={t} />
     ),
     grades: (
-      <GradesWidget
-        averageGrade={averageGrade}
-        language={language}
-        t={t}
-      />
+      <GradesWidget averageGrade={averageGrade} language={language} t={t} />
     ),
     tasks: (
       <UpcomingTasks
         upcomingAssignments={upcomingAssignments}
         language={language}
         t={t}
-      />
+     />
     ),
     appointments: <WeekOverview weekDays={weekDays} t={t} />,
   };
@@ -851,16 +897,13 @@ function DashboardDeferredContent({
 
   const handleDragOver = (
     event: React.DragEvent<HTMLElement>,
-    key: WidgetKey
+    key: WidgetKey,
   ) => {
     event.preventDefault();
     if (dragOverWidget !== key) setDragOverWidget(key);
   };
 
-  const handleDrop = (
-    event: React.DragEvent<HTMLElement>,
-    key: WidgetKey
-  ) => {
+  const handleDrop = (event: React.DragEvent<HTMLElement>, key: WidgetKey) => {
     event.preventDefault();
     if (!draggedWidget || draggedWidget === key) {
       setDraggedWidget(null);
@@ -919,13 +962,13 @@ function DashboardDeferredContent({
                 {t.dragHint ?? "Drag to reorder"}
               </p>
               {isFirstSemester ? (
-                  <button
-                    type="button"
-                    onClick={() => setShowTour(true)}
-                    className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-foreground hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
-                  >
-                    {language === "de" ? "Tour starten" : "Start tour"}
-                  </button>
+                <button
+                  type="button"
+                  onClick={() => setShowTour(true)}
+                  className="mt-4 inline-flex items-center justify-center rounded-full border border-slate-300 dark:border-slate-700 bg-slate-100 dark:bg-slate-900 px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest text-foreground hover:bg-slate-200 dark:hover:bg-slate-800 transition-colors"
+                >
+                  {language === "de" ? "Tour starten" : "Start tour"}
+                </button>
               ) : null}
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
@@ -989,7 +1032,10 @@ function DashboardDeferredContent({
                       }`}
                       aria-label={`${t.dragHint ?? "Drag to reorder"}: ${widgetLabelMap[key]}`}
                     >
-                      <GripVertical className="h-3 w-3 opacity-70" aria-hidden="true" />
+                      <GripVertical
+                        className="h-3 w-3 opacity-70"
+                        aria-hidden="true"
+                      />
                       {widgetLabelMap[key]}
                     </button>
                   ))}
@@ -999,7 +1045,10 @@ function DashboardDeferredContent({
           </div>
         </div>
 
-        <div data-onboard="dashboard-widgets" className="space-y-6 sm:space-y-8">
+        <div
+          data-onboard="dashboard-widgets"
+          className="space-y-6 sm:space-y-8"
+        >
           {widgetOrder
             .filter((key) => widgetVisibility[key])
             .map((key) => (
@@ -1040,9 +1089,12 @@ function DashboardDeferredContent({
             slug: newsItems[selectedNewsIndex].slug,
             title: newsItems[selectedNewsIndex].title,
             excerpt: newsItems[selectedNewsIndex].excerpt ?? undefined,
-            content: (newsItems[selectedNewsIndex].content || newsItems[selectedNewsIndex].excerpt) ?? undefined,
+            content:
+              (newsItems[selectedNewsIndex].content ||
+                newsItems[selectedNewsIndex].excerpt) ??
+              undefined,
             category: newsItems[selectedNewsIndex].category ?? undefined,
-            publishedAt: newsItems[selectedNewsIndex].publishedAt || newsItems[selectedNewsIndex].published_at,
+            publishedAt: newsItems[selectedNewsIndex].published_at,
             featured: newsItems[selectedNewsIndex].featured,
           }}
           loading={false}

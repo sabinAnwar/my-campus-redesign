@@ -68,19 +68,20 @@ export async function loader({ request }: { request: Request }) {
       category: lang === "en" ? (item.category_en || item.category) : (item.category_de || item.category),
     }));
 
-    const filtered = tag
-      ? translatedItems.filter((n: { tags: any; }) => {
-          try {
-            const arr = JSON.parse(n.tags || "[]");
-            return (
-              Array.isArray(arr) &&
-              arr.some((t) => String(t).toLowerCase() === tag.toLowerCase())
-            );
-          } catch (_) {
-            return false;
-          }
-        })
-      : items;
+    let filtered = translatedItems;
+    if (tag) {
+      filtered = translatedItems.filter((n: { tags: any; }) => {
+        try {
+          const arr = JSON.parse(n.tags || "[]");
+          return (
+            Array.isArray(arr) &&
+            arr.some((t) => String(t).toLowerCase() === tag.toLowerCase())
+          );
+        } catch (_) {
+          return false;
+        }
+      });
+    }
 
     return Response.json({ items: filtered, total, page, pageSize });
   } catch (err) {
@@ -98,22 +99,142 @@ export async function loader({ request }: { request: Request }) {
     const pageSize = Math.min(toInt(url.searchParams.get("pageSize"), 12), 50);
     const skip = (page - 1) * pageSize;
     const now = new Date();
+    const lang = url.searchParams.get("lang") || "de";
     const daysAgo = (d: number) => {
       const t = new Date(now);
       t.setDate(now.getDate() - d);
       return t.toISOString();
     };
     const all = [
-      { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", excerpt: "Meet employers, attend workshops, and grow your network.", content: "Career fair details", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", cover_image_url: undefined, featured: true, published_at: daysAgo(0) },
-      { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", excerpt: "Enroll now for the upcoming semester to learn modern analytics.", content: "Module details", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", cover_image_url: undefined, featured: true, published_at: daysAgo(2) },
-      { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", excerpt: "Everything you need in one place: marks, applications, modules, and more.", content: "Welcome content", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", cover_image_url: undefined, featured: false, published_at: daysAgo(3) },
-      { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", excerpt: "Check the dates and registration deadlines for the winter term.", content: "Exam schedule details", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", cover_image_url: undefined, featured: false, published_at: daysAgo(4) },
-      { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", excerpt: "Short downtimes may occur on selected services next weekend.", content: "Maintenance details", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", cover_image_url: undefined, featured: false, published_at: daysAgo(5) },
-      { id: 5, slug: "scholarship-opportunities-2025", title: "Scholarship Opportunities 2025", excerpt: "Multiple scholarships for outstanding students now available.", content: "Scholarship details", category: "Scholarships", tags: JSON.stringify(["scholarship","finance"]), author: "Student Office", cover_image_url: undefined, featured: false, published_at: daysAgo(7) },
-      { id: 6, slug: "library-extended-hours", title: "Library Extends Opening Hours", excerpt: "From next month, the library will be open until midnight.", content: "Library details", category: "Library", tags: JSON.stringify(["library","hours"]), author: "Library Team", cover_image_url: undefined, featured: false, published_at: daysAgo(9) },
+      {
+        id: 7,
+        slug: "career-fair-2025",
+        title_de: "Karrieremesse 2025: Jetzt teilnehmen",
+        title_en: "Join the 2025 Career Fair",
+        excerpt_de: "Triff Arbeitgeber, nimm an Workshops teil und erweitere dein Netzwerk.",
+        excerpt_en: "Meet employers, attend workshops, and grow your network.",
+        content_de: "Details zur Karrieremesse",
+        content_en: "Career fair details",
+        category_de: "Karriere",
+        category_en: "Careers",
+        tags: JSON.stringify(["career", "fair", "jobs"]),
+        author: "Career Services",
+        cover_image_url: undefined,
+        featured: true,
+        published_at: daysAgo(0),
+      },
+      {
+        id: 4,
+        slug: "new-module-data-analytics",
+        title_de: "Neues Modul: Data Analytics mit Python",
+        title_en: "New Module: Data Analytics with Python",
+        excerpt_de: "Jetzt für das kommende Semester einschreiben und moderne Analytics lernen.",
+        excerpt_en: "Enroll now for the upcoming semester to learn modern analytics.",
+        content_de: "Moduldetails",
+        content_en: "Module details",
+        category_de: "Akademisches",
+        category_en: "Academics",
+        tags: JSON.stringify(["module", "python", "analytics"]),
+        author: "Faculty of Computer Science",
+        cover_image_url: undefined,
+        featured: true,
+        published_at: daysAgo(2),
+      },
+      {
+        id: 1,
+        slug: "welcome-to-the-portal",
+        title_de: "Willkommen im IU-Studentenportal",
+        title_en: "Welcome to the IU Student Portal",
+        excerpt_de: "Alles an einem Ort: Noten, Anträge, Module und mehr.",
+        excerpt_en: "Everything you need in one place: marks, applications, modules, and more.",
+        content_de: "Willkommensinhalt",
+        content_en: "Welcome content",
+        category_de: "Ankündigungen",
+        category_en: "Announcements",
+        tags: JSON.stringify(["announcement", "portal"]),
+        author: "IU Team",
+        cover_image_url: undefined,
+        featured: false,
+        published_at: daysAgo(3),
+      },
+      {
+        id: 2,
+        slug: "exam-schedule-winter",
+        title_de: "Winter-Prüfungsplan veröffentlicht",
+        title_en: "Winter Exam Schedule Published",
+        excerpt_de: "Prüfungstermine und Anmeldefristen für das Wintersemester.",
+        excerpt_en: "Check the dates and registration deadlines for the winter term.",
+        content_de: "Details zum Prüfungsplan",
+        content_en: "Exam schedule details",
+        category_de: "Prüfungen",
+        category_en: "Exams",
+        tags: JSON.stringify(["exams", "schedule"]),
+        author: "Examination Office",
+        cover_image_url: undefined,
+        featured: false,
+        published_at: daysAgo(4),
+      },
+      {
+        id: 3,
+        slug: "campus-maintenance-november",
+        title_de: "Geplante Campus-Wartung im November",
+        title_en: "Scheduled Campus Maintenance in November",
+        excerpt_de: "Kurze Ausfälle ausgewählter Dienste am Wochenende möglich.",
+        excerpt_en: "Short downtimes may occur on selected services next weekend.",
+        content_de: "Wartungsdetails",
+        content_en: "Maintenance details",
+        category_de: "IT",
+        category_en: "IT",
+        tags: JSON.stringify(["maintenance", "it"]),
+        author: "IT Services",
+        cover_image_url: undefined,
+        featured: false,
+        published_at: daysAgo(5),
+      },
+      {
+        id: 5,
+        slug: "scholarship-opportunities-2025",
+        title_de: "Stipendien 2025: Jetzt bewerben",
+        title_en: "Scholarship Opportunities 2025",
+        excerpt_de: "Mehrere Stipendien für engagierte Studierende verfügbar.",
+        excerpt_en: "Multiple scholarships for outstanding students now available.",
+        content_de: "Stipendien-Details",
+        content_en: "Scholarship details",
+        category_de: "Stipendien",
+        category_en: "Scholarships",
+        tags: JSON.stringify(["scholarship", "finance"]),
+        author: "Student Office",
+        cover_image_url: undefined,
+        featured: false,
+        published_at: daysAgo(7),
+      },
+      {
+        id: 6,
+        slug: "library-extended-hours",
+        title_de: "Bibliothek verlängert Öffnungszeiten",
+        title_en: "Library Extends Opening Hours",
+        excerpt_de: "Ab nächstem Monat ist die Bibliothek bis 00:00 geöffnet.",
+        excerpt_en: "From next month, the library will be open until midnight.",
+        content_de: "Bibliotheks-Details",
+        content_en: "Library details",
+        category_de: "Bibliothek",
+        category_en: "Library",
+        tags: JSON.stringify(["library", "hours"]),
+        author: "Library Team",
+        cover_image_url: undefined,
+        featured: false,
+        published_at: daysAgo(9),
+      },
     ];
+    const translated = all.map((item) => ({
+      ...item,
+      title: lang === "en" ? item.title_en : item.title_de,
+      excerpt: lang === "en" ? item.excerpt_en : item.excerpt_de,
+      content: lang === "en" ? item.content_en : item.content_de,
+      category: lang === "en" ? item.category_en : item.category_de,
+    }));
     const q = search.toLowerCase();
-    let filtered = all;
+    let filtered = translated;
     if (q) {
       filtered = filtered.filter((n) => [n.title, n.excerpt, n.content].some((t) => (t || "").toLowerCase().includes(q)));
     }

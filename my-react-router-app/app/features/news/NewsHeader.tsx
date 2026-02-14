@@ -8,6 +8,7 @@ interface NewsHeaderProps {
   searchPlaceholder: string;
   searchButtonLabel: string;
   resetTitle: string;
+  lang: string;
   searchValue: string;
   onSearchClear: (form: HTMLFormElement) => void;
 }
@@ -18,6 +19,7 @@ export function NewsHeader({
   searchPlaceholder,
   searchButtonLabel,
   resetTitle,
+  lang,
   searchValue,
   onSearchClear,
 }: NewsHeaderProps) {
@@ -31,6 +33,7 @@ export function NewsHeader({
         method="get"
         className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 w-full lg:w-auto bg-card p-2 rounded-[2rem] border border-slate-300 dark:border-slate-700 shadow-xl"
       >
+        <input type="hidden" name="lang" value={lang} />
         <div className="relative flex-1 md:w-64">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
           <input
@@ -52,7 +55,7 @@ export function NewsHeader({
         </button>
 
         <Link
-          to="/news"
+          to={`/news?lang=${encodeURIComponent(lang)}`}
           className="p-3 bg-muted text-muted-foreground rounded-2xl hover:bg-muted-foreground/10 transition-all w-full sm:w-auto flex items-center justify-center"
           title={resetTitle}
         >

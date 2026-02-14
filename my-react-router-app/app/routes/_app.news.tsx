@@ -56,7 +56,7 @@ export default function NewsList() {
   const locale = language === "de" ? "de-DE" : "en-US";
   const t = TRANSLATIONS[language];
 
-  const [params] = useSearchParams();
+  const [params, setParams] = useSearchParams();
   const submit = useSubmit();
 
   const q = params.get("search") || "";
@@ -74,6 +74,13 @@ export default function NewsList() {
 
   const atStart = currentIndex <= 0;
   const atEnd = currentIndex >= items.length - 1 || currentIndex < 0;
+
+  useEffect(() => {
+    if (params.get("lang") === language) return;
+    const next = new URLSearchParams(params);
+    next.set("lang", language);
+    setParams(next, { replace: true });
+  }, [language, params, setParams]);
 
   /* -----------------------------------
      Modal Functions
@@ -195,6 +202,7 @@ export default function NewsList() {
         searchPlaceholder={t.searchPlaceholder}
         searchButtonLabel={t.search}
         resetTitle={t.reset}
+        lang={language}
         searchValue={q}
         onSearchClear={(form) => submit(form, { method: "get", replace: true })}
       />
