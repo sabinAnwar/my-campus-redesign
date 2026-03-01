@@ -2,7 +2,7 @@
 
 A modern, accessible, and feature-rich student portal redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
 
-## Overview
+## Overvief
 
 This project is a comprehensive redesign of a university campus management system, originally developed as part of a Bachelor's thesis exploring "Vibe Coding" (Agentic Software Engineering). The prototype addresses common pain points in traditional campus portals by providing:
 
