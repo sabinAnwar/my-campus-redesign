@@ -135,7 +135,7 @@ export function ScheduleEventModal({
               href={selectedEvent.zoomLink}
               target="_blank"
               rel="noopener noreferrer"
-              className="group relative flex items-center justify-center gap-4 w-full p-6 sm:p-7 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl hover:-translate-y-1 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 overflow-hidden ring-1 ring-white/10"
+              className="group relative flex items-center justify-center gap-4 w-full p-6 sm:p-7 bg-gradient-to-r from-blue-800 to-indigo-900 text-white rounded-3xl hover:-translate-y-1 active:scale-[0.98] transition-all shadow-xl shadow-blue-900/30 hover:shadow-2xl hover:shadow-blue-900/40 overflow-hidden ring-1 ring-white/10"
             >
               <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out" />
               <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/10 to-blue-400/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />

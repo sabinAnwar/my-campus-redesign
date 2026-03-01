@@ -175,21 +175,21 @@ export function ScheduleListView({
                               )}
                             </div>
                             <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground mt-1">
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-sm border border-border/40 backdrop-blur-sm">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900 shadow-sm border border-slate-300 dark:border-slate-700">
                                 <MapPin
                                   size={14}
-                                  className="text-iu-blue dark:text-iu-blue"
+                                  className="text-blue-800 dark:text-blue-300"
                                 />
-                                <span className="font-semibold text-foreground/80">
+                                <span className="font-bold text-slate-900 dark:text-slate-100">
                                   {event.location}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-sm border border-border/40 backdrop-blur-sm">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/90 dark:bg-slate-900 shadow-sm border border-slate-300 dark:border-slate-700">
                                 <User
                                   size={14}
-                                  className="text-iu-blue dark:text-iu-blue"
+                                  className="text-blue-800 dark:text-blue-300"
                                 />
-                                <span className="font-semibold text-foreground/80">
+                                <span className="font-bold text-slate-900 dark:text-slate-100">
                                   {event.professor}
                                 </span>
                               </div>
@@ -221,7 +221,7 @@ export function ScheduleListView({
                                 target="_blank"
                                 rel="noopener noreferrer"
                                 onClick={(e) => e.stopPropagation()}
-                                className="group relative flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-xl transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] text-sm sm:text-sm overflow-hidden border border-blue-400/50"
+                                className="group relative flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 bg-gradient-to-r from-blue-800 to-indigo-900 text-white font-black rounded-xl transition-all shadow-xl shadow-blue-900/30 hover:shadow-blue-900/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] text-sm sm:text-sm overflow-hidden border border-blue-700/50"
                               >
                                 <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
                                 <span className="relative flex h-2.5 w-2.5 mr-1">
