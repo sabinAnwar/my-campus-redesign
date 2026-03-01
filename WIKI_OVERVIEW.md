@@ -1,8 +1,8 @@
-# 📚 Code Wiki Overview
+#  Code Wiki Overview
 
 Welcome! This is your guide to navigating the My Campus Redesign code wiki.
 
-## 🎯 Start Here
+## Start Here
 
 **New to the project?** → Start with [README.md](./README.md)
 
@@ -10,15 +10,15 @@ Welcome! This is your guide to navigating the My Campus Redesign code wiki.
 
 **Looking for something specific?** → Browse [DOCS_INDEX.md](./DOCS_INDEX.md)
 
-## 📖 Documentation Structure
+##  Documentation Structure
 
 ```
 My Campus Redesign Documentation
 │
-├── 🏠 README.md
+├── README.md
 │   └── Project overview, quick start, features
 │
-├── 📘 CODE_WIKI.md (★ Main Technical Reference)
+├── CODE_WIKI.md (★ Main Technical Reference)
 │   ├── Architecture Overview
 │   ├── Directory Structure
 │   ├── Core Concepts
@@ -33,47 +33,47 @@ My Campus Redesign Documentation
 │   ├── Testing
 │   └── Deployment
 │
-├── 📑 DOCS_INDEX.md (★ Navigation Hub)
+├── DOCS_INDEX.md (★ Navigation Hub)
 │   ├── Documentation by Topic
 │   ├── Documentation by Role
 │   ├── Quick Reference Tables
 │   └── How to Find Information
 │
-├── ⚡ QUICK_REFERENCE.md
+├── QUICK_REFERENCE.md
 │   ├── Common Commands
 │   ├── Code Snippets
 │   ├── Styling Patterns
 │   └── Debugging Tips
 │
-├── 🤝 CONTRIBUTING.md
+├── CONTRIBUTING.md
 │   ├── Code of Conduct
 │   ├── Development Workflow
 │   ├── Coding Standards
 │   ├── Commit Guidelines
 │   └── PR Process
 │
-└── 📂 my-react-router-app/docs/
+└── my-react-router-app/docs/
     │
-    ├── 🏗️ ARCHITECTURE.md
+    ├── ARCHITECTURE.md
     │   ├── System Architecture
     │   ├── Design Patterns
     │   ├── Data Flow
     │   ├── Security
     │   └── Performance
     │
-    ├── 🔌 API.md
+    ├── API.md
     │   ├── Authentication APIs
     │   ├── Data APIs
     │   ├── Error Handling
     │   └── Rate Limiting
     │
-    ├── 🎨 COMPONENTS.md
+    ├── COMPONENTS.md
     │   ├── Layout Components
     │   ├── UI Components
     │   ├── Feature Components
     │   └── Component Patterns
     │
-    └── 📋 Other Docs
+    └── Other Docs
         ├── INSTALLATION.md
         ├── ANFORDERUNGEN_CODE_SNIPPETS.md
         ├── CLEAN_CODE_ANALYSE.md
@@ -81,27 +81,27 @@ My Campus Redesign Documentation
         └── WCAG_AAA_TOKENS.md
 ```
 
-## 🎭 Choose Your Path
+## Choose Your Path
 
-### 👋 I'm New Here
+### I'm New Here
 1. Read [README.md](./README.md) for project overview
 2. Follow [INSTALLATION.md](./my-react-router-app/docs/INSTALLATION.md) to set up
 3. Skim [CODE_WIKI.md](./CODE_WIKI.md) to understand the structure
 4. Check [CONTRIBUTING.md](./CONTRIBUTING.md) for guidelines
 
-### 💻 I'm a Frontend Developer
+### I'm a Frontend Developer
 1. [COMPONENTS.md](./my-react-router-app/docs/COMPONENTS.md) - Component library
 2. [CODE_WIKI.md#component-architecture](./CODE_WIKI.md#component-architecture) - Patterns
 3. [CODE_WIKI.md#styling--theming](./CODE_WIKI.md#styling--theming) - Styling
 4. [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Code snippets
 
-### 🔧 I'm a Backend Developer
+###  I'm a Backend Developer
 1. [API.md](./my-react-router-app/docs/API.md) - API documentation
 2. [CODE_WIKI.md#authentication-system](./CODE_WIKI.md#authentication-system) - Auth
 3. [CODE_WIKI.md#database-schema](./CODE_WIKI.md#database-schema) - Database
 4. [QUICK_REFERENCE.md](./QUICK_REFERENCE.md) - Database queries
 
-### 🏛️ I'm Reviewing Architecture
+###  I'm Reviewing Architecture
 1. [ARCHITECTURE.md](./my-react-router-app/docs/ARCHITECTURE.md) - Full architecture
 2. [CODE_WIKI.md#architecture-overview](./CODE_WIKI.md#architecture-overview) - Tech stack
 3. [CODE_WIKI.md#core-concepts](./CODE_WIKI.md#core-concepts) - Patterns
