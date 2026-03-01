@@ -2,7 +2,7 @@
 
 A modern, accessible, and feature-rich student portal redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
 
-## 🌟 Overview
+## Overview
 
 This project is a comprehensive redesign of a university campus management system, originally developed as part of a Bachelor's thesis exploring "Vibe Coding" (Agentic Software Engineering). The prototype addresses common pain points in traditional campus portals by providing:
 
@@ -12,7 +12,7 @@ This project is a comprehensive redesign of a university campus management syste
 - **Performance Optimized**: Server-side rendering with React Router 7
 - **Mobile Ready**: Responsive design with PWA capabilities
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Prerequisites
 
@@ -40,19 +40,19 @@ npm run dev
 
 Visit `http://localhost:5173` to see the application.
 
-## 📚 Documentation
+## Documentation
 
-### 🚀 Start Here
-- **[📚 Wiki Overview](./WIKI_OVERVIEW.md)** - Your guide to navigating all documentation
+### Start Here
+- **[Wiki Overview](./WIKI_OVERVIEW.md)** - Your guide to navigating all documentation
 
 ### Core Documentation
-- **[📖 Documentation Index](./DOCS_INDEX.md)** - Complete documentation directory
-- **[⚡ Quick Reference](./QUICK_REFERENCE.md)** - Common tasks and code snippets
-- **[📘 Code Wiki](./CODE_WIKI.md)** - Comprehensive technical documentation
-- **[🏗️ Architecture](./my-react-router-app/docs/ARCHITECTURE.md)** - System design and patterns
-- **[🔌 API Documentation](./my-react-router-app/docs/API.md)** - Backend endpoints and services
-- **[🎨 Component Library](./my-react-router-app/docs/COMPONENTS.md)** - UI components guide
-- **[🤝 Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
+- **[Documentation Index](./DOCS_INDEX.md)** - Complete documentation directory
+- **[Quick Reference](./QUICK_REFERENCE.md)** - Common tasks and code snippets
+- **[Code Wiki](./CODE_WIKI.md)** - Comprehensive technical documentation
+- **[Architecture](./my-react-router-app/docs/ARCHITECTURE.md)** - System design and patterns
+- **[API Documentation](./my-react-router-app/docs/API.md)** - Backend endpoints and services
+- **[Component Library](./my-react-router-app/docs/COMPONENTS.md)** - UI components guide
+- **[Contributing Guide](./CONTRIBUTING.md)** - How to contribute to the project
 
 ### Getting Started
 - **[Installation Guide](./my-react-router-app/docs/INSTALLATION.md)** - Detailed setup instructions
@@ -63,7 +63,7 @@ Visit `http://localhost:5173` to see the application.
 - **[Clean Code Analysis](./my-react-router-app/docs/CLEAN_CODE_ANALYSE.md)** - Code quality guidelines
 - **[WCAG AAA Tokens](./my-react-router-app/docs/WCAG_AAA_TOKENS.md)** - Accessibility standards
 
-## 🏗️ Tech Stack
+## Tech Stack
 
 - **Frontend**: React 19, React Router 7
 - **Backend**: Node.js with React Router SSR
@@ -74,33 +74,33 @@ Visit `http://localhost:5173` to see the application.
 - **Email**: Nodemailer
 - **Analytics**: Vercel Analytics
 
-## ✨ Key Features
+## Key Features
 
 ### Core Features (MUST-HAVE)
-- ✅ Stable authentication & session management
-- ✅ High performance & availability
-- ✅ Global search functionality
-- ✅ Clear navigation with minimal click depth
-- ✅ Reliable grade management
-- ✅ Responsive design (mobile-first)
-- ✅ Accessibility features (WCAG 2.1)
+- Stable authentication & session management
+- High performance & availability
+- Global search functionality
+- Clear navigation with minimal click depth
+- Reliable grade management
+- Responsive design (mobile-first)
+- Accessibility features (WCAG 2.1)
 
 ### Extended Features (SHOULD-HAVE)
-- ✅ Personalized dashboard with widgets
-- ✅ Favorites & browsing history
-- ✅ Communication & support system
-- ✅ Dark mode with theme switching
-- ✅ Clear system feedback (toast notifications)
-- ✅ PWA capabilities
+- Personalized dashboard with widgets
+- Favorites & browsing history
+- Communication & support system
+- Dark mode with theme switching
+- Clear system feedback (toast notifications)
+- PWA capabilities
 
 ### Innovative Features
-- ✅ AI Learning Assistant (Lernassistent)
-- ✅ Room booking system
-- ✅ Interactive forum
-- ✅ Practical work report tracking
-- ✅ Module handbook with recommendations
+- AI Learning Assistant (Lernassistent)
+- Room booking system
+- Interactive forum
+- Practical work report tracking
+- Module handbook with recommendations
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 my-react-router-app/
@@ -118,7 +118,7 @@ my-react-router-app/
 └── docs/             # Documentation
 ```
 
-## 🧪 Development
+## Development
 
 ### Available Scripts
 
@@ -136,7 +136,7 @@ npm run typecheck  # Run TypeScript type checking
 3. Test your changes locally
 4. Submit a pull request with a clear description
 
-## 🔒 Security
+## Security
 
 - HTTP-only cookies for session management
 - BCrypt password hashing
@@ -145,7 +145,7 @@ npm run typecheck  # Run TypeScript type checking
 - Secure password reset flow
 - Input validation and sanitization
 
-## 🌍 Internationalization
+## Internationalization
 
 The application supports multiple languages:
 - German (de) - Primary
@@ -153,7 +153,7 @@ The application supports multiple languages:
 
 Language switching is available in the user interface.
 
-## 🤝 Contributing
+## Contributing
 
 We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
 - Code of conduct
@@ -161,16 +161,16 @@ We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md)
 - Pull request guidelines
 - Coding standards
 
-## 📄 License
+## License
 
 This project is part of a Bachelor's thesis and is provided for educational purposes.
 
-## 👥 Authors
+## Authors
 
 - **Sabin El Anwar** - Initial work and thesis implementation
 
 
-## 📞 Contact & Support
+## Contact & Support
 
 For questions, issues, or suggestions:
 - Open an issue on GitHub
