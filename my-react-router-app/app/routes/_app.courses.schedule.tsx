@@ -504,8 +504,8 @@ export default function CourseSchedule() {
 
                       // Use Legend Colors strictly for the card
                       const colors = {
-                        bg: `${typeColors.bg}/15`,
-                        text: typeColors.bg.replace('bg-', 'text-'),
+                        bg: `${typeColors.bg}/15 dark:bg-white/5`, // Slightly tone down dark mode background tint for higher text contrast
+                        text: "text-slate-900 dark:text-white", // AAA High Contrast Text
                         border: typeColors.border
                       };
 
@@ -644,8 +644,8 @@ export default function CourseSchedule() {
                         
                         // Use Legend Colors strictly for the card
                         const colors = {
-                           bg: `${typeColors.bg}/15`,
-                           text: typeColors.bg.replace('bg-', 'text-'),
+                           bg: `${typeColors.bg}/15 dark:bg-white/5`,
+                           text: "text-slate-900 dark:text-white",
                            border: typeColors.border
                         };
 

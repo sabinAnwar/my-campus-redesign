@@ -26,10 +26,6 @@ export function ScheduleEventModal({
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
 
-  const isOtherType =
-    typeof selectedEvent.type === "string" &&
-    selectedEvent.type.toLowerCase() === "other";
-
   return (
     <div
       className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 z-[100] animate-in fade-in duration-300"
@@ -46,19 +42,13 @@ export function ScheduleEventModal({
         <div className="flex items-start justify-between mb-6 sm:mb-10">
           <div className="flex items-center gap-4 sm:gap-6">
             <div
-              className={`p-3 sm:p-5 rounded-[2rem] shadow-xl ${
-                isOtherType
-                  ? "bg-iu-gold text-slate-900"
-                  : `${EVENT_COLORS[selectedEvent.type]?.bg} ${EVENT_COLORS[selectedEvent.type]?.text}`
-              }`}
+              className={`p-3 sm:p-5 rounded-[2rem] shadow-xl ${EVENT_COLORS[selectedEvent.type]?.bg}/15 dark:bg-white/5 text-slate-900 dark:text-white ring-1 ring-border/50`}
             >
               <EventIcon type={selectedEvent.type} className="h-7 w-7 sm:h-10 sm:w-10" />
             </div>
             <div>
               <div
-                className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] mb-2 ${
-                  isOtherType ? "text-slate-900" : EVENT_COLORS[selectedEvent.type]?.text
-                }`}
+                className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] mb-2 ${EVENT_COLORS[selectedEvent.type]?.text || "text-foreground"}`}
               >
                 {selectedEvent.type.toUpperCase()}
               </div>

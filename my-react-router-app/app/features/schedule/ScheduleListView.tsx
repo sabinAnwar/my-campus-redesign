@@ -113,14 +113,10 @@ export function ScheduleListView({
                     {events.map((event, eIdx) => {
                       const isLive = isEventLive(event);
                       const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
-                      const isOtherType =
-                        typeof event.type === "string" &&
-                        event.type.toLowerCase() === "other";
                       
-                      // Use Legend Colors strictly for the card
                       const colors = {
-                        bg: `${typeColors.bg}/15`,
-                        text: typeColors.bg.replace('bg-', 'text-'),
+                        bg: `${typeColors.bg}/15 dark:bg-white/5`,
+                        text: "text-slate-900 dark:text-white",
                         border: typeColors.border
                       };
 
@@ -195,11 +191,7 @@ export function ScheduleListView({
                               </div>
                               {event.type && (
                                 <div
-                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${
-                                    isOtherType
-                                      ? "bg-iu-gold text-slate-900 border-iu-gold/50"
-                                      : `${colors.bg} ${colors.text} border-current/10`
-                                  }`}
+                                  className={`flex items-center gap-1.5 px-2.5 py-1 rounded-lg border ${colors.bg} ${colors.text} border-current/10`}
                                 >
                                   <EventIcon
                                     type={event.type}
