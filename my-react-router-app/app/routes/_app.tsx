@@ -24,7 +24,7 @@ import { useLearningStreak } from "~/hooks/useLearningStreak";
 import { usePomodoroBackground } from "~/hooks/usePomodoroBackground";
 
 /** Breakpoint for responsive sidebar behavior (in pixels) */
-const MOBILE_BREAKPOINT = 768;
+const MOBILE_BREAKPOINT = 1024;
 
 export default function AppShell() {
   // ─── State Management ────────────────────────────────────────────────────────
@@ -136,7 +136,7 @@ export default function AppShell() {
           {/* Mobile Overlay - darkens background when sidebar is open */}
           {sidebarOpen && (
             <div
-              className="fixed inset-0 top-20 bg-black/60 z-[45] md:hidden backdrop-blur-sm"
+              className="fixed inset-0 top-16 sm:top-20 bg-black/60 z-[45] lg:hidden backdrop-blur-sm"
               onClick={handleSidebarClose}
             />
           )}
@@ -150,14 +150,14 @@ export default function AppShell() {
           />
 
           {/* Main Content Area */}
-          <section className="flex-1 flex flex-col min-w-0">
+          <section className="flex-1 flex flex-col min-w-0 lg:pl-72 transition-all duration-300 w-full">
             {/* Top Header Bar */}
-            <header className="h-20 flex items-center justify-between px-4 md:px-6 border-b border-border sticky top-0 z-[100] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
+            <header className="h-16 sm:h-20 flex items-center justify-between px-2 sm:px-4 md:px-6 border-b border-border sticky top-0 z-[100] bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
               {/* Left: Mobile Menu Toggle & Campus Indicator */}
-              <div className="flex items-center gap-4">
+              <div className="flex items-center gap-1 sm:gap-4 flex-shrink-0">
                 <button
                   onClick={handleSidebarToggle}
-                  className="md:hidden p-2.5 rounded-none hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
+                  className="lg:hidden p-1.5 sm:p-2.5 rounded-none hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
                   aria-label={sidebarOpen ? "Close menu" : "Open menu"}
                 >
                   {sidebarOpen ? (
@@ -168,7 +168,7 @@ export default function AppShell() {
                 </button>
 
                 {/* Campus Indicator */}
-                <div className="hidden sm:flex flex-col justify-center h-full">
+                <div className="hidden xl:flex flex-col justify-center h-full">
                   <div className="text-xs font-black text-foreground dark:text-white flex items-center gap-1.5 leading-none uppercase tracking-widest">
                     <span className="w-1.5 h-1.5 rounded-full bg-iu-blue dark:bg-iu-blue shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
                     {shellText.campus}
@@ -177,12 +177,14 @@ export default function AppShell() {
               </div>
 
               {/* Center: Global Search */}
-              <SearchBar
-                query={searchQuery}
-                onQueryChange={setSearchQuery}
-                results={filteredResults}
-                translations={shellText.search}
-              />
+              <div className="flex-1 flex justify-center mx-1 sm:mx-2 min-w-[80px]">
+                <SearchBar
+                  query={searchQuery}
+                  onQueryChange={setSearchQuery}
+                  results={filteredResults}
+                  translations={shellText.search}
+                />
+              </div>
 
               {/* Right: Toggles & Profile */}
               <div className="flex items-center gap-1 sm:gap-3 flex-shrink-0">
@@ -193,7 +195,7 @@ export default function AppShell() {
                 {/* Support Link */}
                 <Link
                   to="/contact"
-                  className="hidden sm:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold cursor-pointer"
+                  className="hidden md:flex relative p-2.5 rounded-xl border border-border hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white hover:border-iu-blue/30 dark:hover:border-iu-blue transition-all font-bold cursor-pointer"
                   aria-label="Contact support"
                 >
                   <Headphones className="h-5 w-5" />

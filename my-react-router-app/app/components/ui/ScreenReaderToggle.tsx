@@ -18,7 +18,7 @@ export function ScreenReaderToggle({ variant = 'floating', className = '' }: Scr
       <div className={`relative ${className}`}>
         <button
           onClick={toggleScreenReader}
-          className={`p-2 rounded-lg transition-all ${
+          className={`p-1.5 sm:p-2 rounded-lg transition-all ${
             isEnabled
               ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
               : 'bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 hover:bg-slate-200 dark:hover:bg-slate-700'

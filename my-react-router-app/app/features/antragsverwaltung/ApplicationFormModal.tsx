@@ -32,9 +32,22 @@ export function ApplicationFormModal({
     window.open(formUrl, "_blank", "noopener,noreferrer");
   };
 
+  // Check if URL has embed=true parameter (embedded iframe form)
+  const isEmbeddedForm = formDef.microsoftFormUrl?.includes("embed=true");
+
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100] flex items-center justify-center sm:p-4 p-0 animate-in fade-in duration-300" onClick={onClose}>
-      <div ref={trapRef} role="dialog" aria-modal="true" aria-labelledby="modal-title" className="bg-card border border-border sm:max-w-xl w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[80vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none" onClick={(e) => e.stopPropagation()}>
+    <div
+      className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100] flex items-center justify-center sm:p-4 p-0 animate-in fade-in duration-300"
+      onClick={onClose}
+    >
+      <div
+        ref={trapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="modal-title"
+        className={`bg-card border border-border w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[90vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none ${isEmbeddedForm ? "sm:max-w-4xl" : "sm:max-w-xl"}`}
+        onClick={(e) => e.stopPropagation()}
+      >
         {/* Modal Header */}
         <div className="sm:p-8 p-6 border-b border-border flex justify-between items-start">
           <div className="space-y-1">
@@ -42,7 +55,10 @@ export function ApplicationFormModal({
               <FileText size={14} className="text-iu-blue" />
               {t.task}
             </div>
-            <h3 id="modal-title" className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+            <h3
+              id="modal-title"
+              className="text-xl sm:text-2xl font-black text-foreground tracking-tight"
+            >
               {formDef.title}
             </h3>
           </div>
@@ -58,43 +74,67 @@ export function ApplicationFormModal({
         {/* Modal Content */}
         <div className="flex-1 overflow-y-auto sm:p-8 p-6 custom-scrollbar">
           {formDef.microsoftFormUrl ? (
-            <div className="space-y-6">
-              <div className="p-8 bg-slate-50 dark:bg-slate-900/50 border border-border rounded-3xl flex flex-col items-center text-center gap-6">
-                <div className="w-16 h-16 bg-iu-blue/10 rounded-2xl flex items-center justify-center text-iu-blue">
-                  <ExternalLink size={32} />
+            isEmbeddedForm ? (
+              <div className="space-y-4">
+                <div className="w-full rounded-2xl overflow-hidden border border-border bg-white">
+                  <iframe
+                    src={formDef.microsoftFormUrl}
+                    width="100%"
+                    height="600"
+                    frameBorder="0"
+                    style={{ border: "none", maxWidth: "100%" }}
+                    allowFullScreen
+                    title={formDef.title}
+                  />
                 </div>
-                <div className="space-y-2">
-                  <p className="text-lg font-black text-foreground">
-                    Microsoft Forms
-                  </p>
-                  <p className="text-sm text-foreground font-bold max-w-[300px] mx-auto">
-                    {t.msFormsAvailable}
-                  </p>
-                </div>
-                <button
-                  onClick={() => handleOpenMicrosoftForm(formDef.microsoftFormUrl!)}
-                  className="w-full py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
-                >
-                  <ExternalLink size={20} />
-                  {t.open}
-                </button>
-              </div>
-              
-              <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-border">
-                <p className="text-xs text-foreground font-bold leading-relaxed text-center">
+                <p className="text-xs text-muted-foreground font-medium text-center">
                   {language === "de"
-                    ? "Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert."
-                    : "Note: You will be redirected to Microsoft Forms to securely complete your application. After submission, your status will be automatically updated in our system."}
+                    ? "Füllen Sie das Formular aus und klicken Sie auf 'Absenden'."
+                    : "Fill out the form and click 'Submit'."}
                 </p>
               </div>
-            </div>
+            ) : (
+              <div className="space-y-6">
+                <div className="p-8 bg-slate-50 dark:bg-slate-900/50 border border-border rounded-3xl flex flex-col items-center text-center gap-6">
+                  <div className="w-16 h-16 bg-iu-blue/10 rounded-2xl flex items-center justify-center text-iu-blue">
+                    <ExternalLink size={32} />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-lg font-black text-foreground">
+                      Microsoft Forms
+                    </p>
+                    <p className="text-sm text-foreground font-bold max-w-[300px] mx-auto">
+                      {t.msFormsAvailable}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleOpenMicrosoftForm(formDef.microsoftFormUrl!)
+                    }
+                    className="w-full py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
+                  >
+                    <ExternalLink size={20} />
+                    {t.open}
+                  </button>
+                </div>
+
+                <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-border">
+                  <p className="text-xs text-foreground font-bold leading-relaxed text-center">
+                    {language === "de"
+                      ? "Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert."
+                      : "Note: You will be redirected to Microsoft Forms to securely complete your application. After submission, your status will be automatically updated in our system."}
+                  </p>
+                </div>
+              </div>
+            )
           ) : (
             <div className="py-12 text-center space-y-4">
               <div className="w-12 h-12 bg-rose-500/10 rounded-full flex items-center justify-center text-rose-500 mx-auto">
                 <X size={24} />
               </div>
               <p className="text-foreground font-black">
-                Für diesen Antrag ist aktuell keine Online-Einreichung verfügbar.
+                Für diesen Antrag ist aktuell keine Online-Einreichung
+                verfügbar.
               </p>
             </div>
           )}

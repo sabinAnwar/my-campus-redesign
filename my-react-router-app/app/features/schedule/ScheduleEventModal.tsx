@@ -130,15 +130,23 @@ export function ScheduleEventModal({
         </div>
 
         {selectedEvent.isOnline && selectedEvent.zoomLink && (
-          <a
-            href={selectedEvent.zoomLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center justify-center gap-3 sm:gap-4 w-full p-4 sm:p-6 bg-iu-blue text-white rounded-[2rem] font-bold text-base sm:text-lg hover:scale-[1.02] active:scale-95 transition-all shadow-xl shadow-iu-blue/20"
-          >
-            <Video size={20} />
-            Zoom-Meeting beitreten
-          </a>
+          <div className="mt-8">
+              <a
+              href={selectedEvent.zoomLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="group relative flex items-center justify-center gap-4 w-full p-6 sm:p-7 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-3xl hover:-translate-y-1 active:scale-[0.98] transition-all shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-blue-500/40 overflow-hidden ring-1 ring-white/10"
+            >
+              <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-in-out" />
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400/0 via-white/10 to-blue-400/0 -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
+              <span className="relative flex h-3 w-3 sm:h-4 sm:w-4 mb-1">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-3 w-3 sm:h-4 sm:w-4 bg-white"></span>
+              </span>
+              <Video size={36} className="relative z-10 shrink-0" />
+              <span className="relative z-10 font-black text-2xl sm:text-3xl tracking-tight">ZOOM BEITRETEN</span>
+            </a>
+          </div>
         )}
       </div>
     </div>

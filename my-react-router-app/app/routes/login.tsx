@@ -57,7 +57,7 @@ export const loader = async ({ request }: { request: Request }) => {
 
 function LoginErrorAlert({ error }: { error: string }) {
   return (
-    <div className="rounded-lg bg-iu-red border-2 border-iu-red p-5 backdrop-blur-sm">
+    <div className="rounded-lg bg-iu-red border-2 border-iu-red p-3 sm:p-4 backdrop-blur-sm">
       <div className="flex gap-4">
         <AlertCircle className="w-6 h-6 text-white flex-shrink-0 mt-0.5" />
         <p className="text-base font-semibold text-white">
@@ -73,7 +73,7 @@ function LoginSubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
     <button
       type="submit"
       disabled={isSubmitting}
-      className="w-full mt-10 px-8 py-4 bg-gradient-to-r from-slate-900 dark:from-iu-blue via-slate-800 dark:via-iu-blue to-slate-900 dark:to-iu-blue hover:from-slate-800 dark:hover:from-iu-blue hover:via-slate-700 dark:hover:via-iu-blue hover:to-slate-800 dark:hover:to-iu-blue text-white font-bold text-lg rounded-xl shadow-lg hover:shadow-2xl dark:shadow-iu-blue/20 dark:hover:shadow-iu-blue/40 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-3 border border-slate-700 dark:border-iu-blue/30"
+      className="w-full mt-3 px-4 py-2 sm:px-6 sm:py-2.5 bg-gradient-to-r from-slate-900 dark:from-iu-blue via-slate-800 dark:via-iu-blue to-slate-900 dark:to-iu-blue hover:from-slate-800 dark:hover:from-iu-blue hover:via-slate-700 dark:hover:via-iu-blue hover:to-slate-800 dark:hover:to-iu-blue text-white font-bold text-base sm:text-lg rounded-xl shadow-lg hover:shadow-2xl dark:shadow-iu-blue/20 dark:hover:shadow-iu-blue/40 transition duration-300 transform hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 flex items-center justify-center gap-2 sm:gap-3 border border-slate-700 dark:border-iu-blue/30"
     >
       {isSubmitting ? (
         <>
@@ -92,7 +92,7 @@ function LoginSubmitButton({ isSubmitting }: { isSubmitting: boolean }) {
 
 function RememberMeSection() {
   return (
-    <div className="flex items-center justify-between pt-4">
+    <div className="flex items-center justify-between pt-2">
       <div className="flex items-center gap-2">
         <input
           id="remember"
@@ -102,7 +102,7 @@ function RememberMeSection() {
         />
         <label
           htmlFor="remember"
-          className="text-base text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
+          className="text-sm sm:text-base text-slate-700 dark:text-slate-300 font-semibold cursor-pointer"
         >
           Keep me signed in
         </label>
@@ -110,7 +110,7 @@ function RememberMeSection() {
       <Link
         to="/reset-password"
         title="Forgot password link"
-        className="text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition duration-200 underline-offset-4 hover:underline"
+        className="text-sm sm:text-base font-bold text-iu-blue dark:text-white hover:text-iu-blue/80 dark:hover:text-white transition duration-200 underline-offset-4 hover:underline"
       >
         Forgot password?
       </Link>
@@ -121,7 +121,7 @@ function RememberMeSection() {
 function SupportSection() {
   return (
     <>
-      <div className="relative mt-10">
+      <div className="relative mt-3 sm:mt-4 lg:mt-5">
         <div className="absolute inset-0 flex items-center">
           <div className="w-full border-t border-slate-300 dark:border-slate-600" />
         </div>
@@ -132,7 +132,7 @@ function SupportSection() {
         </div>
       </div>
 
-      <div className="login-support-grid mt-10">
+      <div className="login-support-grid mt-2 sm:mt-3 lg:mt-4">
         <LoginSupportLink
           href="https://iu.de"
           icon={Globe}
@@ -152,14 +152,19 @@ function SupportSection() {
 
 function LoginFooter() {
   return (
-    <div className="mt-10 text-center space-y-3">
-      <p className="text-base text-slate-700 dark:text-slate-200 font-semibold flex items-center justify-center gap-2">
-        <CheckCircle2 className="w-5 h-5 text-iu-blue dark:text-white" />
-        Built by IU Students • Professional Development
-      </p>
-      <p className="text-sm text-slate-700 dark:text-slate-200 flex items-center justify-center gap-2">
-        <ShieldCheck className="w-4 h-4" />
-        Enterprise-grade security • Encrypted connections • Data protected
+    <div className="mt-6">
+      <div className="border-t border-slate-200 dark:border-slate-700/60 pt-5 pb-3 flex flex-col items-center justify-center gap-1.5 transition-all">
+        <p className="text-[10px] sm:text-xs font-bold tracking-widest uppercase text-slate-400 dark:text-slate-500">
+          Bachelor Thesis Project
+        </p>
+        <p className="text-sm sm:text-base font-medium text-slate-600 dark:text-slate-300">
+          Designed & Engineered by <span className="font-bold text-iu-blue dark:text-blue-400 underline decoration-iu-blue/30 underline-offset-4 hover:decoration-iu-blue transition-all cursor-default">Sabin El Anwar</span>
+        </p>
+      </div>
+
+      <p className="mt-2 text-[10px] sm:text-xs text-slate-400 dark:text-slate-500 text-center flex items-center justify-center gap-1.5 font-medium">
+        <ShieldCheck className="w-3.5 h-3.5 opacity-70" />
+        Secured encrypted connection
       </p>
     </div>
   );
@@ -202,11 +207,11 @@ export default function Login() {
 
       {/* Right side - Login Form Section */}
       <div className="iu-login-form-content bg-white dark:bg-slate-800">
-        <div className="w-full max-w-2xl">
-          <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 lg:p-12 shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-xl bg-white/95 dark:bg-slate-800/95">
+        <div className="w-full max-w-2xl px-2 sm:px-0">
+          <div className="bg-white dark:bg-slate-800 rounded-2xl sm:rounded-3xl p-4 sm:p-6 lg:px-8 lg:py-4 shadow-2xl border border-slate-200 dark:border-slate-700 backdrop-blur-xl bg-white/95 dark:bg-slate-800/95">
             <LoginHeader />
 
-            <form onSubmit={handleSubmit} className="space-y-7">
+            <form onSubmit={handleSubmit} className="space-y-3 lg:space-y-4 pt-0">
               <LoginFormInput
                 id="email"
                 label="Email Address"

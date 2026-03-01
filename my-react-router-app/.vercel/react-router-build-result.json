@@ -44,6 +44,7 @@
       "routes/_app.praxisbericht2": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.settings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.library": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/_app.library.databases": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.vertiefungswahl": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.klausuranmeldung": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/_app.lernassistent": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -52,6 +53,7 @@
       "routes/api/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/news": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/news.$slug": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.courses": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/praxisberichte": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/praxisberichte.$weekKey": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/api/room-bookings": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -324,6 +326,13 @@
         "path": "library",
         "config": {}
       },
+      "routes/_app.library.databases": {
+        "id": "routes/_app.library.databases",
+        "parentId": "routes/_app",
+        "file": "app/routes/_app.library.databases.tsx",
+        "path": "library/databases",
+        "config": {}
+      },
       "routes/_app.vertiefungswahl": {
         "id": "routes/_app.vertiefungswahl",
         "parentId": "routes/_app",
@@ -386,6 +395,15 @@
         "parentId": "root",
         "file": "app/routes/api/news.$slug.tsx",
         "path": "api/news/:slug",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/api.courses": {
+        "id": "routes/api.courses",
+        "parentId": "root",
+        "file": "app/routes/api.courses.tsx",
+        "path": "api/courses",
         "config": {
           "runtime": "nodejs"
         }
@@ -739,6 +757,12 @@
         "file": "routes/_app.library.tsx",
         "path": "library"
       },
+      "routes/_app.library.databases": {
+        "id": "routes/_app.library.databases",
+        "parentId": "routes/_app",
+        "file": "routes/_app.library.databases.tsx",
+        "path": "library/databases"
+      },
       "routes/_app.vertiefungswahl": {
         "id": "routes/_app.vertiefungswahl",
         "parentId": "routes/_app",
@@ -786,6 +810,12 @@
         "parentId": "root",
         "file": "routes/api/news.$slug.tsx",
         "path": "api/news/:slug"
+      },
+      "routes/api.courses": {
+        "id": "routes/api.courses",
+        "parentId": "root",
+        "file": "routes/api.courses.tsx",
+        "path": "api/courses"
       },
       "routes/api/praxisberichte": {
         "id": "routes/api/praxisberichte",
@@ -1023,6 +1053,10 @@
                 "path": "library"
               },
               {
+                "file": "routes/_app.library.databases.tsx",
+                "path": "library/databases"
+              },
+              {
                 "file": "routes/_app.vertiefungswahl.tsx",
                 "path": "vertiefungswahl"
               },
@@ -1056,6 +1090,10 @@
           {
             "file": "routes/api/news.$slug.tsx",
             "path": "api/news/:slug"
+          },
+          {
+            "file": "routes/api.courses.tsx",
+            "path": "api/courses"
           },
           {
             "file": "routes/api/praxisberichte.tsx",

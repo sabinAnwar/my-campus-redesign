@@ -103,7 +103,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
           location: string | null;
           professor: string | null;
         }) => {
-          const isOnline = e.location?.toLowerCase() === "online";
+          const locationParts = e.location?.split("|") || [];
+          const locationName = locationParts[0]?.trim() || "";
+          const dbZoomLink = locationParts[1]?.trim() || undefined;
+          const isOnline = locationName.toLowerCase().includes("online");
+
           return {
             id: e.id,
             title: e.title,
@@ -112,13 +116,11 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             date: toISODate(e.date),
             startTime: e.start_time,
             endTime: e.end_time,
-            location: e.location || "",
+            location: locationName,
             professor: e.professor || "",
             room: null,
             isOnline,
-            zoomLink: isOnline
-              ? `https://iu-online.zoom.us/j/${e.course_code?.replace(/[^0-9]/g, "") || "123456789"}`
-              : undefined,
+            zoomLink: dbZoomLink,
             isOptional: e.event_type === "TUTORIUM" || e.event_type === "Q&A",
           };
         }

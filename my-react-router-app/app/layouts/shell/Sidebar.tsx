@@ -45,7 +45,7 @@ export function Sidebar({
 }: SidebarProps): ReactElement {
   const handleNavClick = () => {
     // Close sidebar on mobile when clicking a nav item
-    if (typeof window !== "undefined" && window.innerWidth < 768) {
+    if (typeof window !== "undefined" && window.innerWidth < 1024) {
       onClose();
     }
   };
@@ -53,14 +53,14 @@ export function Sidebar({
   return (
     <aside
       className={`
-        bg-card text-card-foreground border-r border-border shadow-2xl md:shadow-none
-        ${isOpen ? "translate-x-0" : "-translate-x-full md:translate-x-0"}
-        fixed md:static inset-y-0 left-0 w-72 z-[50] md:z-auto flex flex-col transition-transform duration-300
-        pt-20 md:pt-0
+        bg-card text-card-foreground border-r border-border shadow-2xl lg:shadow-none
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        fixed inset-y-0 left-0 w-72 z-[50] flex flex-col transition-transform duration-300
+        pt-16 sm:pt-20 lg:pt-0
       `}
     >
       {/* Logo Section - hidden on mobile since header is visible */}
-      <div className="hidden md:flex h-24 items-center justify-between px-6 border-b border-border">
+      <div className="hidden lg:flex h-16 sm:h-20 items-center justify-between px-6 border-b border-border flex-shrink-0">
         <Link
           to="/dashboard"
           className="flex items-center gap-3 group cursor-pointer"
@@ -85,7 +85,7 @@ export function Sidebar({
         {/* Close button - mobile only */}
         <button
           onClick={onClose}
-          className="md:hidden p-2 rounded-lg hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
+          className="lg:hidden p-2 rounded-lg hover:bg-iu-blue/10 dark:hover:bg-iu-blue hover:text-iu-blue dark:hover:text-foreground dark:text-white transition-colors"
           aria-label="Close sidebar"
         >
           <X className="h-5 w-5" />

@@ -78,7 +78,7 @@ export function SearchBar({
   return (
     <div 
       ref={containerRef}
-      className="flex-[2] w-full min-w-[140px] sm:min-w-[280px] max-w-full sm:max-w-sm md:max-w-md mx-1 sm:mx-2 md:mx-4 relative"
+      className="w-full min-w-[80px] sm:min-w-[160px] md:min-w-[220px] lg:min-w-[280px] max-w-full sm:max-w-[240px] md:max-w-md mx-1 sm:mx-2 md:mx-4 relative"
     >
       <div className="relative group">
         {/* Search Input */}
@@ -90,8 +90,7 @@ export function SearchBar({
           aria-expanded={isOpen}
           aria-haspopup="listbox"
           aria-controls="search-results"
-          aria-label={translations.placeholder}
-          className="block w-full pl-8 sm:pl-10 pr-3 sm:pr-4 py-3 sm:py-3 bg-muted/50 border border-border/50 rounded-xl sm:rounded-2xl text-xs sm:text-sm placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:ring-4 focus:ring-iu-blue/20 focus:border-iu-blue transition-all shadow-sm"
+          className="block w-full pl-8 sm:pl-10 pr-2 sm:pr-3 py-2.5 sm:py-3 bg-muted/50 border border-border/50 rounded-xl sm:rounded-2xl text-[10px] sm:text-[11px] md:text-sm placeholder:text-muted-foreground focus:outline-none focus:bg-background focus:ring-4 focus:ring-iu-blue/20 focus:border-iu-blue transition-all shadow-sm truncate"
           placeholder={translations.placeholder}
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}

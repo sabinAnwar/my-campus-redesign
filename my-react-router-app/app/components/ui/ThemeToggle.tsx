@@ -46,13 +46,13 @@ export default function ThemeToggle() {
       <button
         type="button"
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-background/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground hover:shadow-md hover:-translate-y-0.5 transition-all"
+        className="inline-flex items-center gap-1 sm:gap-2 rounded-full border border-border bg-background/90 px-2 sm:px-3 py-1.5 text-xs font-semibold text-foreground shadow-sm hover:bg-accent hover:text-accent-foreground hover:shadow-md hover:-translate-y-0.5 transition-all"
         aria-haspopup="menu"
         aria-expanded={open}
       >
-        {React.createElement(icon, { className: "h-4 w-4" })}
+        {React.createElement(icon, { className: "h-3.5 w-3.5 sm:h-4 sm:w-4" })}
         <span className="hidden sm:inline">{label}</span>
-        <ChevronDown className="h-3 w-3 opacity-70" />
+        <ChevronDown className="h-2.5 w-2.5 sm:h-3 sm:w-3 opacity-70" />
       </button>
 
       {open && (

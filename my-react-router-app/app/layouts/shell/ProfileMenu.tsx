@@ -92,7 +92,7 @@ export function ProfileMenu({
       {/* Profile Button */}
       <button
         onClick={onToggle}
-        className="h-9 w-9 sm:h-11 sm:w-11 rounded-xl bg-iu-blue text-white shadow-xl shadow-iu-blue/30 hover:shadow-iu-blue/50 transition-all active:scale-95 flex items-center justify-center font-bold focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
+        className="h-8 w-8 sm:h-11 sm:w-11 rounded-xl bg-iu-blue text-white shadow-xl shadow-iu-blue/30 hover:shadow-iu-blue/50 transition-all active:scale-95 flex items-center justify-center font-bold focus:outline-none focus:ring-4 focus:ring-iu-blue/20"
         aria-label="Open profile menu"
         aria-haspopup="true"
         aria-expanded={isOpen}

@@ -6,6 +6,7 @@ import {
   MapPin,
   User,
   Flag,
+  Video,
 } from "lucide-react";
 import { toISODate, DEFAULT_PALETTE, getBlockStatusForDate, type StudyPlan } from "~/utils/studyPlans";
 import { EVENT_COLORS } from "~/config/schedule";
@@ -173,22 +174,22 @@ export function ScheduleListView({
                                 </span>
                               )}
                             </div>
-                            <div className="flex flex-wrap items-center gap-3 sm:gap-4 text-xs sm:text-sm text-muted-foreground">
-                              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
+                            <div className="flex flex-wrap items-center gap-2 sm:gap-3 text-xs sm:text-sm text-muted-foreground mt-1">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-sm border border-border/40 backdrop-blur-sm">
                                 <MapPin
                                   size={14}
-                                  className="text-iu-blue/70 dark:text-white"
+                                  className="text-iu-blue dark:text-iu-blue"
                                 />
-                                <span className="font-medium">
+                                <span className="font-semibold text-foreground/80">
                                   {event.location}
                                 </span>
                               </div>
-                              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-muted/30 border border-border/50">
+                              <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-white/60 dark:bg-slate-800/60 shadow-sm border border-border/40 backdrop-blur-sm">
                                 <User
                                   size={14}
-                                  className="text-iu-blue/70 dark:text-white"
+                                  className="text-iu-blue dark:text-iu-blue"
                                 />
-                                <span className="font-medium">
+                                <span className="font-semibold text-foreground/80">
                                   {event.professor}
                                 </span>
                               </div>
@@ -213,9 +214,26 @@ export function ScheduleListView({
                           </div>
 
                           {/* Action */}
-                          <div className="lg:ml-auto self-end lg:self-auto">
+                          <div className="lg:ml-auto self-end lg:self-auto flex items-center gap-3 w-full lg:w-auto mt-4 lg:mt-0">
+                            {event.isOnline && event.zoomLink && (
+                              <a
+                                href={event.zoomLink}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                onClick={(e) => e.stopPropagation()}
+                                className="group relative flex-1 lg:flex-none flex items-center justify-center gap-2 px-6 py-3 sm:py-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-black rounded-xl transition-all shadow-xl shadow-blue-500/30 hover:shadow-blue-500/40 hover:-translate-y-0.5 active:translate-y-0 active:scale-[0.98] text-sm sm:text-sm overflow-hidden border border-blue-400/50"
+                              >
+                                <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300 ease-in-out" />
+                                <span className="relative flex h-2.5 w-2.5 mr-1">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                                </span>
+                                <Video size={18} className="shrink-0 relative z-10" />
+                                <span className="relative z-10 tracking-wide">ZOOM BEITRETEN</span>
+                              </a>
+                            )}
                             <div
-                              className={`p-2.5 sm:p-3 rounded-xl border transition-all ${
+                              className={`p-2.5 sm:p-3 rounded-xl border transition-all shrink-0 ${
                                 isLive
                                   ? "bg-iu-blue text-white border-iu-blue/60"
                                   : "bg-white text-slate-900 border-slate-300/70 group-hover:bg-iu-blue group-hover:text-white group-hover:border-iu-blue/60"

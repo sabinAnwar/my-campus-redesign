@@ -589,7 +589,11 @@ async function seedSchedule() {
             date: new Date(currentDate),
             start_time: timeSlots[slot].start,
             end_time: timeSlots[slot].end,
-            location: slot % 2 === 0 ? 'Campus Hammerbrook A1.03' : 'Online (Zoom)',
+            location: slot % 2 !== 0 
+              ? (courseIndex % 2 === 0 
+                  ? "Online (Zoom) | https://iubh.zoom.us/j/2737360547?pwd=YUltRFk0em1zLy95blBQaUFWZ05CQT09" 
+                  : "Online (Zoom) | https://iubh.zoom.us/j/9570624041?pwd=RzFZeEZYVVNjRlIvQks1aHY2b1NMZz09#success")
+              : 'Christoph-Probst-Weg 28 - 2.46 Udo Lindenberg',
             event_type: eventType,
             professor: professors[courseIndex % professors.length]
           }

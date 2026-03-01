@@ -18,7 +18,7 @@ export function SecurityCard({
   return (
     <div className="group relative bg-card/60 backdrop-blur-xl border border-border rounded-[2rem] p-6 hover:border-iu-blue/30 hover:shadow-xl transition-all duration-300 overflow-hidden">
       {/* Background Number */}
-      <div className="absolute -right-4 -bottom-8 text-9xl font-black text-foreground select-none transition-colors group-hover:text-iu-blue/5 dark:group-hover:text-white">
+      <div className="absolute -right-4 -bottom-8 text-9xl font-black text-foreground/5 dark:text-white/5 select-none transition-colors group-hover:text-iu-blue/10 dark:group-hover:text-white/10 pointer-events-none">
         {id}
       </div>
 
