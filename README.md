@@ -12,7 +12,7 @@ This project is a comprehensive redesign of a university campus management syste
 - **Performance Optimized**: Server-side rendering with React Router 7
 - **Mobile Ready**: Responsive design with PWA capabilities
 
-## Quick Start
+## Quick Star
 
 ### Prerequisites
 
