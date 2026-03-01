@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Clock, MapPin, User, Video, X } from "lucide-react";
 import { EVENT_COLORS } from "~/config/schedule";
 import { EventIcon } from "~/features/schedule/EventIcon";
 import type { ScheduleEvent } from "~/types/schedule";
+import { useFocusTrap } from "~/hooks/useFocusTrap";
 
 interface ScheduleEventModalProps {
   selectedEvent: ScheduleEvent;
@@ -15,6 +16,16 @@ export function ScheduleEventModal({
   locale,
   onClose,
 }: ScheduleEventModalProps) {
+  const trapRef = useFocusTrap(true);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
+
   const isOtherType =
     typeof selectedEvent.type === "string" &&
     selectedEvent.type.toLowerCase() === "other";
@@ -25,6 +36,10 @@ export function ScheduleEventModal({
       onClick={onClose}
     >
       <div
+        ref={trapRef}
+        role="dialog"
+        aria-modal="true"
+        aria-label={selectedEvent.title}
         className="bg-card/95 backdrop-blur-2xl rounded-[3rem] p-6 sm:p-10 max-w-xl w-full shadow-2xl border border-white/20 animate-in zoom-in-95 duration-300"
         onClick={(e) => e.stopPropagation()}
       >
@@ -57,6 +72,7 @@ export function ScheduleEventModal({
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="p-2.5 sm:p-3 hover:bg-muted rounded-2xl transition-all"
           >
             <X size={24} className="text-muted-foreground dark:text-white" />

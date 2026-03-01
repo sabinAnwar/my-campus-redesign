@@ -34,7 +34,6 @@ async function handleLoginRequest(request: Request) {
 
     // Be permissive with content types in production
     const contentType = request.headers.get("content-type") || "";
-    console.log(" /api/login content-type:", contentType);
 
     // Try URL-encoded first (browser form default)
     try {
@@ -85,25 +84,20 @@ async function handleLoginRequest(request: Request) {
     }
 
     // Find user by email (case-insensitive)
-    console.log(" Looking up user:", email.toLowerCase());
     const user = await prisma.user.findUnique({
       where: { email: email.toLowerCase() },
     });
 
     if (!user) {
-      console.warn(" User not found:", email);
       return Response.json(
         { error: "Invalid email or password" },
         { status: 401 }
       );
     }
 
-    console.log(" User found. Comparing password...");
-    // Compare passwords
     const isPasswordValid = await bcryptjs.compare(password, user.password);
 
     if (!isPasswordValid) {
-      console.warn(" Invalid password for:", email);
       return Response.json(
         { error: "Invalid email or password" },
         { status: 401 }
@@ -111,7 +105,6 @@ async function handleLoginRequest(request: Request) {
     }
 
     // Create and store session in database
-    console.log(" Password valid. Creating session...");
     const sessionToken = crypto.randomUUID();
     const expiresAt = new Date(Date.now() + 7 * 24 * 60 * 60 * 1000); // 7 days
 
@@ -123,10 +116,6 @@ async function handleLoginRequest(request: Request) {
         expires_at: expiresAt,
       },
     });
-
-    console.log(" Session created successfully:", sessionToken);
-
-    console.log(" Login successful for:", user.email);
 
     // Build cookie header
     const isProduction =
@@ -159,10 +148,6 @@ async function handleLoginRequest(request: Request) {
     if (domain) parts.push(`Domain=${domain}`);
     const cookieHeader = parts.join("; ");
 
-    console.log(" Set-Cookie header:", cookieHeader);
-
-    // Return success response with Set-Cookie header
-    // Client will handle navigation
     const response = Response.json(
       {
         success: true,
@@ -178,12 +163,9 @@ async function handleLoginRequest(request: Request) {
     response.headers.set("Set-Cookie", cookieHeader);
     return response;
   } catch (error) {
-    console.error(" Login error:", error);
-    if (error instanceof Error) {
-      console.error(" Stack:", error.stack);
-    }
+    console.error("Login error:", error instanceof Error ? error.message : error);
     return Response.json(
-      { error: "An error occurred during login", details: error instanceof Error ? error.message : String(error) },
+      { error: "An error occurred during login" },
       { status: 500 }
     );
   }

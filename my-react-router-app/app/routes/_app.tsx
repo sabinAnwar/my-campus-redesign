@@ -1,5 +1,11 @@
 import { useState, useMemo, useEffect } from "react";
-import { Link, Outlet, useLocation, useNavigation, useRevalidator } from "react-router-dom";
+import {
+  Link,
+  Outlet,
+  useLocation,
+  useNavigation,
+  useRevalidator,
+} from "react-router-dom";
 import { DoorOpen, Menu, X, Headphones } from "lucide-react";
 import { isRouteErrorResponse } from "react-router";
 
@@ -13,6 +19,9 @@ import { ScreenReaderToggle } from "~/components/ui/ScreenReaderToggle";
 import { Sidebar, SearchBar, ProfileMenu } from "~/layouts/shell";
 import { useUserData } from "~/hooks/useUserData";
 import { useAppShellSearch } from "~/hooks/useAppShellSearch";
+import { useDebounce } from "~/hooks/useDebounce";
+import { useLearningStreak } from "~/hooks/useLearningStreak";
+import { usePomodoroBackground } from "~/hooks/usePomodoroBackground";
 
 /** Breakpoint for responsive sidebar behavior (in pixels) */
 const MOBILE_BREAKPOINT = 768;
@@ -25,7 +34,10 @@ export default function AppShell() {
 
   useEffect(() => {
     setIsMounted(true);
-    if (typeof window !== "undefined" && window.innerWidth >= MOBILE_BREAKPOINT) {
+    if (
+      typeof window !== "undefined" &&
+      window.innerWidth >= MOBILE_BREAKPOINT
+    ) {
       setSidebarOpen(true);
     }
   }, []);
@@ -40,69 +52,12 @@ export default function AppShell() {
 
   // Custom hooks for data and search
   const { name: userName, campus_area, room_booking_enabled } = useUserData();
-  const { filteredResults } = useAppShellSearch(searchQuery);
+  const debouncedSearchQuery = useDebounce(searchQuery, 200);
+  const { filteredResults } = useAppShellSearch(debouncedSearchQuery);
 
-  // Keep a simple visit-based learning streak in localStorage.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-
-    const today = new Date();
-    const todayISO = today.toISOString().split("T")[0];
-    const yesterday = new Date(today);
-    yesterday.setDate(today.getDate() - 1);
-    const yesterdayISO = yesterday.toISOString().split("T")[0];
-
-    const lastVisit = localStorage.getItem("mycampus:lastVisit");
-    const storedStreak = parseInt(localStorage.getItem("mycampus:streak") || "0", 10);
-
-    if (lastVisit !== todayISO) {
-      const nextStreak = lastVisit === yesterdayISO ? Math.max(storedStreak, 1) + 1 : 1;
-      localStorage.setItem("mycampus:streak", String(nextStreak));
-      localStorage.setItem("mycampus:lastVisit", todayISO);
-      localStorage.setItem("mycampus:todayMinutes", "0");
-    }
-  }, [location.pathname]);
-
-  // Keep Pomodoro running across routes when not on the assistant page.
-  useEffect(() => {
-    if (typeof window === "undefined") return;
-    if (location.pathname.startsWith("/lernassistent")) return;
-
-    const interval = setInterval(() => {
-      const running = localStorage.getItem("pomodoro:running") === "true";
-      if (!running) return;
-
-      const storedTime = parseInt(localStorage.getItem("pomodoro:time") || "", 10);
-      const storedBreak = localStorage.getItem("pomodoro:break") === "true";
-      const storedCompleted = parseInt(localStorage.getItem("pomodoro:completed") || "0", 10);
-      const storedLastTick = parseInt(localStorage.getItem("pomodoro:lastTick") || "", 10);
-      const focusDuration = parseInt(localStorage.getItem("pomodoro:focusDuration") || "10", 10);
-      const breakDuration = parseInt(localStorage.getItem("pomodoro:breakDuration") || "10", 10);
-
-      if (Number.isNaN(storedTime) || Number.isNaN(storedLastTick)) return;
-
-      const now = Date.now();
-      const elapsed = Math.max(1, Math.floor((now - storedLastTick) / 1000));
-      let remaining = storedTime - elapsed;
-      let breakMode = storedBreak;
-      let completed = Number.isNaN(storedCompleted) ? 0 : storedCompleted;
-
-      while (remaining <= 0) {
-        if (!breakMode) {
-          completed += 1;
-        }
-        breakMode = !breakMode;
-        remaining += breakMode ? breakDuration : focusDuration;
-      }
-
-      localStorage.setItem("pomodoro:time", String(remaining));
-      localStorage.setItem("pomodoro:break", String(breakMode));
-      localStorage.setItem("pomodoro:completed", String(completed));
-      localStorage.setItem("pomodoro:lastTick", String(now));
-    }, 1000);
-
-    return () => clearInterval(interval);
-  }, [location.pathname]);
+  // Learning streak and Pomodoro background tick (extracted hooks)
+  useLearningStreak(location.pathname);
+  usePomodoroBackground(location.pathname);
 
   // ─── Navigation Helpers ──────────────────────────────────────────────────────
 
@@ -112,7 +67,10 @@ export default function AppShell() {
    */
   const isActive = (to: string): boolean => {
     // Prevent "My Courses" from being active when on "Course Schedule"
-    if (to === "/courses" && location.pathname.startsWith("/courses/schedule")) {
+    if (
+      to === "/courses" &&
+      location.pathname.startsWith("/courses/schedule")
+    ) {
       return false;
     }
     return location.pathname === to || location.pathname.startsWith(to + "/");
@@ -167,8 +125,8 @@ export default function AppShell() {
           </div>
         )}
         {/* Accessibility Skip Link */}
-        <a 
-          href="#main-content" 
+        <a
+          href="#main-content"
           className="sr-only focus:not-sr-only focus:fixed focus:top-4 focus:left-4 focus:z-[200] focus:px-6 focus:py-3 focus:bg-iu-blue focus:text-white focus:rounded-xl focus:font-bold focus:shadow-2xl transition-all"
         >
           {language === "de" ? "Zum Inhalt springen" : "Skip to content"}
@@ -253,14 +211,17 @@ export default function AppShell() {
               </div>
             </header>
 
-            <main id="main-content" className="flex-1 overflow-y-auto" tabIndex={-1}>
+            <main
+              id="main-content"
+              className="flex-1 overflow-y-auto"
+              tabIndex={-1}
+            >
               <div className="px-4 sm:px-6 lg:px-8 py-4 sm:py-6">
                 <Outlet />
               </div>
             </main>
           </section>
-        </div>      
-      
+        </div>
       </div>
     </ScreenReaderProvider>
   );
@@ -268,11 +229,23 @@ export default function AppShell() {
 
 export function ErrorBoundary({ error }: { error: unknown }) {
   const revalidator = useRevalidator();
-  let message = "Something went wrong.";
-  let details = "Please try again in a moment.";
+  const { language } = useLanguage();
+  const isDE = language === "de";
+
+  let message = isDE ? "Etwas ist schiefgelaufen." : "Something went wrong.";
+  let details = isDE
+    ? "Bitte versuche es in einem Moment erneut."
+    : "Please try again in a moment.";
 
   if (isRouteErrorResponse(error)) {
-    message = error.status === 404 ? "Page not found." : "Request failed.";
+    message =
+      error.status === 404
+        ? isDE
+          ? "Seite nicht gefunden."
+          : "Page not found."
+        : isDE
+          ? "Anfrage fehlgeschlagen."
+          : "Request failed.";
     details = error.statusText || details;
   } else if (error instanceof Error) {
     details = error.message;
@@ -288,7 +261,7 @@ export function ErrorBoundary({ error }: { error: unknown }) {
           onClick={() => revalidator.revalidate()}
           className="inline-flex items-center justify-center rounded-full border border-iu-red/30 px-4 py-2 font-semibold text-iu-red hover:bg-iu-red/10 transition-colors"
         >
-          Try again
+          {isDE ? "Erneut versuchen" : "Try again"}
         </button>
       </div>
     </div>

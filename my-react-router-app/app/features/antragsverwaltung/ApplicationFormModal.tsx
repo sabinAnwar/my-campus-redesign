@@ -1,5 +1,7 @@
+import { useEffect } from "react";
 import { X, FileText, ExternalLink } from "lucide-react";
 import type { FormDefinition } from "~/types/antragsverwaltung";
+import { useFocusTrap } from "~/hooks/useFocusTrap";
 
 interface ApplicationFormModalProps {
   t: any;
@@ -16,14 +18,23 @@ export function ApplicationFormModal({
   onStarted,
   language,
 }: ApplicationFormModalProps) {
+  const trapRef = useFocusTrap(true);
+
+  useEffect(() => {
+    const handleEscape = (e: KeyboardEvent) => {
+      if (e.key === "Escape") onClose();
+    };
+    document.addEventListener("keydown", handleEscape);
+    return () => document.removeEventListener("keydown", handleEscape);
+  }, [onClose]);
   const handleOpenMicrosoftForm = (formUrl: string) => {
     onStarted();
     window.open(formUrl, "_blank", "noopener,noreferrer");
   };
 
   return (
-    <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100] flex items-center justify-center sm:p-4 p-0 animate-in fade-in duration-300">
-      <div className="bg-card border border-border sm:max-w-xl w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[80vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none">
+    <div className="fixed inset-0 bg-background/80 backdrop-blur-xl z-[100] flex items-center justify-center sm:p-4 p-0 animate-in fade-in duration-300" onClick={onClose}>
+      <div ref={trapRef} role="dialog" aria-modal="true" aria-labelledby="modal-title" className="bg-card border border-border sm:max-w-xl w-full sm:shadow-2xl animate-in zoom-in-95 duration-300 flex flex-col sm:max-h-[80vh] max-h-screen h-full sm:h-auto overflow-hidden sm:rounded-[2rem] rounded-none" onClick={(e) => e.stopPropagation()}>
         {/* Modal Header */}
         <div className="sm:p-8 p-6 border-b border-border flex justify-between items-start">
           <div className="space-y-1">
@@ -31,12 +42,13 @@ export function ApplicationFormModal({
               <FileText size={14} className="text-iu-blue" />
               {t.task}
             </div>
-            <h3 className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
+            <h3 id="modal-title" className="text-xl sm:text-2xl font-black text-foreground tracking-tight">
               {formDef.title}
             </h3>
           </div>
           <button
             onClick={onClose}
+            aria-label="Close"
             className="p-2 hover:bg-muted rounded-full transition-colors shrink-0 text-foreground"
           >
             <X className="w-5 h-5" />
@@ -70,7 +82,9 @@ export function ApplicationFormModal({
               
               <div className="p-6 bg-slate-50 dark:bg-slate-900/50 rounded-2xl border border-border">
                 <p className="text-xs text-foreground font-bold leading-relaxed text-center">
-                  Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert.
+                  {language === "de"
+                    ? "Hinweis: Sie werden zu Microsoft Forms weitergeleitet, um Ihren Antrag sicher abzuschließen. Nach der Übermittlung wird Ihr Status automatisch in unserem System aktualisiert."
+                    : "Note: You will be redirected to Microsoft Forms to securely complete your application. After submission, your status will be automatically updated in our system."}
                 </p>
               </div>
             </div>
