@@ -2,7 +2,7 @@
 
 Welcome to the comprehensive code documentation for the My Campus Redesign project. This wiki provides detailed technical information about the codebase architecture, patterns, and implementation details.
 
-## 📖 Table of Contents
+## Table of Contents
 
 1. [Architecture Overview](#architecture-overview)
 2. [Directory Structure](#directory-structure)
