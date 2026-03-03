@@ -62,7 +62,7 @@ app.get("/sitemap.xml", (req: Request, res: Response) => {
   res
     .type("text/xml")
     .send(
-      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>'
+      '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"></urlset>',
     );
 });
 
@@ -71,9 +71,9 @@ app.get("/api/health", (req: Request, res: Response) => res.json({ ok: true }));
 
 // Small helper: get session token from cookie or header, accept both legacy and new names
 function getSessionToken(req: Request): string | null {
-  const cookieToken =
-    req.cookies?.session || req.cookies?.auth_session || null;
-  const headerToken = req.get("X-Session-Token") || req.get("x-session-token") || null;
+  const cookieToken = req.cookies?.session || req.cookies?.auth_session || null;
+  const headerToken =
+    req.get("X-Session-Token") || req.get("x-session-token") || null;
   return cookieToken || headerToken || null;
 }
 
@@ -110,7 +110,8 @@ function getMinuteInTimezone(tz: string | null | undefined): number {
 }
 
 function getCookieOptions(req: Request): CookieOptions {
-  const isProduction = process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
+  const isProduction =
+    process.env.NODE_ENV === "production" || process.env.VERCEL === "1";
   let domain;
   try {
     // Priority 1: explicit override
@@ -157,7 +158,7 @@ app.get("/api/user", async (req: Request, res: Response) => {
     if (!session || !session.user) {
       return res.status(401).json({ error: "Not authenticated" });
     }
-    
+
     const campusCity = process.env.DEFAULT_CAMPUS_CITY || "Hamburg";
     const campusArea = process.env.DEFAULT_CAMPUS_AREA || "Hammerbrook";
     const roomBookingEnabled = process.env.ROOM_BOOKING_ENABLED !== "0";
@@ -191,7 +192,8 @@ app.get("/api/courses", async (req: Request, res: Response) => {
       where: { token },
       include: { user: true },
     });
-    if (!session?.user) return res.status(401).json({ error: "Not authenticated" });
+    if (!session?.user)
+      return res.status(401).json({ error: "Not authenticated" });
 
     let dbCourses: any[] = [];
     if (session.user.major_id) {
@@ -232,86 +234,89 @@ app.post(
   express.json(),
   express.urlencoded({ extended: true }),
   async (req, res) => {
-  try {
-    const { email } = req.body;
+    try {
+      const { email } = req.body;
 
-    console.log(" Password reset request for:", email);
-    console.log("   req.body:", req.body);
-    console.log("   Content-Type:", req.headers["content-type"]);
+      console.log(" Password reset request for:", email);
+      console.log("   req.body:", req.body);
+      console.log("   Content-Type:", req.headers["content-type"]);
 
-    if (!email || typeof email !== "string") {
-      console.log(" Invalid email:", { email, type: typeof email });
-      return res
-        .status(400)
-        .json({ error: "Please provide a valid email address" });
-    }
+      if (!email || typeof email !== "string") {
+        console.log(" Invalid email:", { email, type: typeof email });
+        return res
+          .status(400)
+          .json({ error: "Please provide a valid email address" });
+      }
 
-    console.log(" Looking up user with email:", email.toLowerCase());
+      console.log(" Looking up user with email:", email.toLowerCase());
 
-    // Find user by email (case-insensitive)
-    const user = await prisma.user.findUnique({
-      where: { email: email.toLowerCase() },
-    });
+      // Find user by email (case-insensitive)
+      const user = await prisma.user.findUnique({
+        where: { email: email.toLowerCase() },
+      });
 
-    console.log(" User found:", user ? user.email : "none");
+      console.log(" User found:", user ? user.email : "none");
 
-    // Always return success even if user doesn't exist (security best practice)
-    if (!user) {
-      console.log("  No user found for email:", email);
+      // Always return success even if user doesn't exist (security best practice)
+      if (!user) {
+        console.log("  No user found for email:", email);
+        return res.json({
+          success: true,
+          message:
+            "If an account exists with this email, you will receive a password reset link shortly.",
+        });
+      }
+
+      // Generate reset token
+      const resetToken = crypto.randomUUID();
+      const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
+
+      console.log(" Generated reset token, updating user...");
+
+      // Update user with reset token
+      await prisma.user.update({
+        where: { id: user.id },
+        data: { reset_token: resetToken, reset_token_expiry: resetTokenExpiry },
+      });
+
+      console.log(" Sending password reset email...");
+
+      // Send email
+      const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
+
+      const emailResponse = await sendPasswordResetEmail(email, resetLink);
+
+      console.log(" Password reset email sent to:", email);
+
       return res.json({
         success: true,
         message:
           "If an account exists with this email, you will receive a password reset link shortly.",
+        // In development, return the link for testing
+        ...(process.env.NODE_ENV === "development" && {
+          resetLink,
+          resetToken,
+        }),
+      });
+    } catch (error: unknown) {
+      let message = "Unknown error";
+      let stack: string | undefined;
+      if (error instanceof Error) {
+        message = error.message;
+        stack = error.stack;
+      } else if (typeof error === "string") {
+        message = error;
+      }
+      console.error(" Error requesting password reset:", message);
+      if (stack) {
+        console.error("   Error stack:", stack);
+      }
+      return res.status(500).json({
+        error: "Failed to process password reset request",
+        details: message,
       });
     }
-
-    // Generate reset token
-    const resetToken = crypto.randomUUID();
-    const resetTokenExpiry = new Date(Date.now() + 3600000); // 1 hour from now
-
-    console.log(" Generated reset token, updating user...");
-
-    // Update user with reset token
-    await prisma.user.update({
-      where: { id: user.id },
-      data: { resetToken, resetTokenExpiry },
-    });
-
-    console.log(" Sending password reset email...");
-
-    // Send email
-    const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
-
-    const emailResponse = await sendPasswordResetEmail(email, resetLink);
-
-    console.log(" Password reset email sent to:", email);
-
-    return res.json({
-      success: true,
-      message:
-        "If an account exists with this email, you will receive a password reset link shortly.",
-      // In development, return the link for testing
-      ...(process.env.NODE_ENV === "development" && { resetLink, resetToken }),
-    });
-  } catch (error: unknown) {
-    let message = "Unknown error";
-    let stack: string | undefined;
-    if (error instanceof Error) {
-      message = error.message;
-      stack = error.stack;
-    } else if (typeof error === "string") {
-      message = error;
-    }
-    console.error(" Error requesting password reset:", message);
-    if (stack) {
-      console.error("   Error stack:", stack);
-    }
-    return res.status(500).json({
-      error: "Failed to process password reset request",
-      details: message,
-    });
-  }
-  }
+  },
 );
 
 async function sendPasswordResetEmail(email: string, resetLink: string) {
@@ -428,33 +433,35 @@ app.post(
   express.json(),
   express.urlencoded({ extended: true }),
   async (req, res) => {
-  try {
-    const { token } = req.body;
+    try {
+      const { token } = req.body;
 
-    if (!token || typeof token !== "string") {
-      return res.status(400).json({ error: "Invalid token" });
-    }
+      if (!token || typeof token !== "string") {
+        return res.status(400).json({ error: "Invalid token" });
+      }
 
-    // Find user with this reset token
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: token,
-        resetTokenExpiry: {
-          gt: new Date(), // Token must not be expired
+      // Find user with this reset token
+      const user = await prisma.user.findFirst({
+        where: {
+          reset_token: token,
+          reset_token_expiry: {
+            gt: new Date(), // Token must not be expired
+          },
         },
-      },
-    });
+      });
 
-    if (!user) {
-      return res.status(400).json({ error: "Invalid or expired reset token" });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Invalid or expired reset token" });
+      }
+
+      return res.json({ success: true, valid: true });
+    } catch (error: unknown) {
+      console.error(" Error verifying reset token:", error);
+      return res.status(500).json({ error: "Failed to verify token" });
     }
-
-    return res.json({ success: true, valid: true });
-  } catch (error: unknown) {
-    console.error(" Error verifying reset token:", error);
-    return res.status(500).json({ error: "Failed to verify token" });
-  }
-  }
+  },
 );
 
 // Reset password endpoint
@@ -463,66 +470,68 @@ app.post(
   express.json(),
   express.urlencoded({ extended: true }),
   async (req, res) => {
-  try {
-    const { token, password } = req.body;
+    try {
+      const { token, password } = req.body;
 
-    console.log(
-      " Password reset attempt with token:",
-      token?.substring(0, 8) + "..."
-    );
+      console.log(
+        " Password reset attempt with token:",
+        token?.substring(0, 8) + "...",
+      );
 
-    if (!token || typeof token !== "string") {
-      return res.status(400).json({ error: "Invalid token" });
-    }
+      if (!token || typeof token !== "string") {
+        return res.status(400).json({ error: "Invalid token" });
+      }
 
-    if (!password || typeof password !== "string") {
-      return res.status(400).json({ error: "Please provide a new password" });
-    }
+      if (!password || typeof password !== "string") {
+        return res.status(400).json({ error: "Please provide a new password" });
+      }
 
-    if (password.length < 8) {
-      return res
-        .status(400)
-        .json({ error: "Password must be at least 8 characters long" });
-    }
+      if (password.length < 8) {
+        return res
+          .status(400)
+          .json({ error: "Password must be at least 8 characters long" });
+      }
 
-    // Find user with this reset token
-    const user = await prisma.user.findFirst({
-      where: {
-        resetToken: token,
-        resetTokenExpiry: {
-          gt: new Date(), // Token must not be expired
+      // Find user with this reset token
+      const user = await prisma.user.findFirst({
+        where: {
+          reset_token: token,
+          reset_token_expiry: {
+            gt: new Date(), // Token must not be expired
+          },
         },
-      },
-    });
+      });
 
-    if (!user) {
-      return res.status(400).json({ error: "Invalid or expired reset token" });
+      if (!user) {
+        return res
+          .status(400)
+          .json({ error: "Invalid or expired reset token" });
+      }
+
+      // Hash the new password
+      const hashedPassword = await bcryptjs.hash(password, 10);
+
+      // Update user password and clear reset token
+      await prisma.user.update({
+        where: { id: user.id },
+        data: {
+          password: hashedPassword,
+          reset_token: null,
+          reset_token_expiry: null,
+        },
+      });
+
+      console.log(" Password reset successfully for user:", user.email);
+
+      return res.json({
+        success: true,
+        message: "Password reset successfully!",
+      });
+    } catch (error: unknown) {
+      console.error(" Error resetting password:", error);
+      return res.status(500).json({ error: "Failed to reset password" });
     }
-
-    // Hash the new password
-    const hashedPassword = await bcryptjs.hash(password, 10);
-
-    // Update user password and clear reset token
-    await prisma.user.update({
-      where: { id: user.id },
-      data: {
-        password: hashedPassword,
-        resetToken: null,
-        resetTokenExpiry: null,
-      },
-    });
-
-    console.log(" Password reset successfully for user:", user.email);
-
-    return res.json({
-      success: true,
-      message: "Password reset successfully!",
-    });
-  } catch (error: unknown) {
-    console.error(" Error resetting password:", error);
-    return res.status(500).json({ error: "Failed to reset password" });
-  }
-  }
+  },
 );
 
 // Email reminder cron job - sends reminders to students who haven't submitted this week
@@ -536,7 +545,11 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     const requireSecret =
       process.env.NODE_ENV === "production" ? true : !!cronSecret;
 
-    if (!isVercelCron && requireSecret && (!cronSecret || secret !== cronSecret)) {
+    if (
+      !isVercelCron &&
+      requireSecret &&
+      (!cronSecret || secret !== cronSecret)
+    ) {
       console.warn("  Unauthorized cron request");
       return res.status(401).json({ error: "Unauthorized" });
     }
@@ -554,7 +567,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     const week = Math.ceil(
       ((d.getTime() - yearStart.getTime()) / 86400000 +
         (yearStart.getDay() || 7)) /
-        7
+        7,
     );
     const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
 
@@ -578,9 +591,11 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     });
 
     const submittedIds = new Set(
-      submitted.map((r: { user_id: any }) => r.user_id)
+      submitted.map((r: { user_id: any }) => r.user_id),
     );
-    const targets = students.filter((s: { id: unknown; }) => !submittedIds.has(s.id));
+    const targets = students.filter(
+      (s: { id: unknown }) => !submittedIds.has(s.id),
+    );
 
     console.log(` Targeting ${targets.length} students for reminders`);
 
@@ -590,7 +605,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
         dryRun: true,
         currentWeekKey,
         targetCount: targets.length,
-        targets: targets.map((t: { email: any; }) => t.email),
+        targets: targets.map((t: { email: any }) => t.email),
       });
     }
 
@@ -666,7 +681,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
           ` Email sent to ${student.email}`,
           emailService === "test"
             ? `Preview: ${nodemailer.getTestMessageUrl(info)}`
-            : ""
+            : "",
         );
         sent++;
       } catch (err: unknown) {
@@ -676,10 +691,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
         } else if (typeof err === "string") {
           message = err;
         }
-        console.error(
-          ` Failed to send email to ${student.email}:`,
-          message
-        );
+        console.error(` Failed to send email to ${student.email}:`, message);
       }
     }
 
@@ -795,8 +807,12 @@ app.get("/api/reminders/preferences", async (req, res) => {
       include: { user: true },
     });
     if (!session?.user) return res.status(401).json({ error: "Unauthorized" });
-    const { reminder_enabled, reminder_hour, reminder_minute, reminder_timezone } =
-      session.user;
+    const {
+      reminder_enabled,
+      reminder_hour,
+      reminder_minute,
+      reminder_timezone,
+    } = session.user;
     return res.json({
       reminderEnabled: !!reminder_enabled,
       reminderHour: reminder_hour ?? 18,
@@ -895,7 +911,7 @@ app.post(
       console.error("/api/reminders/preferences POST error", err);
       return res.status(500).json({ error: "Failed to save preferences" });
     }
-  }
+  },
 );
 
 // -----------------------------
@@ -957,7 +973,7 @@ app.get("/api/news", async (req, res) => {
     const [items, total] = await Promise.all([
       prisma.news.findMany({
         where: where as any,
-        orderBy: [{ featured: "desc" }, { publishedAt: "desc" }],
+        orderBy: [{ featured: "desc" }, { published_at: "desc" }],
         take: pageSize,
         skip,
         select: {
@@ -968,9 +984,9 @@ app.get("/api/news", async (req, res) => {
           category: true,
           tags: true,
           author: true,
-          coverImageUrl: true,
+          cover_image_url: true,
           featured: true,
-          publishedAt: true,
+          published_at: true,
         },
       }),
       prisma.news.count({ where: where as any }),
@@ -978,7 +994,7 @@ app.get("/api/news", async (req, res) => {
 
     // optional tag filter on result set (tags stored as JSON string)
     const filtered = tag
-      ? items.filter((n: { tags: any; }) => {
+      ? items.filter((n: { tags: any }) => {
           try {
             const arr = JSON.parse(n.tags || "[]");
             return (
@@ -1121,13 +1137,13 @@ app.get("/api/news", async (req, res) => {
     if (q) {
       filtered = filtered.filter((n) =>
         [n.title, n.excerpt, n.content].some((t) =>
-          (t || "").toLowerCase().includes(q)
-        )
+          (t || "").toLowerCase().includes(q),
+        ),
       );
     }
     if (category) {
       filtered = filtered.filter(
-        (n) => (n.category || "").toLowerCase() === category.toLowerCase()
+        (n) => (n.category || "").toLowerCase() === category.toLowerCase(),
       );
     }
     if (tag) {
@@ -1147,8 +1163,7 @@ app.get("/api/news", async (req, res) => {
     filtered = filtered.sort((a, b) => {
       if (a.featured === b.featured) {
         return (
-          new Date(b.publishedAt).getTime() -
-          new Date(a.publishedAt).getTime()
+          new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime()
         );
       }
       return a.featured ? -1 : 1;
@@ -1203,8 +1218,8 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
       Number.isFinite(overrideWindow) && overrideWindow! >= 0
         ? overrideWindow!
         : Number.isFinite(Number(process.env.REMINDER_WINDOW_MINUTES))
-        ? Number(process.env.REMINDER_WINDOW_MINUTES)
-        : 0;
+          ? Number(process.env.REMINDER_WINDOW_MINUTES)
+          : 0;
     const debugMode = req.query.debug === "1";
     const nowUtc = new Date();
 
@@ -1291,7 +1306,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
     const week = Math.ceil(
       ((d.getTime() - yearStart.getTime()) / 86400000 +
         (yearStart.getDay() || 7)) /
-        7
+        7,
     );
     const currentWeekKey = `${isoYear}-W${String(week).padStart(2, "0")}`;
 
@@ -1427,10 +1442,7 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
         } else if (typeof err === "string") {
           message = err;
         }
-        console.error(
-          `Failed to send reminder to ${u.email}:`,
-          message
-        );
+        console.error(`Failed to send reminder to ${u.email}:`, message);
       }
     }
 
@@ -1476,13 +1488,97 @@ app.get("/api/news/:slug", async (req, res) => {
     console.warn("/api/news/:slug fallback due to error:", message);
     const now = new Date().toISOString();
     const samples = [
-      { id: 1, slug: "welcome-to-the-Plattform", title: "Welcome to the IU Student Plattform", content: "We are excited to launch the new IU Student Plattform. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","Plattform"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
-      { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", content: "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", coverImageUrl: undefined, featured: false, publishedAt: now },
-      { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", content: "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", coverImageUrl: undefined, featured: false, publishedAt: now },
-      { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", content: "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", coverImageUrl: undefined, featured: true, publishedAt: now },
-      { id: 5, slug: "scholarship-opportunities-2025", title: "Scholarship Opportunities 2025", content: "Applications are open for various scholarships for the 2025 academic year. Submit your application before December 15.", category: "Scholarships", tags: JSON.stringify(["scholarship","finance"]), author: "Student Office", coverImageUrl: undefined, featured: false, publishedAt: now },
-      { id: 6, slug: "library-extended-hours", title: "Library Extends Opening Hours", content: "To support your studies, the campus library will extend opening hours to 00:00 from Monday to Friday.", category: "Library", tags: JSON.stringify(["library","hours"]), author: "Library Team", coverImageUrl: undefined, featured: false, publishedAt: now },
-      { id: 7, slug: "career-fair-2025", title: "Join the 2025 Career Fair", content: "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.", category: "Careers", tags: JSON.stringify(["career","fair","jobs"]), author: "Career Services", coverImageUrl: undefined, featured: true, publishedAt: now },
+      {
+        id: 1,
+        slug: "welcome-to-the-Plattform",
+        title: "Welcome to the IU Student Plattform",
+        content:
+          "We are excited to launch the new IU Student Plattform. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.",
+        category: "Announcements",
+        tags: JSON.stringify(["announcement", "Plattform"]),
+        author: "IU Team",
+        coverImageUrl: undefined,
+        featured: true,
+        publishedAt: now,
+      },
+      {
+        id: 2,
+        slug: "exam-schedule-winter",
+        title: "Winter Exam Schedule Published",
+        content:
+          "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.",
+        category: "Exams",
+        tags: JSON.stringify(["exams", "schedule"]),
+        author: "Examination Office",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: now,
+      },
+      {
+        id: 3,
+        slug: "campus-maintenance-november",
+        title: "Scheduled Campus Maintenance in November",
+        content:
+          "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.",
+        category: "IT",
+        tags: JSON.stringify(["maintenance", "it"]),
+        author: "IT Services",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: now,
+      },
+      {
+        id: 4,
+        slug: "new-module-data-analytics",
+        title: "New Module: Data Analytics with Python",
+        content:
+          "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.",
+        category: "Academics",
+        tags: JSON.stringify(["module", "python", "analytics"]),
+        author: "Faculty of Computer Science",
+        coverImageUrl: undefined,
+        featured: true,
+        publishedAt: now,
+      },
+      {
+        id: 5,
+        slug: "scholarship-opportunities-2025",
+        title: "Scholarship Opportunities 2025",
+        content:
+          "Applications are open for various scholarships for the 2025 academic year. Submit your application before December 15.",
+        category: "Scholarships",
+        tags: JSON.stringify(["scholarship", "finance"]),
+        author: "Student Office",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: now,
+      },
+      {
+        id: 6,
+        slug: "library-extended-hours",
+        title: "Library Extends Opening Hours",
+        content:
+          "To support your studies, the campus library will extend opening hours to 00:00 from Monday to Friday.",
+        category: "Library",
+        tags: JSON.stringify(["library", "hours"]),
+        author: "Library Team",
+        coverImageUrl: undefined,
+        featured: false,
+        publishedAt: now,
+      },
+      {
+        id: 7,
+        slug: "career-fair-2025",
+        title: "Join the 2025 Career Fair",
+        content:
+          "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.",
+        category: "Careers",
+        tags: JSON.stringify(["career", "fair", "jobs"]),
+        author: "Career Services",
+        coverImageUrl: undefined,
+        featured: true,
+        publishedAt: now,
+      },
     ];
     const item = samples.find((s) => s.slug === slug) || null;
     if (item) return res.json({ item });
@@ -1495,7 +1591,7 @@ app.use(
   express.static(clientBuildPath, {
     maxAge: "1d",
     etag: false,
-  })
+  }),
 );
 
 // Prevent HTML from being cached so new asset hashes are always picked up.
@@ -1509,13 +1605,12 @@ app.use((req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
-
 app.use(
   createRequestHandler({
     // Cast to avoid type mismatch between generated build and ServerBuild interface
     build: serverBuild as any,
     mode: "production",
-  })
+  }),
 );
 
 // Vercel expects export, not app.listen()
