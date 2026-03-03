@@ -1,12 +1,19 @@
 import nodemailer from "nodemailer";
 
 export async function createTransporter() {
+  // Support both EMAIL_* and SMTP_* env var naming conventions
+  const user = process.env.EMAIL_USER || process.env.SMTP_USER;
+  const pass = process.env.EMAIL_PASSWORD || process.env.SMTP_PASSWORD;
+
+  if (!user || !pass) {
+    throw new Error(
+      "Missing email credentials. Set EMAIL_USER/EMAIL_PASSWORD or SMTP_USER/SMTP_PASSWORD environment variables.",
+    );
+  }
+
   return nodemailer.createTransport({
     service: "gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASSWORD,
-    },
+    auth: { user, pass },
   });
 }
 

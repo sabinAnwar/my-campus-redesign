@@ -32,15 +32,22 @@ async function sendEmail(to: string, subject: string, html: string) {
     // Import nodemailer dynamically
     const nodemailer = await import("nodemailer");
 
+    // Support both SMTP_* and EMAIL_* env var naming conventions
+    const user = process.env.SMTP_USER || process.env.EMAIL_USER;
+    const pass = process.env.SMTP_PASSWORD || process.env.EMAIL_PASSWORD;
+
+    if (!user || !pass) {
+      throw new Error(
+        "Missing email credentials. Set SMTP_USER/SMTP_PASSWORD or EMAIL_USER/EMAIL_PASSWORD environment variables.",
+      );
+    }
+
     // Create transporter
     const transporter = nodemailer.default.createTransport({
       host: process.env.SMTP_HOST || "smtp.gmail.com",
       port: parseInt(process.env.SMTP_PORT || "587"),
       secure: false, // true for 465, false for other ports
-      auth: {
-        user: process.env.SMTP_USER,
-        pass: process.env.SMTP_PASSWORD,
-      },
+      auth: { user, pass },
     });
 
     // Send email
