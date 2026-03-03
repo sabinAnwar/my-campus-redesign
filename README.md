@@ -1,12 +1,12 @@
-# My Campus Redesign - Student Portal Prototype
+# My Campus Redesign - Student Plattform Prototype
 
-A modern, accessible, and feature-rich student portal redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
+A modern, accessible, and feature-rich student Plattform redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
 
 ## Overview
 
-This project is a comprehensive redesign of a university campus management system, originally developed as part of a Bachelor's thesis exploring "Vibe Coding" (Agentic Software Engineering). The prototype addresses common pain points in traditional campus portals by providing:
+This project is a comprehensive redesign of a university campus management system, originally developed as part of a Bachelor's thesis exploring "Vibe Coding" (Agentic Software Engineering). The prototype addresses common pain points in traditional campus Plattforms by providing:
 
-- **Unified Experience**: All-in-one portal replacing fragmented systems
+- **Unified Experience**: All-in-one Plattform replacing fragmented systems
 - **Modern UI/UX**: Glassmorphism design with dark mode support
 - **Accessibility First**: WCAG 2.1 compliant with screen reader support
 - **Performance Optimized**: Server-side rendering with React Router 7

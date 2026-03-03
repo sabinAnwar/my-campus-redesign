@@ -119,7 +119,7 @@ router.put("/:weekKey", express.json(), async (req: Request, res: Response) => {
                   <p style="font-size: 15px; color: #555;">Dein Betreuer wird benachrichtigt.</p>
                 </div>
                 <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
-                  <p>IU Student Portal - Praxisbericht System</p>
+                  <p>IU Student Plattform - Praxisbericht System</p>
                 </div>
               </div>
             </body>
@@ -127,7 +127,7 @@ router.put("/:weekKey", express.json(), async (req: Request, res: Response) => {
         `;
 
         await transporter.sendMail({
-          from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+          from: process.env.EMAIL_FROM || "noreply@iu-Plattform.com",
           to: session.user.email, // Send to student
           subject: emailSubject,
           html: emailHtml,

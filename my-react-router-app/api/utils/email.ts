@@ -15,9 +15,9 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
     const transporter = await createTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+      from: process.env.EMAIL_FROM || "noreply@iu-Plattform.com",
       to: email,
-      subject: "IU Portal - Password Reset Request",
+      subject: "IU Plattform - Password Reset Request",
       html: `
         <html>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -26,7 +26,7 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
                 <h1 style="color: #000; margin: 0;">
                   <span style="display: inline-block; background: #000; color: white; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; font-size: 20px; font-weight: bold;">IU</span>
                 </h1>
-                <p style="color: #666; margin-top: 10px;">IU Student Portal</p>
+                <p style="color: #666; margin-top: 10px;">IU Student Plattform</p>
               </div>
 
               <h2 style="color: #333; margin-bottom: 20px;">Password Reset Request</h2>
@@ -48,12 +48,12 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
               <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
               
               <p style="color: #666; font-size: 12px;">
-                If you have any questions, please contact our support team at support@iu-portal.com
+                If you have any questions, please contact our support team at support@iu-Plattform.com
               </p>
               
               <p style="color: #666; font-size: 12px;">
                 Best regards,<br>
-                IU Portal Team
+                IU Plattform Team
               </p>
             </div>
           </body>
@@ -74,7 +74,7 @@ export async function sendPasswordResetEmail(email: string, resetLink: string) {
         If you didn't make this request, you can safely ignore this email.
         
         Best regards,
-        IU Portal Team
+        IU Plattform Team
       `,
     };
 

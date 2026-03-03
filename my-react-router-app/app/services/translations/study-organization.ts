@@ -11,7 +11,7 @@ export const TRANSLATIONS = {
     specializationSelectionDesc: "Wählen Sie Ihre Vertiefungsrichtung",
     examRegistration: "Klausuranmeldung",
     examRegistrationDesc: "Melden Sie sich zu Prüfungen an",
-    studentPortal: "Studierenden-Portal",
+    studentPortal: "Studierenden-Plattform",
     helpSupport: "Hilfe & Support",
     helpSupportDesc:
       "Haben Sie Fragen zu Ihren Anträgen oder Noten? Unser Support-Team hilft Ihnen gerne weiter.",
@@ -36,7 +36,7 @@ export const TRANSLATIONS = {
     specializationSelectionDesc: "Choose your specialization",
     examRegistration: "Additional Courses",
     examRegistrationDesc: "Apply for additional courses",
-    studentPortal: "Student Portal",
+    studentPortal: "Student Platform",
     helpSupport: "Help & Support",
     helpSupportDesc:
       "Do you have questions about your applications or grades? Our support team is happy to help.",

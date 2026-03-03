@@ -1,5 +1,5 @@
 /**
- * Motivational Quotes for IU Student Portal
+ * Motivational Quotes for IU Student Plattform
  * Each quote has German (quote_de), English (quote_en) versions and author
  */
 

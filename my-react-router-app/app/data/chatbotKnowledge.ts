@@ -24,7 +24,7 @@ export const KNOWLEDGE_BASE: KnowledgeEntry[] = [
 **Klausurtermine:**
 - Klausuren können jederzeit online über das Prüfungssystem gebucht werden
 - Duales Studium: Klausuren werden am Ende jeder Theoriephase geschrieben
-- Die genauen Termine findest du im MyCampus Portal unter "Prüfungen" → "Klausurtermine"
+- Die genauen Termine findest du im MyCampus Plattform unter "Prüfungen" → "Klausurtermine"
 
 **Wichtig zu beachten:**
 - Anmeldung mindestens 7 Tage vor dem gewünschten Termin

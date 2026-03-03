@@ -1,5 +1,5 @@
-import { PrismaClient } from '@prisma/client';
-import crypto from 'crypto';
+import { PrismaClient } from "@prisma/client";
+import crypto from "crypto";
 import { createTransporter } from "~/services/email.server";
 
 const prisma = new PrismaClient();
@@ -9,9 +9,9 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
     const transporter = await createTransporter();
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || 'noreply@iu-portal.com',
+      from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
       to: email,
-      subject: 'IU Portal - Password Reset Request',
+      subject: "IU Plattform - Password Reset Request",
       html: `
         <html>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -20,7 +20,7 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
                 <h1 style="color: #000; margin: 0;">
                   <span style="display: inline-block; background: #000; color: white; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; font-size: 20px; font-weight: bold;">IU</span>
                 </h1>
-                <p style="color: #666; margin-top: 10px;">IU Student Portal</p>
+                <p style="color: #666; margin-top: 10px;">IU Student Plattform</p>
               </div>
 
               <h2 style="color: #333; margin-bottom: 20px;">Password Reset Request</h2>
@@ -47,7 +47,7 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
               
               <p style="color: #666; font-size: 12px;">
                 Best regards,<br>
-                IU Portal Team
+                IU Plattform Team
               </p>
             </div>
           </body>
@@ -68,22 +68,25 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
         If you didn't make this request, you can safely ignore this email.
         
         Best regards,
-        IU Portal Team
-      `
+        IU Plattform Team
+      `,
     };
 
     const info = await transporter.sendMail(mailOptions);
-    console.log('Password reset email sent:', info.messageId);
+    console.log("Password reset email sent:", info.messageId);
     return true;
   } catch (error) {
-    console.error('Error sending password reset email:', error);
+    console.error("Error sending password reset email:", error);
     return false;
   }
 }
 
 export async function action({ request }: { request: Request }) {
-  if (request.method !== 'POST') {
-    return Response.json({ id: `${Date.now()}`, error: 'Method not allowed' }, { status: 405 });
+  if (request.method !== "POST") {
+    return Response.json(
+      { id: `${Date.now()}`, error: "Method not allowed" },
+      { status: 405 },
+    );
   }
 
   try {
@@ -100,11 +103,9 @@ export async function action({ request }: { request: Request }) {
       console.log(" Parsed as formData");
     } catch (formError) {
       const errorMsg =
-        formError instanceof Error
-          ? formError.message
-          : String(formError);
+        formError instanceof Error ? formError.message : String(formError);
       console.log("  formData() failed:", errorMsg);
-      
+
       // Fallback: try to parse as JSON
       try {
         const json: unknown = await request.json();
@@ -130,21 +131,24 @@ export async function action({ request }: { request: Request }) {
           id: `${Date.now()}`,
           error: "Please provide a valid email address",
         },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
     // Find user by email (case-insensitive)
     console.log(" Looking up user with email:", email.toLowerCase());
-    const user = await prisma.user.findUnique({ where: { email: email.toLowerCase() } });
-    
+    const user = await prisma.user.findUnique({
+      where: { email: email.toLowerCase() },
+    });
+
     // Always return success even if user doesn't exist (security best practice)
     if (!user) {
       console.log("  No user found for email:", email);
-      return Response.json({ 
+      return Response.json({
         id: `${Date.now()}`,
-        success: true, 
-        message: 'If an account exists with this email, you will receive a password reset link shortly.' 
+        success: true,
+        message:
+          "If an account exists with this email, you will receive a password reset link shortly.",
       });
     }
 
@@ -168,7 +172,7 @@ export async function action({ request }: { request: Request }) {
     const resetLink = `${process.env.APP_URL || "https://iu-mycampus.me"}/reset-password/${resetToken}`;
 
     const emailResponse = await sendPasswordResetEmail(email, resetLink);
-    
+
     console.log(" Password reset email sent");
 
     return Response.json({
@@ -184,13 +188,13 @@ export async function action({ request }: { request: Request }) {
     });
   } catch (error) {
     // Normalize unknown error to extract message and stack safely
-    let errMessage = 'Unknown error';
+    let errMessage = "Unknown error";
     let errStack: string | undefined = undefined;
 
     if (error instanceof Error) {
       errMessage = error.message;
       errStack = error.stack;
-    } else if (typeof error === 'string') {
+    } else if (typeof error === "string") {
       errMessage = error;
     } else {
       try {
@@ -200,12 +204,19 @@ export async function action({ request }: { request: Request }) {
       }
     }
 
-    console.error(' Error requesting password reset:', errMessage);
+    console.error(" Error requesting password reset:", errMessage);
     if (errStack) {
-      console.error('   Stack:', errStack);
+      console.error("   Stack:", errStack);
     }
 
-    return Response.json({ id: `${Date.now()}`, error: 'Failed to process password reset request', details: errMessage }, { status: 500 });
+    return Response.json(
+      {
+        id: `${Date.now()}`,
+        error: "Failed to process password reset request",
+        details: errMessage,
+      },
+      { status: 500 },
+    );
   }
 }
 

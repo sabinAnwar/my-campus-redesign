@@ -18,7 +18,7 @@ export const TRANSLATIONS = {
     daysUntilExam: (d: number) =>
       d > 0 ? `${d} Tage` : d === 0 ? "Heute" : "Abgeschlossen",
     modalTitle: "Antrag ausfüllen",
-    modalSubtitle: "Reiche deine Unterlagen sicher über unser Portal ein.",
+    modalSubtitle: "Reiche deine Unterlagen sicher über unsere Plattform ein.",
     honor: "Ich bestätige die Richtigkeit der gemachten Angaben.",
     privacy: "Ich akzeptiere die Datenschutzbestimmungen für den Upload.",
     dropHere: "Datei hier ablegen oder klicken, um hochzuladen",
@@ -54,16 +54,19 @@ export const TRANSLATIONS = {
       Klausur: "Klausur",
     },
     titles: {
-      "Paper: Customer Journey in Omnichannel Commerce": "Hausarbeit: Customer Journey im Omnichannel Commerce",
-      "Project: Commerce Platform Redesign": "Projektarbeit: Commerce Plattform Redesign",
-      "Online Exam: E-Commerce Foundations": "Online-Klausur: E-Commerce Grundlagen",
+      "Paper: Customer Journey in Omnichannel Commerce":
+        "Hausarbeit: Customer Journey im Omnichannel Commerce",
+      "Project: Commerce Platform Redesign":
+        "Projektarbeit: Commerce Plattform Redesign",
+      "Online Exam: E-Commerce Foundations":
+        "Online-Klausur: E-Commerce Grundlagen",
       "Exam: Business Informatics II": "Klausur: Wirtschaftsinformatik II",
     },
     courses: {
       "E-Commerce": "E-Commerce",
       "Commerce Engineering": "Commerce Engineering",
       "Business Informatics": "Wirtschaftsinformatik",
-    }
+    },
   },
   en: {
     bulletin: "Campus Bulletin",
@@ -84,7 +87,7 @@ export const TRANSLATIONS = {
     daysUntilExam: (d: number) =>
       d > 0 ? `${d} days` : d === 0 ? "Today" : "Completed",
     modalTitle: "Fill Application",
-    modalSubtitle: "Submit your documents securely via our portal.",
+    modalSubtitle: "Submit your documents securely via our platform.",
     honor: "I confirm the accuracy of the information provided.",
     privacy: "I accept the privacy policy for the upload.",
     dropHere: "Drop file here or click to upload",
@@ -116,15 +119,18 @@ export const TRANSLATIONS = {
       "Academic Paper": "Academic Paper",
     },
     titles: {
-      "Paper: Customer Journey in Omnichannel Commerce": "Term Paper: Customer Journey in Omnichannel Commerce",
-      "Project: Commerce Platform Redesign": "Project Work: Commerce Platform Redesign",
-      "Online Exam: E-Commerce Foundations": "Online Exam: E-Commerce Foundations",
+      "Paper: Customer Journey in Omnichannel Commerce":
+        "Term Paper: Customer Journey in Omnichannel Commerce",
+      "Project: Commerce Platform Redesign":
+        "Project Work: Commerce Platform Redesign",
+      "Online Exam: E-Commerce Foundations":
+        "Online Exam: E-Commerce Foundations",
       "Exam: Business Informatics II": "Exam: Business Informatics II",
     },
     courses: {
       "E-Commerce": "E-Commerce",
       "Commerce Engineering": "Commerce Engineering",
       "Business Informatics": "Business Informatics",
-    }
+    },
   },
 };

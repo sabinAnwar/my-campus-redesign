@@ -92,10 +92,10 @@ router.get("/praxisbericht-reminder", async (req: Request, res: Response) => {
     for (const student of targets) {
       try {
         const appUrl = process.env.APP_URL || "http://localhost:5174";
-        const portalLink = `${appUrl}/praxisbericht2`;
+        const PlattformLink = `${appUrl}/praxisbericht2`;
 
         const mailOptions = {
-          from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+          from: process.env.EMAIL_FROM || "noreply@iu-plattform.com",
           to: student.email,
           subject: `Reminder: Submit your Practical Report for Week ${week}`,
           html: `
@@ -120,7 +120,7 @@ router.get("/praxisbericht-reminder", async (req: Request, res: Response) => {
                     </div>
 
                     <div style="text-align: center; margin: 30px 0;">
-                      <a href="${portalLink}" style="display: inline-block; background: #111f60; color: #ffffff !important; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 16px;">Open Praxisberichte</a>
+                      <a href="${PlattformLink}" style="display: inline-block; background: #111f60; color: #ffffff !important; padding: 14px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; margin-top: 10px; font-size: 16px;">Open Praxisberichte</a>
                     </div>
                     
                     <p style="font-size: 14px; color: #999; text-align: center;">
@@ -128,14 +128,14 @@ router.get("/praxisbericht-reminder", async (req: Request, res: Response) => {
                     </p>
                   </div>
                   <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
-                    <p>&copy; ${new Date().getFullYear()} IU Student Portal</p>
+                    <p>&copy; ${new Date().getFullYear()} IU Student Plattform</p>
                     <p style="margin-top: 5px;">This is an automated notification.</p>
                   </div>
                 </div>
               </body>
             </html>
           `,
-          text: `Hi ${student.name || "Student"},\n\nThis is a reminder to submit your Practical Report for Week ${week}.\n\nVisit: ${portalLink}\n\nBest regards,\nIU Portal Team`,
+          text: `Hi ${student.name || "Student"},\n\nThis is a reminder to submit your Practical Report for Week ${week}.\n\nVisit: ${PlattformLink}\n\nBest regards,\nIU Plattform Team`,
         };
 
         await transporter.sendMail(mailOptions);
@@ -357,12 +357,12 @@ router.get("/daily-reminders", async (req: Request, res: Response) => {
 
       // Send reminder email
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
-      const portalLink = `${appUrl}/praxisbericht2`;
+      const PlattformLink = `${appUrl}/praxisbericht2`;
       const mailOptions = {
         from:
           process.env.EMAIL_FROM ||
           process.env.EMAIL_USER ||
-          "noreply@iu-portal.com",
+          "noreply@iu-Plattform.com",
         to: u.email,
         subject: " Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
@@ -370,12 +370,12 @@ router.get("/daily-reminders", async (req: Request, res: Response) => {
             <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
             <p>kurze Erinnerung für heute: Bitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.</p>
             <p>
-              <a href="${portalLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
+              <a href="${PlattformLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
             </p>
             <p style="color:#999;font-size:12px;">Diese Erinnerung wurde um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}) gesendet.</p>
           </div>
         `,
-        text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${portalLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
+        text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${PlattformLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
       };
 
       try {

@@ -13,8 +13,8 @@ export const DATABASES = [
     "icon": "BarChart3",
     "color": "iu-blue",
     "featured": true,
-    "description": "Das führende Statistik-Portal für Marktdaten, Branchenberichte und digitale Trends.",
-    "descriptionEn": "The leading statistics portal for market data, industry reports, and digital trends."
+    "description": "Das führende Statistik-Plattform für Marktdaten, Branchenberichte und digitale Trends.",
+    "descriptionEn": "The leading statistics Plattform for market data, industry reports, and digital trends."
   },
   {
     "id": "wiso",
@@ -43,8 +43,8 @@ export const DATABASES = [
     "icon": "BookOpen",
     "color": "iu-green",
     "featured": true,
-    "description": "Eines der weltweit führenden Online-Portale für wissenschaftliche, technische und medizinische Fachliteratur.",
-    "descriptionEn": "One of the world's leading online portals for scientific, technical, and medical academic literature."
+    "description": "Eines der weltweit führenden Online-Plattforme für wissenschaftliche, technische und medizinische Fachliteratur.",
+    "descriptionEn": "One of the world's leading online Plattforms for scientific, technical, and medical academic literature."
   },
   {
     "id": "linkedin-learning",

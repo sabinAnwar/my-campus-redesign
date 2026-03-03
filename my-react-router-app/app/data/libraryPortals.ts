@@ -1,1047 +1,1237 @@
 export const ALL_DATABASES = [
   {
-    "id": "acm-digital-library",
-    "name": "ACM Digital Library",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zugang zur Digital Library der Association for Computing Machinery (ACM). Freigeschaltet sind: Zeitschriften, Proceedings, News...",
-    "descriptionEn": "Zugang zur Digital Library der Association for Computing Machinery (ACM). Freigeschaltet sind: Zeitschriften, Proceedings, News...",
-    "type": "databases"
-  },
-  {
-    "id": "albatross",
-    "name": "Albatross",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Informationen rund um Flughäfen, Unternehmen, Verbände, Tabellen, Statistiken, Veranstaltungen • Inhalte sind nicht über die On...",
-    "descriptionEn": "Informationen rund um Flughäfen, Unternehmen, Verbände, Tabellen, Statistiken, Veranstaltungen • Inhalte sind nicht über die On...",
-    "type": "databases"
-  },
-  {
-    "id": "base",
-    "name": "BASE",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": false,
-    "description": "BASE (Bielefeld Academic Search Engine) ist eine der weltweit größten Suchmaschinen für wissenschaftliche Web-Dokumente. Bei et...",
-    "descriptionEn": "BASE (Bielefeld Academic Search Engine) ist eine der weltweit größten Suchmaschinen für wissenschaftliche Web-Dokumente. Bei et...",
-    "type": "databases"
-  },
-  {
-    "id": "bauen",
-    "name": "Bauen+",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugang zur Zeitschrift Bauen+ vom Fraunhofer IRB Verlag über die Plattform Inlibra • Inhalte sind nicht über die Online-Bibliot...",
-    "descriptionEn": "Zugang zur Zeitschrift Bauen+ vom Fraunhofer IRB Verlag über die Plattform Inlibra • Inhalte sind nicht über die Online-Bibliot...",
-    "type": "databases"
-  },
-  {
-    "id": "bauger-teliste--bgl",
-    "name": "Baugeräteliste (BGL)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Datenbank für alle gängigen Gerätearten für die Bauausführung und Baustelleneinrichtung. Bitte beachten: Der Zugriff erfolgt üb...",
-    "descriptionEn": "Datenbank für alle gängigen Gerätearten für die Bauausführung und Baustelleneinrichtung. Bitte beachten: Der Zugriff erfolgt üb...",
-    "type": "databases"
-  },
-  {
-    "id": "es-besteht-au-erdem-zugriff-auf-die-archivversion-2020",
-    "name": "Es besteht außerdem Zugriff auf die Archivversion 2020.",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "zugriff-auf-die--schneider-bautabellen--f-r-ingenieure",
-    "name": "Zugriff auf die „Schneider-Bautabellen“ für Ingenieure",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "bautechnik-digital",
-    "name": "Bautechnik-digital",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugriff auf verschiedene E-Books des Bundesanzeiger/Reguvis Verlag aus dem Bereich Architektur und Bau",
-    "descriptionEn": "Zugriff auf verschiedene E-Books des Bundesanzeiger/Reguvis Verlag aus dem Bereich Architektur und Bau",
-    "type": "databases"
-  },
-  {
-    "id": "beck-elibrary",
-    "name": "Beck eLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "descriptionEn": "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "type": "databases"
-  },
-  {
-    "id": "beck-online-bitte-beschreibung-beachten",
-    "name": "Beck-Online bitte Beschreibung beachten",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Zugang zur Rechtsdatenbank Beck-Online. Dort findest Du Kommentare, Handbücher und Zeitschriften aus dem umfangreichen Hochschu...",
-    "descriptionEn": "Zugang zur Rechtsdatenbank Beck-Online. Dort findest Du Kommentare, Handbücher und Zeitschriften aus dem umfangreichen Hochschu...",
-    "type": "databases"
-  },
-  {
-    "id": "competitionline",
-    "name": "Competitionline",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Campuslizenz für die Plattform Competitionline aus dem Bereich Architektur.Der Zugang kann über die im PDF-Dokument hinterlegte...",
-    "descriptionEn": "Campuslizenz für die Plattform Competitionline aus dem Bereich Architektur.Der Zugang kann über die im PDF-Dokument hinterlegte...",
-    "type": "databases"
-  },
-  {
-    "id": "ein-personenprofil-mit-referenzen",
-    "name": "ein Personenprofil mit Referenzen",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "content-select",
-    "name": "Content-Select",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "eine fächerübergreifende E-Book- und E-Journal-Plattform. Verfügbar sind u.a. einzelne E-Books und E-Book-Pakete der Verlage Be...",
-    "descriptionEn": "eine fächerübergreifende E-Book- und E-Journal-Plattform. Verfügbar sind u.a. einzelne E-Books und E-Book-Pakete der Verlage Be...",
-    "type": "databases"
-  },
-  {
-    "id": "geoinformatik-geod-sie-photogrammetrie-2020",
-    "name": "Geoinformatik/Geodäsie/Photogrammetrie 2020",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Die folgenden E-Journals wurden lizenziert: (Hinweis: Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Such...",
-    "descriptionEn": "Die folgenden E-Journals wurden lizenziert: (Hinweis: Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Such...",
-    "type": "databases"
-  },
-  {
-    "id": "zeitschrift-f-r-sozialp-dagogik-beltz-juventa--ab-2008",
-    "name": "Zeitschrift für Sozialpädagogik Beltz Juventa (ab 2008)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zeitschrift für Soziologie der Erziehung und Sozialisation Beltz Juventa (ab 2008)",
-    "descriptionEn": "Zeitschrift für Soziologie der Erziehung und Sozialisation Beltz Juventa (ab 2008)",
-    "type": "databases"
-  },
-  {
-    "id": "de-gruyter-online",
-    "name": "De Gruyter Online",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugriff einzelne E-Books und die Zeitschrift für Konfliktmanagement. Außerdem Zugriff auf das Online-Zeitschriften Archiv (bis ...",
-    "descriptionEn": "Zugriff einzelne E-Books und die Zeitschrift für Konfliktmanagement. Außerdem Zugriff auf das Online-Zeitschriften Archiv (bis ...",
-    "type": "databases"
-  },
-  {
-    "id": "detail-inspiration",
-    "name": "DETAIL Inspiration",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugriff auf die Zeitschrift DETAIL aus dem Bereich Architektur und Bau. Neben den einzelnen Ausgaben der Zeitschrift sind auch ...",
-    "descriptionEn": "Zugriff auf die Zeitschrift DETAIL aus dem Bereich Architektur und Bau. Neben den einzelnen Ausgaben der Zeitschrift sind auch ...",
-    "type": "databases"
-  },
-  {
-    "id": "dvgw-regelwerk-online",
-    "name": "DVGW-Regelwerk Online",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Zugang zum DVGW-Regelwerk im Bereich Wasser. Die einzelnen Arbeits- und Merkblätter können im Browser geöffnet und als PDF heru...",
-    "descriptionEn": "Zugang zum DVGW-Regelwerk im Bereich Wasser. Die einzelnen Arbeits- und Merkblätter können im Browser geöffnet und als PDF heru...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-academic-search-ultimate",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": true,
-    "description": "eine multidisziplinäre Volltextdatenbank. Sie bietet eine herausragende Kollektion an peer-reviewten Zeitschriften im Volltext,...",
-    "descriptionEn": "eine multidisziplinäre Volltextdatenbank. Sie bietet eine herausragende Kollektion an peer-reviewten Zeitschriften im Volltext,...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-business-source-ultimate",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": true,
-    "description": "weltweit maßgebliche wissenschaftliche Wirtschaftsdatenbank mit der wichtigsten Sammlung von bibliografischen und Volltext-Inha...",
-    "descriptionEn": "weltweit maßgebliche wissenschaftliche Wirtschaftsdatenbank mit der wichtigsten Sammlung von bibliografischen und Volltext-Inha...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-cinahl-ultimate",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": true,
-    "description": "die umfangreichste Volltextdatenbank für die Forschung in der Pflege und verwandten Fachbereichen. Sie ermöglicht den Volltextz...",
-    "descriptionEn": "die umfangreichste Volltextdatenbank für die Forschung in der Pflege und verwandten Fachbereichen. Sie ermöglicht den Volltextz...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-discovery-service-online-bibliothek--eds",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": true,
-    "description": "Der EBSCO Discovery Service besser bekannt als die \"Online-Bibliothek\". Dahinter verbirgt sich eine leistungsstarke Suchmaschin...",
-    "descriptionEn": "Der EBSCO Discovery Service besser bekannt als die \"Online-Bibliothek\". Dahinter verbirgt sich eine leistungsstarke Suchmaschin...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-greenfile",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": true,
-    "description": "bietet profunde Untersuchungsergebnisse zu allen Aspekten menschlichen Einflusses auf die Umwelt.",
-    "descriptionEn": "bietet profunde Untersuchungsergebnisse zu allen Aspekten menschlichen Einflusses auf die Umwelt.",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-hospitality---tourism-complete",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": true,
-    "description": "umfasst akademische Forschung und Branchenneuigkeiten zu sämtlichen Bereichen von Hotellerie und Tourismus.",
-    "descriptionEn": "umfasst akademische Forschung und Branchenneuigkeiten zu sämtlichen Bereichen von Hotellerie und Tourismus.",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-library--information-science---technology-abstracts--lista",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": true,
-    "description": "LISTA (Library, Information Science & Technology Abstracts) ist eine kostenlose Datenbank zum Thema Bibliothekswesen und Inform...",
-    "descriptionEn": "LISTA (Library, Information Science & Technology Abstracts) ist eine kostenlose Datenbank zum Thema Bibliothekswesen und Inform...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-psychology---behavioral-sciences-collection",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": true,
-    "description": "wichtige Volltextdatenbank für Psycholog:innen, Therapeut:innen, Forschende, Wissenschaftler:innen und Studierende. Sie bietet ...",
-    "descriptionEn": "wichtige Volltextdatenbank für Psycholog:innen, Therapeut:innen, Forschende, Wissenschaftler:innen und Studierende. Sie bietet ...",
-    "type": "databases"
-  },
-  {
-    "id": "ebsco-regional-business-news",
-    "name": "EBSCO Discovery",
-    "url": "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": true,
-    "description": "Regional Business News enthält umfassende Volltexte für Wirtschaftspublikationen in den USA und Kanada.",
-    "descriptionEn": "Regional Business News enthält umfassende Volltexte für Wirtschaftspublikationen in den USA und Kanada.",
-    "type": "databases"
-  },
-  {
-    "id": "education-week",
-    "name": "Education week",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugriff auf die Zeitschrift Education Week, eine US-amerikanische Zeitung, die vom Editorial Projects in Education (EPE) pubicl...",
-    "descriptionEn": "Zugriff auf die Zeitschrift Education Week, eine US-amerikanische Zeitung, die vom Editorial Projects in Education (EPE) pubicl...",
-    "type": "databases"
-  },
-  {
-    "id": "kostenloser-zugriff-auf-eine-limitierte-anzahl-an-artikeln-pro-monat",
-    "name": "Kostenloser Zugriff auf eine limitierte Anzahl an Artikeln pro Monat.",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche auf der Seite notwendig Ab 1995 alternativ komplet...",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche auf der Seite notwendig Ab 1995 alternativ komplet...",
-    "type": "databases"
-  },
-  {
-    "id": "edward-elgar-e-book-archive",
-    "name": "Edward Elgar E-Book Archive",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Das Edward Elgar E-Book Archive bietet Online-Zugriff auf wirtschaftswissenschaftliche E-Books ab dem Erscheinungsjahr 1989. Da...",
-    "descriptionEn": "Das Edward Elgar E-Book Archive bietet Online-Zugriff auf wirtschaftswissenschaftliche E-Books ab dem Erscheinungsjahr 1989. Da...",
-    "type": "databases"
-  },
-  {
-    "id": "ehraf-world-cultures",
-    "name": "EHRAF World Cultures",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Daten von über 200 Völkern bzw. ethnischen Gruppen. Zugrunde liegen diese in Form von ethnographischen Monographien, Aufsätzen ...",
-    "descriptionEn": "Daten von über 200 Völkern bzw. ethnischen Gruppen. Zugrunde liegen diese in Form von ethnographischen Monographien, Aufsätzen ...",
-    "type": "databases"
-  },
-  {
-    "id": "eiu-country-reports-archive",
-    "name": "EIU Country Reports Archive",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Die Datenbank der Economist Intelligence Unit (EIU) bietet monatlich aktualisierte Länderberichte (Country Reports) von allen S...",
-    "descriptionEn": "Die Datenbank der Economist Intelligence Unit (EIU) bietet monatlich aktualisierte Länderberichte (Country Reports) von allen S...",
-    "type": "databases"
-  },
-  {
-    "id": "elektronische-zeitschriftenbibliothek--ezb",
-    "name": "Elektronische Zeitschriftenbibliothek (EZB)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Die EZB ist eine Suchplattform für von uns lizenzierte und frei verfügbare Online-Zeitschriften. Sie enthält bibliographische I...",
-    "descriptionEn": "Die EZB ist eine Suchplattform für von uns lizenzierte und frei verfügbare Online-Zeitschriften. Sie enthält bibliographische I...",
-    "type": "databases"
-  },
-  {
-    "id": "rot---kein-zugriff",
-    "name": "Rot - kein Zugriff",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "falls Du eine Rote oder Gelb-Rote Quelle im Volltext lesen möchtest, sende uns einfach eine E-Mail und wir prüfen die Zugriffsm...",
-    "descriptionEn": "falls Du eine Rote oder Gelb-Rote Quelle im Volltext lesen möchtest, sende uns einfach eine E-Mail und wir prüfen die Zugriffsm...",
-    "type": "databases"
-  },
-  {
-    "id": "emerald",
-    "name": "Emerald",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Journals, E-Books und E-Book-Serien hauptsächlich zu den Bereichen Business, Management & Economics. Freigeschaltet sind:",
-    "descriptionEn": "Journals, E-Books und E-Book-Serien hauptsächlich zu den Bereichen Business, Management & Economics. Freigeschaltet sind:",
-    "type": "databases"
-  },
-  {
-    "id": "emerald-fulltext-archive-database--efad---bis-2020",
-    "name": "Emerald Fulltext Archive Database (EFAD) (bis 2020)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Emerald Business, Management and Economics E-Book Series Collection Archive(1991-2022)",
-    "descriptionEn": "Emerald Business, Management and Economics E-Book Series Collection Archive(1991-2022)",
-    "type": "databases"
-  },
-  {
-    "id": "zugriff-auf-das-archiv-der-zeitschrift-ern-hrung-im-fokus--2012-2023",
-    "name": "Zugriff auf das Archiv der Zeitschrift Ernährung im Fokus (2012-2023)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "ern-hrungs-umschau",
-    "name": "Ernährungs-Umschau",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugriff auf die Zeitschrift Ernährungsumschau, das offizielle Organ der Deutschen Gesellschaft für Ernährung e. V. (DGE). Veröf...",
-    "descriptionEn": "Zugriff auf die Zeitschrift Ernährungsumschau, das offizielle Organ der Deutschen Gesellschaft für Ernährung e. V. (DGE). Veröf...",
-    "type": "databases"
-  },
-  {
-    "id": "aktuelle-information-des-verlags",
-    "name": "Aktuelle Information des Verlags:",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "aufgrund technischer Ursachen, können E-Paper die älter als Ausgabe 7/2018 sind, momentan nicht geöffnet werden. Wir arbeiten f...",
-    "descriptionEn": "aufgrund technischer Ursachen, können E-Paper die älter als Ausgabe 7/2018 sind, momentan nicht geöffnet werden. Wir arbeiten f...",
-    "type": "databases"
-  },
-  {
-    "id": "esv-elibrary--esvcampus",
-    "name": "ESV eLibrary (ESVcampus)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "eine fächerübergreifende E-Book-Plattform mit Zugriff auf die Pakete Tourismus- und Sportmanagement, sowie weitere lizenzierte ...",
-    "descriptionEn": "eine fächerübergreifende E-Book-Plattform mit Zugriff auf die Pakete Tourismus- und Sportmanagement, sowie weitere lizenzierte ...",
-    "type": "databases"
-  },
-  {
-    "id": "europ-isches-arzneibuch--eab",
-    "name": "Europäisches Arzneibuch (EAB)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugriff auf das Europäische Arzneibuch. Der Inhalt der Online-Version entspricht der 11. Ausgabe des Europäischen Arzneibuchs, ...",
-    "descriptionEn": "Zugriff auf das Europäische Arzneibuch. Der Inhalt der Online-Version entspricht der 11. Ausgabe des Europäischen Arzneibuchs, ...",
-    "type": "databases"
-  },
-  {
-    "id": "genesis-destatis",
-    "name": "GENESIS/Destatis",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": false,
-    "description": "Datenbank des Statistischen Bundesamtes - enthält ein breites Themenspektrum fachlich tief gegliederter Ergebnisse (Bund, Land,...",
-    "descriptionEn": "Datenbank des Statistischen Bundesamtes - enthält ein breites Themenspektrum fachlich tief gegliederter Ergebnisse (Bund, Land,...",
-    "type": "databases"
-  },
-  {
-    "id": "hogrefe-psyjournals",
-    "name": "Hogrefe PsyJournals",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zugang zum Zeitschriftenpaket PsyJournals vom Hogrefe-Verlag. Es handelt sich um 29 psychologische und psychiatrische Zeitschri...",
-    "descriptionEn": "Zugang zum Zeitschriftenpaket PsyJournals vom Hogrefe-Verlag. Es handelt sich um 29 psychologische und psychiatrische Zeitschri...",
-    "type": "databases"
-  },
-  {
-    "id": "ibr-online---immobilien----baurecht",
-    "name": "ibr-online – Immobilien- & Baurecht",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugang zur Datenbank ibr-online für baurechtliche Informationen. In der Datenbank sind folgende Elemente integriert:",
-    "descriptionEn": "Zugang zur Datenbank ibr-online für baurechtliche Informationen. In der Datenbank sind folgende Elemente integriert:",
-    "type": "databases"
-  },
-  {
-    "id": "ma-gebende-kommentierung-zu-allen-gebieten-des-baurechts",
-    "name": "maßgebende Kommentierung zu allen Gebieten des Baurechts",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "IBR Materialien (wie z.B. aktuelle Gesetzesentwürfe, Stellungnahmen Verwaltungsschreiben) • Inhalte sind nicht über die Online-...",
-    "descriptionEn": "IBR Materialien (wie z.B. aktuelle Gesetzesentwürfe, Stellungnahmen Verwaltungsschreiben) • Inhalte sind nicht über die Online-...",
-    "type": "databases"
-  },
-  {
-    "id": "ieee-xplore",
-    "name": "IEEE Xplore",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugriff auf die IEEE Xplore Digital Library. Beinhaltet u.a. Literatur aus den Bereichen Electrical Engineering, Computer Scien...",
-    "descriptionEn": "Zugriff auf die IEEE Xplore Digital Library. Beinhaltet u.a. Literatur aus den Bereichen Electrical Engineering, Computer Scien...",
-    "type": "databases"
-  },
-  {
-    "id": "igi-global-infosci",
-    "name": "IGI Global InfoSci",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "IGI Global ist ein Anbieter wissenschaftlicher Veröffentlichungen vor allem im Bereich der Wirtschaftsinformatik, Informatik un...",
-    "descriptionEn": "IGI Global ist ein Anbieter wissenschaftlicher Veröffentlichungen vor allem im Bereich der Wirtschaftsinformatik, Informatik un...",
-    "type": "databases"
-  },
-  {
-    "id": "international-monetary-fund",
-    "name": "International Monetary Fund",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Zugang zur eLibrary des IMF mit Büchern, Analytical Papers, Periodicals und Statistiken Inlibra eine fächerübergreifende E-Book...",
-    "descriptionEn": "Zugang zur eLibrary des IMF mit Büchern, Analytical Papers, Periodicals und Statistiken Inlibra eine fächerübergreifende E-Book...",
-    "type": "databases"
-  },
-  {
-    "id": "zukunfts-handbuch-kindertageseinrichtungen",
-    "name": "Zukunfts-Handbuch Kindertageseinrichtungen",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "• Inhalte der Zeitschriften sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte der Zeitschriften sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "iudocs",
-    "name": "IUDocs",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Im neuen Repositorium IUDocs findest Du ab sofort Abschlussarbeiten/Theses von ehemaligen IU-Studierenden. Die Theses sind nur ...",
-    "descriptionEn": "Im neuen Repositorium IUDocs findest Du ab sofort Abschlussarbeiten/Theses von ehemaligen IU-Studierenden. Die Theses sind nur ...",
-    "type": "databases"
-  },
-  {
-    "id": "karger",
-    "name": "Karger",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "E-Books und eJournals des Medizin-Verlags Karger, die ein breites biomedizinisches Spektrum abdecken. Zugriff auf die Karger E-...",
-    "descriptionEn": "E-Books und eJournals des Medizin-Verlags Karger, die ein breites biomedizinisches Spektrum abdecken. Zugriff auf die Karger E-...",
-    "type": "databases"
-  },
-  {
-    "id": "kleiber-digital-wertermittlerportal",
-    "name": "Kleiber-digital/Wertermittlerportal",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugang zum Buch „Verkehrswertermittlung von Grundstücken“, herausgegeben von Prof. Wolfgang Kleiber unter Mitarbeit von Dr. Rol...",
-    "descriptionEn": "Zugang zum Buch „Verkehrswertermittlung von Grundstücken“, herausgegeben von Prof. Wolfgang Kleiber unter Mitarbeit von Dr. Rol...",
-    "type": "databases"
-  },
-  {
-    "id": "klett-cotta-elibrary",
-    "name": "Klett-Cotta eLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugriff auf die Zeitschriften Familiendynamik und Trauma & Gewalt beim Klett-Cotta Verlag • Inhalte sind nicht über die Online-...",
-    "descriptionEn": "Zugriff auf die Zeitschriften Familiendynamik und Trauma & Gewalt beim Klett-Cotta Verlag • Inhalte sind nicht über die Online-...",
-    "type": "databases"
-  },
-  {
-    "id": "knovel",
-    "name": "Knovel",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugang zur Datenbank Knovel. Diese bietet technische Informationen und Grundwissen für Ingenieure in Form von Handbüchern und N...",
-    "descriptionEn": "Zugang zur Datenbank Knovel. Diese bietet technische Informationen und Grundwissen für Ingenieure in Form von Handbüchern und N...",
-    "type": "databases"
-  },
-  {
-    "id": "konstruktiver-ingenieurbau",
-    "name": "Konstruktiver Ingenieurbau",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugang zur Zeitschrift Konstruktiver Ingenieurbau vom Reguvis/ Bundesanzeiger Verlag • Inhalte sind nicht über die Online-Bibli...",
-    "descriptionEn": "Zugang zur Zeitschrift Konstruktiver Ingenieurbau vom Reguvis/ Bundesanzeiger Verlag • Inhalte sind nicht über die Online-Bibli...",
-    "type": "databases"
-  },
-  {
-    "id": "zugang-zur-logos---fachzeitschrift-f-r-logop-die-und-sprachtherapie",
-    "name": "Zugang zur Logos – Fachzeitschrift für Logopädie und Sprachtherapie",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "medhochzwei",
-    "name": "medhochzwei",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugriff auf E-Books und Zeitschriften des medhochzwei Verlags u.a. zu den Themen Gesundheitspolitik, Gesundheitssysteme und Man...",
-    "descriptionEn": "Zugriff auf E-Books und Zeitschriften des medhochzwei Verlags u.a. zu den Themen Gesundheitspolitik, Gesundheitssysteme und Man...",
-    "type": "databases"
-  },
-  {
-    "id": "medline",
-    "name": "MEDLINE",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "MEDLINE ist die wichtigste bibliographische Datenbank mit dem Schwerpunkt Medizin. Sie weist Publikationen nach, die seit 1946 ...",
-    "descriptionEn": "MEDLINE ist die wichtigste bibliographische Datenbank mit dem Schwerpunkt Medizin. Sie weist Publikationen nach, die seit 1946 ...",
-    "type": "databases"
-  },
-  {
-    "id": "nautos-normdatenbank",
-    "name": "Nautos Normdatenbank",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Die Normdatenbank Perinorm wurde durch die neue Plattform Nautos abgelöst. Alle lizenzierten Normen und Normentwürfe können im ...",
-    "descriptionEn": "Die Normdatenbank Perinorm wurde durch die neue Plattform Nautos abgelöst. Alle lizenzierten Normen und Normentwürfe können im ...",
-    "type": "databases"
-  },
-  {
-    "id": "best-collection-33-dwa-komplett",
-    "name": "BEST-Collection 33 DWA komplett",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig Weitere Normen, z.B. zu...",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig Weitere Normen, z.B. zu...",
-    "type": "databases"
-  },
-  {
-    "id": "nomos-elibrary",
-    "name": "Nomos eLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Die Inhalte der Nomos eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "descriptionEn": "Die Inhalte der Nomos eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "type": "databases"
-  },
-  {
-    "id": "oecd-ilibrary",
-    "name": "OECD iLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "OECD iLibrary ist das Portal für Online-Veröffentlichungen der Organisation for Economic Cooperation and Development (OECD). Üb...",
-    "descriptionEn": "OECD iLibrary ist das Portal für Online-Veröffentlichungen der Organisation for Economic Cooperation and Development (OECD). Üb...",
-    "type": "databases"
-  },
-  {
-    "id": "onarchitecture",
-    "name": "OnArchitecture",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "ein umfangreiches audiovisuelles Archiv im Bereich Architektur und Design. Die Kollektion umfasst Video-Interviews mit einfluss...",
-    "descriptionEn": "ein umfangreiches audiovisuelles Archiv im Bereich Architektur und Design. Die Kollektion umfasst Video-Interviews mit einfluss...",
-    "type": "databases"
-  },
-  {
-    "id": "orbis-d-a-ch",
-    "name": "Orbis D-A-CH",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Zugang zur Unternehmensdatenbank Orbis. Darin enthalten sind Firmen- und Beteiligungsdaten sowie Finanzzahlen von Unternehmen i...",
-    "descriptionEn": "Zugang zur Unternehmensdatenbank Orbis. Darin enthalten sind Firmen- und Beteiligungsdaten sowie Finanzzahlen von Unternehmen i...",
-    "type": "databases"
-  },
-  {
-    "id": "oxford-journals",
-    "name": "Oxford Journals",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Zugang zum Oxford Journals Digital Archive (1849-2017). Angeboten werden elektronische Zeitschriften der Oxford University Pres...",
-    "descriptionEn": "Zugang zum Oxford Journals Digital Archive (1849-2017). Angeboten werden elektronische Zeitschriften der Oxford University Pres...",
-    "type": "databases"
-  },
-  {
-    "id": "zugang-zur-zeitschrift-p-dagogik-der-gesundheitsberufe-von-hpsmedia",
-    "name": "Zugang zur Zeitschrift Pädagogik der Gesundheitsberufe von hpsmedia",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "physician-assistant",
-    "name": "Physician Assistant",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zugang zur Zeitschrift Physician Assistant vom Schmidt-Römhild Verlag. Ältere Ausgaben (ab 2020) befinden sich im Archiv und la...",
-    "descriptionEn": "Zugang zur Zeitschrift Physician Assistant vom Schmidt-Römhild Verlag. Ältere Ausgaben (ab 2020) befinden sich im Archiv und la...",
-    "type": "databases"
-  },
-  {
-    "id": "prometheus-bildarchiv",
-    "name": "Prometheus Bildarchiv",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Prometheus ist ein verteiltes digitales Bildarchiv, das derzeit 3.913.400 Bilder aus Kunst, Kultur und Geschichte für Ihre Fors...",
-    "descriptionEn": "Prometheus ist ein verteiltes digitales Bildarchiv, das derzeit 3.913.400 Bilder aus Kunst, Kultur und Geschichte für Ihre Fors...",
-    "type": "databases"
-  },
-  {
-    "id": "pschyrembel-klinisches-w-rterbuch",
-    "name": "Pschyrembel Klinisches Wörterbuch",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-orange",
-    "featured": false,
-    "description": "Zugang zum Pschyrembel Klinisches Wörterbuch. Das führende medizinische Nachschlagewerk für die klinische Erstinformation: qual...",
-    "descriptionEn": "Zugang zum Pschyrembel Klinisches Wörterbuch. Das führende medizinische Nachschlagewerk für die klinische Erstinformation: qual...",
-    "type": "databases"
-  },
-  {
-    "id": "psyndex",
-    "name": "Psyndex",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zugang zur Referenzdatenbank Psyndex über WISOnet. Für die Recherche empfehlen wir zusätzlich die Verwendung des Thesaurus Psyc...",
-    "descriptionEn": "Zugang zur Referenzdatenbank Psyndex über WISOnet. Für die Recherche empfehlen wir zusätzlich die Verwendung des Thesaurus Psyc...",
-    "type": "databases"
-  },
-  {
-    "id": "quartier-fachmagazin",
-    "name": "Quartier Fachmagazin",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugang zu Quartier: Fachmagazin für urbanen Wohnungsbau. Die Zugangsdaten können beim Library Team beantragt werden: library@iu...",
-    "descriptionEn": "Zugang zu Quartier: Fachmagazin für urbanen Wohnungsbau. Die Zugangsdaten können beim Library Team beantragt werden: library@iu...",
-    "type": "databases"
-  },
-  {
-    "id": "sage",
-    "name": "Sage",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": false,
-    "description": "Zugang zum Sage Journals Online Deep Backfile 1879-2023. Angeboten werden elektronische Zeitschriften des Verlags Sage Publicat...",
-    "descriptionEn": "Zugang zum Sage Journals Online Deep Backfile 1879-2023. Angeboten werden elektronische Zeitschriften des Verlags Sage Publicat...",
-    "type": "databases"
-  },
-  {
-    "id": "schulz-kirchner-verlag",
-    "name": "Schulz-Kirchner Verlag",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": false,
-    "description": "Zugang zu den Zeitschriften Ergoscience (ab Jg. 2025-) Ergotherapie und Rehabilitation (Jg. 2021-2022; ab Jg. 2025-) und Forum ...",
-    "descriptionEn": "Zugang zu den Zeitschriften Ergoscience (ab Jg. 2025-) Ergotherapie und Rehabilitation (Jg. 2021-2022; ab Jg. 2025-) und Forum ...",
-    "type": "databases"
-  },
-  {
-    "id": "sciencedirect--elsevier",
-    "name": "ScienceDirect (Elsevier)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Laufender Zugang zu mehr als 2000 Zeitschriften des Verlags Elsevier (DEAL) und den Journal Backfiles Social Sciences & Humanit...",
-    "descriptionEn": "Laufender Zugang zu mehr als 2000 Zeitschriften des Verlags Elsevier (DEAL) und den Journal Backfiles Social Sciences & Humanit...",
-    "type": "databases"
-  },
-  {
-    "id": "scientific-net",
-    "name": "Scientific.Net",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Archiv der Online-Zeitschriften von Trans Tech Publications (1984-2016). Ingenieurs,- Nano- und Biomedizinische Wissenschaften,...",
-    "descriptionEn": "Archiv der Online-Zeitschriften von Trans Tech Publications (1984-2016). Ingenieurs,- Nano- und Biomedizinische Wissenschaften,...",
-    "type": "databases"
-  },
-  {
-    "id": "social-theory--alexander-street-press",
-    "name": "Social Theory (Alexander Street Press)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "eine Volltextdatenbank zur soziologischen Theorie von den Anfängen der Soziologie im 19. Jahrhundert bis zum 21. Jahrhundert. D...",
-    "descriptionEn": "eine Volltextdatenbank zur soziologischen Theorie von den Anfängen der Soziologie im 19. Jahrhundert bis zum 21. Jahrhundert. D...",
-    "type": "databases"
-  },
-  {
-    "id": "soziale-arbeit--dzi",
-    "name": "Soziale Arbeit (DZI)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Volltextzugriff auf die Zeitschrift Soziale Arbeit vom Deutschen Zentralinstitut für Soziale Fragen (DZI) ab Heft 1/2005. Die v...",
-    "descriptionEn": "Volltextzugriff auf die Zeitschrift Soziale Arbeit vom Deutschen Zentralinstitut für Soziale Fragen (DZI) ab Heft 1/2005. Die v...",
-    "type": "databases"
-  },
-  {
-    "id": "springer",
-    "name": "Springer Link",
-    "url": "https://link.springer.com/",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": true,
-    "description": "Zugang zu lizenzierten E-Books und weiteren Open Access E-Books. Außerdem Zugriff auf die laufenden Jahrgänge von rund 2.800 Sp...",
-    "descriptionEn": "Zugang zu lizenzierten E-Books und weiteren Open Access E-Books. Außerdem Zugriff auf die laufenden Jahrgänge von rund 2.800 Sp...",
-    "type": "databases"
-  },
-  {
-    "id": "statista",
-    "name": "Statista",
-    "url": "https://www.statista.com/",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": true,
-    "description": "nationale und internationale statistische Quellen zu Unternehmen und Branchen. Mit einer speziellen Downloadfunktion kannst Du ...",
-    "descriptionEn": "nationale und internationale statistische Quellen zu Unternehmen und Branchen. Mit einer speziellen Downloadfunktion kannst Du ...",
-    "type": "databases"
-  },
-  {
-    "id": "the-nation-digital-archive",
-    "name": "The Nation Digital Archive",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "die vollständigen Ausgaben der Zeitschrift „The Nation“ ab der Erstausgabe von 1865 bis 2010 im Volltext.",
-    "descriptionEn": "die vollständigen Ausgaben der Zeitschrift „The Nation“ ab der Erstausgabe von 1865 bis 2010 im Volltext.",
-    "type": "databases"
-  },
-  {
-    "id": "thieme-bilddatenbank-anatomie",
-    "name": "Thieme Bilddatenbank Anatomie",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugang zur Thieme Bilddatenbank Anatomie. Die Bilddatenbank enthält über 3700 einzigartige Abbildungen und radiologische Bilder...",
-    "descriptionEn": "Zugang zur Thieme Bilddatenbank Anatomie. Die Bilddatenbank enthält über 3700 einzigartige Abbildungen und radiologische Bilder...",
-    "type": "databases"
-  },
-  {
-    "id": "thieme-connect",
-    "name": "Thieme-Connect",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugriff auf die E-Book-Pakete Innere Medizin und Logopädie. Außerdem Zugriff auf die Volltextarchive (1980-2007) von ausgewählt...",
-    "descriptionEn": "Zugriff auf die E-Book-Pakete Innere Medizin und Logopädie. Außerdem Zugriff auf die Volltextarchive (1980-2007) von ausgewählt...",
-    "type": "databases"
-  },
-  {
-    "id": "physioscience",
-    "name": "Physioscience",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "thieme-eref-e-books",
-    "name": "Thieme eRef E-Books",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "Zugriff auf ausgewählte eRef-Lehrbücher aus den Bereichen Anatomie, Biologie, Chemie, Ergotherapie, Medizin, Pflege, Physiologi...",
-    "descriptionEn": "Zugriff auf ausgewählte eRef-Lehrbücher aus den Bereichen Anatomie, Biologie, Chemie, Ergotherapie, Medizin, Pflege, Physiologi...",
-    "type": "databases"
-  },
-  {
-    "id": "unwto-elibrary",
-    "name": "UNWTO eLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugang zur eLibrary der Welt Tourismus Organisation der UN. Unter anderem sind dort umfangreiche statistische Daten, wissenscha...",
-    "descriptionEn": "Zugang zur eLibrary der Welt Tourismus Organisation der UN. Unter anderem sind dort umfangreiche statistische Daten, wissenscha...",
-    "type": "databases"
-  },
-  {
-    "id": "utb-elibrary",
-    "name": "utb elibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "eine fächerübergreifende E-Book-Plattform. Außerdem Zugang zu den Zeitschriften:",
-    "descriptionEn": "eine fächerübergreifende E-Book-Plattform. Außerdem Zugang zu den Zeitschriften:",
-    "type": "databases"
-  },
-  {
-    "id": "vierteljahresschrift-f-r-heilp-dagogik-und-ihre-nachbargebiete",
-    "name": "Vierteljahresschrift für Heilpädagogik und ihre Nachbargebiete",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "vde-normenbibliothek",
-    "name": "VDE NormenBibliothek",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Zugang zur Normenbibliothek des VDE-Verlags. Darin sind alle DIN-VDE-Normen freigeschaltet, jedoch nicht die IEC-Normen und Fac...",
-    "descriptionEn": "Zugang zur Normenbibliothek des VDE-Verlags. Darin sind alle DIN-VDE-Normen freigeschaltet, jedoch nicht die IEC-Normen und Fac...",
-    "type": "databases"
-  },
-  {
-    "id": "vdi-elibrary",
-    "name": "VDI eLibrary",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "descriptionEn": "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
-    "type": "databases"
-  },
-  {
-    "id": "vlebooks",
-    "name": "VLeBooks",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "eine fächerübergreifende E-Book-Plattform. Enthält alle vorher bei Dawson verfügbaren E-Books.",
-    "descriptionEn": "eine fächerübergreifende E-Book-Plattform. Enthält alle vorher bei Dawson verfügbaren E-Books.",
-    "type": "databases"
-  },
-  {
-    "id": "au-erdem-zugriff-auf-die-zeitschrift-erwachsenenbildung",
-    "name": "Außerdem Zugriff auf die Zeitschrift Erwachsenenbildung",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-green",
-    "featured": false,
-    "description": "• Inhalte der Zeitschrift sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "descriptionEn": "• Inhalte der Zeitschrift sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
-    "type": "databases"
-  },
-  {
-    "id": "wiso",
-    "name": "WISO",
-    "url": "https://www.wiso-net.de/",
-    "icon": "Database",
-    "color": "iu-pink",
-    "featured": true,
-    "description": "Ein umfassendes Angebot vorwiegend deutschsprachiger Literatur für Wirtschafts- und Sozialwissenschaften, Recht und Psychologie...",
-    "descriptionEn": "Ein umfassendes Angebot vorwiegend deutschsprachiger Literatur für Wirtschafts- und Sozialwissenschaften, Recht und Psychologie...",
-    "type": "databases"
-  },
-  {
-    "id": "world-bank-open-knowledge-repository--okr",
-    "name": "World Bank Open Knowledge Repository (OKR)",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-blue",
-    "featured": false,
-    "description": "alle bis 2023 erschienenen Publikationen der Wissenschaftlerinnen und Wissenschaftler der Weltbank. Die Publikationen befassen ...",
-    "descriptionEn": "alle bis 2023 erschienenen Publikationen der Wissenschaftlerinnen und Wissenschaftler der Weltbank. Die Publikationen befassen ...",
-    "type": "databases"
-  },
-  {
-    "id": "zeitschrift-f-r-heilp-dagogik",
-    "name": "Zeitschrift für Heilpädagogik",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-red",
-    "featured": false,
-    "description": "Zugriff auf die Zeitschrift für Heilpädagogik, eine Publikation des Verband Sonderpädagogik e.V. • Inhalte sind nicht über die ...",
-    "descriptionEn": "Zugriff auf die Zeitschrift für Heilpädagogik, eine Publikation des Verband Sonderpädagogik e.V. • Inhalte sind nicht über die ...",
-    "type": "databases"
-  },
-  {
-    "id": "zeitschrift-menschen",
-    "name": "Zeitschrift Menschen",
-    "url": "#",
-    "icon": "Database",
-    "color": "iu-purple",
-    "featured": false,
-    "description": "Volltextzugriff auf die Zeitschrift Menschen (ehemals Behinderte Menschen) - Zeitschrift für gemeinsames Leben, Lernen und Arbe...",
-    "descriptionEn": "Volltextzugriff auf die Zeitschrift Menschen (ehemals Behinderte Menschen) - Zeitschrift für gemeinsames Leben, Lernen und Arbe...",
-    "type": "databases"
-  }
+    id: "acm-digital-library",
+    name: "ACM Digital Library",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zugang zur Digital Library der Association for Computing Machinery (ACM). Freigeschaltet sind: Zeitschriften, Proceedings, News...",
+    descriptionEn:
+      "Zugang zur Digital Library der Association for Computing Machinery (ACM). Freigeschaltet sind: Zeitschriften, Proceedings, News...",
+    type: "databases",
+  },
+  {
+    id: "albatross",
+    name: "Albatross",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Informationen rund um Flughäfen, Unternehmen, Verbände, Tabellen, Statistiken, Veranstaltungen • Inhalte sind nicht über die On...",
+    descriptionEn:
+      "Informationen rund um Flughäfen, Unternehmen, Verbände, Tabellen, Statistiken, Veranstaltungen • Inhalte sind nicht über die On...",
+    type: "databases",
+  },
+  {
+    id: "base",
+    name: "BASE",
+    url: "#",
+    icon: "Database",
+    color: "iu-pink",
+    featured: false,
+    description:
+      "BASE (Bielefeld Academic Search Engine) ist eine der weltweit größten Suchmaschinen für wissenschaftliche Web-Dokumente. Bei et...",
+    descriptionEn:
+      "BASE (Bielefeld Academic Search Engine) ist eine der weltweit größten Suchmaschinen für wissenschaftliche Web-Dokumente. Bei et...",
+    type: "databases",
+  },
+  {
+    id: "bauen",
+    name: "Bauen+",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugang zur Zeitschrift Bauen+ vom Fraunhofer IRB Verlag über die Plattform Inlibra • Inhalte sind nicht über die Online-Bibliot...",
+    descriptionEn:
+      "Zugang zur Zeitschrift Bauen+ vom Fraunhofer IRB Verlag über die Plattform Inlibra • Inhalte sind nicht über die Online-Bibliot...",
+    type: "databases",
+  },
+  {
+    id: "bauger-teliste--bgl",
+    name: "Baugeräteliste (BGL)",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Datenbank für alle gängigen Gerätearten für die Bauausführung und Baustelleneinrichtung. Bitte beachten: Der Zugriff erfolgt üb...",
+    descriptionEn:
+      "Datenbank für alle gängigen Gerätearten für die Bauausführung und Baustelleneinrichtung. Bitte beachten: Der Zugriff erfolgt üb...",
+    type: "databases",
+  },
+  {
+    id: "es-besteht-au-erdem-zugriff-auf-die-archivversion-2020",
+    name: "Es besteht außerdem Zugriff auf die Archivversion 2020.",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "zugriff-auf-die--schneider-bautabellen--f-r-ingenieure",
+    name: "Zugriff auf die „Schneider-Bautabellen“ für Ingenieure",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "bautechnik-digital",
+    name: "Bautechnik-digital",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugriff auf verschiedene E-Books des Bundesanzeiger/Reguvis Verlag aus dem Bereich Architektur und Bau",
+    descriptionEn:
+      "Zugriff auf verschiedene E-Books des Bundesanzeiger/Reguvis Verlag aus dem Bereich Architektur und Bau",
+    type: "databases",
+  },
+  {
+    id: "beck-elibrary",
+    name: "Beck eLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    descriptionEn:
+      "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    type: "databases",
+  },
+  {
+    id: "beck-online-bitte-beschreibung-beachten",
+    name: "Beck-Online bitte Beschreibung beachten",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Zugang zur Rechtsdatenbank Beck-Online. Dort findest Du Kommentare, Handbücher und Zeitschriften aus dem umfangreichen Hochschu...",
+    descriptionEn:
+      "Zugang zur Rechtsdatenbank Beck-Online. Dort findest Du Kommentare, Handbücher und Zeitschriften aus dem umfangreichen Hochschu...",
+    type: "databases",
+  },
+  {
+    id: "competitionline",
+    name: "Competitionline",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Campuslizenz für die Plattform Competitionline aus dem Bereich Architektur.Der Zugang kann über die im PDF-Dokument hinterlegte...",
+    descriptionEn:
+      "Campuslizenz für die Plattform Competitionline aus dem Bereich Architektur.Der Zugang kann über die im PDF-Dokument hinterlegte...",
+    type: "databases",
+  },
+  {
+    id: "ein-personenprofil-mit-referenzen",
+    name: "ein Personenprofil mit Referenzen",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "content-select",
+    name: "Content-Select",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "eine fächerübergreifende E-Book- und E-Journal-Plattform. Verfügbar sind u.a. einzelne E-Books und E-Book-Pakete der Verlage Be...",
+    descriptionEn:
+      "eine fächerübergreifende E-Book- und E-Journal-Plattform. Verfügbar sind u.a. einzelne E-Books und E-Book-Pakete der Verlage Be...",
+    type: "databases",
+  },
+  {
+    id: "geoinformatik-geod-sie-photogrammetrie-2020",
+    name: "Geoinformatik/Geodäsie/Photogrammetrie 2020",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Die folgenden E-Journals wurden lizenziert: (Hinweis: Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Such...",
+    descriptionEn:
+      "Die folgenden E-Journals wurden lizenziert: (Hinweis: Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Such...",
+    type: "databases",
+  },
+  {
+    id: "zeitschrift-f-r-sozialp-dagogik-beltz-juventa--ab-2008",
+    name: "Zeitschrift für Sozialpädagogik Beltz Juventa (ab 2008)",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zeitschrift für Soziologie der Erziehung und Sozialisation Beltz Juventa (ab 2008)",
+    descriptionEn:
+      "Zeitschrift für Soziologie der Erziehung und Sozialisation Beltz Juventa (ab 2008)",
+    type: "databases",
+  },
+  {
+    id: "de-gruyter-online",
+    name: "De Gruyter Online",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugriff einzelne E-Books und die Zeitschrift für Konfliktmanagement. Außerdem Zugriff auf das Online-Zeitschriften Archiv (bis ...",
+    descriptionEn:
+      "Zugriff einzelne E-Books und die Zeitschrift für Konfliktmanagement. Außerdem Zugriff auf das Online-Zeitschriften Archiv (bis ...",
+    type: "databases",
+  },
+  {
+    id: "detail-inspiration",
+    name: "DETAIL Inspiration",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugriff auf die Zeitschrift DETAIL aus dem Bereich Architektur und Bau. Neben den einzelnen Ausgaben der Zeitschrift sind auch ...",
+    descriptionEn:
+      "Zugriff auf die Zeitschrift DETAIL aus dem Bereich Architektur und Bau. Neben den einzelnen Ausgaben der Zeitschrift sind auch ...",
+    type: "databases",
+  },
+  {
+    id: "dvgw-regelwerk-online",
+    name: "DVGW-Regelwerk Online",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Zugang zum DVGW-Regelwerk im Bereich Wasser. Die einzelnen Arbeits- und Merkblätter können im Browser geöffnet und als PDF heru...",
+    descriptionEn:
+      "Zugang zum DVGW-Regelwerk im Bereich Wasser. Die einzelnen Arbeits- und Merkblätter können im Browser geöffnet und als PDF heru...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-academic-search-ultimate",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-blue",
+    featured: true,
+    description:
+      "eine multidisziplinäre Volltextdatenbank. Sie bietet eine herausragende Kollektion an peer-reviewten Zeitschriften im Volltext,...",
+    descriptionEn:
+      "eine multidisziplinäre Volltextdatenbank. Sie bietet eine herausragende Kollektion an peer-reviewten Zeitschriften im Volltext,...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-business-source-ultimate",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-blue",
+    featured: true,
+    description:
+      "weltweit maßgebliche wissenschaftliche Wirtschaftsdatenbank mit der wichtigsten Sammlung von bibliografischen und Volltext-Inha...",
+    descriptionEn:
+      "weltweit maßgebliche wissenschaftliche Wirtschaftsdatenbank mit der wichtigsten Sammlung von bibliografischen und Volltext-Inha...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-cinahl-ultimate",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-orange",
+    featured: true,
+    description:
+      "die umfangreichste Volltextdatenbank für die Forschung in der Pflege und verwandten Fachbereichen. Sie ermöglicht den Volltextz...",
+    descriptionEn:
+      "die umfangreichste Volltextdatenbank für die Forschung in der Pflege und verwandten Fachbereichen. Sie ermöglicht den Volltextz...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-discovery-service-online-bibliothek--eds",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-red",
+    featured: true,
+    description:
+      'Der EBSCO Discovery Service besser bekannt als die "Online-Bibliothek". Dahinter verbirgt sich eine leistungsstarke Suchmaschin...',
+    descriptionEn:
+      'Der EBSCO Discovery Service besser bekannt als die "Online-Bibliothek". Dahinter verbirgt sich eine leistungsstarke Suchmaschin...',
+    type: "databases",
+  },
+  {
+    id: "ebsco-greenfile",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-orange",
+    featured: true,
+    description:
+      "bietet profunde Untersuchungsergebnisse zu allen Aspekten menschlichen Einflusses auf die Umwelt.",
+    descriptionEn:
+      "bietet profunde Untersuchungsergebnisse zu allen Aspekten menschlichen Einflusses auf die Umwelt.",
+    type: "databases",
+  },
+  {
+    id: "ebsco-hospitality---tourism-complete",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-blue",
+    featured: true,
+    description:
+      "umfasst akademische Forschung und Branchenneuigkeiten zu sämtlichen Bereichen von Hotellerie und Tourismus.",
+    descriptionEn:
+      "umfasst akademische Forschung und Branchenneuigkeiten zu sämtlichen Bereichen von Hotellerie und Tourismus.",
+    type: "databases",
+  },
+  {
+    id: "ebsco-library--information-science---technology-abstracts--lista",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-red",
+    featured: true,
+    description:
+      "LISTA (Library, Information Science & Technology Abstracts) ist eine kostenlose Datenbank zum Thema Bibliothekswesen und Inform...",
+    descriptionEn:
+      "LISTA (Library, Information Science & Technology Abstracts) ist eine kostenlose Datenbank zum Thema Bibliothekswesen und Inform...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-psychology---behavioral-sciences-collection",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-green",
+    featured: true,
+    description:
+      "wichtige Volltextdatenbank für Psycholog:innen, Therapeut:innen, Forschende, Wissenschaftler:innen und Studierende. Sie bietet ...",
+    descriptionEn:
+      "wichtige Volltextdatenbank für Psycholog:innen, Therapeut:innen, Forschende, Wissenschaftler:innen und Studierende. Sie bietet ...",
+    type: "databases",
+  },
+  {
+    id: "ebsco-regional-business-news",
+    name: "EBSCO Discovery",
+    url: "https://search.ebscohost.com/login.aspx?profile=eds&authtype=sso&custid=s6068579&profile=eds&groupid=main",
+    icon: "Database",
+    color: "iu-pink",
+    featured: true,
+    description:
+      "Regional Business News enthält umfassende Volltexte für Wirtschaftspublikationen in den USA und Kanada.",
+    descriptionEn:
+      "Regional Business News enthält umfassende Volltexte für Wirtschaftspublikationen in den USA und Kanada.",
+    type: "databases",
+  },
+  {
+    id: "education-week",
+    name: "Education week",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugriff auf die Zeitschrift Education Week, eine US-amerikanische Zeitung, die vom Editorial Projects in Education (EPE) pubicl...",
+    descriptionEn:
+      "Zugriff auf die Zeitschrift Education Week, eine US-amerikanische Zeitung, die vom Editorial Projects in Education (EPE) pubicl...",
+    type: "databases",
+  },
+  {
+    id: "kostenloser-zugriff-auf-eine-limitierte-anzahl-an-artikeln-pro-monat",
+    name: "Kostenloser Zugriff auf eine limitierte Anzahl an Artikeln pro Monat.",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche auf der Seite notwendig Ab 1995 alternativ komplet...",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche auf der Seite notwendig Ab 1995 alternativ komplet...",
+    type: "databases",
+  },
+  {
+    id: "edward-elgar-e-book-archive",
+    name: "Edward Elgar E-Book Archive",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Das Edward Elgar E-Book Archive bietet Online-Zugriff auf wirtschaftswissenschaftliche E-Books ab dem Erscheinungsjahr 1989. Da...",
+    descriptionEn:
+      "Das Edward Elgar E-Book Archive bietet Online-Zugriff auf wirtschaftswissenschaftliche E-Books ab dem Erscheinungsjahr 1989. Da...",
+    type: "databases",
+  },
+  {
+    id: "ehraf-world-cultures",
+    name: "EHRAF World Cultures",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Daten von über 200 Völkern bzw. ethnischen Gruppen. Zugrunde liegen diese in Form von ethnographischen Monographien, Aufsätzen ...",
+    descriptionEn:
+      "Daten von über 200 Völkern bzw. ethnischen Gruppen. Zugrunde liegen diese in Form von ethnographischen Monographien, Aufsätzen ...",
+    type: "databases",
+  },
+  {
+    id: "eiu-country-reports-archive",
+    name: "EIU Country Reports Archive",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Die Datenbank der Economist Intelligence Unit (EIU) bietet monatlich aktualisierte Länderberichte (Country Reports) von allen S...",
+    descriptionEn:
+      "Die Datenbank der Economist Intelligence Unit (EIU) bietet monatlich aktualisierte Länderberichte (Country Reports) von allen S...",
+    type: "databases",
+  },
+  {
+    id: "elektronische-zeitschriftenbibliothek--ezb",
+    name: "Elektronische Zeitschriftenbibliothek (EZB)",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Die EZB ist eine Suchplattform für von uns lizenzierte und frei verfügbare Online-Zeitschriften. Sie enthält bibliographische I...",
+    descriptionEn:
+      "Die EZB ist eine Suchplattform für von uns lizenzierte und frei verfügbare Online-Zeitschriften. Sie enthält bibliographische I...",
+    type: "databases",
+  },
+  {
+    id: "rot---kein-zugriff",
+    name: "Rot - kein Zugriff",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "falls Du eine Rote oder Gelb-Rote Quelle im Volltext lesen möchtest, sende uns einfach eine E-Mail und wir prüfen die Zugriffsm...",
+    descriptionEn:
+      "falls Du eine Rote oder Gelb-Rote Quelle im Volltext lesen möchtest, sende uns einfach eine E-Mail und wir prüfen die Zugriffsm...",
+    type: "databases",
+  },
+  {
+    id: "emerald",
+    name: "Emerald",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Journals, E-Books und E-Book-Serien hauptsächlich zu den Bereichen Business, Management & Economics. Freigeschaltet sind:",
+    descriptionEn:
+      "Journals, E-Books und E-Book-Serien hauptsächlich zu den Bereichen Business, Management & Economics. Freigeschaltet sind:",
+    type: "databases",
+  },
+  {
+    id: "emerald-fulltext-archive-database--efad---bis-2020",
+    name: "Emerald Fulltext Archive Database (EFAD) (bis 2020)",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Emerald Business, Management and Economics E-Book Series Collection Archive(1991-2022)",
+    descriptionEn:
+      "Emerald Business, Management and Economics E-Book Series Collection Archive(1991-2022)",
+    type: "databases",
+  },
+  {
+    id: "zugriff-auf-das-archiv-der-zeitschrift-ern-hrung-im-fokus--2012-2023",
+    name: "Zugriff auf das Archiv der Zeitschrift Ernährung im Fokus (2012-2023)",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "ern-hrungs-umschau",
+    name: "Ernährungs-Umschau",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugriff auf die Zeitschrift Ernährungsumschau, das offizielle Organ der Deutschen Gesellschaft für Ernährung e. V. (DGE). Veröf...",
+    descriptionEn:
+      "Zugriff auf die Zeitschrift Ernährungsumschau, das offizielle Organ der Deutschen Gesellschaft für Ernährung e. V. (DGE). Veröf...",
+    type: "databases",
+  },
+  {
+    id: "aktuelle-information-des-verlags",
+    name: "Aktuelle Information des Verlags:",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "aufgrund technischer Ursachen, können E-Paper die älter als Ausgabe 7/2018 sind, momentan nicht geöffnet werden. Wir arbeiten f...",
+    descriptionEn:
+      "aufgrund technischer Ursachen, können E-Paper die älter als Ausgabe 7/2018 sind, momentan nicht geöffnet werden. Wir arbeiten f...",
+    type: "databases",
+  },
+  {
+    id: "esv-elibrary--esvcampus",
+    name: "ESV eLibrary (ESVcampus)",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "eine fächerübergreifende E-Book-Plattform mit Zugriff auf die Pakete Tourismus- und Sportmanagement, sowie weitere lizenzierte ...",
+    descriptionEn:
+      "eine fächerübergreifende E-Book-Plattform mit Zugriff auf die Pakete Tourismus- und Sportmanagement, sowie weitere lizenzierte ...",
+    type: "databases",
+  },
+  {
+    id: "europ-isches-arzneibuch--eab",
+    name: "Europäisches Arzneibuch (EAB)",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugriff auf das Europäische Arzneibuch. Der Inhalt der Online-Version entspricht der 11. Ausgabe des Europäischen Arzneibuchs, ...",
+    descriptionEn:
+      "Zugriff auf das Europäische Arzneibuch. Der Inhalt der Online-Version entspricht der 11. Ausgabe des Europäischen Arzneibuchs, ...",
+    type: "databases",
+  },
+  {
+    id: "genesis-destatis",
+    name: "GENESIS/Destatis",
+    url: "#",
+    icon: "Database",
+    color: "iu-pink",
+    featured: false,
+    description:
+      "Datenbank des Statistischen Bundesamtes - enthält ein breites Themenspektrum fachlich tief gegliederter Ergebnisse (Bund, Land,...",
+    descriptionEn:
+      "Datenbank des Statistischen Bundesamtes - enthält ein breites Themenspektrum fachlich tief gegliederter Ergebnisse (Bund, Land,...",
+    type: "databases",
+  },
+  {
+    id: "hogrefe-psyjournals",
+    name: "Hogrefe PsyJournals",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zugang zum Zeitschriftenpaket PsyJournals vom Hogrefe-Verlag. Es handelt sich um 29 psychologische und psychiatrische Zeitschri...",
+    descriptionEn:
+      "Zugang zum Zeitschriftenpaket PsyJournals vom Hogrefe-Verlag. Es handelt sich um 29 psychologische und psychiatrische Zeitschri...",
+    type: "databases",
+  },
+  {
+    id: "ibr-online---immobilien----baurecht",
+    name: "ibr-online – Immobilien- & Baurecht",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugang zur Datenbank ibr-online für baurechtliche Informationen. In der Datenbank sind folgende Elemente integriert:",
+    descriptionEn:
+      "Zugang zur Datenbank ibr-online für baurechtliche Informationen. In der Datenbank sind folgende Elemente integriert:",
+    type: "databases",
+  },
+  {
+    id: "ma-gebende-kommentierung-zu-allen-gebieten-des-baurechts",
+    name: "maßgebende Kommentierung zu allen Gebieten des Baurechts",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "IBR Materialien (wie z.B. aktuelle Gesetzesentwürfe, Stellungnahmen Verwaltungsschreiben) • Inhalte sind nicht über die Online-...",
+    descriptionEn:
+      "IBR Materialien (wie z.B. aktuelle Gesetzesentwürfe, Stellungnahmen Verwaltungsschreiben) • Inhalte sind nicht über die Online-...",
+    type: "databases",
+  },
+  {
+    id: "ieee-xplore",
+    name: "IEEE Xplore",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugriff auf die IEEE Xplore Digital Library. Beinhaltet u.a. Literatur aus den Bereichen Electrical Engineering, Computer Scien...",
+    descriptionEn:
+      "Zugriff auf die IEEE Xplore Digital Library. Beinhaltet u.a. Literatur aus den Bereichen Electrical Engineering, Computer Scien...",
+    type: "databases",
+  },
+  {
+    id: "igi-global-infosci",
+    name: "IGI Global InfoSci",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "IGI Global ist ein Anbieter wissenschaftlicher Veröffentlichungen vor allem im Bereich der Wirtschaftsinformatik, Informatik un...",
+    descriptionEn:
+      "IGI Global ist ein Anbieter wissenschaftlicher Veröffentlichungen vor allem im Bereich der Wirtschaftsinformatik, Informatik un...",
+    type: "databases",
+  },
+  {
+    id: "international-monetary-fund",
+    name: "International Monetary Fund",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Zugang zur eLibrary des IMF mit Büchern, Analytical Papers, Periodicals und Statistiken Inlibra eine fächerübergreifende E-Book...",
+    descriptionEn:
+      "Zugang zur eLibrary des IMF mit Büchern, Analytical Papers, Periodicals und Statistiken Inlibra eine fächerübergreifende E-Book...",
+    type: "databases",
+  },
+  {
+    id: "zukunfts-handbuch-kindertageseinrichtungen",
+    name: "Zukunfts-Handbuch Kindertageseinrichtungen",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "• Inhalte der Zeitschriften sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte der Zeitschriften sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "iudocs",
+    name: "IUDocs",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Im neuen Repositorium IUDocs findest Du ab sofort Abschlussarbeiten/Theses von ehemaligen IU-Studierenden. Die Theses sind nur ...",
+    descriptionEn:
+      "Im neuen Repositorium IUDocs findest Du ab sofort Abschlussarbeiten/Theses von ehemaligen IU-Studierenden. Die Theses sind nur ...",
+    type: "databases",
+  },
+  {
+    id: "karger",
+    name: "Karger",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "E-Books und eJournals des Medizin-Verlags Karger, die ein breites biomedizinisches Spektrum abdecken. Zugriff auf die Karger E-...",
+    descriptionEn:
+      "E-Books und eJournals des Medizin-Verlags Karger, die ein breites biomedizinisches Spektrum abdecken. Zugriff auf die Karger E-...",
+    type: "databases",
+  },
+  {
+    id: "kleiber-digital-wertermittlerportal",
+    name: "Kleiber-digital/WertermittlerPlattform",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugang zum Buch „Verkehrswertermittlung von Grundstücken“, herausgegeben von Prof. Wolfgang Kleiber unter Mitarbeit von Dr. Rol...",
+    descriptionEn:
+      "Zugang zum Buch „Verkehrswertermittlung von Grundstücken“, herausgegeben von Prof. Wolfgang Kleiber unter Mitarbeit von Dr. Rol...",
+    type: "databases",
+  },
+  {
+    id: "klett-cotta-elibrary",
+    name: "Klett-Cotta eLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugriff auf die Zeitschriften Familiendynamik und Trauma & Gewalt beim Klett-Cotta Verlag • Inhalte sind nicht über die Online-...",
+    descriptionEn:
+      "Zugriff auf die Zeitschriften Familiendynamik und Trauma & Gewalt beim Klett-Cotta Verlag • Inhalte sind nicht über die Online-...",
+    type: "databases",
+  },
+  {
+    id: "knovel",
+    name: "Knovel",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugang zur Datenbank Knovel. Diese bietet technische Informationen und Grundwissen für Ingenieure in Form von Handbüchern und N...",
+    descriptionEn:
+      "Zugang zur Datenbank Knovel. Diese bietet technische Informationen und Grundwissen für Ingenieure in Form von Handbüchern und N...",
+    type: "databases",
+  },
+  {
+    id: "konstruktiver-ingenieurbau",
+    name: "Konstruktiver Ingenieurbau",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugang zur Zeitschrift Konstruktiver Ingenieurbau vom Reguvis/ Bundesanzeiger Verlag • Inhalte sind nicht über die Online-Bibli...",
+    descriptionEn:
+      "Zugang zur Zeitschrift Konstruktiver Ingenieurbau vom Reguvis/ Bundesanzeiger Verlag • Inhalte sind nicht über die Online-Bibli...",
+    type: "databases",
+  },
+  {
+    id: "zugang-zur-logos---fachzeitschrift-f-r-logop-die-und-sprachtherapie",
+    name: "Zugang zur Logos – Fachzeitschrift für Logopädie und Sprachtherapie",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "medhochzwei",
+    name: "medhochzwei",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugriff auf E-Books und Zeitschriften des medhochzwei Verlags u.a. zu den Themen Gesundheitspolitik, Gesundheitssysteme und Man...",
+    descriptionEn:
+      "Zugriff auf E-Books und Zeitschriften des medhochzwei Verlags u.a. zu den Themen Gesundheitspolitik, Gesundheitssysteme und Man...",
+    type: "databases",
+  },
+  {
+    id: "medline",
+    name: "MEDLINE",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "MEDLINE ist die wichtigste bibliographische Datenbank mit dem Schwerpunkt Medizin. Sie weist Publikationen nach, die seit 1946 ...",
+    descriptionEn:
+      "MEDLINE ist die wichtigste bibliographische Datenbank mit dem Schwerpunkt Medizin. Sie weist Publikationen nach, die seit 1946 ...",
+    type: "databases",
+  },
+  {
+    id: "nautos-normdatenbank",
+    name: "Nautos Normdatenbank",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Die Normdatenbank Perinorm wurde durch die neue Plattform Nautos abgelöst. Alle lizenzierten Normen und Normentwürfe können im ...",
+    descriptionEn:
+      "Die Normdatenbank Perinorm wurde durch die neue Plattform Nautos abgelöst. Alle lizenzierten Normen und Normentwürfe können im ...",
+    type: "databases",
+  },
+  {
+    id: "best-collection-33-dwa-komplett",
+    name: "BEST-Collection 33 DWA komplett",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig Weitere Normen, z.B. zu...",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig Weitere Normen, z.B. zu...",
+    type: "databases",
+  },
+  {
+    id: "nomos-elibrary",
+    name: "Nomos eLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Die Inhalte der Nomos eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    descriptionEn:
+      "Die Inhalte der Nomos eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    type: "databases",
+  },
+  {
+    id: "oecd-ilibrary",
+    name: "OECD iLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "OECD iLibrary ist die Plattform für Online-Veröffentlichungen der Organisation for Economic Cooperation and Development (OECD). Üb...",
+    descriptionEn:
+      "OECD iLibrary ist die Plattform für Online-Veröffentlichungen der Organisation for Economic Cooperation and Development (OECD). Üb...",
+    type: "databases",
+  },
+  {
+    id: "onarchitecture",
+    name: "OnArchitecture",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "ein umfangreiches audiovisuelles Archiv im Bereich Architektur und Design. Die Kollektion umfasst Video-Interviews mit einfluss...",
+    descriptionEn:
+      "ein umfangreiches audiovisuelles Archiv im Bereich Architektur und Design. Die Kollektion umfasst Video-Interviews mit einfluss...",
+    type: "databases",
+  },
+  {
+    id: "orbis-d-a-ch",
+    name: "Orbis D-A-CH",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Zugang zur Unternehmensdatenbank Orbis. Darin enthalten sind Firmen- und Beteiligungsdaten sowie Finanzzahlen von Unternehmen i...",
+    descriptionEn:
+      "Zugang zur Unternehmensdatenbank Orbis. Darin enthalten sind Firmen- und Beteiligungsdaten sowie Finanzzahlen von Unternehmen i...",
+    type: "databases",
+  },
+  {
+    id: "oxford-journals",
+    name: "Oxford Journals",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Zugang zum Oxford Journals Digital Archive (1849-2017). Angeboten werden elektronische Zeitschriften der Oxford University Pres...",
+    descriptionEn:
+      "Zugang zum Oxford Journals Digital Archive (1849-2017). Angeboten werden elektronische Zeitschriften der Oxford University Pres...",
+    type: "databases",
+  },
+  {
+    id: "zugang-zur-zeitschrift-p-dagogik-der-gesundheitsberufe-von-hpsmedia",
+    name: "Zugang zur Zeitschrift Pädagogik der Gesundheitsberufe von hpsmedia",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "physician-assistant",
+    name: "Physician Assistant",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zugang zur Zeitschrift Physician Assistant vom Schmidt-Römhild Verlag. Ältere Ausgaben (ab 2020) befinden sich im Archiv und la...",
+    descriptionEn:
+      "Zugang zur Zeitschrift Physician Assistant vom Schmidt-Römhild Verlag. Ältere Ausgaben (ab 2020) befinden sich im Archiv und la...",
+    type: "databases",
+  },
+  {
+    id: "prometheus-bildarchiv",
+    name: "Prometheus Bildarchiv",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Prometheus ist ein verteiltes digitales Bildarchiv, das derzeit 3.913.400 Bilder aus Kunst, Kultur und Geschichte für Ihre Fors...",
+    descriptionEn:
+      "Prometheus ist ein verteiltes digitales Bildarchiv, das derzeit 3.913.400 Bilder aus Kunst, Kultur und Geschichte für Ihre Fors...",
+    type: "databases",
+  },
+  {
+    id: "pschyrembel-klinisches-w-rterbuch",
+    name: "Pschyrembel Klinisches Wörterbuch",
+    url: "#",
+    icon: "Database",
+    color: "iu-orange",
+    featured: false,
+    description:
+      "Zugang zum Pschyrembel Klinisches Wörterbuch. Das führende medizinische Nachschlagewerk für die klinische Erstinformation: qual...",
+    descriptionEn:
+      "Zugang zum Pschyrembel Klinisches Wörterbuch. Das führende medizinische Nachschlagewerk für die klinische Erstinformation: qual...",
+    type: "databases",
+  },
+  {
+    id: "psyndex",
+    name: "Psyndex",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zugang zur Referenzdatenbank Psyndex über WISOnet. Für die Recherche empfehlen wir zusätzlich die Verwendung des Thesaurus Psyc...",
+    descriptionEn:
+      "Zugang zur Referenzdatenbank Psyndex über WISOnet. Für die Recherche empfehlen wir zusätzlich die Verwendung des Thesaurus Psyc...",
+    type: "databases",
+  },
+  {
+    id: "quartier-fachmagazin",
+    name: "Quartier Fachmagazin",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugang zu Quartier: Fachmagazin für urbanen Wohnungsbau. Die Zugangsdaten können beim Library Team beantragt werden: library@iu...",
+    descriptionEn:
+      "Zugang zu Quartier: Fachmagazin für urbanen Wohnungsbau. Die Zugangsdaten können beim Library Team beantragt werden: library@iu...",
+    type: "databases",
+  },
+  {
+    id: "sage",
+    name: "Sage",
+    url: "#",
+    icon: "Database",
+    color: "iu-pink",
+    featured: false,
+    description:
+      "Zugang zum Sage Journals Online Deep Backfile 1879-2023. Angeboten werden elektronische Zeitschriften des Verlags Sage Publicat...",
+    descriptionEn:
+      "Zugang zum Sage Journals Online Deep Backfile 1879-2023. Angeboten werden elektronische Zeitschriften des Verlags Sage Publicat...",
+    type: "databases",
+  },
+  {
+    id: "schulz-kirchner-verlag",
+    name: "Schulz-Kirchner Verlag",
+    url: "#",
+    icon: "Database",
+    color: "iu-pink",
+    featured: false,
+    description:
+      "Zugang zu den Zeitschriften Ergoscience (ab Jg. 2025-) Ergotherapie und Rehabilitation (Jg. 2021-2022; ab Jg. 2025-) und Forum ...",
+    descriptionEn:
+      "Zugang zu den Zeitschriften Ergoscience (ab Jg. 2025-) Ergotherapie und Rehabilitation (Jg. 2021-2022; ab Jg. 2025-) und Forum ...",
+    type: "databases",
+  },
+  {
+    id: "sciencedirect--elsevier",
+    name: "ScienceDirect (Elsevier)",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Laufender Zugang zu mehr als 2000 Zeitschriften des Verlags Elsevier (DEAL) und den Journal Backfiles Social Sciences & Humanit...",
+    descriptionEn:
+      "Laufender Zugang zu mehr als 2000 Zeitschriften des Verlags Elsevier (DEAL) und den Journal Backfiles Social Sciences & Humanit...",
+    type: "databases",
+  },
+  {
+    id: "scientific-net",
+    name: "Scientific.Net",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Archiv der Online-Zeitschriften von Trans Tech Publications (1984-2016). Ingenieurs,- Nano- und Biomedizinische Wissenschaften,...",
+    descriptionEn:
+      "Archiv der Online-Zeitschriften von Trans Tech Publications (1984-2016). Ingenieurs,- Nano- und Biomedizinische Wissenschaften,...",
+    type: "databases",
+  },
+  {
+    id: "social-theory--alexander-street-press",
+    name: "Social Theory (Alexander Street Press)",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "eine Volltextdatenbank zur soziologischen Theorie von den Anfängen der Soziologie im 19. Jahrhundert bis zum 21. Jahrhundert. D...",
+    descriptionEn:
+      "eine Volltextdatenbank zur soziologischen Theorie von den Anfängen der Soziologie im 19. Jahrhundert bis zum 21. Jahrhundert. D...",
+    type: "databases",
+  },
+  {
+    id: "soziale-arbeit--dzi",
+    name: "Soziale Arbeit (DZI)",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Volltextzugriff auf die Zeitschrift Soziale Arbeit vom Deutschen Zentralinstitut für Soziale Fragen (DZI) ab Heft 1/2005. Die v...",
+    descriptionEn:
+      "Volltextzugriff auf die Zeitschrift Soziale Arbeit vom Deutschen Zentralinstitut für Soziale Fragen (DZI) ab Heft 1/2005. Die v...",
+    type: "databases",
+  },
+  {
+    id: "springer",
+    name: "Springer Link",
+    url: "https://link.springer.com/",
+    icon: "Database",
+    color: "iu-purple",
+    featured: true,
+    description:
+      "Zugang zu lizenzierten E-Books und weiteren Open Access E-Books. Außerdem Zugriff auf die laufenden Jahrgänge von rund 2.800 Sp...",
+    descriptionEn:
+      "Zugang zu lizenzierten E-Books und weiteren Open Access E-Books. Außerdem Zugriff auf die laufenden Jahrgänge von rund 2.800 Sp...",
+    type: "databases",
+  },
+  {
+    id: "statista",
+    name: "Statista",
+    url: "https://www.statista.com/",
+    icon: "Database",
+    color: "iu-purple",
+    featured: true,
+    description:
+      "nationale und internationale statistische Quellen zu Unternehmen und Branchen. Mit einer speziellen Downloadfunktion kannst Du ...",
+    descriptionEn:
+      "nationale und internationale statistische Quellen zu Unternehmen und Branchen. Mit einer speziellen Downloadfunktion kannst Du ...",
+    type: "databases",
+  },
+  {
+    id: "the-nation-digital-archive",
+    name: "The Nation Digital Archive",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "die vollständigen Ausgaben der Zeitschrift „The Nation“ ab der Erstausgabe von 1865 bis 2010 im Volltext.",
+    descriptionEn:
+      "die vollständigen Ausgaben der Zeitschrift „The Nation“ ab der Erstausgabe von 1865 bis 2010 im Volltext.",
+    type: "databases",
+  },
+  {
+    id: "thieme-bilddatenbank-anatomie",
+    name: "Thieme Bilddatenbank Anatomie",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugang zur Thieme Bilddatenbank Anatomie. Die Bilddatenbank enthält über 3700 einzigartige Abbildungen und radiologische Bilder...",
+    descriptionEn:
+      "Zugang zur Thieme Bilddatenbank Anatomie. Die Bilddatenbank enthält über 3700 einzigartige Abbildungen und radiologische Bilder...",
+    type: "databases",
+  },
+  {
+    id: "thieme-connect",
+    name: "Thieme-Connect",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugriff auf die E-Book-Pakete Innere Medizin und Logopädie. Außerdem Zugriff auf die Volltextarchive (1980-2007) von ausgewählt...",
+    descriptionEn:
+      "Zugriff auf die E-Book-Pakete Innere Medizin und Logopädie. Außerdem Zugriff auf die Volltextarchive (1980-2007) von ausgewählt...",
+    type: "databases",
+  },
+  {
+    id: "physioscience",
+    name: "Physioscience",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "thieme-eref-e-books",
+    name: "Thieme eRef E-Books",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "Zugriff auf ausgewählte eRef-Lehrbücher aus den Bereichen Anatomie, Biologie, Chemie, Ergotherapie, Medizin, Pflege, Physiologi...",
+    descriptionEn:
+      "Zugriff auf ausgewählte eRef-Lehrbücher aus den Bereichen Anatomie, Biologie, Chemie, Ergotherapie, Medizin, Pflege, Physiologi...",
+    type: "databases",
+  },
+  {
+    id: "unwto-elibrary",
+    name: "UNWTO eLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugang zur eLibrary der Welt Tourismus Organisation der UN. Unter anderem sind dort umfangreiche statistische Daten, wissenscha...",
+    descriptionEn:
+      "Zugang zur eLibrary der Welt Tourismus Organisation der UN. Unter anderem sind dort umfangreiche statistische Daten, wissenscha...",
+    type: "databases",
+  },
+  {
+    id: "utb-elibrary",
+    name: "utb elibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "eine fächerübergreifende E-Book-Plattform. Außerdem Zugang zu den Zeitschriften:",
+    descriptionEn:
+      "eine fächerübergreifende E-Book-Plattform. Außerdem Zugang zu den Zeitschriften:",
+    type: "databases",
+  },
+  {
+    id: "vierteljahresschrift-f-r-heilp-dagogik-und-ihre-nachbargebiete",
+    name: "Vierteljahresschrift für Heilpädagogik und ihre Nachbargebiete",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte sind nicht vollständig über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "vde-normenbibliothek",
+    name: "VDE NormenBibliothek",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Zugang zur Normenbibliothek des VDE-Verlags. Darin sind alle DIN-VDE-Normen freigeschaltet, jedoch nicht die IEC-Normen und Fac...",
+    descriptionEn:
+      "Zugang zur Normenbibliothek des VDE-Verlags. Darin sind alle DIN-VDE-Normen freigeschaltet, jedoch nicht die IEC-Normen und Fac...",
+    type: "databases",
+  },
+  {
+    id: "vdi-elibrary",
+    name: "VDI eLibrary",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    descriptionEn:
+      "Die Inhalte der Beck eLibrary sind seit dem 01.12.25 auf der neuen Plattform Inlibra zu finden",
+    type: "databases",
+  },
+  {
+    id: "vlebooks",
+    name: "VLeBooks",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "eine fächerübergreifende E-Book-Plattform. Enthält alle vorher bei Dawson verfügbaren E-Books.",
+    descriptionEn:
+      "eine fächerübergreifende E-Book-Plattform. Enthält alle vorher bei Dawson verfügbaren E-Books.",
+    type: "databases",
+  },
+  {
+    id: "au-erdem-zugriff-auf-die-zeitschrift-erwachsenenbildung",
+    name: "Außerdem Zugriff auf die Zeitschrift Erwachsenenbildung",
+    url: "#",
+    icon: "Database",
+    color: "iu-green",
+    featured: false,
+    description:
+      "• Inhalte der Zeitschrift sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    descriptionEn:
+      "• Inhalte der Zeitschrift sind nicht über die Online-Bibliothek durchsuchbar, separate Suche in der Datenbank notwendig",
+    type: "databases",
+  },
+  {
+    id: "wiso",
+    name: "WISO",
+    url: "https://www.wiso-net.de/",
+    icon: "Database",
+    color: "iu-pink",
+    featured: true,
+    description:
+      "Ein umfassendes Angebot vorwiegend deutschsprachiger Literatur für Wirtschafts- und Sozialwissenschaften, Recht und Psychologie...",
+    descriptionEn:
+      "Ein umfassendes Angebot vorwiegend deutschsprachiger Literatur für Wirtschafts- und Sozialwissenschaften, Recht und Psychologie...",
+    type: "databases",
+  },
+  {
+    id: "world-bank-open-knowledge-repository--okr",
+    name: "World Bank Open Knowledge Repository (OKR)",
+    url: "#",
+    icon: "Database",
+    color: "iu-blue",
+    featured: false,
+    description:
+      "alle bis 2023 erschienenen Publikationen der Wissenschaftlerinnen und Wissenschaftler der Weltbank. Die Publikationen befassen ...",
+    descriptionEn:
+      "alle bis 2023 erschienenen Publikationen der Wissenschaftlerinnen und Wissenschaftler der Weltbank. Die Publikationen befassen ...",
+    type: "databases",
+  },
+  {
+    id: "zeitschrift-f-r-heilp-dagogik",
+    name: "Zeitschrift für Heilpädagogik",
+    url: "#",
+    icon: "Database",
+    color: "iu-red",
+    featured: false,
+    description:
+      "Zugriff auf die Zeitschrift für Heilpädagogik, eine Publikation des Verband Sonderpädagogik e.V. • Inhalte sind nicht über die ...",
+    descriptionEn:
+      "Zugriff auf die Zeitschrift für Heilpädagogik, eine Publikation des Verband Sonderpädagogik e.V. • Inhalte sind nicht über die ...",
+    type: "databases",
+  },
+  {
+    id: "zeitschrift-menschen",
+    name: "Zeitschrift Menschen",
+    url: "#",
+    icon: "Database",
+    color: "iu-purple",
+    featured: false,
+    description:
+      "Volltextzugriff auf die Zeitschrift Menschen (ehemals Behinderte Menschen) - Zeitschrift für gemeinsames Leben, Lernen und Arbe...",
+    descriptionEn:
+      "Volltextzugriff auf die Zeitschrift Menschen (ehemals Behinderte Menschen) - Zeitschrift für gemeinsames Leben, Lernen und Arbe...",
+    type: "databases",
+  },
 ];

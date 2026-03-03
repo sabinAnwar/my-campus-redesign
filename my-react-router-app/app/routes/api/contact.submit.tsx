@@ -30,12 +30,12 @@ async function getUser(request: Request) {
 async function sendEmail(to: string, subject: string, html: string) {
   try {
     // Import nodemailer dynamically
-    const nodemailer = await import('nodemailer');
-    
+    const nodemailer = await import("nodemailer");
+
     // Create transporter
     const transporter = nodemailer.default.createTransport({
-      host: process.env.SMTP_HOST || 'smtp.gmail.com',
-      port: parseInt(process.env.SMTP_PORT || '587'),
+      host: process.env.SMTP_HOST || "smtp.gmail.com",
+      port: parseInt(process.env.SMTP_PORT || "587"),
       secure: false, // true for 465, false for other ports
       auth: {
         user: process.env.SMTP_USER,
@@ -45,16 +45,18 @@ async function sendEmail(to: string, subject: string, html: string) {
 
     // Send email
     const info = await transporter.sendMail({
-      from: process.env.SMTP_FROM || `"IU Student Portal" <${process.env.SMTP_USER}>`,
+      from:
+        process.env.SMTP_FROM ||
+        `"IU Student Plattform" <${process.env.SMTP_USER}>`,
       to,
       subject,
       html,
     });
 
-    console.log(' Email sent successfully:', info.messageId);
+    console.log(" Email sent successfully:", info.messageId);
     return true;
   } catch (error) {
-    console.error(' Error sending email:', error);
+    console.error(" Error sending email:", error);
     // Don't throw error - we still want to save the submission even if email fails
     return false;
   }
@@ -68,7 +70,7 @@ export async function action({ request }: ActionFunctionArgs) {
   try {
     // Get the current user
     const user = await getUser(request);
-    
+
     if (!user) {
       return Response.json({ error: "Nicht autorisiert" }, { status: 401 });
     }
@@ -80,7 +82,7 @@ export async function action({ request }: ActionFunctionArgs) {
     if (!subject || !message) {
       return Response.json(
         { error: "Betreff und Nachricht sind erforderlich" },
-        { status: 400 }
+        { status: 400 },
       );
     }
 
@@ -108,7 +110,7 @@ export async function action({ request }: ActionFunctionArgs) {
           <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
             <div style="background: #111f60; color: white; padding: 30px; border-radius: 10px 10px 0 0; text-align: center;">
               <h1 style="margin: 0; font-size: 26px;">Neue Support-Anfrage</h1>
-              <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">IU Student Portal</p>
+              <p style="margin: 5px 0 0 0; opacity: 0.9; font-size: 16px;">IU Student Plattform</p>
             </div>
             <div style="background: #f9fafb; padding: 30px; border: 1px solid #e5e7eb;">
               <div style="background: white; padding: 20px; margin: 15px 0; border-left: 4px solid #111f60; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
@@ -131,7 +133,7 @@ export async function action({ request }: ActionFunctionArgs) {
                   <tr>
                     <td align="left" valign="top">
                       <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">Eingereicht am</div>
-                      <div style="font-size: 15px;">${new Date().toLocaleString('de-DE')}</div>
+                      <div style="font-size: 15px;">${new Date().toLocaleString("de-DE")}</div>
                     </td>
                     <td align="right" valign="top">
                        <div style="font-weight: bold; color: #111f60; margin-bottom: 5px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em;">ID</div>
@@ -143,7 +145,7 @@ export async function action({ request }: ActionFunctionArgs) {
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
               <p>Diese E-Mail wurde automatisch generiert.</p>
-              <p>&copy; ${new Date().getFullYear()} IU Student Portal</p>
+              <p>&copy; ${new Date().getFullYear()} IU Student Plattform</p>
             </div>
           </div>
         </body>
@@ -175,32 +177,35 @@ export async function action({ request }: ActionFunctionArgs) {
               <div style="background: white; padding: 20px; margin: 20px 0; border-left: 4px solid #174f26; border-radius: 4px; box-shadow: 0 1px 2px rgba(0,0,0,0.05);">
                 <div style="font-weight: bold; color: #174f26; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #eee; padding-bottom: 5px;">Deine Nachricht</div>
                 <div style="margin-bottom: 10px; font-size: 16px;"><strong>Betreff:</strong> ${subject}</div>
-                <div style="color: #555; font-style: italic; font-size: 15px;">"${message.substring(0, 300)}${message.length > 300 ? '...' : ''}"</div>
+                <div style="color: #555; font-style: italic; font-size: 15px;">"${message.substring(0, 300)}${message.length > 300 ? "..." : ""}"</div>
               </div>
               
               <p style="font-size: 15px; color: #555;">Durchschnittliche Antwortzeit: <strong>< 24 Stunden</strong></p>
             </div>
             <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
-              <p>IU Student Portal - Support Team</p>
+              <p>IU Student Plattform - Support Team</p>
             </div>
           </div>
         </body>
       </html>
     `;
 
-    await sendEmail(user.email, "Deine Support-Anfrage wurde erhalten", userConfirmationHtml);
+    await sendEmail(
+      user.email,
+      "Deine Support-Anfrage wurde erhalten",
+      userConfirmationHtml,
+    );
 
     return Response.json({
       success: true,
       message: "Nachricht erfolgreich gesendet",
       submissionId: contactSubmission.id,
     });
-
   } catch (error) {
     console.error("Error submitting contact form:", error);
     return Response.json(
       { error: "Fehler beim Senden der Nachricht" },
-      { status: 500 }
+      { status: 500 },
     );
   }
 }

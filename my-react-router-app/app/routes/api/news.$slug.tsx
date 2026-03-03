@@ -28,10 +28,22 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
 
     const translatedItem = {
       ...item,
-      title: lang === "en" ? (item.title_en || item.title) : (item.title_de || item.title),
-      excerpt: lang === "en" ? (item.excerpt_en || item.excerpt) : (item.excerpt_de || item.excerpt),
-      content: lang === "en" ? (item.content_en || item.content) : (item.content_de || item.content),
-      category: lang === "en" ? (item.category_en || item.category) : (item.category_de || item.category),
+      title:
+        lang === "en"
+          ? item.title_en || item.title
+          : item.title_de || item.title,
+      excerpt:
+        lang === "en"
+          ? item.excerpt_en || item.excerpt
+          : item.excerpt_de || item.excerpt,
+      content:
+        lang === "en"
+          ? item.content_en || item.content
+          : item.content_de || item.content,
+      category:
+        lang === "en"
+          ? item.category_en || item.category
+          : item.category_de || item.category,
     };
 
     return new Response(JSON.stringify({ item: translatedItem }), {
@@ -46,10 +58,12 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
       {
         id: 1,
         slug: "welcome-to-the-portal",
-        title_de: "Willkommen im IU-Studentenportal",
-        title_en: "Welcome to the IU Student Portal",
-        content_de: "Wir freuen uns, das neue IU-Studentenportal zu starten. Hier kannst du Noten verwalten, Praxisberichte hochladen und dich über Campus-Updates informieren.",
-        content_en: "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.",
+        title_de: "Willkommen in der IU-Studentenplattform",
+        title_en: "Welcome to the IU Student Platform",
+        content_de:
+          "Wir freuen uns, die neue IU-Studentenplattform zu starten. Hier kannst du Noten verwalten, Praxisberichte hochladen und dich über Campus-Updates informieren.",
+        content_en:
+          "We are excited to launch the new IU Student Platform. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.",
         category_de: "Ankündigungen",
         category_en: "Announcements",
         tags: JSON.stringify(["announcement", "portal"]),
@@ -63,8 +77,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "exam-schedule-winter",
         title_de: "Winter-Prüfungsplan veröffentlicht",
         title_en: "Winter Exam Schedule Published",
-        content_de: "Der Winter-Prüfungsplan ist veröffentlicht. Bitte prüfe deine kursspezifischen Termine und melde dich rechtzeitig an.",
-        content_en: "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.",
+        content_de:
+          "Der Winter-Prüfungsplan ist veröffentlicht. Bitte prüfe deine kursspezifischen Termine und melde dich rechtzeitig an.",
+        content_en:
+          "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.",
         category_de: "Prüfungen",
         category_en: "Exams",
         tags: JSON.stringify(["exams", "schedule"]),
@@ -78,8 +94,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "campus-maintenance-november",
         title_de: "Geplante Campus-Wartung im November",
         title_en: "Scheduled Campus Maintenance in November",
-        content_de: "Die IT führt am Wochenende eine geplante Wartung durch. Kurze Serviceunterbrechungen sind möglich.",
-        content_en: "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.",
+        content_de:
+          "Die IT führt am Wochenende eine geplante Wartung durch. Kurze Serviceunterbrechungen sind möglich.",
+        content_en:
+          "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.",
         category_de: "IT",
         category_en: "IT",
         tags: JSON.stringify(["maintenance", "it"]),
@@ -93,8 +111,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "new-module-data-analytics",
         title_de: "Neues Modul: Data Analytics mit Python",
         title_en: "New Module: Data Analytics with Python",
-        content_de: "Wir bieten ein neues Modul zu Data Analytics mit Python an. Themen sind NumPy, pandas, Visualisierung und Grundlagen von ML.",
-        content_en: "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.",
+        content_de:
+          "Wir bieten ein neues Modul zu Data Analytics mit Python an. Themen sind NumPy, pandas, Visualisierung und Grundlagen von ML.",
+        content_en:
+          "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.",
         category_de: "Akademisches",
         category_en: "Academics",
         tags: JSON.stringify(["module", "python", "analytics"]),
@@ -108,8 +128,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "scholarship-opportunities-2025",
         title_de: "Stipendien 2025: Jetzt bewerben",
         title_en: "Scholarship Opportunities 2025",
-        content_de: "Bewerbungen für Stipendien im Studienjahr 2025 sind offen. Bitte vor dem 15. Dezember einreichen.",
-        content_en: "Applications are open for various scholarships for the 2025 academic year. Submit your application before December 15.",
+        content_de:
+          "Bewerbungen für Stipendien im Studienjahr 2025 sind offen. Bitte vor dem 15. Dezember einreichen.",
+        content_en:
+          "Applications are open for various scholarships for the 2025 academic year. Submit your application before December 15.",
         category_de: "Stipendien",
         category_en: "Scholarships",
         tags: JSON.stringify(["scholarship", "finance"]),
@@ -123,8 +145,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "library-extended-hours",
         title_de: "Bibliothek verlängert Öffnungszeiten",
         title_en: "Library Extends Opening Hours",
-        content_de: "Zur Unterstützung eures Studiums öffnet die Bibliothek werktags bis 00:00 Uhr.",
-        content_en: "To support your studies, the campus library will extend opening hours to 00:00 from Monday to Friday.",
+        content_de:
+          "Zur Unterstützung eures Studiums öffnet die Bibliothek werktags bis 00:00 Uhr.",
+        content_en:
+          "To support your studies, the campus library will extend opening hours to 00:00 from Monday to Friday.",
         category_de: "Bibliothek",
         category_en: "Library",
         tags: JSON.stringify(["library", "hours"]),
@@ -138,8 +162,10 @@ export async function loader({ params, request }: LoaderFunctionArgs) {
         slug: "career-fair-2025",
         title_de: "Karrieremesse 2025: Sei dabei",
         title_en: "Join the 2025 Career Fair",
-        content_de: "Unsere jährliche Karrieremesse bringt Top-Arbeitgeber auf den Campus. Bereite deinen Lebenslauf vor und triff Recruiter.",
-        content_en: "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.",
+        content_de:
+          "Unsere jährliche Karrieremesse bringt Top-Arbeitgeber auf den Campus. Bereite deinen Lebenslauf vor und triff Recruiter.",
+        content_en:
+          "Our annual Career Fair brings top employers to campus. Prepare your CV and meet recruiters.",
         category_de: "Karriere",
         category_en: "Careers",
         tags: JSON.stringify(["career", "fair", "jobs"]),

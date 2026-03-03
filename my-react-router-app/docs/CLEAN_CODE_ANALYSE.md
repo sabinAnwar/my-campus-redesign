@@ -1,4 +1,4 @@
-# Clean-Code-Analyse des IU Student Portal MVP
+# Clean-Code-Analyse des IU Student Plattform MVP
 
 > **Wissenschaftliche Dokumentation der Anwendung von Clean-Code-Prinzipien**  
 > Basierend auf Martin, R. C. (2009) und Fowler, M. (2018)
@@ -7,7 +7,7 @@
 
 ## 1. Einleitung
 
-Diese Dokumentation analysiert die Implementierung von Clean-Code-Prinzipien im IU Student Portal MVP. Die Analyse folgt den etablierten Standards nach Robert C. Martin (*Clean Code: A Handbook of Agile Software Craftsmanship*, 2009) und Martin Fowler (*Refactoring: Improving the Design of Existing Code*, 2018).
+Diese Dokumentation analysiert die Implementierung von Clean-Code-Prinzipien im IU Student Plattform MVP. Die Analyse folgt den etablierten Standards nach Robert C. Martin (_Clean Code: A Handbook of Agile Software Craftsmanship_, 2009) und Martin Fowler (_Refactoring: Improving the Design of Existing Code_, 2018).
 
 ---
 
@@ -19,14 +19,15 @@ Diese Dokumentation analysiert die Implementierung von Clean-Code-Prinzipien im 
 
 **Anwendung im Projekt:**
 
-| Kontext | Implementierung | Bewertung |
-|---------|-----------------|-----------|
-| State Management | `searchQuery`, `filteredResults`, `isSearchActive` |  Exzellent |
-| Komponenten | `LoginFormInput`, `ThemeToggle`, `ScreenReaderToggle` |  Exzellent |
-| Hooks | `useClickOutside`, `useMediaQuery`, `useDebounce` |  Exzellent |
-| Konstanten | `SHELL_TRANSLATIONS`, `BASE_NAV_ITEMS` |  Exzellent |
+| Kontext          | Implementierung                                       | Bewertung |
+| ---------------- | ----------------------------------------------------- | --------- |
+| State Management | `searchQuery`, `filteredResults`, `isSearchActive`    | Exzellent |
+| Komponenten      | `LoginFormInput`, `ThemeToggle`, `ScreenReaderToggle` | Exzellent |
+| Hooks            | `useClickOutside`, `useMediaQuery`, `useDebounce`     | Exzellent |
+| Konstanten       | `SHELL_TRANSLATIONS`, `BASE_NAV_ITEMS`                | Exzellent |
 
 **Codebeispiel aus `_app.tsx`:**
+
 ```typescript
 //  Aussagekräftige Variablennamen
 const [userName, setUserName] = useState("");
@@ -51,16 +52,17 @@ type SearchItem = {
 
 **Anwendung im Projekt:**
 
-| Datei/Komponente | Verantwortlichkeit | Bewertung |
-|------------------|-------------------|-----------|
-| `hooks/useClickOutside.ts` | Erkennung von Klicks außerhalb eines Elements |  SRP erfüllt |
-| `hooks/useMediaQuery.ts` | Responsive Breakpoint-Detection |  SRP erfüllt |
-| `hooks/useDebounce.ts` | Verzögerte Wertaktualisierung |  SRP erfüllt |
-| `contexts/LanguageContext.tsx` | Sprachverwaltung (i18n) |  SRP erfüllt |
-| `contexts/ThemeContext.tsx` | Theme-Management (Light/Dark) |  SRP erfüllt |
-| `contexts/ScreenReaderContext.tsx` | Barrierefreiheit-Steuerung |  SRP erfüllt |
+| Datei/Komponente                   | Verantwortlichkeit                            | Bewertung   |
+| ---------------------------------- | --------------------------------------------- | ----------- |
+| `hooks/useClickOutside.ts`         | Erkennung von Klicks außerhalb eines Elements | SRP erfüllt |
+| `hooks/useMediaQuery.ts`           | Responsive Breakpoint-Detection               | SRP erfüllt |
+| `hooks/useDebounce.ts`             | Verzögerte Wertaktualisierung                 | SRP erfüllt |
+| `contexts/LanguageContext.tsx`     | Sprachverwaltung (i18n)                       | SRP erfüllt |
+| `contexts/ThemeContext.tsx`        | Theme-Management (Light/Dark)                 | SRP erfüllt |
+| `contexts/ScreenReaderContext.tsx` | Barrierefreiheit-Steuerung                    | SRP erfüllt |
 
 **Codebeispiel aus `hooks/useClickOutside.ts`:**
+
 ```typescript
 /**
  * A hook that calls a handler when a click occurs outside the referenced element.
@@ -73,8 +75,10 @@ type SearchItem = {
 export function useClickOutside<T extends HTMLElement = HTMLElement>(
   ref: RefObject<T>,
   handler: (event: MouseEvent | TouchEvent) => void,
-  enabled: boolean = true
-): void { /* ... */ }
+  enabled: boolean = true,
+): void {
+  /* ... */
+}
 ```
 
 ---
@@ -85,15 +89,16 @@ export function useClickOutside<T extends HTMLElement = HTMLElement>(
 
 **Anwendung im Projekt:**
 
-| Zentralisierung | Dateipfad | Verwendung |
-|-----------------|-----------|------------|
-| Navigation-Konstanten | `constants/navigation.ts` | Sidebar, Header |
-| Übersetzungen | `services/translations/*.ts` | Alle Komponenten |
-| UI-Komponenten | `components/ui/*.tsx` | Projektübergreifend |
-| Custom Hooks | `hooks/index.ts` | Re-export Barrel |
-| Konstanten-Barrel | `constants/index.ts` | Zentrale Exports |
+| Zentralisierung       | Dateipfad                    | Verwendung          |
+| --------------------- | ---------------------------- | ------------------- |
+| Navigation-Konstanten | `constants/navigation.ts`    | Sidebar, Header     |
+| Übersetzungen         | `services/translations/*.ts` | Alle Komponenten    |
+| UI-Komponenten        | `components/ui/*.tsx`        | Projektübergreifend |
+| Custom Hooks          | `hooks/index.ts`             | Re-export Barrel    |
+| Konstanten-Barrel     | `constants/index.ts`         | Zentrale Exports    |
 
 **Codebeispiel aus `constants/index.ts`:**
+
 ```typescript
 // Central export barrel for all constants
 export * from "./antragsverwaltung";
@@ -136,7 +141,7 @@ app/
 └── types/            # TypeScript Definitionen
 ```
 
-**Bewertung:**  Klare Schichtentrennung nach Verantwortlichkeiten
+**Bewertung:** Klare Schichtentrennung nach Verantwortlichkeiten
 
 ---
 
@@ -145,14 +150,29 @@ app/
 **Prinzip:** Methoden sind kurz und erfüllen genau eine Funktion.
 
 **Beispiele aus `_app.events.tsx`:**
+
 ```typescript
-function fmtMonth(date: Date) { /* formatiert Monat */ }
-function startOfMonth(date: Date) { /* Monatsanfang */ }
-function addMonths(date: Date, delta: number) { /* Monate addieren */ }
-function isSameDay(a: Date, b: Date) { /* Tagesvergleich */ }
-function toISODate(d: Date) { /* ISO-Format */ }
-function buildMonthGrid(current: Date): Date[] { /* Kalender-Grid */ }
-function parseDurationMinutes(str: unknown): number { /* Dauer parsen */ }
+function fmtMonth(date: Date) {
+  /* formatiert Monat */
+}
+function startOfMonth(date: Date) {
+  /* Monatsanfang */
+}
+function addMonths(date: Date, delta: number) {
+  /* Monate addieren */
+}
+function isSameDay(a: Date, b: Date) {
+  /* Tagesvergleich */
+}
+function toISODate(d: Date) {
+  /* ISO-Format */
+}
+function buildMonthGrid(current: Date): Date[] {
+  /* Kalender-Grid */
+}
+function parseDurationMinutes(str: unknown): number {
+  /* Dauer parsen */
+}
 ```
 
 ---
@@ -172,9 +192,10 @@ function parseDurationMinutes(str: unknown): number { /* Dauer parsen */ }
 
 // _app.tsx
 // semester starts: Summer = Apr(3), Winter = Oct(9)
-const defaultSemStart = today.getMonth() >= 3 && today.getMonth() <= 8
-  ? { y: today.getFullYear(), m: 3 }
-  : { y: today.getFullYear(), m: 9 };
+const defaultSemStart =
+  today.getMonth() >= 3 && today.getMonth() <= 8
+    ? { y: today.getFullYear(), m: 3 }
+    : { y: today.getFullYear(), m: 9 };
 ```
 
 ---
@@ -195,7 +216,9 @@ useEffect(() => {
         const data = await res.json();
         // Verarbeitung...
       }
-    } catch { /* Graceful degradation */ }
+    } catch {
+      /* Graceful degradation */
+    }
   })();
 }, []);
 ```
@@ -206,12 +229,12 @@ useEffect(() => {
 
 **Prinzip:** Code ist unabhängig von UI und Infrastruktur testbar.
 
-| Hook/Kontext | Testbar | Begründung |
-|--------------|---------|------------|
-| `useLocalStorage` |  | Reine Logik, mockbarer Storage |
-| `useDebounce` |  | Deterministisch mit Timer-Mocks |
-| `useMediaQuery` |  | Window-Mock möglich |
-| Redux Store |  | Isolierte Reducer-Tests |
+| Hook/Kontext      | Testbar | Begründung                      |
+| ----------------- | ------- | ------------------------------- |
+| `useLocalStorage` |         | Reine Logik, mockbarer Storage  |
+| `useDebounce`     |         | Deterministisch mit Timer-Mocks |
+| `useMediaQuery`   |         | Window-Mock möglich             |
+| Redux Store       |         | Isolierte Reducer-Tests         |
 
 ---
 
@@ -235,21 +258,21 @@ my-react-router-app/
 
 ### 3.2 Technologie-Übersicht
 
-| Schicht | Technologie | Clean-Code-Relevanz |
-|---------|-------------|---------------------|
-| **Frontend** | React 19, React Router 7 | Komponentenbasierte Architektur |
-| **Styling** | Tailwind CSS 4 | Utility-first, keine CSS-Duplikate |
-| **State** | Redux Toolkit, React Context | Klare Zustandstrennung |
-| **Backend** | Node.js, Express 5 | REST-API-Schichtentrennung |
-| **Datenbank** | PostgreSQL, Prisma ORM | Schema-first, typsicher |
-| **Typisierung** | TypeScript 5.9 | Compile-Zeit-Fehlerprüfung |
+| Schicht         | Technologie                  | Clean-Code-Relevanz                |
+| --------------- | ---------------------------- | ---------------------------------- |
+| **Frontend**    | React 19, React Router 7     | Komponentenbasierte Architektur    |
+| **Styling**     | Tailwind CSS 4               | Utility-first, keine CSS-Duplikate |
+| **State**       | Redux Toolkit, React Context | Klare Zustandstrennung             |
+| **Backend**     | Node.js, Express 5           | REST-API-Schichtentrennung         |
+| **Datenbank**   | PostgreSQL, Prisma ORM       | Schema-first, typsicher            |
+| **Typisierung** | TypeScript 5.9               | Compile-Zeit-Fehlerprüfung         |
 
 ---
 
 ## 4. Zusammenfassung
 
-> Das IU Student Portal MVP implementiert die zentralen Clean-Code-Prinzipien nach Martin (2009) konsequent:
-> 
+> Das IU Student Plattform MVP implementiert die zentralen Clean-Code-Prinzipien nach Martin (2009) konsequent:
+>
 > - **Aussagekräftige Namen** bei Variablen, Hooks und Komponenten
 > - **Single Responsibility** durch spezialisierte Hooks und Contexts
 > - **DRY-Prinzip** durch zentrale Constants und Barrel-Exports
@@ -263,11 +286,11 @@ my-react-router-app/
 
 ## 5. Referenzen
 
-1. Martin, R. C. (2009). *Clean Code: A Handbook of Agile Software Craftsmanship*. Prentice Hall.
-2. Fowler, M. (2018). *Refactoring: Improving the Design of Existing Code* (2nd ed.). Addison-Wesley.
-3. Martin, R. C. (2017). *Clean Architecture: A Craftsman's Guide to Software Structure and Design*. Prentice Hall.
+1. Martin, R. C. (2009). _Clean Code: A Handbook of Agile Software Craftsmanship_. Prentice Hall.
+2. Fowler, M. (2018). _Refactoring: Improving the Design of Existing Code_ (2nd ed.). Addison-Wesley.
+3. Martin, R. C. (2017). _Clean Architecture: A Craftsman's Guide to Software Structure and Design_. Prentice Hall.
 
 ---
 
-*Dokumentation erstellt am: 02. Januar 2026*  
-*Projekt: IU International University - Student Portal MVP*
+_Dokumentation erstellt am: 02. Januar 2026_  
+_Projekt: IU International University - Student Plattform MVP_

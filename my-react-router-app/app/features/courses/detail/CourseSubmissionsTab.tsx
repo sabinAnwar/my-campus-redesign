@@ -1,4 +1,12 @@
-import { Calendar, CheckCircle, ClipboardList, Clock, FileText, GraduationCap, Plus } from "lucide-react";
+import {
+  Calendar,
+  CheckCircle,
+  ClipboardList,
+  Clock,
+  FileText,
+  GraduationCap,
+  Plus,
+} from "lucide-react";
 import type { CourseSubmission } from "~/types/course";
 import type { TranslationType } from "~/types/courseDetail";
 
@@ -10,7 +18,13 @@ interface CourseSubmissionsTabProps {
   openModal: (submission: CourseSubmission) => void;
 }
 
-export function CourseSubmissionsTab({ language, t, submissions, translate, openModal }: CourseSubmissionsTabProps) {
+export function CourseSubmissionsTab({
+  language,
+  t,
+  submissions,
+  translate,
+  openModal,
+}: CourseSubmissionsTabProps) {
   return (
     <div className="space-y-4 sm:space-y-6 animate-in fade-in slide-in-from-bottom-6 duration-700">
       <div className="flex flex-col lg:flex-row lg:items-end justify-between gap-4 sm:gap-6 mb-2">
@@ -25,7 +39,10 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
           </p>
         </div>
         <button className="w-full lg:w-auto px-5 sm:px-6 py-2.5 sm:py-3 rounded-xl bg-iu-blue text-white font-bold text-sm hover:bg-iu-blue/90 transition-all shadow-lg shadow-iu-blue/20 flex items-center justify-center gap-2 active:scale-95 group shrink-0">
-          <Plus size={18} className="group-hover:rotate-90 transition-transform duration-300" />
+          <Plus
+            size={18}
+            className="group-hover:rotate-90 transition-transform duration-300"
+          />
           <span>
             {language === "de" ? "Hausarbeit abgeben" : "Submit Assignment"}
           </span>
@@ -115,9 +132,15 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
                             <div className="truncate max-w-[220px]">
                               {assignment.submitted_file_name}
                             </div>
-                            {typeof assignment.submitted_file_size === "number" && (
+                            {typeof assignment.submitted_file_size ===
+                              "number" && (
                               <div className="text-[10px] text-muted-foreground font-black uppercase tracking-widest">
-                                {(assignment.submitted_file_size / 1024 / 1024).toFixed(2)} MB
+                                {(
+                                  assignment.submitted_file_size /
+                                  1024 /
+                                  1024
+                                ).toFixed(2)}{" "}
+                                MB
                               </div>
                             )}
                           </div>
@@ -162,7 +185,7 @@ export function CourseSubmissionsTab({ language, t, submissions, translate, open
 
                     {isExam && (
                       <div className="px-4 sm:px-8 py-3 sm:py-4 rounded-xl sm:rounded-2xl bg-iu-red/5 dark:bg-iu-red border border-iu-red/10 dark:border-iu-red text-iu-red dark:text-white font-black text-[10px] sm:text-sm uppercase tracking-widest text-center">
-                        Externes Portal
+                        Externe Plattform
                       </div>
                     )}
                   </div>

@@ -17,14 +17,14 @@ export default function LibraryDatabasesPage() {
     return ALL_DATABASES.filter(
       (db) =>
         db.name.toLowerCase().includes(q) ||
-        (db.description && db.description.toLowerCase().includes(q))
+        (db.description && db.description.toLowerCase().includes(q)),
     );
   }, [searchQuery]);
 
   const grouped = useMemo(() => {
     const groups: { [key: string]: typeof ALL_DATABASES } = {};
     const sorted = [...filteredDatabases].sort((a, b) =>
-      a.name.localeCompare(b.name)
+      a.name.localeCompare(b.name),
     );
     sorted.forEach((db) => {
       const firstChar = db.name.charAt(0).toUpperCase();
@@ -70,12 +70,12 @@ export default function LibraryDatabasesPage() {
             className="w-full pl-12 pr-12 py-4 bg-card border border-border rounded-2xl text-sm font-bold focus:outline-none focus:ring-4 focus:ring-iu-blue/10 transition-all shadow-xl placeholder:text-foreground/60"
           />
           {searchQuery && (
-             <button 
-               onClick={() => setSearchQuery("")}
-               className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-muted rounded-full transition-colors"
-             >
-               <X className="h-4 w-4 text-muted-foreground" />
-             </button>
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 p-2 hover:bg-muted rounded-full transition-colors"
+            >
+              <X className="h-4 w-4 text-muted-foreground" />
+            </button>
           )}
         </div>
       </div>
@@ -101,7 +101,11 @@ export default function LibraryDatabasesPage() {
       {/* Main List */}
       <div className="space-y-16">
         {alphabet.map((letter) => (
-          <div key={letter} id={`db-letter-${letter}`} className="scroll-mt-32 animate-in fade-in slide-in-from-bottom-4">
+          <div
+            key={letter}
+            id={`db-letter-${letter}`}
+            className="scroll-mt-32 animate-in fade-in slide-in-from-bottom-4"
+          >
             <div className="flex items-center gap-6 mb-8">
               <span className="text-5xl font-black text-slate-900 dark:text-slate-100 tracking-tight">
                 {letter}
@@ -119,31 +123,32 @@ export default function LibraryDatabasesPage() {
                   className="group flex flex-col p-8 rounded-[2rem] bg-card border border-border hover:border-slate-400 dark:hover:border-slate-600 hover:bg-slate-50 dark:hover:bg-slate-900/50 transition-all shadow-sm hover:shadow-2xl relative overflow-hidden"
                 >
                   <div className="absolute top-0 right-0 w-48 h-48 bg-slate-100/50 dark:bg-slate-800/10 blur-[100px] rounded-full -mr-24 -mt-24 group-hover:bg-slate-200/50 dark:group-hover:bg-slate-800/20 transition-all" />
-                  
+
                   <div className="flex items-center justify-between mb-6 relative z-10">
                     <div className="p-3 rounded-2xl bg-iu-blue/10 text-iu-blue group-hover:scale-110 transition-transform duration-500">
                       <DynamicIcon name={db.icon} className="h-6 w-6" />
                     </div>
                     <div className="flex items-center gap-2 px-3 py-1 bg-muted rounded-lg text-[10px] font-black text-foreground group-hover:bg-slate-200 dark:group-hover:bg-slate-700 transition-all">
-                      PORTAL
+                      PLATTFORM
                       <ExternalLink className="h-3 w-3" />
                     </div>
                   </div>
-                  
+
                   <h3 className="text-xl font-black text-foreground group-hover:translate-x-1 transition-transform mb-4 relative z-10 leading-tight">
                     {db.name}
                   </h3>
-                  
+
                   <p className="text-sm text-foreground font-medium leading-relaxed line-clamp-4 mb-6 relative z-10 transition-colors">
                     {language === "de" ? db.description : db.descriptionEn}
                   </p>
-                  
-                  {db.description && db.description.includes("Inhalte sind nicht") && (
-                     <div className="mt-auto relative z-10 flex items-center gap-2 px-4 py-2 bg-amber-200 text-amber-900 rounded-xl text-[10px] font-black uppercase tracking-wider self-start border border-amber-300 dark:bg-amber-900 dark:text-amber-100 dark:border-amber-700">
+
+                  {db.description &&
+                    db.description.includes("Inhalte sind nicht") && (
+                      <div className="mt-auto relative z-10 flex items-center gap-2 px-4 py-2 bg-amber-200 text-amber-900 rounded-xl text-[10px] font-black uppercase tracking-wider self-start border border-amber-300 dark:bg-amber-900 dark:text-amber-100 dark:border-amber-700">
                         <span className="w-2 h-2 bg-amber-900 dark:bg-amber-100 rounded-full animate-pulse" />
                         {t.separateSearch}
-                     </div>
-                  )}
+                      </div>
+                    )}
                 </a>
               ))}
             </div>
@@ -161,7 +166,7 @@ export default function LibraryDatabasesPage() {
             <p className="text-muted-foreground font-bold">
               {t.tryDifferentSearch}
             </p>
-            <button 
+            <button
               onClick={() => setSearchQuery("")}
               className="mt-8 px-8 py-3 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 rounded-2xl font-black hover:scale-105 transition-all shadow-xl"
             >

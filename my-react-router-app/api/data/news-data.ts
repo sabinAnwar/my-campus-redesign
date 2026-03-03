@@ -36,14 +36,14 @@ export const FALLBACK_NEWS_ITEMS = [
   },
   {
     id: 1,
-    slug: "welcome-to-the-portal",
-    title: "Welcome to the IU Student Portal",
+    slug: "welcome-to-the-Plattform",
+    title: "Welcome to the IU Student Plattform",
     excerpt:
       "Everything you need in one place: marks, applications, modules, and more.",
     content:
-      "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.",
+      "We are excited to launch the new IU Student Plattform. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.",
     category: "Announcements",
-    tags: JSON.stringify(["announcement", "portal"]),
+    tags: JSON.stringify(["announcement", "Plattform"]),
     author: "IU Team",
     cover_image_url: undefined,
     featured: false,

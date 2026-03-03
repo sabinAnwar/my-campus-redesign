@@ -350,9 +350,9 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
     }
 
     const mailOptions = {
-      from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+      from: process.env.EMAIL_FROM || "noreply@iu-plattform.com",
       to: email,
-      subject: "IU Portal - Password Reset Request",
+      subject: "IU Plattform - Password Reset Request",
       html: `
         <html>
           <body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
@@ -361,7 +361,7 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
                 <h1 style="color: #000; margin: 0;">
                   <span style="display: inline-block; background: #000; color: white; width: 40px; height: 40px; border-radius: 50%; line-height: 40px; font-size: 20px; font-weight: bold;">IU</span>
                 </h1>
-                <p style="color: #666; margin-top: 10px;">IU Student Portal</p>
+                <p style="color: #666; margin-top: 10px;">IU Plattform</p>
               </div>
 
               <h2 style="color: #333; margin-bottom: 20px;">Password Reset Request</h2>
@@ -383,12 +383,12 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
               <hr style="border: none; border-top: 1px solid #ddd; margin: 30px 0;">
               
               <p style="color: #666; font-size: 12px;">
-                If you have any questions, please contact our support team at support@iu-portal.com
+                If you have any questions, please contact our support team at support@iu-plattform.com
               </p>
               
               <p style="color: #666; font-size: 12px;">
                 Best regards,<br>
-                IU Portal Team
+                IU Team
               </p>
             </div>
           </body>
@@ -409,7 +409,7 @@ async function sendPasswordResetEmail(email: string, resetLink: string) {
         If you didn't make this request, you can safely ignore this email.
         
         Best regards,
-        IU Portal Team
+        IU Plattform Team
       `,
     };
 
@@ -633,10 +633,10 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
     for (const student of targets) {
       try {
         const appUrl = process.env.APP_URL || "http://localhost:5174";
-        const portalLink = `${appUrl}/praxisbericht2`;
+        const PlattformLink = `${appUrl}/praxisbericht2`;
 
         const mailOptions = {
-          from: process.env.EMAIL_FROM || "noreply@iu-portal.com",
+          from: process.env.EMAIL_FROM || "noreply@iu-Plattform.com",
           to: student.email,
           subject: ` Reminder: Submit your Practical Report for Week ${week}`,
           html: `
@@ -645,10 +645,10 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
               
               <p>This is a friendly reminder to submit your Practical Report for the current week.</p>
               
-              <p>You can submit it from the portal:</p>
+              <p>You can submit it from the Plattform:</p>
               
               <p>
-                <a href="${portalLink}" style="display: inline-block; background: #111827; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">
+                <a href="${PlattformLink}" style="display: inline-block; background: #111827; color: #fff; padding: 10px 16px; border-radius: 6px; text-decoration: none; font-weight: bold;">
                   Open Praxisberichte
                 </a>
               </p>
@@ -658,7 +658,7 @@ app.get("/api/cron/praxisbericht-reminder", async (req, res) => {
               </p>
             </div>
           `,
-          text: `Hi ${student.name || "Student"},\n\nThis is a reminder to submit your Practical Report for Week ${week}.\n\nVisit: ${portalLink}\n\nBest regards,\nIU Portal Team`,
+          text: `Hi ${student.name || "Student"},\n\nThis is a reminder to submit your Practical Report for Week ${week}.\n\nVisit: ${PlattformLink}\n\nBest regards,\nIU Plattform Team`,
         };
 
         const info = await transporter.sendMail(mailOptions);
@@ -1049,13 +1049,13 @@ app.get("/api/news", async (req, res) => {
       },
       {
         id: 1,
-        slug: "welcome-to-the-portal",
-        title: "Welcome to the IU Student Portal",
+        slug: "welcome-to-the-Plattform",
+        title: "Welcome to the IU Student Plattform",
         excerpt:
           "Everything you need in one place: marks, applications, modules, and more.",
         content: "Welcome content",
         category: "Announcements",
-        tags: JSON.stringify(["announcement", "portal"]),
+        tags: JSON.stringify(["announcement", "Plattform"]),
         author: "IU Team",
         coverImageUrl: undefined,
         featured: false,
@@ -1381,12 +1381,12 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
 
       // Send reminder email
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
-      const portalLink = `${appUrl}/praxisbericht2`;
+      const PlattformLink = `${appUrl}/praxisbericht2`;
       const mailOptions = {
         from:
           process.env.EMAIL_FROM ||
           process.env.EMAIL_USER ||
-          "noreply@iu-portal.com",
+          "noreply@iu-Plattform.com",
         to: u.email,
         subject: " Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
@@ -1394,12 +1394,12 @@ app.get("/api/cron/daily-reminders", async (req, res) => {
             <h2 style="margin: 0 0 12px;">Hallo ${u.name || "Student"},</h2>
             <p>kurze Erinnerung für heute: Bitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.</p>
             <p>
-              <a href="${portalLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
+              <a href="${PlattformLink}" style="display:inline-block;background:#111827;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font-weight:bold;">Praxisbericht öffnen</a>
             </p>
             <p style="color:#999;font-size:12px;">Diese Erinnerung wurde um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}) gesendet.</p>
           </div>
         `,
-        text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${portalLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
+        text: `Hallo ${u.name || "Student"},\n\nBitte denke daran, deinen Praxisbericht für diese Woche auszufüllen.\n\n${PlattformLink}\n\nGesendet um ${String(targetHour).padStart(2, "0")}:${String(targetMinute).padStart(2, "0")} (${tz}).`,
       };
 
       try {
@@ -1476,7 +1476,7 @@ app.get("/api/news/:slug", async (req, res) => {
     console.warn("/api/news/:slug fallback due to error:", message);
     const now = new Date().toISOString();
     const samples = [
-      { id: 1, slug: "welcome-to-the-portal", title: "Welcome to the IU Student Portal", content: "We are excited to launch the new IU Student Portal. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","portal"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
+      { id: 1, slug: "welcome-to-the-Plattform", title: "Welcome to the IU Student Plattform", content: "We are excited to launch the new IU Student Plattform. Here you can manage your marks, upload your practical reports, and stay informed about the latest campus updates.", category: "Announcements", tags: JSON.stringify(["announcement","Plattform"]), author: "IU Team", coverImageUrl: undefined, featured: true, publishedAt: now },
       { id: 2, slug: "exam-schedule-winter", title: "Winter Exam Schedule Published", content: "The winter exam schedule has been published. Please check your course-specific dates and make sure to register before the deadline.", category: "Exams", tags: JSON.stringify(["exams","schedule"]), author: "Examination Office", coverImageUrl: undefined, featured: false, publishedAt: now },
       { id: 3, slug: "campus-maintenance-november", title: "Scheduled Campus Maintenance in November", content: "Our IT department will perform scheduled maintenance on campus systems this weekend. Short service interruptions may occur.", category: "IT", tags: JSON.stringify(["maintenance","it"]), author: "IT Services", coverImageUrl: undefined, featured: false, publishedAt: now },
       { id: 4, slug: "new-module-data-analytics", title: "New Module: Data Analytics with Python", content: "We are excited to offer a new module on Data Analytics with Python. The course covers NumPy, pandas, visualization, and basic ML.", category: "Academics", tags: JSON.stringify(["module","python","analytics"]), author: "Faculty of Computer Science", coverImageUrl: undefined, featured: true, publishedAt: now },

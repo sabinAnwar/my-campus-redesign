@@ -363,9 +363,9 @@ async function seedNews() {
       title: 'Exam Registration Now Open',
       title_de: 'Klausuranmeldung jetzt offen',
       title_en: 'Exam Registration Now Open',
-      content: 'Register for your exams in the student portal.',
-      content_de: 'Melden Sie sich jetzt im Studierendenportal für Klausuren an.',
-      content_en: 'Register for your exams in the student portal.',
+      content: 'Register for your exams in the student platform.',
+      content_de: 'Melden Sie sich jetzt in der Studierendenplattform für Klausuren an.',
+      content_en: 'Register for your exams in the student platform.'
       category: 'Academic',
       category_de: 'Studium',
       category_en: 'Academic',

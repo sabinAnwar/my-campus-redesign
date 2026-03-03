@@ -6,9 +6,15 @@ export const LoginHeader = () => (
       </div>
     </div>
     <div className="mb-0 sm:mb-1">
-      <span className="px-3 py-1 sm:px-4 sm:py-1 rounded-full bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-700 dark:to-slate-600 text-slate-700 dark:text-slate-300 text-[9px] sm:text-[10px] font-bold border border-slate-300 dark:border-slate-600">STUDENT PORTAL</span>
+      <span className="px-3 py-1 sm:px-4 sm:py-1 rounded-full bg-gradient-to-r from-slate-100 to-slate-50 dark:from-slate-700 dark:to-slate-600 text-slate-700 dark:text-slate-300 text-[9px] sm:text-[10px] font-bold border border-slate-300 dark:border-slate-600">
+        STUDENT PLATTFORM
+      </span>
     </div>
-    <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mb-0.5 sm:mb-1">Welcome</h1>
-    <p className="text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs lg:text-sm font-semibold mb-0">IU Dual Degree Platform</p>
+    <h1 className="text-xl sm:text-2xl lg:text-3xl font-black text-slate-900 dark:text-white mb-0.5 sm:mb-1">
+      Welcome
+    </h1>
+    <p className="text-slate-700 dark:text-slate-200 text-[10px] sm:text-xs lg:text-sm font-semibold mb-0">
+      IU Dual Degree Platform
+    </p>
   </div>
 );

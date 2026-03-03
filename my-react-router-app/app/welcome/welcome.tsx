@@ -17,7 +17,7 @@ export function Welcome() {
             </div>
             <h1 className="text-4xl font-black text-white tracking-tight text-center">
               Welcome to the{" "}
-              <span className="text-iu-blue">IU Student Portal</span>
+              <span className="text-iu-blue">IU Student Plattform</span>
             </h1>
           </div>
         </header>

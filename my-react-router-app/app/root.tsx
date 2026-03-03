@@ -50,7 +50,7 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="IU Student Portal - Manage your courses, grades, and academic journey" />
+        <meta name="description" content="IU Student Plattform - Manage your courses, grades, and academic journey" />
         <meta name="theme-color" content="#0f172a" />
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />

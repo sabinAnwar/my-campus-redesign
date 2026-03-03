@@ -18,7 +18,7 @@ export const TEXT = {
     daysUntilExam: (d: number) =>
       d > 0 ? `${d} Tage` : d === 0 ? "Heute" : "Abgeschlossen",
     modalTitle: "Antrag ausfüllen",
-    modalSubtitle: "Reiche deine Unterlagen sicher über unser Portal ein.",
+    modalSubtitle: "Reiche deine Unterlagen sicher über unsere Plattform ein.",
     honor: "Ich bestätige die Richtigkeit der gemachten Angaben.",
     privacy: "Ich akzeptiere die Datenschutzbestimmungen für den Upload.",
     dropHere: "Datei hier ablegen oder klicken, um hochzuladen",
@@ -51,7 +51,7 @@ export const TEXT = {
     daysUntilExam: (d: number) =>
       d > 0 ? `${d} days` : d === 0 ? "Today" : "Completed",
     modalTitle: "Fill Application",
-    modalSubtitle: "Submit your documents securely via our portal.",
+    modalSubtitle: "Submit your documents securely via our Plattform.",
     honor: "I confirm the accuracy of the information provided.",
     privacy: "I accept the privacy policy for the upload.",
     dropHere: "Drop file here or click to upload",

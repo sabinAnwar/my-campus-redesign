@@ -32,11 +32,15 @@ function getMinuteInTimezone(tz: string | null | undefined): number {
 }
 
 function getIsoWeekKey(date: Date) {
-  const d = new Date(Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()));
+  const d = new Date(
+    Date.UTC(date.getFullYear(), date.getMonth(), date.getDate()),
+  );
   const dayNum = d.getUTCDay() || 7;
   d.setUTCDate(d.getUTCDate() + 4 - dayNum);
   const yearStart = new Date(Date.UTC(d.getUTCFullYear(), 0, 1));
-  const weekNo = Math.ceil((((d.getTime() - yearStart.getTime()) / 86400000) + 1) / 7);
+  const weekNo = Math.ceil(
+    ((d.getTime() - yearStart.getTime()) / 86400000 + 1) / 7,
+  );
   const weekStr = String(weekNo).padStart(2, "0");
   return `${d.getUTCFullYear()}-W${weekStr}`;
 }
@@ -46,9 +50,16 @@ export const loader = async ({ request }: { request: Request }) => {
     const url = new URL(request.url);
     const secret = url.searchParams.get("secret");
     const cronSecret = process.env.CRON_SECRET || null;
-    const isLocal = process.env.VERCEL !== "1" && process.env.NODE_ENV !== "production";
-    const requireSecret = process.env.NODE_ENV === "production" ? true : !!cronSecret;
-    if (!isLocal && !isVercelCron(request) && requireSecret && (!cronSecret || secret !== cronSecret)) {
+    const isLocal =
+      process.env.VERCEL !== "1" && process.env.NODE_ENV !== "production";
+    const requireSecret =
+      process.env.NODE_ENV === "production" ? true : !!cronSecret;
+    if (
+      !isLocal &&
+      !isVercelCron(request) &&
+      requireSecret &&
+      (!cronSecret || secret !== cronSecret)
+    ) {
       return json({ error: "Unauthorized" }, 401);
     }
 
@@ -64,7 +75,7 @@ export const loader = async ({ request }: { request: Request }) => {
     const selfOnly = url.searchParams.get("self") === "1";
 
     let users: any[] = [];
-    
+
     if (selfOnly) {
       const token = getSessionTokenFromRequest(request);
       if (!token) return json({ error: "Unauthorized" }, 401);
@@ -125,14 +136,23 @@ export const loader = async ({ request }: { request: Request }) => {
         },
       });
       // Map to camelCase for consistency in the loop
-      users = dbUsers.map((u: { id: any; email: any; name: any; reminder_hour: any; reminder_minute: any; reminder_timezone: any; }) => ({
+      users = dbUsers.map(
+        (u: {
+          id: any;
+          email: any;
+          name: any;
+          reminder_hour: any;
+          reminder_minute: any;
+          reminder_timezone: any;
+        }) => ({
           id: u.id,
           email: u.email,
           name: u.name,
           reminderHour: u.reminder_hour,
           reminderMinute: u.reminder_minute,
-          reminderTimezone: u.reminder_timezone
-      }));
+          reminderTimezone: u.reminder_timezone,
+        }),
+      );
     }
 
     console.log(" daily-reminders (RR) users loaded", users.length);
@@ -143,7 +163,7 @@ export const loader = async ({ request }: { request: Request }) => {
     let sent = 0;
     // Use shared transporter (Gmail only)
     const transporter = await createTransporter();
-    
+
     // Default preview urls array, although createTransporter (Gmail) won't generate test URLs
     const previewUrls: string[] = [];
 
@@ -151,14 +171,19 @@ export const loader = async ({ request }: { request: Request }) => {
       const tz = u.reminder_timezone || "Europe/Berlin";
       const currentHour = getHourInTimezone(tz);
       const currentMinute = getMinuteInTimezone(tz);
-      
+
       const currentBucket = Math.floor(currentMinute / 5) * 5;
 
-      const targetHour = overrideHour ? parseInt(overrideHour, 10) : u.reminderHour ?? 18;
-      const targetMinute = overrideMinute ? parseInt(overrideMinute, 10) : u.reminderMinute ?? 0;
+      const targetHour = overrideHour
+        ? parseInt(overrideHour, 10)
+        : (u.reminderHour ?? 18);
+      const targetMinute = overrideMinute
+        ? parseInt(overrideMinute, 10)
+        : (u.reminderMinute ?? 0);
 
       const hourMatches = currentHour === targetHour;
-      const minuteMatches = targetMinute >= currentBucket && targetMinute < currentBucket + 5;
+      const minuteMatches =
+        targetMinute >= currentBucket && targetMinute < currentBucket + 5;
 
       if (!hourMatches || !minuteMatches) {
         continue;
@@ -179,7 +204,10 @@ export const loader = async ({ request }: { request: Request }) => {
       const appUrl = process.env.APP_URL || "https://iu-mycampus.me";
       const portalLink = `${appUrl}/praxisbericht2`;
       const mailOptions = {
-        from: process.env.EMAIL_FROM || process.env.EMAIL_USER || "noreply@iu-portal.com",
+        from:
+          process.env.EMAIL_FROM ||
+          process.env.EMAIL_USER ||
+          "noreply@iu-portal.com",
         to: u.email,
         subject: "Erinnerung: Praxisbericht heute noch ausfüllen",
         html: `
@@ -212,7 +240,7 @@ export const loader = async ({ request }: { request: Request }) => {
                     </p>
                   </div>
                   <div style="background: #f3f4f6; padding: 20px; text-align: center; color: #6b7280; font-size: 14px; border-radius: 0 0 10px 10px;">
-                    <p>&copy; ${new Date().getFullYear()} IU Student Portal</p>
+                    <p>&copy; ${new Date().getFullYear()} IU Student Plattform</p>
                     <p style="margin-top: 5px;">Dies ist eine automatische Benachrichtigung.</p>
                   </div>
                 </div>
@@ -243,7 +271,7 @@ export const loader = async ({ request }: { request: Request }) => {
         usersChecked: users.length,
         ...(previewUrls.length ? { previews: previewUrls } : {}),
       },
-      200
+      200,
     );
   } catch (error) {
     console.error("cron/daily-reminders route error", error);
@@ -270,8 +298,7 @@ function getSessionTokenFromRequest(request: Request): string | null {
         .split("; ")
         .map((c) => c.trim())
         .filter(Boolean)
-        .map((c) => {
-        })
+        .map((c) => {}),
     ) as Record<string, string>;
     const headerToken =
       request.headers.get("x-session-token") ||
@@ -282,4 +309,3 @@ function getSessionTokenFromRequest(request: Request): string | null {
     return null;
   }
 }
-
