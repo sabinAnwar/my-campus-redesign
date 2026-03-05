@@ -554,76 +554,76 @@ function DashboardDeferredContent({
           {
             id: "header",
             selector: '[data-onboard="dashboard-header"]',
-            title: "Begruessung und Ueberblick",
-            body: "Hier siehst du deinen persoenlichen Einstieg mit Begruessung und kurzem Kontext zum Dashboard.",
+            title: "Willkommen an der IU! ",
+            body: "Schön, dass du da bist! Dies ist dein persönliches Dashboard – deine zentrale Anlaufstelle für alles rund um dein Studium. Hier hast du immer den Überblick.",
           },
           {
             id: "news",
             selector: '[data-onboard="dashboard-news"]',
-            title: "Aktuelle News",
-            body: "Wichtige Updates und Hinweise der Hochschule findest du hier.",
+            title: "Aktuelles & Neuigkeiten",
+            body: "Bleib immer auf dem Laufenden! Hier findest du wichtige Ankündigungen, Campus-Updates und Neuigkeiten der Hochschule – damit du nichts verpasst.",
           },
           {
             id: "actions",
             selector: '[data-onboard="dashboard-quick-actions"]',
-            title: "Schnellzugriffe",
-            body: "Springe direkt zu den meist genutzten Bereichen wie Kurse, Aufgaben oder Bibliothek.",
+            title: "Deine Schnellzugriffe ⚡",
+            body: "Zeit ist kostbar! Mit einem Klick gelangst du zu den wichtigsten Bereichen: Kurse, Aufgaben, Bibliothek und mehr. Dein Studium, immer griffbereit.",
           },
           {
             id: "progress",
             selector: '[data-onboard="dashboard-progress"]',
-            title: "Studienfortschritt",
-            body: "Dein aktueller Status, Stunden und die naechsten Phasen werden hier angezeigt.",
+            title: "Dein Studienfortschritt",
+            body: "Behalte deine Ziele im Blick! Hier siehst du deinen aktuellen Fortschritt, absolvierte Module und was als Nächstes ansteht. Jeder Schritt zählt!",
           },
           {
             id: "customize",
             selector: '[data-onboard="dashboard-customize"]',
-            title: "Dashboard anpassen",
-            body: "Widgets ein- oder ausblenden und die Reihenfolge per Drag and Drop festlegen.",
+            title: "Gestalte dein Dashboard",
+            body: "Mach es dir bequem! Du kannst Widgets ein- und ausblenden sowie per Drag & Drop anordnen. Dein Dashboard, deine Regeln.",
           },
           {
             id: "widgets",
             selector: '[data-onboard="dashboard-widgets"]',
-            title: "Widgets",
-            body: "Diese Karten zeigen dir Aufgaben, Termine, Noten und weitere wichtige Infos.",
+            title: "Deine Info-Karten",
+            body: "Alles Wichtige auf einen Blick: Aufgaben, Termine, Noten und Deadlines. Diese Karten halten dich organisiert und auf Kurs. Viel Erfolg im Studium!",
           },
         ]
       : [
           {
             id: "header",
             selector: '[data-onboard="dashboard-header"]',
-            title: "Greeting and overview",
-            body: "Your personal dashboard entry with a quick overview.",
+            title: "Welcome to IU! ",
+            body: "Great to have you here! This is your personal dashboard – your central hub for everything related to your studies. Stay organized and in control.",
           },
           {
             id: "news",
             selector: '[data-onboard="dashboard-news"]',
-            title: "Latest news",
-            body: "Important updates and announcements appear here.",
+            title: "News & Updates",
+            body: "Stay in the loop! Find important announcements, campus updates, and university news right here – so you never miss a thing.",
           },
           {
             id: "actions",
             selector: '[data-onboard="dashboard-quick-actions"]',
-            title: "Quick actions",
-            body: "Jump directly to key areas like courses, tasks, or the library.",
+            title: "Your Quick Actions ⚡",
+            body: "Time is precious! Access the most important areas with a single click: courses, tasks, library, and more. Your studies, always at hand.",
           },
           {
             id: "progress",
             selector: '[data-onboard="dashboard-progress"]',
-            title: "Study progress",
-            body: "Your current status, logged hours, and upcoming phases.",
+            title: "Your Study Progress",
+            body: "Keep your goals in sight! Track your current progress, completed modules, and what's coming next. Every step counts!",
           },
           {
             id: "customize",
             selector: '[data-onboard="dashboard-customize"]',
-            title: "Customize dashboard",
-            body: "Show or hide widgets and reorder them with drag and drop.",
+            title: "Customize Your Dashboard",
+            body: "Make it yours! Show or hide widgets and arrange them with drag & drop. Your dashboard, your rules.",
           },
           {
             id: "widgets",
             selector: '[data-onboard="dashboard-widgets"]',
-            title: "Widgets",
-            body: "These cards show tasks, appointments, grades, and more.",
+            title: "Your Info Cards",
+            body: "Everything important at a glance: tasks, appointments, grades, and deadlines. These cards keep you organized and on track. Good luck with your studies!",
           },
         ];
   // Load recent courses from localStorage (client-side only)
@@ -886,7 +886,7 @@ function DashboardDeferredContent({
         upcomingAssignments={upcomingAssignments}
         language={language}
         t={t}
-     />
+      />
     ),
     appointments: <WeekOverview weekDays={weekDays} t={t} />,
   };

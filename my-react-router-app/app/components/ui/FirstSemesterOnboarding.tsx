@@ -1,4 +1,5 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
+import { Sparkles, ChevronLeft, ChevronRight, X } from "lucide-react";
 
 interface FirstSemesterOnboardingProps {
   isOpen: boolean;
@@ -23,6 +24,7 @@ export default function FirstSemesterOnboarding({
   const tooltipRef = useRef<HTMLDivElement | null>(null);
 
   const step = steps[stepIndex];
+  const progress = ((stepIndex + 1) / steps.length) * 100;
 
   useEffect(() => {
     if (!isOpen) return;
@@ -57,10 +59,13 @@ export default function FirstSemesterOnboarding({
       const placeAbove = spaceBelow < tooltipHeight + 20;
       const top = placeAbove
         ? Math.max(padding, rect.top - tooltipHeight - 16)
-        : Math.min(window.innerHeight - tooltipHeight - padding, rect.bottom + 12);
+        : Math.min(
+            window.innerHeight - tooltipHeight - padding,
+            rect.bottom + 12,
+          );
       const left = Math.min(
         window.innerWidth - tooltipWidth - padding,
-        Math.max(padding, rect.left)
+        Math.max(padding, rect.left),
       );
 
       setTooltipStyle({
@@ -75,7 +80,10 @@ export default function FirstSemesterOnboarding({
     if (!isOpen || !step) return;
     const target = document.querySelector(step.selector);
     if (target && "scrollIntoView" in target) {
-      (target as HTMLElement).scrollIntoView({ block: "center", behavior: "smooth" });
+      (target as HTMLElement).scrollIntoView({
+        block: "center",
+        behavior: "smooth",
+      });
     }
     updatePosition();
 
@@ -92,8 +100,10 @@ export default function FirstSemesterOnboarding({
     if (!isOpen) return;
     const onKeyDown = (event: KeyboardEvent) => {
       if (event.key === "Escape") onClose();
-      if (event.key === "ArrowRight") setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
-      if (event.key === "ArrowLeft") setStepIndex((prev) => Math.max(prev - 1, 0));
+      if (event.key === "ArrowRight")
+        setStepIndex((prev) => Math.min(prev + 1, steps.length - 1));
+      if (event.key === "ArrowLeft")
+        setStepIndex((prev) => Math.max(prev - 1, 0));
     };
     window.addEventListener("keydown", onKeyDown);
     return () => window.removeEventListener("keydown", onKeyDown);
@@ -111,12 +121,18 @@ export default function FirstSemesterOnboarding({
 
       {targetRect ? (
         <div
-          className="absolute rounded-xl border-2 border-iu-blue/80 shadow-[0_0_0_9999px_rgba(0,0,0,0.6)] pointer-events-none"
+          className="absolute rounded-2xl border-[3px] border-iu-blue shadow-[0_0_0_9999px_rgba(0,0,0,0.65),0_0_30px_rgba(59,130,246,0.5)] pointer-events-none transition-all duration-300"
           style={{
-            top: Math.max(0, targetRect.top - 6),
-            left: Math.max(0, targetRect.left - 6),
-            width: Math.min(viewport.width || targetRect.width + 12, targetRect.width + 12),
-            height: Math.min(viewport.height || targetRect.height + 12, targetRect.height + 12),
+            top: Math.max(0, targetRect.top - 8),
+            left: Math.max(0, targetRect.left - 8),
+            width: Math.min(
+              viewport.width || targetRect.width + 16,
+              targetRect.width + 16,
+            ),
+            height: Math.min(
+              viewport.height || targetRect.height + 16,
+              targetRect.height + 16,
+            ),
           }}
         />
       ) : null}
@@ -126,47 +142,112 @@ export default function FirstSemesterOnboarding({
         role="dialog"
         aria-modal="true"
         aria-labelledby="first-semester-title"
-        className="absolute rounded-[1.5rem] border border-iu-blue/30 bg-card text-card-foreground shadow-2xl p-5 sm:p-6"
+        className="absolute rounded-[2rem] border border-iu-blue/20 bg-gradient-to-br from-card via-card to-card/95 text-card-foreground shadow-2xl overflow-hidden"
         style={tooltipStyle}
       >
-        <div className="flex items-center justify-between gap-4">
-          <span className="text-[10px] font-black uppercase tracking-[0.2em] text-muted-foreground">
-            Step {stepIndex + 1} of {steps.length}
-          </span>
-          <button
-            type="button"
-            onClick={onClose}
-            className="text-xs font-bold text-muted-foreground hover:text-foreground transition-colors"
-          >
-            Close
-          </button>
+        {/* Progress bar */}
+        <div className="absolute top-0 left-0 right-0 h-1 bg-muted/50">
+          <div
+            className="h-full bg-gradient-to-r from-iu-blue via-iu-purple to-iu-orange transition-all duration-500 ease-out"
+            style={{ width: `${progress}%` }}
+          />
         </div>
-        <h2 id="first-semester-title" className="mt-2 text-lg sm:text-xl font-black text-foreground">
-          {step.title}
-        </h2>
-        <p className="mt-2 text-sm sm:text-base text-muted-foreground">
-          {step.body}
-        </p>
-        <div className="mt-5 flex items-center justify-between gap-3">
-          <button
-            type="button"
-            onClick={() => setStepIndex((prev) => Math.max(0, prev - 1))}
-            disabled={stepIndex === 0}
-            className="inline-flex items-center justify-center rounded-full border border-border px-4 py-2 text-xs font-bold text-foreground disabled:opacity-50"
+
+        <div className="p-6 sm:p-7">
+          {/* Header */}
+          <div className="flex items-center justify-between gap-4 mb-4">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-gradient-to-br from-iu-blue/20 to-iu-purple/20">
+                <Sparkles className="h-4 w-4 text-iu-blue" />
+              </div>
+              <span className="text-[10px] font-black uppercase tracking-[0.15em] text-iu-blue">
+                Schritt {stepIndex + 1} von {steps.length}
+              </span>
+            </div>
+            <button
+              type="button"
+              onClick={onClose}
+              className="p-1.5 rounded-full hover:bg-muted/80 text-muted-foreground hover:text-foreground transition-all"
+              aria-label="Schließen"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+
+          {/* Title */}
+          <h2
+            id="first-semester-title"
+            className="text-xl sm:text-2xl font-black text-foreground leading-tight"
           >
-            Back
-          </button>
-          <button
-            type="button"
-            onClick={() =>
-              stepIndex === steps.length - 1
-                ? onClose()
-                : setStepIndex((prev) => Math.min(prev + 1, steps.length - 1))
-            }
-            className="inline-flex items-center justify-center rounded-full bg-iu-blue px-5 py-2 text-xs font-bold text-white hover:bg-iu-blue/90 transition-colors"
-          >
-            {stepIndex === steps.length - 1 ? "Finish" : "Next"}
-          </button>
+            {step.title}
+          </h2>
+
+          {/* Body */}
+          <p className="mt-3 text-sm sm:text-[15px] text-muted-foreground leading-relaxed">
+            {step.body}
+          </p>
+
+          {/* Step indicators */}
+          <div className="mt-5 flex items-center justify-center gap-1.5">
+            {steps.map((_, idx) => (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setStepIndex(idx)}
+                className={`h-2 rounded-full transition-all duration-300 ${
+                  idx === stepIndex
+                    ? "w-6 bg-gradient-to-r from-iu-blue to-iu-purple"
+                    : idx < stepIndex
+                      ? "w-2 bg-iu-blue/50"
+                      : "w-2 bg-muted-foreground/30"
+                }`}
+                aria-label={`Schritt ${idx + 1}`}
+              />
+            ))}
+          </div>
+
+          {/* Navigation */}
+          <div className="mt-5 flex items-center justify-between gap-3">
+            <button
+              type="button"
+              onClick={() => setStepIndex((prev) => Math.max(0, prev - 1))}
+              disabled={stepIndex === 0}
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl border border-border px-4 py-2.5 text-xs font-bold text-foreground hover:bg-muted/50 disabled:opacity-30 disabled:cursor-not-allowed transition-all"
+            >
+              <ChevronLeft className="h-4 w-4" />
+              <span className="hidden sm:inline">Zurück</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() =>
+                stepIndex === steps.length - 1
+                  ? onClose()
+                  : setStepIndex((prev) => Math.min(prev + 1, steps.length - 1))
+              }
+              className="inline-flex items-center justify-center gap-1.5 rounded-xl bg-gradient-to-r from-iu-blue to-iu-purple px-5 py-2.5 text-xs font-bold text-white hover:opacity-90 transition-all shadow-lg shadow-iu-blue/20"
+            >
+              <span>
+                {stepIndex === steps.length - 1 ? "Los geht's! 🚀" : "Weiter"}
+              </span>
+              {stepIndex < steps.length - 1 && (
+                <ChevronRight className="h-4 w-4" />
+              )}
+            </button>
+          </div>
+
+          {/* Skip link */}
+          {stepIndex < steps.length - 1 && (
+            <div className="mt-4 text-center">
+              <button
+                type="button"
+                onClick={onClose}
+                className="text-xs text-muted-foreground hover:text-foreground transition-colors"
+              >
+                Überspringen
+              </button>
+            </div>
+          )}
         </div>
       </div>
     </div>
