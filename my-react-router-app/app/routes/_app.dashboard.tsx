@@ -566,7 +566,7 @@ function DashboardDeferredContent({
           {
             id: "actions",
             selector: '[data-onboard="dashboard-quick-actions"]',
-            title: "Deine Schnellzugriffe ⚡",
+            title: "Deine Schnellzugriffe",
             body: "Zeit ist kostbar! Mit einem Klick gelangst du zu den wichtigsten Bereichen: Kurse, Aufgaben, Bibliothek und mehr. Dein Studium, immer griffbereit.",
           },
           {
