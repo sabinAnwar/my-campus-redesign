@@ -27,9 +27,12 @@ export function ApplicationFormModal({
     document.addEventListener("keydown", handleEscape);
     return () => document.removeEventListener("keydown", handleEscape);
   }, [onClose]);
+
   const handleOpenMicrosoftForm = (formUrl: string) => {
     onStarted();
-    window.open(formUrl, "_blank", "noopener,noreferrer");
+    // Remove embed=true for direct navigation
+    const directUrl = formUrl.replace("embed=true", "").replace(/[&?]$/, "");
+    window.open(directUrl, "_blank", "noopener,noreferrer");
   };
 
   // Check if URL has embed=true parameter (embedded iframe form)
@@ -77,27 +80,40 @@ export function ApplicationFormModal({
         >
           {formDef.microsoftFormUrl ? (
             isEmbeddedForm ? (
-              <div className="space-y-4 flex flex-col min-h-0 flex-1">
-                <div className="w-full sm:rounded-2xl rounded-xl overflow-hidden border border-border bg-white flex-1 min-h-0">
-                  <iframe
-                    src={formDef.microsoftFormUrl}
-                    width="100%"
-                    frameBorder="0"
-                    className="sm:h-[600px] h-[calc(100vh-220px)] min-h-[300px]"
-                    style={{
-                      border: "none",
-                      maxWidth: "100%",
-                      display: "block",
-                    }}
-                    allowFullScreen
-                    title={formDef.title}
-                  />
+              // Always show button to open form directly (iframe login doesn't work reliably)
+              <div className="space-y-6">
+                <div className="p-8 bg-slate-50 dark:bg-slate-900/50 border border-border rounded-3xl flex flex-col items-center text-center gap-6">
+                  <div className="w-16 h-16 bg-iu-blue/10 rounded-2xl flex items-center justify-center text-iu-blue">
+                    <ExternalLink size={32} />
+                  </div>
+                  <div className="space-y-2">
+                    <p className="text-lg font-black text-foreground">
+                      Microsoft Forms
+                    </p>
+                    <p className="text-sm text-foreground font-bold max-w-[300px] mx-auto">
+                      {language === "de"
+                        ? "Das Formular wird in einem neuen Tab geöffnet, damit Sie sich mit Ihrem Microsoft-Konto anmelden können."
+                        : "The form will open in a new tab so you can sign in with your Microsoft account."}
+                    </p>
+                  </div>
+                  <button
+                    onClick={() =>
+                      handleOpenMicrosoftForm(formDef.microsoftFormUrl!)
+                    }
+                    className="w-full py-4 bg-slate-900 dark:bg-slate-100 text-white dark:text-slate-900 font-black rounded-2xl hover:scale-[1.02] transition-all flex items-center justify-center gap-3 shadow-xl"
+                  >
+                    <ExternalLink size={20} />
+                    {language === "de" ? "Formular öffnen" : "Open Form"}
+                  </button>
                 </div>
-                <p className="text-xs text-muted-foreground font-medium text-center">
-                  {language === "de"
-                    ? "Füllen Sie das Formular aus und klicken Sie auf 'Absenden'."
-                    : "Fill out the form and click 'Submit'."}
-                </p>
+
+                <div className="p-6 bg-amber-50 dark:bg-amber-900/20 rounded-2xl border border-amber-200 dark:border-amber-800">
+                  <p className="text-xs text-amber-800 dark:text-amber-200 font-bold leading-relaxed text-center">
+                    {language === "de"
+                      ? "Tipp: Nach dem Öffnen melden Sie sich mit Ihrem Microsoft-Konto an und füllen das Formular aus. Ihr Antragsstatus wird automatisch aktualisiert."
+                      : "Tip: After opening, sign in with your Microsoft account and complete the form. Your application status will be updated automatically."}
+                  </p>
+                </div>
               </div>
             ) : (
               <div className="space-y-6">
