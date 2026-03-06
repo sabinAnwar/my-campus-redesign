@@ -72,17 +72,23 @@ export function ApplicationFormModal({
         </div>
 
         {/* Modal Content */}
-        <div className="flex-1 overflow-y-auto sm:p-8 p-6 custom-scrollbar">
+        <div
+          className={`flex-1 sm:p-8 p-4 custom-scrollbar flex flex-col min-h-0 ${isEmbeddedForm ? "overflow-hidden" : "overflow-y-auto"}`}
+        >
           {formDef.microsoftFormUrl ? (
             isEmbeddedForm ? (
-              <div className="space-y-4">
-                <div className="w-full rounded-2xl overflow-hidden border border-border bg-white">
+              <div className="space-y-4 flex flex-col min-h-0 flex-1">
+                <div className="w-full sm:rounded-2xl rounded-xl overflow-hidden border border-border bg-white flex-1 min-h-0">
                   <iframe
                     src={formDef.microsoftFormUrl}
                     width="100%"
-                    height="600"
                     frameBorder="0"
-                    style={{ border: "none", maxWidth: "100%" }}
+                    className="sm:h-[600px] h-[calc(100vh-220px)] min-h-[300px]"
+                    style={{
+                      border: "none",
+                      maxWidth: "100%",
+                      display: "block",
+                    }}
                     allowFullScreen
                     title={formDef.title}
                   />
