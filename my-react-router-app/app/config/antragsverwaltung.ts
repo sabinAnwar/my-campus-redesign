@@ -66,7 +66,16 @@ export const getFormDefinitions = (t: typeof TRANSLATIONS.de) => {
 
   // Populate remaining definitions (skip 1, 2, 3, 5, 7, 8, 9, 11, 12, 13 as they have custom URLs)
   for (let i = 4; i <= 17; i++) {
-    if (i === 5 || i === 7 || i === 8 || i === 9 || i === 11 || i === 12 || i === 13) continue;
+    if (
+      i === 5 ||
+      i === 7 ||
+      i === 8 ||
+      i === 9 ||
+      i === 11 ||
+      i === 12 ||
+      i === 13
+    )
+      continue;
     const id = i.toString();
     definitions[id] = {
       title: t.itemTitles[id as keyof typeof t.itemTitles],
@@ -75,7 +84,7 @@ export const getFormDefinitions = (t: typeof TRANSLATIONS.de) => {
   }
 
   return definitions;
-};;
+};
 
 export const MOCK_ITEMS: ApplicationItem[] = [
   {
