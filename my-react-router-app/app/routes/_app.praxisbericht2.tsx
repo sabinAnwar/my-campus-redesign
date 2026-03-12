@@ -25,11 +25,19 @@ import {
   Legend,
 } from "~/features/praxisbericht";
 
-import { normalizeReport, getISOWeekKey, getMonthWeekKeys, getSemesterWeekKeys } from "~/features/praxisbericht/helpers";
+import {
+  normalizeReport,
+  getISOWeekKey,
+  getMonthWeekKeys,
+  getSemesterWeekKeys,
+  getWeekPhase,
+} from "~/features/praxisbericht/helpers";
 import { CalendarView } from "~/features/praxisbericht/CalendarView";
 import { ListView } from "~/features/praxisbericht/ListView";
 import { WeekModal } from "~/features/praxisbericht/WeekModal";
 import type { PraxisReport, StatusFilter } from "~/types/praxisbericht";
+import { getStudyPlanByStudiengang } from "~/utils/studyPlans";
+import type { StudyPlan } from "~/utils/studyPlans";
 
 export default function Praxisbericht2() {
   const { language } = useLanguage();
@@ -46,6 +54,12 @@ export default function Praxisbericht2() {
   // Reminder preferences display
   const [reminderEnabled, setReminderEnabled] = useState(false);
   const [reminderHour, setReminderHour] = useState(18);
+  // Study plan sync
+  const [studiengangName, setStudiengangName] = useState<string | null>(null);
+  const studyPlan: StudyPlan = useMemo(
+    () => getStudyPlanByStudiengang(studiengangName),
+    [studiengangName],
+  );
   // calendar period control
   const [mode, setMode] = useState<"month" | "semester">("month");
   const today = new Date();
@@ -62,7 +76,12 @@ export default function Praxisbericht2() {
   const fetchReports = useCallback(async () => {
     try {
       const data = await apiGet(`/api/praxisberichte?ts=${Date.now()}`);
-      setReports((data.reports || []).map(normalizeReport).filter((r: any): r is PraxisReport => !!r));
+      setReports(
+        (data.reports || [])
+          .map(normalizeReport)
+          .filter((r: any): r is PraxisReport => !!r),
+      );
+      if (data.studiengangName) setStudiengangName(data.studiengangName);
       setReportsVersion((v) => v + 1);
       setLoading(false);
     } catch (e: any) {
@@ -98,10 +117,11 @@ export default function Praxisbericht2() {
 
   const normalizedReports = useMemo(
     () => reports.map(normalizeReport).filter((r): r is PraxisReport => !!r),
-    [reports]
+    [reports],
   );
 
   // Derive period-aware metrics (submitted/due/klausur/completion + drafts/approved/satisfied) for visible period
+  // Synced with Studienplan: only praxis weeks count as DUE
   const stats = useMemo(() => {
     const statusMap = new Map();
     for (const r of normalizedReports) {
@@ -125,10 +145,18 @@ export default function Praxisbericht2() {
 
     for (const wk of visibleKeys) {
       const s = statusMap.get(wk);
-      if (s === "KLAUSURPHASE") {
+      const phase = getWeekPhase(wk as string, studyPlan);
+      const isPraxisWeek = phase === "praxis";
+      const isExamWeek = phase === "klausurphase" || phase === "nachpruefung";
+
+      if (s === "KLAUSURPHASE" || isExamWeek) {
         klausur += 1;
         continue; // exclude from total and due/submitted calculations
       }
+
+      // Only count praxis weeks toward totals – skip theory weeks
+      if (!isPraxisWeek) continue;
+
       total += 1;
       if (s === "SUBMITTED" || s === "APPROVED") submitted += 1;
       if (s === "DRAFT") drafts += 1;
@@ -155,7 +183,15 @@ export default function Praxisbericht2() {
 
     const completion = total > 0 ? Math.round((submitted / total) * 100) : 0;
     return { submitted, due, klausur, completion, drafts, approved, satisfied };
-  }, [normalizedReports, mode, year, month, semStartYear, semStartMonth]);
+  }, [
+    normalizedReports,
+    mode,
+    year,
+    month,
+    semStartYear,
+    semStartMonth,
+    studyPlan,
+  ]);
 
   return (
     <div className="max-w-7xl mx-auto">
@@ -259,20 +295,20 @@ export default function Praxisbericht2() {
               <div className="flex items-center justify-between mb-3">
                 <div className="flex items-center gap-2">
                   <button
-                    className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                    className={`px-3 py-1.5 text-xs rounded-lg border transition-colors font-medium ${
                       mode === "month"
-                        ? "bg-iu-blue text-white"
-                        : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                        ? "bg-iu-blue text-white border-iu-blue"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                     onClick={() => setMode("month")}
                   >
                     {t.month}
                   </button>
                   <button
-                    className={`px-2.5 py-1.5 text-xs rounded-none border transition-colors font-bold ${
+                    className={`px-3 py-1.5 text-xs rounded-lg border transition-colors font-medium ${
                       mode === "semester"
-                        ? "bg-iu-blue text-white"
-                        : "bg-slate-900 text-slate-200 border-slate-700 hover:bg-slate-800"
+                        ? "bg-iu-blue text-white border-iu-blue"
+                        : "bg-card border-border text-muted-foreground hover:text-foreground hover:bg-muted/50"
                     }`}
                     onClick={() => setMode("semester")}
                   >
@@ -327,13 +363,13 @@ export default function Praxisbericht2() {
                         {
                           month: "long",
                           year: "numeric",
-                        }
+                        },
                       )}
                       {" – "}
                       {new Date(
                         semStartYear,
                         semStartMonth + 5,
-                        1
+                        1,
                       ).toLocaleString(undefined, {
                         month: "long",
                         year: "numeric",
@@ -360,12 +396,12 @@ export default function Praxisbericht2() {
                   year={year}
                   month={month}
                   filter={statusFilter}
+                  studyPlan={studyPlan}
                   onDayClick={(weekKey: string) => {
                     const r =
                       normalizedReports.find(
-                        (x) => x && x.isoWeekKey === weekKey
-                      ) ||
-                      null;
+                        (x) => x && x.isoWeekKey === weekKey,
+                      ) || null;
                     setActiveReport(r);
                     setActiveWeekKey(weekKey);
                   }}
@@ -383,10 +419,11 @@ export default function Praxisbericht2() {
                         year={y}
                         month={m}
                         filter={statusFilter}
+                        studyPlan={studyPlan}
                         onDayClick={(weekKey: string) => {
                           const r =
                             normalizedReports.find(
-                              (x) => x && x.isoWeekKey === weekKey
+                              (x) => x && x.isoWeekKey === weekKey,
                             ) || null;
                           setActiveReport(r);
                           setActiveWeekKey(weekKey);
@@ -397,7 +434,7 @@ export default function Praxisbericht2() {
                 </div>
               )}
             </div>
-            <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border dark:border-white/10 p-5 sm:p-6 lg:p-8 h-fit">
+            <div className="bg-card/50 dark:bg-card/50/5 backdrop-blur-xl rounded-2xl sm:rounded-3xl border border-border dark:border-white/10 p-5 sm:p-6 lg:p-8 h-fit">
               <div className="flex items-center gap-3 mb-6 sm:mb-8">
                 <div className="p-2.5 sm:p-3 bg-iu-blue/10 dark:bg-iu-blue rounded-2xl">
                   <Info className="h-5 w-5 sm:h-6 sm:w-6 text-iu-blue dark:text-white" />
@@ -414,6 +451,7 @@ export default function Praxisbericht2() {
         <ListView
           reports={normalizedReports}
           filter={statusFilter}
+          studyPlan={studyPlan}
           onOpen={(weekKey: string) => {
             const r =
               normalizedReports.find((x) => x && x.isoWeekKey === weekKey) ||
@@ -429,22 +467,30 @@ export default function Praxisbericht2() {
         open={!!activeWeekKey}
         weekKey={activeWeekKey}
         report={activeReport}
+        studyPlan={studyPlan}
         onClose={() => {
           setActiveWeekKey(null);
           setActiveReport(null);
+        }}
+        onDeleted={(wk) => {
+          setReports((prev) => prev.filter((r) => r.isoWeekKey !== wk));
+          setReportsVersion((v) => v + 1);
+          setActiveWeekKey(null);
+          setActiveReport(null);
+          void fetchReports();
         }}
         onSaved={(saved) => {
           if (!saved) return;
           const normalized = normalizeReport(saved);
           if (normalized) {
             setReports((prev) => {
-                const idx = prev.findIndex(
-                (p) => p && p.isoWeekKey === normalized.isoWeekKey
-                );
-                if (idx === -1) return [...prev, normalized];
-                const next = prev.slice();
-                next[idx] = normalized;
-                return next;
+              const idx = prev.findIndex(
+                (p) => p && p.isoWeekKey === normalized.isoWeekKey,
+              );
+              if (idx === -1) return [...prev, normalized];
+              const next = prev.slice();
+              next[idx] = normalized;
+              return next;
             });
             setReportsVersion((v) => v + 1);
             void fetchReports();

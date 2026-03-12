@@ -396,42 +396,44 @@ export default function CourseSchedule() {
             setSelectedEvent={setSelectedEvent}
           />
         ) : viewMode === "week" ? (
-          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-hidden">
-            {/* Week Stats Bar */}
-            <div className="px-6 py-3 border-b border-border/50 bg-muted/10 flex items-center gap-4 text-xs font-bold text-muted-foreground overflow-x-auto min-w-[800px]">
-              <Sparkles size={14} className="text-iu-blue shrink-0" />
-              <span>{language === "de" ? "Diese Woche:" : "This week:"}</span>
-              <span className="text-foreground">
-                {weekDates.reduce(
-                  (sum, d) => sum + getEventsForDate(d).length,
-                  0,
-                )}{" "}
-                {language === "de" ? "Veranstaltungen" : "events"}
-              </span>
-              <span className="text-muted-foreground/50">|</span>
-              <span className="text-foreground">
-                {weekDates.filter((d) => {
-                  const s = currentPlan
-                    ? getBlockStatusForDate(currentPlan, d)
-                    : null;
-                  return s === "feiertag";
-                }).length > 0
-                  ? `${
-                      weekDates.filter((d) => {
-                        const s = currentPlan
-                          ? getBlockStatusForDate(currentPlan, d)
-                          : null;
-                        return s === "feiertag";
-                      }).length
-                    } ${language === "de" ? "Feiertag(e)" : "holiday(s)"}`
-                  : language === "de"
-                    ? "Keine Feiertage"
-                    : "No holidays"}
-              </span>
-            </div>
-            {/* Week Header */}
-            <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20 min-w-[800px] overflow-x-auto">
-              <div className="p-6" />
+          <div className="rounded-[1.5rem] sm:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-hidden">
+            <div className="overflow-x-auto custom-scrollbar touch-scroll">
+              <div className="min-w-[800px]">
+                {/* Week Stats Bar */}
+                <div className="px-4 sm:px-6 py-3 border-b border-border/50 bg-muted/10 flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-bold text-muted-foreground">
+                  <Sparkles size={14} className="text-iu-blue shrink-0" />
+                  <span>{language === "de" ? "Diese Woche:" : "This week:"}</span>
+                  <span className="text-foreground">
+                    {weekDates.reduce(
+                      (sum, d) => sum + getEventsForDate(d).length,
+                      0,
+                    )}{" "}
+                    {language === "de" ? "Veranstaltungen" : "events"}
+                  </span>
+                  <span className="text-muted-foreground/50">|</span>
+                  <span className="text-foreground">
+                    {weekDates.filter((d) => {
+                      const s = currentPlan
+                        ? getBlockStatusForDate(currentPlan, d)
+                        : null;
+                      return s === "feiertag";
+                    }).length > 0
+                      ? `${
+                          weekDates.filter((d) => {
+                            const s = currentPlan
+                              ? getBlockStatusForDate(currentPlan, d)
+                              : null;
+                            return s === "feiertag";
+                          }).length
+                        } ${language === "de" ? "Feiertag(e)" : "holiday(s)"}`
+                      : language === "de"
+                        ? "Keine Feiertage"
+                        : "No holidays"}
+                  </span>
+                </div>
+                {/* Week Header */}
+                <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20">
+                  <div className="p-4 sm:p-6" />
               {weekDates.map((date, idx) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
@@ -476,8 +478,8 @@ export default function CourseSchedule() {
               })}
             </div>
 
-            {/* Week Grid */}
-            <div className="grid grid-cols-[100px_repeat(5,1fr)] relative min-w-[800px]">
+                {/* Week Grid */}
+                <div className="grid grid-cols-[100px_repeat(5,1fr)] relative">
               {/* Time Labels */}
               <div className="border-r border-border bg-muted/10">
                 {TIME_SLOTS.map((time) => (
@@ -622,25 +624,29 @@ export default function CourseSchedule() {
               })}
             </div>
           </div>
-        ) : (
-          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-x-auto">
-            {/* Month Header */}
-            <div className="grid grid-cols-7 border-b border-border bg-muted/20 min-w-[800px]">
-              {(language === "de"
-                ? ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
-                : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
-              ).map((day) => (
-                <div
-                  key={day}
-                  className="p-6 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
-                >
-                  {day}
+        </div>
+      </div>
+    ) : (
+          <div className="rounded-[1.5rem] sm:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-hidden">
+            <div className="overflow-x-auto custom-scrollbar touch-scroll">
+              <div className="min-w-[800px]">
+                {/* Month Header */}
+                <div className="grid grid-cols-7 border-b border-border bg-muted/20">
+                  {(language === "de"
+                    ? ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"]
+                    : ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+                  ).map((day) => (
+                    <div
+                      key={day}
+                      className="p-4 sm:p-6 text-center text-[10px] font-bold uppercase tracking-[0.2em] text-muted-foreground"
+                    >
+                      {day}
+                    </div>
+                  ))}
                 </div>
-              ))}
-            </div>
-
-            {/* Month Grid */}
-            <div className="grid grid-cols-7 min-w-[800px]">
+    
+                {/* Month Grid */}
+                <div className="grid grid-cols-7">
               {Array.from({ length: (monthDays[0].getDay() + 6) % 7 }).map(
                 (_, idx) => (
                   <div
@@ -670,7 +676,7 @@ export default function CourseSchedule() {
                 return (
                   <div
                     key={dateStr}
-                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all group relative ${
+                    className={`min-h-[180px] p-3 sm:p-4 border-b border-r border-border/50 transition-all group relative overflow-hidden ${
                       isToday
                         ? "bg-iu-blue/[0.04] ring-2 ring-inset ring-iu-blue/20"
                         : isHoliday
@@ -682,7 +688,7 @@ export default function CourseSchedule() {
                               : "hover:bg-iu-blue/[0.03]"
                     }`}
                   >
-                    <div className="flex items-center justify-between mb-3">
+                    <div className="flex flex-wrap items-start justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
                       <div className="flex items-center gap-2">
                         <span
                           className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
@@ -730,7 +736,7 @@ export default function CourseSchedule() {
                           <div
                             key={event.id}
                             onClick={() => setSelectedEvent(event)}
-                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${typeColors.bg}/10 dark:bg-white/5 text-slate-900 dark:text-white font-bold border-l-[3px] ${typeColors.border} hover:shadow-md hover:scale-[1.02] hover:-translate-y-px transition-all truncate flex items-center gap-2 backdrop-blur-sm`}
+                            className={`text-[9px] sm:text-[10px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-r-xl rounded-l-sm cursor-pointer ${typeColors.bg}/10 dark:bg-white/5 text-slate-900 dark:text-white font-bold border-l-[3px] sm:border-l-[4px] ${typeColors.border} hover:shadow-md hover:scale-[1.02] hover:-translate-y-px transition-all truncate flex items-center gap-1.5 sm:gap-2 backdrop-blur-sm`}
                           >
                             <span className="opacity-70 shrink-0 tabular-nums">
                               {event.startTime}
@@ -770,6 +776,8 @@ export default function CourseSchedule() {
                   </div>
                 );
               })}
+                </div>
+              </div>
             </div>
           </div>
         )}

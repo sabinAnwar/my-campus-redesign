@@ -4,7 +4,7 @@ import { getUserFromRequest } from "~/services/auth.server";
 import type { LoaderFunctionArgs } from "react-router";
 
 export async function action({ request, params }: LoaderFunctionArgs) {
-  if (request.method !== "PUT") {
+  if (request.method !== "PUT" && request.method !== "DELETE") {
     return Response.json({ error: "Method not allowed" }, { status: 405 });
   }
 
@@ -26,6 +26,18 @@ export async function action({ request, params }: LoaderFunctionArgs) {
     }
 
     const { weekKey } = params;
+
+    // Handle DELETE
+    if (request.method === "DELETE") {
+      const deleted = await prisma.practicalReport.deleteMany({
+        where: { iso_week_key: weekKey, user_id: user.id },
+      });
+      return Response.json(
+        { success: true, deleted: deleted.count },
+        { headers: { "Cache-Control": "no-store" } },
+      );
+    }
+
     const body = await request.json();
     const { days, tasks, grade, status } = body;
     const normalizedStatus = (status || "DUE").toUpperCase();
@@ -35,7 +47,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
       if (!tasks || tasks.length < 10) {
         return Response.json(
           { error: "Tasks must be at least 10 characters" },
-          { status: 400 }
+          { status: 400 },
         );
       }
     }
@@ -51,7 +63,6 @@ export async function action({ request, params }: LoaderFunctionArgs) {
       edited_at: new Date(),
       approved_at: normalizedStatus === "APPROVED" ? new Date() : undefined,
     };
-  
 
     const updateData = {
       days: days || {},
@@ -81,7 +92,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
         approvedAt: report.approved_at,
         createdAt: report.created_at,
       },
-      { headers: { "Cache-Control": "no-store" } }
+      { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
     console.error(" Error updating praxisbericht:", error);
@@ -95,7 +106,7 @@ export async function action({ request, params }: LoaderFunctionArgs) {
           error:
             "Praxisberichte-Tabelle fehlt in der Datenbank. Bitte Migrationen ausführen.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
     // Surface more context to help diagnose 500s in dev
@@ -103,14 +114,14 @@ export async function action({ request, params }: LoaderFunctionArgs) {
       error instanceof Error
         ? error.message
         : typeof error === "string"
-        ? error
-        : (() => {
-            try {
-              return JSON.stringify(error) || "Failed to update report";
-            } catch {
-              return "Failed to update report";
-            }
-          })();
+          ? error
+          : (() => {
+              try {
+                return JSON.stringify(error) || "Failed to update report";
+              } catch {
+                return "Failed to update report";
+              }
+            })();
     const code = (error as any)?.code ?? undefined;
     return Response.json({ error: message, code }, { status: 500 });
   }

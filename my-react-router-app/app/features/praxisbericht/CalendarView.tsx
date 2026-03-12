@@ -4,6 +4,8 @@ import { TRANSLATIONS } from "~/services/translations/praxisbericht";
 import { STATUS_STYLES, buildMonth, getISOWeekKey } from "./helpers";
 
 import type { PraxisReport } from "~/types/praxisbericht";
+import type { StudyPlan } from "~/utils/studyPlans";
+import { getBlockStatusForDate } from "~/utils/studyPlans";
 
 export function CalendarView({
   reports,
@@ -11,12 +13,14 @@ export function CalendarView({
   year,
   month,
   filter = "ALL",
+  studyPlan,
 }: {
   reports: (PraxisReport | null | undefined)[];
   onDayClick?: (weekKey: string) => void;
   year: number;
   month: number;
   filter?: string;
+  studyPlan?: StudyPlan | null;
 }) {
   const { language } = useLanguage();
   const t = TRANSLATIONS[language];
@@ -76,36 +80,70 @@ export function CalendarView({
     const inMonth = date.getMonth() === month;
     const weekKey = getISOWeekKey(date);
     let status = statusByWeek.get(weekKey) || "DUE";
-    // normalize legacy values
     if (status === "KLAUSUR") status = "KLAUSURPHASE";
+
+    // Per-day phase from study plan (syncs with schedule view)
+    if (status === "DUE" && studyPlan) {
+      const dayPhase = getBlockStatusForDate(studyPlan, date);
+      if (dayPhase === "klausurphase") status = "KLAUSUR";
+      else if (dayPhase === "nachpruefung") status = "NACHPRUEFUNG";
+      else if (dayPhase === "theoriephase" || dayPhase === "vorlesung")
+        status = "THEORIE";
+      else if (dayPhase === "feiertag") status = "FEIERTAG";
+      else if (dayPhase && dayPhase !== "praxis" && dayPhase !== "wochenende")
+        status = "THEORIE";
+    }
+
     const clsObj = STATUS_STYLES[status as keyof typeof STATUS_STYLES] || {
       bg: "bg-card/50",
       text: "text-foreground",
       border: "border-border",
     };
-    // Always show week color starting Monday, even on trailing/leading days; fade if out of month
     const dimByFilter = filter !== "ALL" && status !== filter;
-    const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-30"} ${dimByFilter ? "opacity-20" : ""}`;
+    const base = `${clsObj.bg} ${clsObj.text} ${clsObj.border} ${inMonth ? "" : "opacity-25"} ${dimByFilter ? "opacity-15" : ""}`;
     const isEdited = editedByWeek.get(weekKey);
     const mins = minutesByWeek.get(weekKey);
-    const hoursLabel = mins ? `${Math.floor(mins / 60)}h ${mins % 60}m` : null;
-    const isMonday = date.getDay() === 1; // Monday badge: week number
+    const hoursLabel = mins
+      ? `${Math.floor(mins / 60)}h${mins % 60 > 0 ? ` ${mins % 60}m` : ""}`
+      : null;
+    const isMonday = date.getDay() === 1;
     const weekNumber = Number(weekKey.split("-W")[1]);
+    const isToday =
+      date.getDate() === new Date().getDate() &&
+      date.getMonth() === new Date().getMonth() &&
+      date.getFullYear() === new Date().getFullYear();
+
+    const hasReport = statusByWeek.has(weekKey);
+
+    const isNonPraxis =
+      !hasReport &&
+      (status === "THEORIE" ||
+        status === "KLAUSUR" ||
+        status === "NACHPRUEFUNG" ||
+        status === "FEIERTAG");
+
     return (
       <button
         type="button"
-        onClick={() => onDayClick && onDayClick(weekKey)}
-        className={`relative h-20 rounded-2xl border text-xs font-bold flex items-start p-3 text-left transition-all duration-300 hover:scale-[1.05] hover:z-10 ${base} ${isEdited ? "ring-2 ring-offset-2 ring-offset-background ring-iu-blue" : ""}`}
-        title={`${weekKey} • ${status}${hoursLabel ? " • " + hoursLabel : ""}${isEdited ? " • edited" : ""}`}
+        onClick={() => !isNonPraxis && onDayClick && onDayClick(weekKey)}
+        disabled={isNonPraxis}
+        className={`relative h-14 sm:h-[4.5rem] rounded-xl border text-xs flex flex-col justify-between p-1.5 sm:p-2 text-left transition-all duration-300 ${isNonPraxis ? "cursor-default opacity-70" : "hover:shadow-lg hover:shadow-black/5 dark:hover:shadow-black/20 hover:-translate-y-0.5 hover:z-10 cursor-pointer"} ${base} ${isEdited ? "ring-2 ring-offset-1 ring-offset-background ring-iu-blue" : ""} ${isToday ? "ring-2 ring-offset-1 ring-offset-background ring-iu-blue dark:ring-iu-blue" : ""}`}
+        title={`${weekKey} • ${status}${isNonPraxis ? " • kein Bericht nötig" : ""}${hoursLabel ? " • " + hoursLabel : ""}${isEdited ? " • edited" : ""}`}
       >
-        {isMonday && (
-          <span className="absolute top-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-foreground border border-foreground text-background uppercase tracking-widest">
-            W{weekNumber}
+        <div className="flex items-start justify-between w-full">
+          <span
+            className={`text-xs sm:text-sm font-bold leading-none ${isToday ? "bg-iu-blue text-white rounded-md px-1.5 py-0.5" : ""}`}
+          >
+            {date.getDate()}
           </span>
-        )}
-        <span className="text-lg text-white font-black">{date.getDate()}</span>
+          {isMonday && (
+            <span className="text-[7px] sm:text-[8px] px-1 py-px rounded bg-foreground/10 dark:bg-white/15 font-semibold tracking-wide">
+              W{weekNumber}
+            </span>
+          )}
+        </div>
         {hoursLabel && (
-          <span className="absolute bottom-2 right-2 text-[9px] px-2 py-0.5 rounded-lg bg-iu-blue border border-iu-blue text-white font-bold uppercase tracking-widest">
+          <span className="text-[7px] sm:text-[8px] px-1 py-px rounded bg-foreground/10 dark:bg-white/15 font-medium self-end">
             {hoursLabel}
           </span>
         )}
@@ -116,19 +154,29 @@ export function CalendarView({
   const dow = [t.mon, t.tue, t.wed, t.thu, t.fri, t.sat, t.sun];
 
   return (
-    <div className="bg-card/50 backdrop-blur-xl rounded-[2rem] sm:rounded-[2.5rem] border border-border p-4 sm:p-6 lg:p-8 transition-all duration-500">
-      <div className="flex items-center justify-between mb-6 sm:mb-8">
-        <div className="text-2xl sm:text-3xl font-bold text-foreground uppercase tracking-tighter">
+    <div className="bg-card/40 backdrop-blur-xl rounded-2xl sm:rounded-[2rem] border border-border shadow-xl p-4 sm:p-6 lg:p-8 transition-all duration-500">
+      <div className="flex items-center justify-between mb-5 sm:mb-6">
+        <h3 className="text-lg sm:text-xl font-black text-foreground tracking-tight">
           {headerDate.toLocaleString(undefined, {
             month: "long",
             year: "numeric",
           })}
-        </div>
-        <div className="text-[10px] font-bold text-muted-foreground uppercase tracking-[0.2em]">
+        </h3>
+        <span className="text-[9px] font-bold text-muted-foreground uppercase tracking-[0.15em]">
           {t.colorsReflect}
-        </div>
+        </span>
       </div>
-      <div className="grid grid-cols-7 text-[10px] text-muted-foreground mb-4 font-bold uppercase tracking-widest">
+      <div className="grid grid-cols-7 gap-1 sm:gap-1.5 mb-1.5">
+        {dow.map((d) => (
+          <div
+            key={d}
+            className="text-center text-[9px] sm:text-[10px] font-bold text-muted-foreground uppercase tracking-widest py-1.5"
+          >
+            {d}
+          </div>
+        ))}
+      </div>
+      <div className="grid grid-cols-7 gap-1 sm:gap-1.5">
         {weeks.flat().map((date, idx) => (
           <DayCell key={idx} date={date} />
         ))}

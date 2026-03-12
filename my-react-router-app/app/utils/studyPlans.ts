@@ -7,10 +7,10 @@ export type DayStatus =
   | "wochenende"
   | "feiertag";
 
-export type PaletteEntry = { 
-  label: string; 
-  bg: string; 
-  text: string; 
+export type PaletteEntry = {
+  label: string;
+  bg: string;
+  text: string;
   ring: string;
   textSoft?: string; // Text color for soft backgrounds (Light Mode)
   darkTextSoft?: string; // Text color for soft backgrounds (Dark Mode)
@@ -276,48 +276,71 @@ export const STUDY_PLANS: StudyPlan[] = [
 ];
 
 // Helper function to find study plan by Studiengang name
-export function getStudyPlanByStudiengang(studiengangName: string | null | undefined): StudyPlan {
-  if (!studiengangName) return STUDY_PLANS[0]; // Default fallback
-  
-  // Find plan that matches the Studiengang pattern
-  const matchingPlan = STUDY_PLANS.find(plan => {
-    if (!plan.studiengangPattern) return false;
-    return plan.studiengangPattern.some(pattern => 
-      studiengangName.toLowerCase().includes(pattern.toLowerCase())
-    );
-  });
-  
-  return matchingPlan || STUDY_PLANS[0]; // Return matching or default
+// Merges the matched plan with fallback plans (no studiengangPattern) so that
+// all semesters are covered, not just the current one.
+export function getStudyPlanByStudiengang(
+  studiengangName: string | null | undefined,
+): StudyPlan {
+  // Find the primary plan matching the Studiengang
+  let primaryPlan: StudyPlan | undefined;
+
+  if (studiengangName) {
+    primaryPlan = STUDY_PLANS.find((plan) => {
+      if (!plan.studiengangPattern) return false;
+      return plan.studiengangPattern.some((pattern) =>
+        studiengangName.toLowerCase().includes(pattern.toLowerCase()),
+      );
+    });
+  }
+
+  if (!primaryPlan) primaryPlan = STUDY_PLANS[0];
+
+  // Gather fallback plans (those without studiengangPattern) that cover other semesters
+  const fallbackPlans = STUDY_PLANS.filter(
+    (plan) => !plan.studiengangPattern && plan.id !== primaryPlan!.id,
+  );
+
+  if (fallbackPlans.length === 0) return primaryPlan;
+
+  // Merge: primary plan blocks first (higher priority), then fallback blocks for uncovered periods
+  return {
+    ...primaryPlan,
+    blocks: [...primaryPlan.blocks, ...fallbackPlans.flatMap((p) => p.blocks)],
+  };
 }
 
-export function getBlockStatusForDate(plan: StudyPlan, date: Date): DayStatus | null {
+export function getBlockStatusForDate(
+  plan: StudyPlan,
+  date: Date,
+): DayStatus | null {
   const dateStr = toISODate(date);
-  
+
   // 1. Check for holidays first
-  const holiday = plan.blocks.find(b => b.status === "feiertag" && dateStr >= b.start && dateStr <= b.end);
+  const holiday = plan.blocks.find(
+    (b) => b.status === "feiertag" && dateStr >= b.start && dateStr <= b.end,
+  );
   if (holiday) return "feiertag";
 
-
-
   // 2. Check for Priority Blocks (Exams/Resits) BEFORE Split Logic
-  const priorityBlock = plan.blocks.find(b => 
-    (b.status === "klausurphase" || b.status === "nachpruefung") && 
-    dateStr >= b.start && dateStr <= b.end
+  const priorityBlock = plan.blocks.find(
+    (b) =>
+      (b.status === "klausurphase" || b.status === "nachpruefung") &&
+      dateStr >= b.start &&
+      dateStr <= b.end,
   );
   if (priorityBlock) return priorityBlock.status;
 
   // 3. Special Logic for SS26 (Split Week) overrides generic blocks
   if (dateStr >= "2026-04-01" && dateStr <= "2026-06-30") {
     const day = date.getDay();
-    if (day >= 1 && day <= 3) return "praxis"; 
-    if (day >= 4 && day <= 5) return "theoriephase"; 
+    if (day >= 1 && day <= 3) return "praxis";
+    if (day >= 4 && day <= 5) return "theoriephase";
   }
 
   // 4. Find regular block
-  const block = plan.blocks.find(b => dateStr >= b.start && dateStr <= b.end);
+  const block = plan.blocks.find((b) => dateStr >= b.start && dateStr <= b.end);
   return block ? block.status : null;
 }
-
 
 export function startOfMonth(date: Date) {
   return new Date(date.getFullYear(), date.getMonth(), 1);
@@ -369,10 +392,10 @@ export function expandBlocksToMap(blocks: StudyBlock[], autoWeekends: boolean) {
   if (autoWeekends) {
     // Fill weekends if not already set
     const minStart = new Date(
-      Math.min(...blocks.map((b) => new Date(b.start).getTime()))
+      Math.min(...blocks.map((b) => new Date(b.start).getTime())),
     );
     const maxEnd = new Date(
-      Math.max(...blocks.map((b) => new Date(b.end).getTime()))
+      Math.max(...blocks.map((b) => new Date(b.end).getTime())),
     );
     for (
       let d = new Date(minStart);
@@ -395,10 +418,10 @@ export function listMonthsForBlocks(blocks: StudyBlock[]) {
   const starts = blocks.map((b) => new Date(b.start));
   const ends = blocks.map((b) => new Date(b.end));
   const minStart = startOfMonth(
-    new Date(Math.min(...starts.map((d) => d.getTime())))
+    new Date(Math.min(...starts.map((d) => d.getTime()))),
   );
   const maxEnd = endOfMonth(
-    new Date(Math.max(...ends.map((d) => d.getTime())))
+    new Date(Math.max(...ends.map((d) => d.getTime()))),
   );
 
   const months: Date[] = [];

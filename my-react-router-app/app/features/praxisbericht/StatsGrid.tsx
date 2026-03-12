@@ -11,68 +11,69 @@ interface StatsGridProps {
   stats: StatItem[];
 }
 
-const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> = {
-  "iu-blue": {
-    bg: "bg-iu-blue/10 dark:bg-iu-blue",
-    border: "border-iu-blue/20 dark:border-iu-blue",
-    text: "text-iu-blue dark:text-white",
-  },
-  "iu-blue-text": {
-    bg: "bg-iu-blue",
-    border: "border-iu-blue",
-    text: "text-white",
-  },
-  "iu-orange": {
-    bg: "bg-iu-orange/10 dark:bg-iu-orange",
-    border: "border-iu-orange/20 dark:border-iu-orange",
-    text: "text-iu-orange dark:text-white",
-  },
-  "orange-500": {
-    bg: "bg-iu-orange/10 dark:bg-iu-orange",
-    border: "border-iu-orange/20 dark:border-iu-orange",
-    text: "text-iu-orange dark:text-white",
-  },
-  "orange-900": {
-    bg: "bg-orange-900",
-    border: "border-orange-900",
-    text: "text-white",
-  },
-  "purple-500": {
-    bg: "bg-iu-purple/10 dark:bg-iu-purple",
-    border: "border-iu-purple/20 dark:border-iu-purple",
-    text: "text-iu-purple dark:text-white",
-  },
-  "purple-900": {
-    bg: "bg-purple-900",
-    border: "border-purple-900",
-    text: "text-white",
-  },
-  "iu-purple": {
-    bg: "bg-iu-purple/10 dark:bg-iu-purple",
-    border: "border-iu-purple/20 dark:border-iu-purple",
-    text: "text-iu-purple dark:text-white",
-  },
-  "pink-500": {
-    bg: "bg-iu-pink/10 dark:bg-iu-pink",
-    border: "border-iu-pink/20 dark:border-iu-pink",
-    text: "text-iu-pink dark:text-white",
-  },
-  "pink-900": {
-    bg: "bg-pink-900",
-    border: "border-pink-900",
-    text: "text-white",
-  },
-  "slate-400": {
-    bg: "bg-muted dark:bg-muted",
-    border: "border-border",
-    text: "text-muted-foreground",
-  },
-  "slate-900": {
-    bg: "bg-slate-900",
-    border: "border-slate-900",
-    text: "text-white",
-  },
-};
+const COLOR_MAP: Record<string, { bg: string; border: string; text: string }> =
+  {
+    "iu-blue": {
+      bg: "bg-iu-blue/10 dark:bg-iu-blue/20",
+      border: "border-iu-blue/20 dark:border-iu-blue/30",
+      text: "text-iu-blue dark:text-white",
+    },
+    "iu-blue-text": {
+      bg: "bg-iu-blue/10 dark:bg-iu-blue/20",
+      border: "border-iu-blue/20 dark:border-iu-blue/30",
+      text: "text-iu-blue dark:text-white",
+    },
+    "iu-orange": {
+      bg: "bg-iu-orange/10 dark:bg-iu-orange/20",
+      border: "border-iu-orange/20 dark:border-iu-orange/30",
+      text: "text-iu-orange dark:text-white",
+    },
+    "orange-500": {
+      bg: "bg-amber-500/10 dark:bg-amber-500/20",
+      border: "border-amber-500/20 dark:border-amber-500/30",
+      text: "text-amber-600 dark:text-amber-300",
+    },
+    "orange-900": {
+      bg: "bg-amber-500/10 dark:bg-amber-500/20",
+      border: "border-amber-500/20 dark:border-amber-500/30",
+      text: "text-amber-600 dark:text-amber-300",
+    },
+    "purple-500": {
+      bg: "bg-violet-500/10 dark:bg-violet-500/20",
+      border: "border-violet-500/20 dark:border-violet-500/30",
+      text: "text-violet-600 dark:text-violet-300",
+    },
+    "purple-900": {
+      bg: "bg-violet-500/10 dark:bg-violet-500/20",
+      border: "border-violet-500/20 dark:border-violet-500/30",
+      text: "text-violet-600 dark:text-violet-300",
+    },
+    "iu-purple": {
+      bg: "bg-violet-500/10 dark:bg-violet-500/20",
+      border: "border-violet-500/20 dark:border-violet-500/30",
+      text: "text-violet-600 dark:text-violet-300",
+    },
+    "pink-500": {
+      bg: "bg-pink-500/10 dark:bg-pink-500/20",
+      border: "border-pink-500/20 dark:border-pink-500/30",
+      text: "text-pink-600 dark:text-pink-300",
+    },
+    "pink-900": {
+      bg: "bg-pink-500/10 dark:bg-pink-500/20",
+      border: "border-pink-500/20 dark:border-pink-500/30",
+      text: "text-pink-600 dark:text-pink-300",
+    },
+    "slate-400": {
+      bg: "bg-slate-500/10 dark:bg-slate-500/20",
+      border: "border-slate-500/20 dark:border-slate-500/30",
+      text: "text-slate-600 dark:text-slate-300",
+    },
+    "slate-900": {
+      bg: "bg-slate-500/10 dark:bg-slate-500/20",
+      border: "border-slate-500/20 dark:border-slate-500/30",
+      text: "text-slate-600 dark:text-slate-300",
+    },
+  };
 
 export function StatsGrid({ stats }: StatsGridProps) {
   return (
@@ -82,17 +83,24 @@ export function StatsGrid({ stats }: StatsGridProps) {
         return (
           <div
             key={i}
-            className="bg-card/50 backdrop-blur-xl rounded-3xl border border-border p-6 hover:scale-[1.02] transition-all duration-300 group"
+            className="group relative overflow-hidden bg-card/40 backdrop-blur-xl rounded-2xl sm:rounded-[2rem] border border-border p-5 sm:p-6 shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition-all duration-500"
           >
-            <div
-              className={`h-10 w-10 rounded-2xl ${colors.bg} flex items-center justify-center border ${colors.border} mb-4 group-hover:scale-110 transition-transform`}
-            >
-              <stat.icon className={`h-5 w-5 ${colors.text}`} />
+            <div className="absolute top-0 right-0 p-3 opacity-[0.04] group-hover:scale-110 transition-transform duration-700">
+              <stat.icon className="h-16 w-16" />
             </div>
-            <div className="text-muted-foreground text-[10px] font-bold uppercase tracking-widest mb-1">
-              {stat.label}
+            <div className="relative z-10">
+              <div
+                className={`h-9 w-9 rounded-xl ${colors.bg} flex items-center justify-center border ${colors.border} mb-3 group-hover:scale-110 transition-transform`}
+              >
+                <stat.icon className={`h-4 w-4 ${colors.text}`} />
+              </div>
+              <div className="text-muted-foreground text-[9px] sm:text-[10px] font-bold uppercase tracking-widest mb-1">
+                {stat.label}
+              </div>
+              <div className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">
+                {stat.val}
+              </div>
             </div>
-            <div className="text-3xl font-bold text-foreground">{stat.val}</div>
           </div>
         );
       })}

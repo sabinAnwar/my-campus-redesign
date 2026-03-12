@@ -98,7 +98,7 @@ function RememberMeSection() {
           id="remember"
           name="remember"
           type="checkbox"
-          className="w-5 h-5 rounded bg-white dark:bg-slate-700 border-2 border-slate-300 dark:border-slate-600 text-iu-blue dark:text-iu-blue focus:ring-2 focus:ring-iu-blue cursor-pointer transition-all"
+          className="h-5 w-5 shrink-0 appearance-none rounded-[6px] border-2 border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-700 transition-all hover:border-iu-blue/50 dark:hover:border-iu-blue/50 checked:bg-iu-blue checked:border-iu-blue dark:checked:bg-iu-blue dark:checked:border-iu-blue checked:bg-[url('data:image/svg+xml;utf8,%3Csvg%20viewBox=%220%200%2014%2014%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath%20d=%22M3%208L6%2011L11%203.5%22%20stroke=%22white%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E')] checked:bg-center checked:bg-no-repeat focus:outline-none focus-visible:ring-2 focus-visible:ring-iu-blue focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 cursor-pointer shadow-sm"
         />
         <label
           htmlFor="remember"

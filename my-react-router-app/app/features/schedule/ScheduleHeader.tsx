@@ -65,7 +65,7 @@ export function ScheduleHeader({
         iconBg="bg-iu-blue/10 dark:bg-iu-blue"
         iconColor="text-iu-blue dark:text-white"
       >
-        <div className="flex flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto overflow-x-auto">
+        <div className="flex flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto overflow-x-auto custom-scrollbar touch-scroll pb-1">
           <div className="flex flex-row items-center gap-3 sm:gap-4 shrink-0">
             {/* View Toggle */}
             <div className="flex shrink-0 p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm">

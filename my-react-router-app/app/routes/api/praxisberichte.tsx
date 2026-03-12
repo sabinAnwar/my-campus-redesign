@@ -24,6 +24,12 @@ export async function loader({ request }: { request: Request }) {
       return Response.json({ error: "Unauthorized" }, { status: 401 });
     }
 
+    // Get user with major to return studiengangName for study plan sync
+    const fullUser = await prisma.user.findUnique({
+      where: { id: user.id },
+      include: { major: true },
+    });
+
     // Get all practical reports for this user
     const reports = await prisma.practicalReport.findMany({
       where: { user_id: user.id },
@@ -39,8 +45,8 @@ export async function loader({ request }: { request: Request }) {
     }));
 
     return Response.json(
-      { reports: mapped },
-      { headers: { "Cache-Control": "no-store" } }
+      { reports: mapped, studiengangName: fullUser?.major?.name || null },
+      { headers: { "Cache-Control": "no-store" } },
     );
   } catch (error) {
     console.error(" Error fetching practical reports:", error);
@@ -54,13 +60,19 @@ export async function loader({ request }: { request: Request }) {
           error:
             "Praxisberichte-Tabelle fehlt in der Datenbank. Bitte Migrationen ausführen.",
         },
-        { status: 503 }
+        { status: 503 },
       );
     }
     return Response.json({ error: "Failed to fetch reports" }, { status: 500 });
   }
 }
 
-export async function action({ request, params }: { request: Request; params: any }) {
+export async function action({
+  request,
+  params,
+}: {
+  request: Request;
+  params: any;
+}) {
   return Response.json({ error: "Method not allowed" }, { status: 405 });
 }

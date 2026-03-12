@@ -311,7 +311,7 @@ function CheckboxField({
           type="checkbox"
           checked={checked}
           onChange={(e) => onChange(e.target.checked)}
-          className="w-5 h-5 rounded-lg border-border bg-muted text-iu-blue focus:ring-iu-blue transition-all"
+          className="h-5 w-5 shrink-0 appearance-none rounded-[6px] border-2 border-border dark:border-slate-600 bg-muted dark:bg-slate-800 transition-all hover:border-iu-blue/50 dark:hover:border-iu-blue/50 checked:bg-iu-blue checked:border-iu-blue dark:checked:bg-iu-blue dark:checked:border-iu-blue checked:bg-[url('data:image/svg+xml;utf8,%3Csvg%20viewBox=%220%200%2014%2014%22%20fill=%22none%22%20xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cpath%20d=%22M3%208L6%2011L11%203.5%22%20stroke=%22white%22%20stroke-width=%222%22%20stroke-linecap=%22round%22%20stroke-linejoin=%22round%22/%3E%3C/svg%3E')] checked:bg-center checked:bg-no-repeat focus:outline-none focus-visible:ring-2 focus-visible:ring-iu-blue focus-visible:ring-offset-2 dark:focus-visible:ring-offset-slate-900 cursor-pointer shadow-sm"
         />
       </div>
       <span className="text-sm text-muted-foreground font-medium leading-relaxed group-hover:text-foreground transition-colors">
