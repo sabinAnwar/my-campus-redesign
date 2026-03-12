@@ -44,12 +44,13 @@ export function ScheduleEventModal({
             <div
               className={`p-3 sm:p-5 rounded-[2rem] shadow-xl ${EVENT_COLORS[selectedEvent.type]?.bg}/15 dark:bg-white/5 text-slate-900 dark:text-white ring-1 ring-border/50`}
             >
-              <EventIcon type={selectedEvent.type} className="h-7 w-7 sm:h-10 sm:w-10" />
+              <EventIcon
+                type={selectedEvent.type}
+                className="h-7 w-7 sm:h-10 sm:w-10"
+              />
             </div>
             <div>
-              <div
-                className={`text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] mb-2 ${EVENT_COLORS[selectedEvent.type]?.text || "text-foreground"}`}
-              >
+              <div className="text-[10px] sm:text-xs font-bold uppercase tracking-[0.3em] mb-2 text-muted-foreground">
                 {selectedEvent.type.toUpperCase()}
               </div>
               <h3 className="text-xl sm:text-3xl font-bold tracking-tight text-foreground">
@@ -121,7 +122,7 @@ export function ScheduleEventModal({
 
         {selectedEvent.isOnline && selectedEvent.zoomLink && (
           <div className="mt-8">
-              <a
+            <a
               href={selectedEvent.zoomLink}
               target="_blank"
               rel="noopener noreferrer"
@@ -134,7 +135,9 @@ export function ScheduleEventModal({
                 <span className="relative inline-flex rounded-full h-3 w-3 sm:h-4 sm:w-4 bg-white"></span>
               </span>
               <Video size={36} className="relative z-10 shrink-0" />
-              <span className="relative z-10 font-black text-2xl sm:text-3xl tracking-tight">ZOOM BEITRETEN</span>
+              <span className="relative z-10 font-black text-2xl sm:text-3xl tracking-tight">
+                ZOOM BEITRETEN
+              </span>
             </a>
           </div>
         )}

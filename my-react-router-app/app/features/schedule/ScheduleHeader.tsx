@@ -51,9 +51,10 @@ export function ScheduleHeader({
   goToToday,
   handleDownloadICS,
 }: ScheduleHeaderProps) {
-  const subtitle = language === "de"
-    ? "Theoriewoche – Dein persönlicher Stundenplan und akademischer Kalender."
-    : "Theory Week – Your personal schedule and academic calendar.";
+  const subtitle =
+    language === "de"
+      ? "Theoriewoche – Dein persönlicher Stundenplan und akademischer Kalender."
+      : "Theory Week – Your personal schedule and academic calendar.";
 
   return (
     <>
@@ -64,10 +65,10 @@ export function ScheduleHeader({
         iconBg="bg-iu-blue/10 dark:bg-iu-blue"
         iconColor="text-iu-blue dark:text-white"
       >
-        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3 sm:gap-4 w-full lg:w-auto">
-          <div className="flex flex-col sm:flex-row sm:flex-wrap items-stretch sm:items-center gap-3 sm:gap-4 lg:flex-row w-full">
+        <div className="flex flex-row items-center gap-3 sm:gap-4 w-full lg:w-auto overflow-x-auto">
+          <div className="flex flex-row items-center gap-3 sm:gap-4 shrink-0">
             {/* View Toggle */}
-            <div className="flex w-full sm:w-auto p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm overflow-x-auto">
+            <div className="flex shrink-0 p-1.5 rounded-2xl bg-card/50 backdrop-blur-xl border border-border shadow-sm">
               <button
                 onClick={() => setViewMode("list")}
                 className={`flex items-center gap-2 px-4 sm:px-6 py-2.5 rounded-xl font-bold text-xs sm:text-sm transition-all whitespace-nowrap ${
@@ -105,9 +106,9 @@ export function ScheduleHeader({
 
             <button
               onClick={handleDownloadICS}
-              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-2xl bg-card/50 backdrop-blur-xl border border-border text-foreground font-bold text-xs sm:text-sm hover:border-iu-blue/50 transition-all shadow-sm w-full sm:w-auto"
+              className="flex items-center justify-center gap-2 px-5 sm:px-6 py-3 rounded-2xl bg-card/50 backdrop-blur-xl border border-border text-foreground font-bold text-xs sm:text-sm hover:border-iu-blue/50 transition-all shadow-sm whitespace-nowrap shrink-0"
             >
-              <Download size={18} className="text-iu-blue" />
+              <Download size={18} className="text-iu-blue shrink-0" />
               {t.downloadCalendar}
             </button>
           </div>

@@ -9,6 +9,9 @@ import {
   FileCheck,
   MessageSquare,
   Flag,
+  Sun,
+  Coffee,
+  Sparkles,
 } from "lucide-react";
 import { useLanguage } from "~/store/LanguageContext";
 import { useLoaderData } from "react-router-dom";
@@ -50,7 +53,9 @@ export { type ScheduleEvent };
 const toSoftPhaseBg = (bgClassString: string) => {
   if (!bgClassString) return "";
   // With AAA dark colors, we need higher opacity for the pastel look
-  return bgClassString.endsWith("/10") ? bgClassString.replace("/10", "/15") : `${bgClassString}/15`;
+  return bgClassString.endsWith("/10")
+    ? bgClassString.replace("/10", "/15")
+    : `${bgClassString}/15`;
 };
 
 export const loader = async ({ request }: LoaderFunctionArgs) => {
@@ -123,7 +128,7 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             zoomLink: dbZoomLink,
             isOptional: e.event_type === "TUTORIUM" || e.event_type === "Q&A",
           };
-        }
+        },
       );
     }
 
@@ -158,7 +163,7 @@ export default function CourseSchedule() {
   }>();
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEvent, setSelectedEvent] = useState<ScheduleEvent | null>(
-    null
+    null,
   );
   const [viewMode, setViewMode] = useState<"week" | "month" | "list">("list");
   const [showOptional, setShowOptional] = useState(true);
@@ -176,7 +181,7 @@ export default function CourseSchedule() {
   const weekDates = useMemo(() => getWeekDates(currentDate), [currentDate]);
   const monthDays = useMemo(
     () => getMonthDays(startOfMonth(currentDate)),
-    [currentDate]
+    [currentDate],
   );
   const todayISO = toISODate(new Date());
 
@@ -191,7 +196,7 @@ export default function CourseSchedule() {
 
   // Get current study phase
   const currentBlock = currentPlan?.blocks.find(
-    (b) => todayISO >= b.start && todayISO <= b.end
+    (b) => todayISO >= b.start && todayISO <= b.end,
   );
   const currentStatus = currentBlock?.status || "vorlesung";
   const statusConfig =
@@ -228,14 +233,17 @@ export default function CourseSchedule() {
     const dateStr = toISODate(date);
     const events: ScheduleEvent[] = [];
 
-    // Check which phase this date is in
-    const dateBlock = currentPlan?.blocks.find(
-      (b) => dateStr >= b.start && dateStr <= b.end
-    );
-    const currentPhase = dateBlock?.status;
+    // Check which phase this date is in (use getBlockStatusForDate for correct priority)
+    const currentPhase = currentPlan
+      ? getBlockStatusForDate(currentPlan, date)
+      : null;
+    const isHoliday = currentPhase === "feiertag";
     const isInPraxisPhase = currentPhase === "praxis";
     const isInExamPhase =
       currentPhase === "klausurphase" || currentPhase === "nachpruefung";
+
+    // No classes on national holidays or Praxisunternehmen days
+    if (isHoliday || isInPraxisPhase) return events;
 
     // Add regular events
     scheduleEvents.forEach((e: ScheduleEvent) => {
@@ -245,10 +253,6 @@ export default function CourseSchedule() {
       // During Klausurphase or Nachprüfungsphase: only show Prüfung events
       if (isInExamPhase) {
         if (e.type !== "Prüfung") return;
-      }
-      // During Praxis phase: only show optional courses (no mandatory lectures)
-      else if (isInPraxisPhase) {
-        if (!e.isOptional) return;
       }
 
       events.push(e);
@@ -292,7 +296,7 @@ export default function CourseSchedule() {
   const handleDownloadICS = () => {
     const icsContent = generateICSContent(
       scheduleEvents,
-      currentPlan?.blocks || []
+      currentPlan?.blocks || [],
     );
     const blob = new Blob([icsContent], {
       type: "text/calendar;charset=utf-8",
@@ -313,7 +317,7 @@ export default function CourseSchedule() {
     if (!plan) return [];
 
     const sortedBlocks = [...plan.blocks].sort(
-      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime()
+      (a, b) => new Date(a.start).getTime() - new Date(b.start).getTime(),
     );
 
     return sortedBlocks.map((block) => {
@@ -322,12 +326,12 @@ export default function CourseSchedule() {
       const startWeek =
         Math.ceil(
           (start.getTime() - new Date(start.getFullYear(), 0, 1).getTime()) /
-            (7 * 24 * 60 * 60 * 1000)
+            (7 * 24 * 60 * 60 * 1000),
         ) + 1;
       const endWeek =
         Math.ceil(
           (end.getTime() - new Date(end.getFullYear(), 0, 1).getTime()) /
-            (7 * 24 * 60 * 60 * 1000)
+            (7 * 24 * 60 * 60 * 1000),
         ) + 1;
       const config =
         plan.paletteOverrides?.[block.status] || DEFAULT_PALETTE[block.status];
@@ -389,15 +393,49 @@ export default function CourseSchedule() {
             setSelectedEvent={setSelectedEvent}
           />
         ) : viewMode === "week" ? (
-          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-x-auto">
+          <div className="rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-hidden">
+            {/* Week Stats Bar */}
+            <div className="px-6 py-3 border-b border-border/50 bg-muted/10 flex items-center gap-4 text-xs font-bold text-muted-foreground overflow-x-auto min-w-[800px]">
+              <Sparkles size={14} className="text-iu-blue shrink-0" />
+              <span>{language === "de" ? "Diese Woche:" : "This week:"}</span>
+              <span className="text-foreground">
+                {weekDates.reduce(
+                  (sum, d) => sum + getEventsForDate(d).length,
+                  0,
+                )}{" "}
+                {language === "de" ? "Veranstaltungen" : "events"}
+              </span>
+              <span className="text-muted-foreground/50">|</span>
+              <span className="text-foreground">
+                {weekDates.filter((d) => {
+                  const s = currentPlan
+                    ? getBlockStatusForDate(currentPlan, d)
+                    : null;
+                  return s === "feiertag";
+                }).length > 0
+                  ? `${
+                      weekDates.filter((d) => {
+                        const s = currentPlan
+                          ? getBlockStatusForDate(currentPlan, d)
+                          : null;
+                        return s === "feiertag";
+                      }).length
+                    } ${language === "de" ? "Feiertag(e)" : "holiday(s)"}`
+                  : language === "de"
+                    ? "Keine Feiertage"
+                    : "No holidays"}
+              </span>
+            </div>
             {/* Week Header */}
-            <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20 min-w-[800px]">
+            <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20 min-w-[800px] overflow-x-auto">
               <div className="p-6" />
               {weekDates.map((date, idx) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
-                
-                const status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+
+                const status = currentPlan
+                  ? getBlockStatusForDate(currentPlan, date)
+                  : null;
                 const phaseConfig = status
                   ? currentPlan?.paletteOverrides?.[status] ||
                     DEFAULT_PALETTE[status]
@@ -424,11 +462,9 @@ export default function CourseSchedule() {
                     </div>
                     {phaseConfig && (
                       <div
-                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest inline-flex items-center gap-1 ${status === 'feiertag' ? 'text-iu-gold' : phaseConfig.text.replace('text-white', 'text-iu-blue dark:text-white')}`}
+                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest inline-flex items-center gap-1 ${status === "feiertag" ? "text-iu-gold" : phaseConfig.text.replace("text-white", "text-iu-blue dark:text-white")}`}
                       >
-                        {status === "feiertag" && (
-                          <Flag className="h-3 w-3" />
-                        )}
+                        {status === "feiertag" && <Flag className="h-3 w-3" />}
                         {phaseConfig.label.split(" ")[0]}
                       </div>
                     )}
@@ -486,17 +522,20 @@ export default function CourseSchedule() {
                           className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
                           style={{ top: `${timeLineTop}px` }}
                         >
-                          <div className="w-2 h-2 rounded-full bg-iu-red -ml-1 shadow-lg shadow-rose-500/50" />
-                          <div className="flex-1 h-0.5 bg-iu-red" />
+                          <div className="w-3 h-3 rounded-full bg-iu-red -ml-1.5 shadow-lg shadow-rose-500/50 ring-4 ring-iu-red/20 animate-pulse" />
+                          <div className="flex-1 h-[2px] bg-gradient-to-r from-iu-red to-iu-red/30" />
                         </div>
                       )}
 
                     {events.map((event) => {
                       const isLive = isEventLive(event);
-                      const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                      const typeColors =
+                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
                       // Calculate phase config for this specific day
                       const eventDate = new Date(event.date);
-                      const status = currentPlan ? getBlockStatusForDate(currentPlan, eventDate) : null;
+                      const status = currentPlan
+                        ? getBlockStatusForDate(currentPlan, eventDate)
+                        : null;
                       const phaseConfig = status
                         ? currentPlan?.paletteOverrides?.[status] ||
                           DEFAULT_PALETTE[status]
@@ -506,7 +545,7 @@ export default function CourseSchedule() {
                       const colors = {
                         bg: `${typeColors.bg}/15 dark:bg-white/5`, // Slightly tone down dark mode background tint for higher text contrast
                         text: "text-slate-900 dark:text-white", // AAA High Contrast Text
-                        border: typeColors.border
+                        border: typeColors.border,
                       };
 
                       const style = getEventStyle(event);
@@ -544,7 +583,9 @@ export default function CourseSchedule() {
                                 />
                               </div>
                               <div className="min-w-0 flex-1">
-                                <div className={`text-[10px] font-black uppercase tracking-wider ${colors.text} opacity-70 leading-none mb-1`}>
+                                <div
+                                  className={`text-[10px] font-black uppercase tracking-wider ${colors.text} opacity-70 leading-none mb-1`}
+                                >
                                   {event.startTime} – {event.endTime}
                                 </div>
                                 <div
@@ -556,7 +597,9 @@ export default function CourseSchedule() {
                             </div>
 
                             <div className="mt-auto flex items-center gap-2 opacity-100 transition-opacity">
-                              <div className={`flex items-center gap-1 text-[9px] font-bold ${colors.text}`}>
+                              <div
+                                className={`flex items-center gap-1 text-[9px] font-bold ${colors.text}`}
+                              >
                                 {event.isOnline ? (
                                   <Video size={10} />
                                 ) : (
@@ -601,61 +644,92 @@ export default function CourseSchedule() {
                     key={`empty-${idx}`}
                     className="min-h-[180px] p-4 border-b border-r border-border/50 bg-muted/5"
                   />
-                )
+                ),
               )}
 
               {monthDays.map((date) => {
                 const dateStr = toISODate(date);
                 const isToday = dateStr === todayISO;
                 const dayEvents = getEventsForDate(date);
-                
-                const status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+
+                const status = currentPlan
+                  ? getBlockStatusForDate(currentPlan, date)
+                  : null;
                 const phaseConfig = status
                   ? currentPlan?.paletteOverrides?.[status] ||
                     DEFAULT_PALETTE[status]
                   : null;
 
+                const isPraxis = status === "praxis";
+                const isHoliday = status === "feiertag";
+
                 return (
                   <div
                     key={dateStr}
-                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all hover:bg-iu-blue/5 group ${isToday ? "bg-iu-blue/[0.02]" : ""} ${phaseConfig ? toSoftPhaseBg(phaseConfig.bg) : ""}`}
+                    className={`min-h-[180px] p-4 border-b border-r border-border/50 transition-all group relative ${
+                      isToday
+                        ? "bg-iu-blue/[0.04] ring-2 ring-inset ring-iu-blue/20"
+                        : isHoliday
+                          ? "bg-amber-50/50 dark:bg-amber-900/5"
+                          : isPraxis
+                            ? "bg-emerald-50/40 dark:bg-emerald-900/5"
+                            : isWeekend
+                              ? "bg-muted/10 opacity-60"
+                              : "hover:bg-iu-blue/[0.03]"
+                    }`}
                   >
-                    <div className="flex items-center justify-between mb-4">
-                      <span
-                        className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
-                          isToday
-                            ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110"
-                            : "text-foreground"
-                        }`}
-                      >
-                        {date.getDate()}
-                      </span>
-                      {status === "feiertag" && (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold text-white">
-                          <Flag className="h-3 w-3" />
-                          {language === "de" ? "Feiertag" : "Holiday"}
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
+                            isToday
+                              ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110 animate-pulse"
+                              : isWeekend
+                                ? "text-muted-foreground"
+                                : "text-foreground group-hover:bg-muted/20"
+                          }`}
+                        >
+                          {date.getDate()}
                         </span>
-                      )}
+                        {/* Event count dot */}
+                        {dayEvents.length > 0 && !isToday && (
+                          <span className="inline-flex items-center justify-center w-5 h-5 text-[9px] font-black rounded-full bg-iu-blue/10 text-iu-blue dark:bg-iu-blue/20 dark:text-white">
+                            {dayEvents.length}
+                          </span>
+                        )}
+                      </div>
+                      {isHoliday ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold/10 text-iu-gold border border-iu-gold/20">
+                          <Flag className="h-3 w-3" />
+                          {language === "de" ? "Frei" : "Off"}
+                        </span>
+                      ) : isPraxis ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                          <Briefcase className="h-3 w-3" />
+                          {language === "de" ? "Praxis" : "Practice"}
+                        </span>
+                      ) : status === "klausurphase" ||
+                        status === "nachpruefung" ? (
+                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-red/10 text-iu-red border border-iu-red/20">
+                          <FileCheck className="h-3 w-3" />
+                          {language === "de" ? "Prüfung" : "Exam"}
+                        </span>
+                      ) : null}
                     </div>
 
-                    <div className="space-y-2">
+                    <div className="space-y-1.5">
                       {dayEvents.slice(0, 3).map((event) => {
-                        const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
-                        
-                        // Use Legend Colors strictly for the card
-                        const colors = {
-                           bg: `${typeColors.bg}/15 dark:bg-white/5`,
-                           text: "text-slate-900 dark:text-white",
-                           border: typeColors.border
-                        };
+                        const typeColors =
+                          EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
 
                         return (
                           <div
                             key={event.id}
                             onClick={() => setSelectedEvent(event)}
-                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${colors.bg} ${colors.text} font-bold border-l-4 ${colors.border} shadow-sm hover:shadow-md hover:scale-[1.02] transition-all truncate flex items-center gap-2`}
+                            className={`text-[10px] px-3 py-2 rounded-xl cursor-pointer ${typeColors.bg}/10 dark:bg-white/5 text-slate-900 dark:text-white font-bold border-l-[3px] ${typeColors.border} hover:shadow-md hover:scale-[1.02] hover:-translate-y-px transition-all truncate flex items-center gap-2 backdrop-blur-sm`}
                           >
-                            <span className="opacity-80 shrink-0">
+                            <span className="opacity-70 shrink-0 tabular-nums">
                               {event.startTime}
                             </span>
                             <span className="truncate">{event.title}</span>
@@ -663,10 +737,32 @@ export default function CourseSchedule() {
                         );
                       })}
                       {dayEvents.length > 3 && (
-                        <div className="text-[10px] text-muted-foreground font-bold text-center py-1 bg-muted/20 rounded-lg">
-                          +{dayEvents.length - 3} more
+                        <div className="text-[10px] text-iu-blue dark:text-white font-bold text-center py-1.5 bg-iu-blue/5 dark:bg-white/5 rounded-xl border border-iu-blue/10 dark:border-white/10 cursor-pointer hover:bg-iu-blue/10 transition-colors">
+                          +{dayEvents.length - 3}{" "}
+                          {language === "de" ? "weitere" : "more"}
                         </div>
                       )}
+                      {/* Empty day visual for praxis/holiday */}
+                      {dayEvents.length === 0 &&
+                        !isWeekend &&
+                        (isPraxis || isHoliday) && (
+                          <div className="flex flex-col items-center justify-center py-6 opacity-40">
+                            {isHoliday ? (
+                              <Sun size={24} className="text-iu-gold" />
+                            ) : (
+                              <Coffee size={24} className="text-emerald-500" />
+                            )}
+                            <span className="text-[9px] font-bold mt-2 text-muted-foreground uppercase tracking-widest">
+                              {isHoliday
+                                ? language === "de"
+                                  ? "Feiertag"
+                                  : "Holiday"
+                                : language === "de"
+                                  ? "Praxistag"
+                                  : "Practice"}
+                            </span>
+                          </div>
+                        )}
                     </div>
                   </div>
                 );
@@ -682,8 +778,14 @@ export default function CourseSchedule() {
           {/* Semester Plan Section */}
           <div className="rounded-[2rem] sm:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl p-5 sm:p-6 lg:p-8">
             <h3 className="text-lg sm:text-xl font-black text-foreground mb-6 sm:mb-8 flex items-center gap-3">
-              <CalendarDays size={20} className="text-iu-blue dark:text-white sm:hidden" />
-              <CalendarDays size={24} className="text-iu-blue dark:text-white hidden sm:block" />
+              <CalendarDays
+                size={20}
+                className="text-iu-blue dark:text-white sm:hidden"
+              />
+              <CalendarDays
+                size={24}
+                className="text-iu-blue dark:text-white hidden sm:block"
+              />
               {t.semesterPlan}
             </h3>
 
@@ -765,7 +867,7 @@ export default function CourseSchedule() {
                         : "National Holidays"}
                     </h4>
                   </div>
-                  <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-black/90 text-foreground dark:text-white dark:bg-white/90 dark:text-black">
+                  <div className="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-[0.2em] bg-black/90 text-white dark:bg-white/90 dark:text-black">
                     {language === "de" ? "VORLESUNGSFREI" : "NO LECTURES"}
                   </div>
                 </div>
@@ -777,9 +879,9 @@ export default function CourseSchedule() {
                         key={idx}
                         className="p-5 rounded-2xl bg-card border border-border flex items-center gap-4 group hover:border-iu-gold hover:shadow-lg hover:shadow-amber-500/5 transition-all"
                       >
-                      <div className="p-3 rounded-xl bg-iu-gold text-white group-hover:scale-110 transition-transform">
-                        <Flag size={20} />
-                      </div>
+                        <div className="p-3 rounded-xl bg-iu-gold text-white group-hover:scale-110 transition-transform">
+                          <Flag size={20} />
+                        </div>
                         <div className="min-w-0">
                           <div className="text-sm font-bold text-foreground truncate group-hover:text-iu-gold transition-colors">
                             {block.config.label}

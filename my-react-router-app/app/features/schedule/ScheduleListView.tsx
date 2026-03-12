@@ -7,8 +7,16 @@ import {
   User,
   Flag,
   Video,
+  Sun,
+  Coffee,
+  Briefcase,
 } from "lucide-react";
-import { toISODate, DEFAULT_PALETTE, getBlockStatusForDate, type StudyPlan } from "~/utils/studyPlans";
+import {
+  toISODate,
+  DEFAULT_PALETTE,
+  getBlockStatusForDate,
+  type StudyPlan,
+} from "~/utils/studyPlans";
 import { EVENT_COLORS } from "~/config/schedule";
 import { EventIcon } from "~/features/schedule/EventIcon";
 import type { ScheduleEvent } from "~/types/schedule";
@@ -44,20 +52,27 @@ export function ScheduleListView({
         const dateStr = toISODate(date);
         const isToday = dateStr === todayISO;
         const events = getEventsForDate(date);
-        
-        let status = currentPlan ? getBlockStatusForDate(currentPlan, date) : null;
+
+        let status = currentPlan
+          ? getBlockStatusForDate(currentPlan, date)
+          : null;
         // Fallback to basic block lookup if helper returns null (shouldn't happen if plan exists)
         if (!status && currentPlan) {
-            const block = currentPlan.blocks.find(b => dateStr >= b.start && dateStr <= b.end);
-            status = block?.status || null;
+          const block = currentPlan.blocks.find(
+            (b) => dateStr >= b.start && dateStr <= b.end,
+          );
+          status = block?.status || null;
         }
 
         const phaseConfig = status
-          ? currentPlan?.paletteOverrides?.[status] ||
-            DEFAULT_PALETTE[status]
+          ? currentPlan?.paletteOverrides?.[status] || DEFAULT_PALETTE[status]
           : null;
 
-        if (events.length === 0 && !isToday) return null;
+        const isHoliday = status === "feiertag";
+        const isPraxis = status === "praxis";
+
+        if (events.length === 0 && !isToday && !isHoliday && !isPraxis)
+          return null;
 
         return (
           <div
@@ -65,7 +80,11 @@ export function ScheduleListView({
             className={`relative overflow-hidden rounded-[2rem] border transition-all ${
               isToday
                 ? "border-iu-blue/30 bg-iu-blue/[0.02] shadow-xl shadow-iu-blue/5"
-                : "border-border bg-card/50"
+                : isHoliday
+                  ? "border-iu-gold/30 bg-amber-50/30 dark:bg-amber-900/5"
+                  : isPraxis
+                    ? "border-emerald-500/30 bg-emerald-50/30 dark:bg-emerald-900/5"
+                    : "border-border bg-card/50"
             }`}
           >
             <div className="flex flex-col md:flex-row">
@@ -98,9 +117,7 @@ export function ScheduleListView({
                   <div
                     className={`mt-0 md:mt-3 sm:mt-4 inline-flex items-center gap-1 px-2.5 py-1 rounded-full text-[9px] sm:text-[10px] font-bold uppercase tracking-wider border ${phaseConfig.bg} ${phaseConfig.text} border-current/10`}
                   >
-                    {status === "feiertag" && (
-                      <Flag className="h-3 w-3" />
-                    )}
+                    {status === "feiertag" && <Flag className="h-3 w-3" />}
                     {phaseConfig.label}
                   </div>
                 )}
@@ -112,12 +129,13 @@ export function ScheduleListView({
                   <div className="grid gap-4">
                     {events.map((event, eIdx) => {
                       const isLive = isEventLive(event);
-                      const typeColors = EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
-                      
+                      const typeColors =
+                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+
                       const colors = {
                         bg: `${typeColors.bg}/15 dark:bg-white/5`,
                         text: "text-slate-900 dark:text-white",
-                        border: typeColors.border
+                        border: typeColors.border,
                       };
 
                       return (
@@ -220,8 +238,13 @@ export function ScheduleListView({
                                   <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white opacity-75"></span>
                                   <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
                                 </span>
-                                <Video size={18} className="shrink-0 relative z-10" />
-                                <span className="relative z-10 tracking-wide">ZOOM BEITRETEN</span>
+                                <Video
+                                  size={18}
+                                  className="shrink-0 relative z-10"
+                                />
+                                <span className="relative z-10 tracking-wide">
+                                  ZOOM BEITRETEN
+                                </span>
                               </a>
                             )}
                             <div
@@ -237,6 +260,44 @@ export function ScheduleListView({
                         </div>
                       );
                     })}
+                  </div>
+                ) : isHoliday || isPraxis ? (
+                  <div className="h-full flex flex-col items-center justify-center text-center py-8 sm:py-10">
+                    <div
+                      className={`w-16 h-16 rounded-2xl flex items-center justify-center mb-4 ${
+                        isHoliday ? "bg-iu-gold/10" : "bg-emerald-500/10"
+                      }`}
+                    >
+                      {isHoliday ? (
+                        <Sun className="text-iu-gold" size={32} />
+                      ) : (
+                        <Briefcase className="text-emerald-500" size={32} />
+                      )}
+                    </div>
+                    <p
+                      className={`font-black text-base ${
+                        isHoliday
+                          ? "text-iu-gold"
+                          : "text-emerald-600 dark:text-emerald-400"
+                      }`}
+                    >
+                      {isHoliday
+                        ? language === "de"
+                          ? "Nationaler Feiertag"
+                          : "National Holiday"
+                        : language === "de"
+                          ? "Praxisunternehmen"
+                          : "Practice Company"}
+                    </p>
+                    <p className="text-xs text-muted-foreground font-bold mt-1">
+                      {isHoliday
+                        ? language === "de"
+                          ? "Vorlesungsfrei – Genieße deinen Tag!"
+                          : "No lectures – Enjoy your day!"
+                        : language === "de"
+                          ? "Kein Unterricht – Praxistag"
+                          : "No classes – Practice day"}
+                    </p>
                   </div>
                 ) : (
                   <div className="h-full flex flex-col items-center justify-center text-center py-10 sm:py-12">
