@@ -11,41 +11,52 @@ export const getFormDefinitions = (t: typeof TRANSLATIONS.de) => {
     "1": {
       title: t.itemTitles["1"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUMzY5QlNXSVBNREVIWkZJNkJRREVYMDkyWC4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUMzY5QlNXSVBNREVIWkZJNkJRREVYMDkyWC4u",
     },
     "2": {
       title: t.itemTitles["2"],
-      microsoftFormUrl: "https://forms.office.com/e/9ZWG79y2wx?embed=true",
+      microsoftFormUrl:
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUOUFWWUhBUzI4TURDMlM5M0FXWEZZTTJLNS4u",
     },
     "13": {
       title: t.itemTitles["13"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxURTZJRkFCMVMzMTAxVDRJV0NXQ00xT0JCUi4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxURTZJRkFCMVMzMTAxVDRJV0NXQ00xT0JCUi4u",
     },
     "5": {
       title: t.itemTitles["5"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxURUw2TVIzNTBYRE9RV0lSTFpPRjhOR09ZQS4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxURUw2TVIzNTBYRE9RV0lSTFpPRjhOR09ZQS4u",
     },
     "12": {
       title: t.itemTitles["12"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUNDlZS0xRQldPNElZVzA1NU1BMFFEN0pSQS4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUNDlZS0xRQldPNElZVzA1NU1BMFFEN0pSQS4u",
     },
     "7": {
       title: t.itemTitles["7"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUOTVDQVRCMkNXSkxQMVJETTlYVTE0VUMzNC4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUOTVDQVRCMkNXSkxQMVJETTlYVTE0VUMzNC4u",
     },
     "8": {
       title: t.itemTitles["8"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUQU40R09ZVkJZS1pJMDNWUFJHTVJOODY3MS4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUQU40R09ZVkJZS1pJMDNWUFJHTVJOODY3MS4u",
     },
     "3": {
       title: t.itemTitles["3"],
       microsoftFormUrl:
-        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUNDFGRlo3UUNXVk1VN1pCOUs3S1lORUxXQi4u&embed=true",
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUNDFGRlo3UUNXVk1VN1pCOUs3S1lORUxXQi4u",
+    },
+    "11": {
+      title: t.itemTitles["11"],
+      microsoftFormUrl:
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUNFFHVEUwTTlHNEsxWTJCWU1BNVpNSTlZNS4u",
+    },
+    "9": {
+      title: t.itemTitles["9"],
+      microsoftFormUrl:
+        "https://forms.office.com/Pages/ResponsePage.aspx?id=_skZ9LD3h02-6OjfshkMq7F2PQ6rY6BIklzo_Enz5dxUN0hUTTVUSDZVN05QWENTTE5YNFEzTzE0VS4u",
     },
     default: {
       title: t.formLabels.generalApplication,
@@ -53,9 +64,9 @@ export const getFormDefinitions = (t: typeof TRANSLATIONS.de) => {
     },
   };
 
-  // Populate remaining definitions (skip 1, 2, 3, 5, 7, 8, 12, 13 as they have custom URLs)
+  // Populate remaining definitions (skip 1, 2, 3, 5, 7, 8, 9, 11, 12, 13 as they have custom URLs)
   for (let i = 4; i <= 17; i++) {
-    if (i === 5 || i === 7 || i === 8 || i === 12 || i === 13) continue;
+    if (i === 5 || i === 7 || i === 8 || i === 9 || i === 11 || i === 12 || i === 13) continue;
     const id = i.toString();
     definitions[id] = {
       title: t.itemTitles[id as keyof typeof t.itemTitles],
