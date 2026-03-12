@@ -165,16 +165,17 @@ export default function Praxisbericht2() {
 
       // satisfied: majority of mooded days are happy/satisfied
       const rep = normalizedReports.find((r) => r && r.isoWeekKey === wk);
-      if (rep && rep.days) {
+      if (rep && rep.days && typeof rep.days === "object") {
         const dayKeys = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"];
         let pos = 0,
           denom = 0;
         for (const k of dayKeys) {
           const d = rep.days[k];
           if (!d || d.holiday) continue;
-          if (d.mood) {
+          const mood = typeof d.mood === "string" ? d.mood.trim() : "";
+          if (mood) {
             denom += 1;
-            if (d.mood === "happy" || d.mood === "satisfied") pos += 1;
+            if (mood === "happy" || mood === "satisfied") pos += 1;
           }
         }
         if (denom > 0 && pos / denom >= 0.5) satisfied += 1;

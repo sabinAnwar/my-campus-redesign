@@ -26,7 +26,10 @@ router.get("/", async (req: Request, res: Response) => {
       orderBy: { iso_week_key: "asc" },
     });
 
-    return res.json({ reports });
+    return res.json({
+      reports,
+      studiengangName: session.user.study_program || null,
+    });
   } catch (error: unknown) {
     console.error(" Error fetching praxisberichte:", error);
     return res.status(500).json({ error: "Failed to fetch reports" });
@@ -86,11 +89,10 @@ router.put("/:weekKey", express.json(), async (req: Request, res: Response) => {
     // Send confirmation email if status is SUBMITTED
     if ((status || "").toUpperCase() === "SUBMITTED") {
       try {
-       
         const { createTransporter } = require("../utils/email");
         const transporter = await createTransporter();
         const emailSubject = `Praxisbericht eingereicht: Woche ${weekKey}`;
-        
+
         const emailHtml = `
           <!DOCTYPE html>
           <html>
@@ -113,7 +115,7 @@ router.put("/:weekKey", express.json(), async (req: Request, res: Response) => {
                     <div style="font-weight: bold; color: #174f26; margin-bottom: 10px; font-size: 14px; text-transform: uppercase; letter-spacing: 0.05em; border-bottom: 1px solid #eee; padding-bottom: 5px;">Zusammenfassung</div>
                     <div style="margin-bottom: 10px; font-size: 16px;"><strong>Status:</strong> <span style="color: #174f26; font-weight: bold;">Eingereicht</span></div>
                     <div style="margin-bottom: 5px; font-size: 16px;"><strong>Aufgaben:</strong></div>
-                    <div style="color: #555; background: #f3f4f6; padding: 10px; border-radius: 4px; font-style: italic; font-size: 15px;">"${tasks.substring(0, 200)}${tasks.length > 200 ? '...' : ''}"</div>
+                    <div style="color: #555; background: #f3f4f6; padding: 10px; border-radius: 4px; font-style: italic; font-size: 15px;">"${tasks.substring(0, 200)}${tasks.length > 200 ? "..." : ""}"</div>
                   </div>
                   
                   <p style="font-size: 15px; color: #555;">Dein Betreuer wird benachrichtigt.</p>

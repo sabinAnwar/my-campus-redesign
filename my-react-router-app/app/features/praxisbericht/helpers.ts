@@ -56,22 +56,30 @@ export const STATUS_STYLES = {
   },
 };
 
-export const normalizeReport = (
-  report: any,
-): PraxisReport | undefined | null => {
+export const normalizeReport = (report: any): PraxisReport | undefined | null => {
   if (!report) return report;
   const rawStatus =
     typeof report.status === "string" ? report.status.toUpperCase() : "DUE";
   const normalizedStatus = rawStatus === "KLAUSUR" ? "KLAUSURPHASE" : rawStatus;
+  // Defensive: parse days if stored/returned as a JSON string
+  let days = report.days;
+  if (typeof days === "string") {
+    try {
+      days = JSON.parse(days);
+    } catch {
+      days = {};
+    }
+  }
   return {
     ...report,
+    days: days || {},
     status: normalizedStatus,
     isoWeekKey: report.isoWeekKey || report.iso_week_key,
     editedAt: report.editedAt || report.edited_at,
     approvedAt: report.approvedAt || report.approved_at,
     createdAt: report.createdAt || report.created_at,
   };
-};
+};;
 
 // Helpers
 export function getISOWeekKey(date: Date) {
