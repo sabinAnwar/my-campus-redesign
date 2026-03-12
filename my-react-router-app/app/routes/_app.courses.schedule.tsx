@@ -126,7 +126,10 @@ export const loader = async ({ request }: LoaderFunctionArgs) => {
             room: null,
             isOnline,
             zoomLink: dbZoomLink,
-            isOptional: e.event_type === "TUTORIUM" || e.event_type === "Q&A",
+            isOptional:
+              e.event_type === "TUTORIUM" ||
+              e.event_type === "Q&A" ||
+              e.event_type === "OTHER",
           };
         },
       );
