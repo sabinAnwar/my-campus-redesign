@@ -2,9 +2,10 @@
 
 This is a quick reference for common tasks and patterns in the My Campus Redesign project.
 
-## 🚀 Common Commands
+## Common Commands
 
 ### Development
+
 ```bash
 # Start development server
 npm run dev
@@ -20,6 +21,7 @@ npm run typecheck
 ```
 
 ### Database
+
 ```bash
 # Generate Prisma client
 npx prisma generate
@@ -38,6 +40,7 @@ npx prisma migrate dev --name migration_name
 ```
 
 ### Testing & Quality
+
 ```bash
 # Run tests
 npm test
@@ -56,6 +59,7 @@ npm run format
 ```
 
 ### Git Workflow
+
 ```bash
 # Create feature branch
 git checkout -b feature/my-feature
@@ -74,9 +78,10 @@ git fetch upstream
 git merge upstream/main
 ```
 
-## 📝 Code Snippets
+## Code Snippets
 
 ### Route with Loader (Data Fetching)
+
 ```typescript
 // app/routes/_app.my-route.tsx
 import { json, type LoaderFunctionArgs } from 'react-router';
@@ -86,17 +91,17 @@ import { prisma } from '~/lib/prisma';
 
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await requireAuth(request);
-  
+
   const data = await prisma.model.findMany({
     where: { userId: session.user.id }
   });
-  
+
   return json({ data });
 }
 
 export default function MyRoute() {
   const { data } = useLoaderData<typeof loader>();
-  
+
   return (
     <div>
       <h1>My Route</h1>
@@ -109,6 +114,7 @@ export default function MyRoute() {
 ```
 
 ### Route with Action (Form Submission)
+
 ```typescript
 // app/routes/_app.my-form.tsx
 import { json, redirect, type ActionFunctionArgs } from 'react-router';
@@ -119,10 +125,10 @@ import { prisma } from '~/lib/prisma';
 export async function action({ request }: ActionFunctionArgs) {
   const session = await requireAuth(request);
   const formData = await request.formData();
-  
+
   const title = formData.get('title') as string;
   const description = formData.get('description') as string;
-  
+
   await prisma.model.create({
     data: {
       title,
@@ -130,7 +136,7 @@ export async function action({ request }: ActionFunctionArgs) {
       userId: session.user.id
     }
   });
-  
+
   return redirect('/success');
 }
 
@@ -146,33 +152,35 @@ export default function MyForm() {
 ```
 
 ### Custom Hook
+
 ```typescript
 // app/hooks/useMyData.ts
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 export function useMyData(id: string) {
   const [data, setData] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
+
   useEffect(() => {
     fetch(`/api/data/${id}`)
-      .then(res => res.json())
-      .then(data => {
+      .then((res) => res.json())
+      .then((data) => {
         setData(data);
         setLoading(false);
       })
-      .catch(err => {
+      .catch((err) => {
         setError(err);
         setLoading(false);
       });
   }, [id]);
-  
+
   return { data, loading, error };
 }
 ```
 
 ### Reusable Component
+
 ```typescript
 // app/components/MyCard.tsx
 interface MyCardProps {
@@ -184,7 +192,7 @@ interface MyCardProps {
 
 export function MyCard({ title, description, children, onClick }: MyCardProps) {
   return (
-    <div 
+    <div
       className="p-4 rounded-lg bg-card shadow-md hover:shadow-lg transition-shadow cursor-pointer"
       onClick={onClick}
     >
@@ -197,6 +205,7 @@ export function MyCard({ title, description, children, onClick }: MyCardProps) {
 ```
 
 ### Context Provider
+
 ```typescript
 // app/store/MyContext.tsx
 import { createContext, useContext, useState, ReactNode } from 'react';
@@ -210,7 +219,7 @@ const MyContext = createContext<MyContextType | undefined>(undefined);
 
 export function MyProvider({ children }: { children: ReactNode }) {
   const [value, setValue] = useState('');
-  
+
   return (
     <MyContext.Provider value={{ value, setValue }}>
       {children}
@@ -228,112 +237,116 @@ export function useMyContext() {
 ```
 
 ### Database Query (Prisma)
+
 ```typescript
 // Find one
 const user = await prisma.user.findUnique({
-  where: { id: userId }
+  where: { id: userId },
 });
 
 // Find many with filters
 const courses = await prisma.course.findMany({
   where: {
     majorId: majorId,
-    semester: { gte: 1, lte: 6 }
+    semester: { gte: 1, lte: 6 },
   },
   include: {
-    major: true
+    major: true,
   },
   orderBy: {
-    semester: 'asc'
-  }
+    semester: "asc",
+  },
 });
 
 // Create
 const newCourse = await prisma.course.create({
   data: {
-    code: 'CS101',
-    title_de: 'Informatik',
-    title_en: 'Computer Science',
+    code: "CS101",
+    title_de: "Informatik",
+    title_en: "Computer Science",
     credits: 5,
     semester: 1,
-    majorId: majorId
-  }
+    majorId: majorId,
+  },
 });
 
 // Update
 const updatedUser = await prisma.user.update({
   where: { id: userId },
-  data: { firstName: 'John' }
+  data: { firstName: "John" },
 });
 
 // Delete
 await prisma.course.delete({
-  where: { id: courseId }
+  where: { id: courseId },
 });
 
 // Parallel queries
 const [users, courses, grades] = await Promise.all([
   prisma.user.findMany(),
   prisma.course.findMany(),
-  prisma.mark.findMany()
+  prisma.mark.findMany(),
 ]);
 ```
 
 ### API Route
+
 ```typescript
 // api/routes/my-endpoint.ts
-import { json } from 'react-router';
-import { prisma } from '../utils/db';
+import { json } from "react-router";
+import { prisma } from "../utils/db";
 
 export async function GET(request: Request) {
   const url = new URL(request.url);
-  const id = url.searchParams.get('id');
-  
+  const id = url.searchParams.get("id");
+
   const data = await prisma.model.findUnique({
-    where: { id }
+    where: { id },
   });
-  
+
   if (!data) {
-    return json({ error: 'Not found' }, { status: 404 });
+    return json({ error: "Not found" }, { status: 404 });
   }
-  
+
   return json({ data });
 }
 
 export async function POST(request: Request) {
   const body = await request.json();
-  
+
   const created = await prisma.model.create({
-    data: body
+    data: body,
   });
-  
+
   return json({ data: created }, { status: 201 });
 }
 ```
 
 ### Toast Notifications
+
 ```typescript
-import { toast } from '~/utils/toast';
+import { toast } from "~/utils/toast";
 
 // Success
-toast.success('Operation successful!');
+toast.success("Operation successful!");
 
 // Error
-toast.error('Something went wrong');
+toast.error("Something went wrong");
 
 // Info
-toast.info('Information message');
+toast.info("Information message");
 
 // With custom options
-toast.success('Saved!', {
-  position: 'bottom-right',
-  autoClose: 5000
+toast.success("Saved!", {
+  position: "bottom-right",
+  autoClose: 5000,
 });
 ```
 
-## 🎨 Styling Patterns
+## Styling Patterns
 
 ### Responsive Grid
+
 ```typescript
 <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
   {items.map(item => <ItemCard key={item.id} item={item} />)}
@@ -341,6 +354,7 @@ toast.success('Saved!', {
 ```
 
 ### Dark Mode Support
+
 ```typescript
 <div className="bg-white dark:bg-gray-900 text-gray-900 dark:text-white">
   Content adapts to theme
@@ -348,6 +362,7 @@ toast.success('Saved!', {
 ```
 
 ### Glassmorphism Effect
+
 ```typescript
 <div className="backdrop-blur-md bg-white/10 dark:bg-black/20 border border-white/20">
   Glass effect
@@ -355,6 +370,7 @@ toast.success('Saved!', {
 ```
 
 ### Hover Effects
+
 ```typescript
 <div className="transition-all hover:shadow-lg hover:scale-105">
   Hover me
@@ -362,6 +378,7 @@ toast.success('Saved!', {
 ```
 
 ### Loading State
+
 ```typescript
 {loading ? (
   <LoadingSpinner />
@@ -370,9 +387,10 @@ toast.success('Saved!', {
 )}
 ```
 
-## 🔐 Authentication Patterns
+## Authentication Patterns
 
 ### Protected Route Loader
+
 ```typescript
 export async function loader({ request }: LoaderFunctionArgs) {
   const session = await requireAuth(request);
@@ -382,44 +400,47 @@ export async function loader({ request }: LoaderFunctionArgs) {
 ```
 
 ### Login Action
+
 ```typescript
 export async function action({ request }: ActionFunctionArgs) {
   const formData = await request.formData();
-  const username = formData.get('username') as string;
-  const password = formData.get('password') as string;
-  
+  const username = formData.get("username") as string;
+  const password = formData.get("password") as string;
+
   const user = await prisma.user.findUnique({ where: { username } });
-  if (!user || !await bcrypt.compare(password, user.password)) {
-    return json({ error: 'Invalid credentials' }, { status: 401 });
+  if (!user || !(await bcrypt.compare(password, user.password))) {
+    return json({ error: "Invalid credentials" }, { status: 401 });
   }
-  
+
   const token = await createSession(user.id);
-  
+
   return json(
     { success: true },
     {
       headers: {
-        'Set-Cookie': `session=${token}; HttpOnly; Path=/; Max-Age=604800`
-      }
-    }
+        "Set-Cookie": `session=${token}; HttpOnly; Path=/; Max-Age=604800`,
+      },
+    },
   );
 }
 ```
 
 ### Get Current User
+
 ```typescript
 import { useAuth } from '~/hooks/useAuth';
 
 function MyComponent() {
   const session = useAuth();
-  
+
   return <div>Welcome, {session?.user.firstName}</div>;
 }
 ```
 
-## 📊 Common Queries
+## Common Queries
 
 ### Get User's Grades
+
 ```typescript
 const grades = await prisma.mark.findMany({
   where: { userId: session.user.id },
@@ -428,80 +449,88 @@ const grades = await prisma.mark.findMany({
       select: {
         code: true,
         title_de: true,
-        title_en: true
-      }
-    }
+        title_en: true,
+      },
+    },
   },
-  orderBy: { examDate: 'desc' }
+  orderBy: { examDate: "desc" },
 });
 ```
 
 ### Get Courses by Semester
+
 ```typescript
 const courses = await prisma.course.findMany({
   where: {
     semester: semesterNumber,
-    majorId: majorId
+    majorId: majorId,
   },
   include: {
-    major: true
-  }
+    major: true,
+  },
 });
 ```
 
 ### Create Task with Due Date
+
 ```typescript
 const task = await prisma.studentTask.create({
   data: {
-    title: 'Complete Assignment',
-    description: 'Submit the final project',
-    dueDate: new Date('2026-03-15'),
-    kind: 'SUBMISSION',
-    userId: session.user.id
-  }
+    title: "Complete Assignment",
+    description: "Submit the final project",
+    dueDate: new Date("2026-03-15"),
+    kind: "SUBMISSION",
+    userId: session.user.id,
+  },
 });
 ```
 
-## 🔍 Debugging Tips
+## Debugging Tips
 
 ### Log Request Details
+
 ```typescript
-console.log('Request URL:', request.url);
-console.log('Request Method:', request.method);
-console.log('Headers:', Object.fromEntries(request.headers));
+console.log("Request URL:", request.url);
+console.log("Request Method:", request.method);
+console.log("Headers:", Object.fromEntries(request.headers));
 ```
 
 ### Log Database Query
+
 ```typescript
 const users = await prisma.user.findMany();
-console.log('Found users:', users.length);
-console.log('Users:', JSON.stringify(users, null, 2));
+console.log("Found users:", users.length);
+console.log("Users:", JSON.stringify(users, null, 2));
 ```
 
 ### Check Environment
+
 ```typescript
-console.log('NODE_ENV:', process.env.NODE_ENV);
-console.log('DATABASE_URL:', process.env.DATABASE_URL ? 'Set' : 'Not set');
+console.log("NODE_ENV:", process.env.NODE_ENV);
+console.log("DATABASE_URL:", process.env.DATABASE_URL ? "Set" : "Not set");
 ```
 
 ### Prisma Debug Mode
+
 ```bash
 # Enable query logging
 DEBUG="prisma:query" npm run dev
 ```
 
-## ⚡ Performance Tips
+## Performance Tips
 
 ### Parallel Data Fetching
+
 ```typescript
 const [courses, grades, tasks] = await Promise.all([
   prisma.course.findMany(),
   prisma.mark.findMany({ where: { userId } }),
-  prisma.studentTask.findMany({ where: { userId } })
+  prisma.studentTask.findMany({ where: { userId } }),
 ]);
 ```
 
 ### Memoize Expensive Calculations
+
 ```typescript
 const average = useMemo(() => {
   return calculateAverage(grades);
@@ -509,6 +538,7 @@ const average = useMemo(() => {
 ```
 
 ### Debounce User Input
+
 ```typescript
 const debouncedSearch = useDebounce(searchQuery, 300);
 
@@ -520,6 +550,7 @@ useEffect(() => {
 ```
 
 ### Lazy Load Components
+
 ```typescript
 const HeavyComponent = lazy(() => import('./HeavyComponent'));
 
@@ -528,22 +559,28 @@ const HeavyComponent = lazy(() => import('./HeavyComponent'));
 </Suspense>
 ```
 
-## 🐛 Common Issues & Solutions
+## Common Issues & Solutions
 
 ### Issue: Database connection errors
+
 **Solution**: Check DATABASE_URL in .env and ensure PostgreSQL is running
 
 ### Issue: Prisma client not found
+
 **Solution**: Run `npx prisma generate`
 
 ### Issue: Session not persisting
+
 **Solution**: Check cookie settings and ensure HttpOnly cookies are enabled
 
 ### Issue: TypeScript errors
+
 **Solution**: Run `npm run typecheck` and fix type issues
 
 ### Issue: Build fails
+
 **Solution**: Clear cache and rebuild
+
 ```bash
 rm -rf node_modules package-lock.json
 npm install
@@ -551,7 +588,7 @@ npx prisma generate
 npm run build
 ```
 
-## 📚 Additional Resources
+## Additional Resources
 
 - [Full Documentation Index](./DOCS_INDEX.md)
 - [Code Wiki](./CODE_WIKI.md)
