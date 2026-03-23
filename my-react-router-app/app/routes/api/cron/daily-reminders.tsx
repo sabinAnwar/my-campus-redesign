@@ -298,7 +298,7 @@ function getSessionTokenFromRequest(request: Request): string | null {
         .split("; ")
         .map((c) => c.trim())
         .filter(Boolean)
-        .map((c) => {}),
+        .map((c) => c.split("=") as [string, string]),
     ) as Record<string, string>;
     const headerToken =
       request.headers.get("x-session-token") ||
