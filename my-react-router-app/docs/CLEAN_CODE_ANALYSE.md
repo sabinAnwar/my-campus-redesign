@@ -1,13 +1,13 @@
 # Clean-Code-Analyse des IU Student Plattform MVP
 
 > **Wissenschaftliche Dokumentation der Anwendung von Clean-Code-Prinzipien**  
-> Basierend auf Martin, R. C. (2009) und Fowler, M. (2018)
+> Basierend auf Martin, R. C. (2008) und Fowler, M. (2018)
 
 ---
 
 ## 1. Einleitung
 
-Diese Dokumentation analysiert die Implementierung von Clean-Code-Prinzipien im IU Student Plattform MVP. Die Analyse folgt den etablierten Standards nach Robert C. Martin (_Clean Code: A Handbook of Agile Software Craftsmanship_, 2009) und Martin Fowler (_Refactoring: Improving the Design of Existing Code_, 2018).
+Diese Dokumentation analysiert die Implementierung von Clean-Code-Prinzipien im IU Student Plattform MVP. Die Analyse folgt den etablierten Standards nach Robert C. Martin (_Clean Code: A Handbook of Agile Software Craftsmanship_, 2008) und Martin Fowler (_Refactoring: Improving the Design of Existing Code_, 2018).
 
 ---
 
