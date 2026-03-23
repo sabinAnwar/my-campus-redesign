@@ -53,33 +53,39 @@ Before you begin, ensure you have:
 ### Setting Up the Development Environment
 
 1. **Fork the repository**
+
    ```bash
    # Click "Fork" on GitHub
    ```
 
 2. **Clone your fork**
+
    ```bash
    git clone https://github.com/YOUR_USERNAME/my-campus-redesign.git
    cd my-campus-redesign/my-react-router-app
    ```
 
 3. **Add upstream remote**
+
    ```bash
    git remote add upstream https://github.com/sabinAnwar/my-campus-redesign.git
    ```
 
 4. **Install dependencies**
+
    ```bash
    npm install
    ```
 
 5. **Set up environment variables**
+
    ```bash
    cp .env.example .env
    # Edit .env with your local settings
    ```
 
 6. **Set up the database**
+
    ```bash
    npx prisma generate
    npx prisma db push
@@ -150,6 +156,7 @@ git rebase upstream/main
 - Use type inference where appropriate
 
 **Example**:
+
 ```typescript
 // Good
 interface User {
@@ -176,6 +183,7 @@ function getUser(id: any): any {
 - Use proper prop types
 
 **Example**:
+
 ```typescript
 // Good
 interface CourseCardProps {
@@ -245,13 +253,14 @@ npm run lint:fix
 - Ensure accessibility
 
 **Example**:
+
 ```typescript
 <div className="
-  p-4 
-  rounded-lg 
-  bg-white dark:bg-gray-800 
-  shadow-md 
-  hover:shadow-lg 
+  p-4
+  rounded-lg
+  bg-white dark:bg-gray-800
+  shadow-md
+  hover:shadow-lg
   transition-shadow
   md:p-6
 ">
@@ -353,32 +362,39 @@ docs(api): update API endpoint documentation
 
 ```markdown
 ## Description
+
 Brief description of the changes
 
 ## Type of Change
+
 - [ ] Bug fix
 - [ ] New feature
 - [ ] Breaking change
 - [ ] Documentation update
 
 ## Changes Made
+
 - Change 1
 - Change 2
 - Change 3
 
 ## Testing
+
 - [ ] Local testing completed
 - [ ] Unit tests added/updated
 - [ ] Integration tests added/updated
 
 ## Screenshots (if applicable)
+
 Add screenshots for UI changes
 
 ## Related Issues
+
 Closes #123
 Relates to #456
 
 ## Checklist
+
 - [ ] Code follows project style guidelines
 - [ ] Self-review completed
 - [ ] Comments added for complex code
@@ -427,22 +443,22 @@ npm test -- --coverage
 
 ```typescript
 // tests/utils/gradeUtils.test.ts
-import { calculateAverage } from '../app/utils/gradeUtils';
+import { calculateAverage } from "../app/utils/gradeUtils";
 
-describe('calculateAverage', () => {
-  it('calculates weighted average correctly', () => {
+describe("calculateAverage", () => {
+  it("calculates weighted average correctly", () => {
     const marks = [
       { value: 1.7, credits: 5 },
       { value: 2.3, credits: 5 },
     ];
     expect(calculateAverage(marks)).toBe(2.0);
   });
-  
-  it('returns 0 for empty array', () => {
+
+  it("returns 0 for empty array", () => {
     expect(calculateAverage([])).toBe(0);
   });
-  
-  it('handles single grade', () => {
+
+  it("handles single grade", () => {
     const marks = [{ value: 1.5, credits: 5 }];
     expect(calculateAverage(marks)).toBe(1.5);
   });
@@ -470,9 +486,9 @@ describe('Courses Route', () => {
         })
       }
     ]);
-    
+
     render(<RemixStub initialEntries={['/courses']} />);
-    
+
     expect(screen.getByText('Course 1')).toBeInTheDocument();
   });
 });
@@ -481,6 +497,7 @@ describe('Courses Route', () => {
 ### Test Coverage
 
 Aim for:
+
 - **80%+ overall coverage**
 - **100% coverage for critical paths** (auth, payments, data integrity)
 - **Unit tests** for utilities and hooks
@@ -499,13 +516,13 @@ Add comments for complex logic:
 // Formula: Σ(grade × credits) / Σ(credits)
 export function calculateAverage(marks: Mark[]): number {
   if (marks.length === 0) return 0;
-  
+
   const totalWeightedGrade = marks.reduce(
     (sum, mark) => sum + mark.value * mark.credits,
-    0
+    0,
   );
   const totalCredits = marks.reduce((sum, mark) => sum + mark.credits, 0);
-  
+
   return totalWeightedGrade / totalCredits;
 }
 ```
@@ -529,6 +546,7 @@ async function getUser(userId: string): Promise<User | null> {
 ### README Updates
 
 Update relevant README files when:
+
 - Adding new features
 - Changing setup process
 - Updating dependencies
@@ -537,6 +555,7 @@ Update relevant README files when:
 ### Documentation Files
 
 Keep these up to date:
+
 - `README.md` - Project overview
 - `CODE_WIKI.md` - Technical documentation
 - `API.md` - API endpoints
@@ -573,6 +592,7 @@ A clear description of the bug
 
 **To Reproduce**
 Steps to reproduce:
+
 1. Go to '...'
 2. Click on '...'
 3. See error
@@ -584,6 +604,7 @@ What you expected to happen
 Add screenshots if applicable
 
 **Environment**
+
 - OS: [e.g., macOS, Windows, Linux]
 - Browser: [e.g., Chrome, Firefox]
 - Node version: [e.g., 18.17.0]
@@ -602,6 +623,6 @@ By contributing, you agree that your contributions will be licensed under the sa
 
 ## Thank You!
 
-Your contributions make this project better for everyone. I appreciate your time and effort! 🎉
+Your contributions make this project better for everyone. I appreciate your time and effort!
 
 For questions about contributing, feel free to open an issue or reach out to the maintainers.
