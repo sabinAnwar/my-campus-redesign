@@ -286,7 +286,7 @@ my-react-router-app/
 
 ## 5. Referenzen
 
-1. Martin, R. C. (2009). _Clean Code: A Handbook of Agile Software Craftsmanship_. Prentice Hall.
+1. Martin, R. C. (2008). _Clean Code: A Handbook of Agile Software Craftsmanship_. Prentice Hall.
 2. Fowler, M. (2018). _Refactoring: Improving the Design of Existing Code_ (2nd ed.). Addison-Wesley.
 3. Martin, R. C. (2017). _Clean Architecture: A Craftsman's Guide to Software Structure and Design_. Prentice Hall.
 
