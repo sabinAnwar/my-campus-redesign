@@ -292,5 +292,5 @@ my-react-router-app/
 
 ---
 
-_Dokumentation erstellt am: 02. Januar 2026_  
-_Projekt: IU International University - Student Plattform MVP_
+_Dokumentation erstellt am: 23. März 2026_  
+_Projekt: IU International University - Sabin El Anwar_
