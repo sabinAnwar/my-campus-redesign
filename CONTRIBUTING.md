@@ -568,7 +568,7 @@ Keep these up to date:
 
 ### Resources
 
-- **Documentation**: Check the [Code Wiki](../CODE_WIKI.md)
+- **Documentation**: Check the [Code Wiki](./CODE_WIKI.md)
 - **Issues**: Browse existing [GitHub Issues](https://github.com/sabinAnwar/my-campus-redesign/issues)
 - **Discussions**: Join [GitHub Discussions](https://github.com/sabinAnwar/my-campus-redesign/discussions)
 

@@ -72,7 +72,6 @@ Welcome to the My Campus Redesign documentation! This page provides quick access
 
 ### Core Features
 
-- **[Implementation Guide](./my-react-router-app/Implementierung_Thesis_Begleitdokument.md)** - Thesis implementation documentation (German)
 - **[Requirements & Code Snippets](./my-react-router-app/docs/ANFORDERUNGEN_CODE_SNIPPETS.md)** - Feature requirements with code examples
 - **[Clean Code Analysis](./my-react-router-app/docs/CLEAN_CODE_ANALYSE.md)** - Code quality analysis
 - **[Login MVP](./my-react-router-app/docs/LOGIN_MVP.md)** - Authentication implementation details
