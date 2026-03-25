@@ -161,11 +161,12 @@ export const loader = async ({ request }: { request: Request }) => {
     const currentWeekKey = getIsoWeekKey(now);
 
     let sent = 0;
-    // Use shared transporter (Gmail only)
-    const transporter = await createTransporter();
-
     // Default preview urls array, although createTransporter (Gmail) won't generate test URLs
     const previewUrls: string[] = [];
+    // Lazily initialised on first email send so a transporter failure doesn't
+    // crash the whole cron run and return 500 when no emails need sending.
+    let transporter: Awaited<ReturnType<typeof createTransporter>> | null = null;
+    let transporterError: unknown = null;
 
     for (const u of users) {
       const tz = u.reminder_timezone || "Europe/Berlin";
@@ -198,6 +199,20 @@ export const loader = async ({ request }: { request: Request }) => {
         },
       });
       if (submitted) {
+        continue;
+      }
+
+      // Initialise the transporter once, the first time an email is actually needed.
+      if (!transporter && !transporterError) {
+        try {
+          transporter = await createTransporter();
+        } catch (err) {
+          transporterError = err;
+          console.error("Failed to create email transporter:", err);
+        }
+      }
+      if (!transporter) {
+        console.error(`Skipping reminder for ${u.email}: email transporter unavailable`);
         continue;
       }
 
@@ -259,6 +274,9 @@ export const loader = async ({ request }: { request: Request }) => {
       }
     }
 
+    if (transporterError) {
+      console.error(" daily-reminders (RR) transporter unavailable – no emails sent", transporterError);
+    }
     console.log(" daily-reminders (RR) complete", {
       sent,
       usersChecked: users.length,
