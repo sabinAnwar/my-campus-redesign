@@ -537,9 +537,9 @@
     }
   },
   "reactRouterConfig": {
-    "appDirectory": "C:/Users/Dell/website-remix-data-base/website-bauen/my-react-router-app/app",
+    "appDirectory": "C:/Dell/mycampus/my-campus-redesign/my-react-router-app/app",
     "basename": "/",
-    "buildDirectory": "C:/Users/Dell/website-remix-data-base/website-bauen/my-react-router-app/build",
+    "buildDirectory": "C:/Dell/mycampus/my-campus-redesign/my-react-router-app/build",
     "future": {
       "unstable_optimizeDeps": false,
       "unstable_subResourceIntegrity": false,

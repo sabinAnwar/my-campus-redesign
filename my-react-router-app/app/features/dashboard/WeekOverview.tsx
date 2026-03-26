@@ -66,19 +66,19 @@ export function WeekOverview({ weekDays, t }: WeekOverviewProps) {
               </div>
               <div className="space-y-1 sm:space-y-1.5 min-h-[50px] sm:min-h-[60px]">
                 {day.events.length === 0 ? (
-                  <p className="text-[10px] text-muted-foreground dark:text-slate-200 text-center italic">
+                  <p className="text-[10px] text-foreground/75 dark:text-slate-100 text-center italic">
                     Keine Termine
                   </p>
                 ) : (
                   day.events.slice(0, 2).map((event, eIdx) => (
                     <div
                       key={eIdx}
-                      className={`p-1.5 rounded-lg text-[10px] ${
+                      className={`p-1.5 rounded-lg text-[10px] font-medium ${
                         event.type === "Vorlesung"
-                          ? "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white"
+                          ? "bg-iu-blue text-white shadow-sm"
                           : event.type === "Workshop"
-                            ? "bg-iu-blue/10 text-iu-blue dark:bg-iu-blue dark:text-white"
-                            : "bg-iu-orange/10 text-iu-orange dark:bg-iu-orange dark:text-white"
+                            ? "bg-iu-blue text-white shadow-sm"
+                            : "bg-iu-brown text-white shadow-sm"
                       }`}
                     >
                       <p className="font-medium truncate">{event.time}</p>

@@ -38,7 +38,7 @@ export function GradesWidget({ averageGrade, language, t }: GradesWidgetProps) {
                 {gradeLabel}
               </div>
             </div>
-            <div className="rounded-2xl bg-iu-green/10 text-iu-green dark:bg-iu-green dark:text-white px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest border border-iu-green/20">
+            <div className="rounded-2xl bg-iu-indigo text-white px-4 py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest border border-iu-indigo/30 shadow-sm">
               {t.average}
             </div>
           </div>

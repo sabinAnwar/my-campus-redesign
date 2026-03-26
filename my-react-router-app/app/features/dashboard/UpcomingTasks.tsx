@@ -82,8 +82,8 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
                     <span
                       className={`w-fit px-3 py-0.5 rounded-full text-[11px] font-black uppercase tracking-widest border leading-none ${
                         assignment.color === "blue"
-                          ? "bg-iu-blue/10 text-iu-blue border-iu-blue/20 dark:bg-iu-blue dark:text-white"
-                          : "bg-iu-orange/10 text-iu-orange border-iu-orange/20 dark:bg-iu-orange dark:text-white"
+                          ? "bg-iu-blue text-white border-iu-blue/30 shadow-sm"
+                          : "bg-iu-brown text-white border-iu-brown/30 shadow-sm"
                       }`}
                     >
                       {assignment.kind}
@@ -97,7 +97,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
                       className={`text-[9px] sm:text-[10px] font-black uppercase tracking-widest mt-0.5 shrink-0 ${
                         assignment.daysLeft <= 3
                           ? "text-iu-red"
-                          : "text-muted-foreground dark:text-slate-200"
+                          : "text-foreground/70 dark:text-slate-100"
                       }`}
                     >
                       {assignment.dueDate}
@@ -108,7 +108,7 @@ export function UpcomingTasks({ upcomingAssignments, language, t }: UpcomingTask
             ))
           ) : (
             <div className="text-center py-10">
-              <p className="text-muted-foreground dark:text-slate-200 font-medium italic">
+              <p className="text-foreground/75 dark:text-slate-100 font-medium italic">
                 {language === "de"
                   ? "Keine anstehenden Aufgaben"
                   : "No upcoming tasks"}

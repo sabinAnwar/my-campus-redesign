@@ -87,7 +87,7 @@ export function NewsSlider({
               >
                 {newsItems[currentNewsIndex]?.category || "News"}
               </span>
-              <span className="hidden xs:block text-[8px] sm:text-[9px] md:text-[9px] lg:text-[10px] font-black text-muted-foreground dark:text-slate-200 uppercase tracking-widest mt-0.5">
+              <span className="hidden xs:block text-[8px] sm:text-[9px] md:text-[9px] lg:text-[10px] font-black text-foreground/70 dark:text-slate-100 uppercase tracking-widest mt-0.5">
                 {new Date(
                   newsItems[currentNewsIndex]?.published_at
                 ).toLocaleDateString("de-DE", {
@@ -147,7 +147,7 @@ export function NewsSlider({
             <Link
               to="/news"
               onClick={(e) => e.stopPropagation()}
-              className="hidden md:flex lg:flex items-center gap-2 text-[10px] lg:text-xs text-iu-blue font-black uppercase tracking-widest hover:translate-x-1 transition-transform dark:text-white cursor-pointer"
+              className="hidden md:flex lg:flex items-center gap-2 text-[10px] lg:text-xs text-iu-indigo font-black uppercase tracking-widest hover:translate-x-1 transition-transform dark:text-slate-50 cursor-pointer"
             >
               LESEN <ArrowRight className="w-3.5 h-3.5 lg:w-4 lg:h-4" />
             </Link>

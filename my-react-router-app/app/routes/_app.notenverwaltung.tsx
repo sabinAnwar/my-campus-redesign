@@ -624,14 +624,16 @@ export default function GradesDashboardIU() {
                               </td>
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 border-y border-border/50 group-hover/row:border-iu-blue/30">
                                 <span
-                                  className={`inline-flex items-center gap-1 rounded px-2 py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wide shadow-sm ${
+                                  className={`inline-flex items-center gap-1 rounded px-2 py-1 text-[8px] sm:text-[9px] font-bold uppercase tracking-wide shadow-sm text-white border ${
                                     m.status === "P"
-                                      ? "bg-iu-green/10 dark:bg-iu-green text-iu-green dark:text-white border border-iu-green/20 dark:border-iu-green"
+                                      ? "bg-iu-green border-iu-green/30"
                                       : m.status === "F"
-                                        ? "bg-iu-red/10 dark:bg-iu-red text-iu-red dark:text-white border border-iu-red/20 dark:border-iu-red"
+                                        ? "bg-iu-red border-iu-red/30"
                                         : m.status === "M"
-                                          ? "bg-iu-orange/10 dark:bg-iu-orange text-iu-orange dark:text-white border border-iu-orange/20 dark:border-iu-orange"
-                                          : "bg-iu-blue/10 dark:bg-iu-blue text-iu-blue dark:text-white border border-iu-blue/20 dark:border-iu-blue"
+                                          ? "bg-iu-brown border-iu-brown/30"
+                                          : m.status === "CE"
+                                            ? "bg-iu-indigo border-iu-indigo/30"
+                                            : "bg-iu-blue border-iu-blue/30"
                                   }`}
                                 >
                                   {m.status === "P" && (
@@ -657,10 +659,10 @@ export default function GradesDashboardIU() {
                                       m.note <= 1.5
                                         ? "bg-iu-blue text-white"
                                         : m.note <= 2.5
-                                          ? "bg-iu-purple text-white"
+                                          ? "bg-iu-indigo text-white"
                                           : m.note <= 3.5
-                                            ? "bg-iu-orange text-white"
-                                            : "bg-muted-foreground text-white"
+                                            ? "bg-iu-brown text-white"
+                                            : "bg-slate-900 text-white dark:bg-slate-100 dark:text-slate-900"
                                     }`}
                                   >
                                     {m.note.toFixed(1)}
@@ -670,18 +672,18 @@ export default function GradesDashboardIU() {
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-center border-y border-border/50 group-hover/row:border-iu-blue/30">
                                 <div className="text-xs sm:text-sm font-medium text-foreground">
                                   {m.credits}{" "}
-                                  <span className="text-[8px] text-muted-foreground uppercase tracking-wide">
+                                  <span className="text-[8px] text-foreground/65 uppercase tracking-wide">
                                     ECTS
                                   </span>
                                 </div>
                               </td>
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 border-y border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground">
+                                <div className="text-[10px] sm:text-xs font-medium text-foreground/70">
                                   {m.datum}
                                 </div>
                               </td>
                               <td className="px-2 sm:px-4 py-2.5 sm:py-3 text-right rounded-r-lg border-y border-r border-border/50 group-hover/row:border-iu-blue/30">
-                                <div className="text-[10px] sm:text-xs font-medium text-muted-foreground italic">
+                                <div className="text-[10px] sm:text-xs font-medium text-foreground/70 italic">
                                   {m.bewertung || "—"}
                                 </div>
                               </td>

@@ -14,20 +14,20 @@ interface GradesStatsGridProps {
 
 const COLOR_MAP: Record<string, { bg: string; text: string }> = {
   "iu-blue": {
-    bg: "bg-iu-blue/10 dark:bg-iu-blue",
-    text: "text-iu-blue dark:text-white",
+    bg: "bg-iu-blue",
+    text: "text-white",
   },
   "iu-purple": {
-    bg: "bg-iu-purple/10 dark:bg-iu-purple",
-    text: "text-iu-purple dark:text-white",
+    bg: "bg-iu-indigo",
+    text: "text-white",
   },
   "iu-green": {
-    bg: "bg-iu-green/10 dark:bg-iu-green",
-    text: "text-iu-green dark:text-white",
+    bg: "bg-iu-green",
+    text: "text-white",
   },
   "iu-red": {
-    bg: "bg-iu-red/10 dark:bg-iu-red",
-    text: "text-iu-red dark:text-white",
+    bg: "bg-iu-red",
+    text: "text-white",
   },
 };
 
@@ -50,7 +50,7 @@ export function GradesStatsGrid({ stats }: GradesStatsGridProps) {
               >
                 <stat.icon className={`h-5 w-5 sm:h-6 sm:w-6 ${colors.text}`} />
               </div>
-              <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase tracking-wide mb-0.5">
+              <p className="text-[10px] sm:text-xs font-bold text-foreground/75 uppercase tracking-wide mb-0.5">
                 {stat.label}
               </p>
               <p className="text-2xl sm:text-3xl font-black text-foreground tracking-tight">

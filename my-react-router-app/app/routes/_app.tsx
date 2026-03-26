@@ -169,8 +169,8 @@ export default function AppShell() {
 
                 {/* Campus Indicator */}
                 <div className="hidden xl:flex flex-col justify-center h-full">
-                  <div className="text-xs font-black text-foreground dark:text-white flex items-center gap-1.5 leading-none uppercase tracking-widest">
-                    <span className="w-1.5 h-1.5 rounded-full bg-iu-blue dark:bg-iu-blue shadow-[0_0_8px_rgba(16,185,129,0.5)]" />
+                  <div className="text-xs font-black text-iu-indigo dark:text-white flex items-center gap-1.5 leading-none uppercase tracking-widest">
+                    <span className="w-1.5 h-1.5 rounded-full bg-iu-indigo dark:bg-white shadow-[0_0_8px_rgba(30,38,109,0.35)]" />
                     {shellText.campus}
                   </div>
                 </div>
