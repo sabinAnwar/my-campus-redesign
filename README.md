@@ -157,7 +157,7 @@ Language switching is available in the user interface.
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
+I welcome contributions! Please see my [Contributing Guide](./CONTRIBUTING.md) for details on:
 - Code of conduct
 - Development process
 - Pull request guidelines
