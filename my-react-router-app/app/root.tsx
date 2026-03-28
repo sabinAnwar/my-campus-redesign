@@ -17,11 +17,12 @@ import { ThemeProvider } from "./store/ThemeContext";
 import { LanguageProvider } from "./store/LanguageContext";
 
 // ---------------------------------------------
-// DOCUMENT LAYOUT 
+// DOCUMENT LAYOUT
 // ---------------------------------------------
 export const links: Route.LinksFunction = () => [
   // Favicon
-  { rel: "icon", href: "/favicon.ico", type: "image/x-icon" },
+  { rel: "icon", href: "/favicon-iu.svg?v=2", type: "image/svg+xml" },
+  { rel: "shortcut icon", href: "/favicon-iu.svg?v=2", type: "image/svg+xml" },
   // Preconnect to font servers early
   { rel: "preconnect", href: "https://fonts.googleapis.com" },
   {
@@ -50,7 +51,10 @@ export function Layout({ children }: { children: React.ReactNode }) {
       <head>
         <meta charSet="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
-        <meta name="description" content="IU Student Plattform - Manage your courses, grades, and academic journey" />
+        <meta
+          name="description"
+          content="IU Student Plattform - Manage your courses, grades, and academic journey"
+        />
         <meta name="theme-color" content="#0f172a" />
         {/* DNS prefetch for external resources */}
         <link rel="dns-prefetch" href="https://fonts.googleapis.com" />
@@ -75,25 +79,23 @@ export function Layout({ children }: { children: React.ReactNode }) {
 // ---------------------------------------------
 export default function App() {
   return (
-   
-      <ThemeProvider defaultTheme="system" storageKey="iu-theme">
-        <LanguageProvider storageKey="iu-language">
-          <ToastContainer 
-            position="top-right"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="colored"
-          />
-          <Outlet />
-        </LanguageProvider>
-      </ThemeProvider>
-  
+    <ThemeProvider defaultTheme="system" storageKey="iu-theme">
+      <LanguageProvider storageKey="iu-language">
+        <ToastContainer
+          position="top-right"
+          autoClose={5000}
+          hideProgressBar={false}
+          newestOnTop
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="colored"
+        />
+        <Outlet />
+      </LanguageProvider>
+    </ThemeProvider>
   );
 }
 
@@ -111,7 +113,11 @@ export function ErrorBoundary({ error }: Route.ErrorBoundaryProps) {
       error.status === 404
         ? "The requested page could not be found."
         : error.statusText || details;
-  } else if (process.env.NODE_ENV !== "production" && error && error instanceof Error) {
+  } else if (
+    process.env.NODE_ENV !== "production" &&
+    error &&
+    error instanceof Error
+  ) {
     details = error.message;
     stack = error.stack;
   }

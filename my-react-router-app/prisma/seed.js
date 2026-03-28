@@ -12,7 +12,6 @@ const SALT_ROUNDS = 10;
 //
 // OFFICIAL IU CURRICULUM DATA (English + German)
 // Based on IU Internationale Hochschule Wirtschaftsinformatik (Dual) 
-// FIXED: Exactly 5 courses per semester for 7 semesters = 35 courses total
 //
 
 const CURRICULUM = {
