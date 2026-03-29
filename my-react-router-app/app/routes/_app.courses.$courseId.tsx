@@ -368,7 +368,7 @@ export const loader = async ({
       ...sampleResources.filter((r) => !existingIds.has(r.id)),
     ];
   }
-  const tasks = await withTimeout(
+  const tasks = (await withTimeout(
     prisma.studentTask.findMany({
       where: {
         user_id: typedUser.id,
@@ -386,7 +386,7 @@ export const loader = async ({
           : "Course data is unavailable right now.";
     }
     return [];
-  });
+  })) as any[];
 
   let baseSubmissions: CourseSubmission[] = tasks
     .filter(
@@ -446,7 +446,7 @@ export const loader = async ({
   return {
     submissions,
     course: courseData,
-    user_id: user.id,
+    user_id: typedUser.id,
     studiengangName: (user as any).major?.name || "IU Studium",
     error: errorMessage,
   };
@@ -517,8 +517,8 @@ export default function CourseDetail() {
       ...s,
       status: savedStatus[s.id]?.status ?? "pending",
       similarity: savedStatus[s.id]?.similarity,
-      submittedFileName: savedStatus[s.id]?.fileName,
-      submittedFileSize: savedStatus[s.id]?.fileSize,
+      submitted_file_name: savedStatus[s.id]?.fileName,
+      submitted_file_size: savedStatus[s.id]?.fileSize,
     })),
   );
 
@@ -542,8 +542,8 @@ export default function CourseDetail() {
         ...s,
         status: savedStatus[s.id]?.status ?? "pending",
         similarity: savedStatus[s.id]?.similarity,
-        submittedFileName: savedStatus[s.id]?.fileName,
-        submittedFileSize: savedStatus[s.id]?.fileSize,
+        submitted_file_name: savedStatus[s.id]?.fileName,
+        submitted_file_size: savedStatus[s.id]?.fileSize,
       })),
     );
   }, [courseSubmissions, savedStatus]);
@@ -591,8 +591,8 @@ export default function CourseDetail() {
               ...s,
               status: "submitted" as const,
               similarity,
-              submittedFileName: uploadedFile.name,
-              submittedFileSize: uploadedFile.size,
+              submitted_file_name: uploadedFile.name,
+              submitted_file_size: uploadedFile.size,
             }
           : s,
       );
@@ -615,20 +615,20 @@ export default function CourseDetail() {
         }
       > = {};
       const courseKeyBase =
-        selectedSubmission.course || course.title || course.name || "Course";
+        selectedSubmission.course || course?.title || course?.name || "Course";
       updated.forEach((s) => {
         if (s.status === "submitted") {
           persisted[s.id] = {
             status: s.status,
             similarity: s.similarity,
-            fileName: s.submittedFileName,
-            fileSize: s.submittedFileSize,
+            fileName: s.submitted_file_name,
+            fileSize: s.submitted_file_size,
           };
           persistedByCourse[`${courseKeyBase}::${s.title}`] = {
             status: s.status,
             similarity: s.similarity,
-            fileName: s.submittedFileName,
-            fileSize: s.submittedFileSize,
+            fileName: s.submitted_file_name,
+            fileSize: s.submitted_file_size,
           };
         }
       });
