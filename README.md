@@ -2,6 +2,8 @@
 
 A modern, accessible, and feature-rich student Plattform redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
 
+<img width="1004" height="577" alt="image" src="https://github.com/user-attachments/assets/cff4ac5f-8f2e-4380-93a8-8a4eba1216c7" />
+
 ## Overview
 
 This project is a comprehensive redesign of a university campus management system, originally developed as part of a Bachelor's thesis exploring "Vibe Coding" (Agentic Software Engineering). The prototype addresses common pain points in traditional campus Plattforms by providing:
@@ -155,7 +157,7 @@ Language switching is available in the user interface.
 
 ## Contributing
 
-We welcome contributions! Please see our [Contributing Guide](./CONTRIBUTING.md) for details on:
+I welcome contributions! Please see my [Contributing Guide](./CONTRIBUTING.md) for details on:
 - Code of conduct
 - Development process
 - Pull request guidelines
