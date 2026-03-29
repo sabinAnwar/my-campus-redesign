@@ -1,5 +1,10 @@
 import React, { useEffect, useState, useCallback } from "react";
-import { useLoaderData, useNavigate, useParams, useRevalidator } from "react-router-dom";
+import {
+  useLoaderData,
+  useNavigate,
+  useParams,
+  useRevalidator,
+} from "react-router-dom";
 import path from "node:path";
 import fs from "node:fs/promises";
 import {
@@ -18,13 +23,15 @@ import { showErrorToast, showSuccessToast } from "~/utils/toast";
 import { prisma } from "~/services/prisma";
 import { TimeoutError, withTimeout } from "~/utils/loaderUtils";
 import { calculateDaysLeft } from "~/utils/tasksSample";
-import {
-  TRANSLATIONS,
-  getCourseConfig,
-} from "../data/coursesConfig";
+import { TRANSLATIONS, getCourseConfig } from "../data/coursesConfig";
 import { useLanguage } from "~/store/LanguageContext";
 import type { CourseSubmission } from "~/types/course";
-import type { Course, CourseDetailData, CourseResource, VideoResource } from "~/types/courseDetail";
+import type {
+  Course,
+  CourseDetailData,
+  CourseResource,
+  VideoResource,
+} from "~/types/courseDetail";
 
 // New Extractions
 import { COURSE_TYPE_MAP } from "~/config/course";
@@ -107,7 +114,7 @@ export const loader = async ({
       })
       .then((s: any) => s?.user),
     COURSE_TIMEOUT_MS,
-    "Loading user session timed out"
+    "Loading user session timed out",
   ).catch((error) => {
     if (!errorMessage) {
       errorMessage =
@@ -125,7 +132,7 @@ export const loader = async ({
         where: { email: "student.demo@iu-study.org" },
       }),
       COURSE_TIMEOUT_MS,
-      "Loading demo user timed out"
+      "Loading demo user timed out",
     ).catch((error) => {
       if (!errorMessage) {
         errorMessage =
@@ -149,7 +156,9 @@ export const loader = async ({
     });
   }
   const typedUser = user as any;
-  console.log(` Course Loader: User found: ${typedUser.email} (ID: ${typedUser.id})`);
+  console.log(
+    ` Course Loader: User found: ${typedUser.email} (ID: ${typedUser.id})`,
+  );
 
   const courseIdParam = params.courseId || "";
   const courseIdNum = Number(courseIdParam);
@@ -157,21 +166,21 @@ export const loader = async ({
 
   // Fetch course from DB with files
   console.log(` Course Loader: Fetching course with param ${courseIdParam}...`);
-  
+
   const course = await withTimeout(
     prisma.course.findFirst({
-      where: isNumeric 
-        ? { OR: [{ id: courseIdNum }, { code: courseIdParam }] } 
+      where: isNumeric
+        ? { OR: [{ id: courseIdNum }, { code: courseIdParam }] }
         : { code: { equals: courseIdParam, mode: "insensitive" } },
       include: {
         files: {
           where: { user_id: typedUser.id },
         },
-        major: true
+        major: true,
       },
     }),
     COURSE_TIMEOUT_MS,
-    "Loading course data timed out"
+    "Loading course data timed out",
   ).catch((error) => {
     console.error(" Course Loader: course query failed:", error);
     if (!errorMessage) {
@@ -187,11 +196,13 @@ export const loader = async ({
 
   if (!typedCourse) {
     console.warn(` Course Loader: Course ${courseIdParam} not found in DB.`);
-    
+
     // Attempt fallback to static config if not in DB
     const configCourses = getCourseConfig("de");
-    const configMatch = configCourses.find(c => 
-      c.id === courseIdNum || c.code?.toLowerCase() === courseIdParam.toLowerCase()
+    const configMatch = configCourses.find(
+      (c) =>
+        c.id === courseIdNum ||
+        c.code?.toLowerCase() === courseIdParam.toLowerCase(),
     );
 
     if (!configMatch) {
@@ -211,7 +222,8 @@ export const loader = async ({
       name_de: configMatch.title,
       name_en: configMatch.title,
       instructor: "Dozent",
-      description: "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
+      description:
+        "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
       startDate: "01.10.2024",
       endDate: "31.03.2025",
       progress: configMatch.progress || 0,
@@ -220,7 +232,7 @@ export const loader = async ({
       color: configMatch.color || "cyan",
       resources: [],
       code: configMatch.code,
-      name: configMatch.title
+      name: configMatch.title,
     };
 
     return {
@@ -231,7 +243,7 @@ export const loader = async ({
       error: errorMessage,
     };
   }
-  
+
   console.log(` Course Loader: Course found: ${typedCourse.name}`);
 
   // Map database files to UI resources
@@ -255,7 +267,7 @@ export const loader = async ({
     try {
       // Use pre-generated manifest to avoid scanning large directory on Vercel
       const relPaths = (publicStudyManifest as string[]).filter(
-        (p) => !p.endsWith("/.gitkeep") && !p.endsWith(".gitkeep")
+        (p) => !p.endsWith("/.gitkeep") && !p.endsWith(".gitkeep"),
       );
       const publicResources: CourseResource[] = relPaths.map((relPath, idx) => {
         const fileName = relPath.split("/").pop() || relPath;
@@ -276,7 +288,7 @@ export const loader = async ({
     } catch (error) {
       console.warn(
         "Course Loader: failed to attach public study materials from manifest",
-        error
+        error,
       );
     }
   }
@@ -288,7 +300,7 @@ export const loader = async ({
   // Add comprehensive scripts and podcasts for all courses (only if not from database)
   const hasExistingVideos = resources.some((r) => r.type === "video");
   const hasExistingScripts = resources.some((r) => r.type === "script");
-  
+
   if (!hasExistingVideos || !hasExistingScripts) {
     // Generate scripts for each week (only if missing)
     if (!hasExistingScripts) {
@@ -299,7 +311,9 @@ export const loader = async ({
           url: "/uploads/modulhandbuch-winfo.pdf",
           type: "script",
           size: `${(1.2 + Math.random() * 2).toFixed(1)} MB`,
-          date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+          date: formatGermanDate(
+            new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000),
+          ),
         });
       }
     }
@@ -315,7 +329,9 @@ export const loader = async ({
         type: "podcast",
         size: "MP3",
         duration: `${minutes}:${seconds.toString().padStart(2, "0")}`,
-        date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+        date: formatGermanDate(
+          new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000),
+        ),
       });
     }
 
@@ -338,7 +354,9 @@ export const loader = async ({
           type: "video",
           size: "HD",
           duration: `${videoMinutes}:${videoSeconds.toString().padStart(2, "0")}`,
-          date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+          date: formatGermanDate(
+            new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000),
+          ),
         });
       }
     }
@@ -359,7 +377,7 @@ export const loader = async ({
       orderBy: { due_date: "asc" },
     }),
     COURSE_TIMEOUT_MS,
-    "Loading course tasks timed out"
+    "Loading course tasks timed out",
   ).catch((error) => {
     if (!errorMessage) {
       errorMessage =
@@ -372,8 +390,8 @@ export const loader = async ({
 
   let baseSubmissions: CourseSubmission[] = tasks
     .filter(
-      (row: { title: string; kind: string; }) =>
-        !row.title.toLowerCase().includes("klausur") && row.kind !== "KLAUSUR"
+      (row: { title: string; kind: string }) =>
+        !row.title.toLowerCase().includes("klausur") && row.kind !== "KLAUSUR",
     )
     .map((row: any) => ({
       id: row.id,
@@ -386,14 +404,14 @@ export const loader = async ({
       due_date: formatGermanDate(new Date(row.due_date)),
       correction_date: formatGermanDate(
         new Date(
-          new Date(row.due_date).setDate(new Date(row.due_date).getDate() + 14)
-        )
+          new Date(row.due_date).setDate(new Date(row.due_date).getDate() + 14),
+        ),
       ),
       status: "pending",
       similarity: undefined,
       submissions: [],
       days_until_due: calculateDaysLeft(
-        new Date(row.due_date).toISOString().slice(0, 10)
+        new Date(row.due_date).toISOString().slice(0, 10),
       ),
     }));
 
@@ -411,7 +429,9 @@ export const loader = async ({
     name_de: typedCourse.name_de || typedCourse.name,
     name_en: typedCourse.name_en || typedCourse.name,
     instructor: "Dozent",
-    description: typedCourse.description || "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
+    description:
+      typedCourse.description ||
+      "Dieses Modul vermittelt tiefgehende Kenntnisse im Fachbereich.",
     startDate: "01.10.2024",
     endDate: "31.03.2025",
     progress: Number(typedCourse.progress) || 0,
@@ -420,7 +440,7 @@ export const loader = async ({
     color: typedCourse.color || "cyan",
     resources: resources,
     code: typedCourse.code,
-    name: typedCourse.name
+    name: typedCourse.name,
   };
 
   return {
@@ -447,23 +467,29 @@ export default function CourseDetail() {
   // Find the course by ID or Code (from loader or fallback to config)
   const courseIdParam = courseId || "";
   const courseIdNum = Number(courseIdParam);
-  const fallbackCourse = courses.find((c) => 
-    c.id === courseIdNum || (c.code && c.code.toLowerCase() === courseIdParam.toLowerCase())
+  const fallbackCourse = courses.find(
+    (c) =>
+      c.id === courseIdNum ||
+      (c.code && c.code.toLowerCase() === courseIdParam.toLowerCase()),
   );
-  const course: Course | null = loaderData?.course || (fallbackCourse ? {
-    ...fallbackCourse,
-    id: fallbackCourse.id,
-    title: fallbackCourse.title,
-    name: fallbackCourse.title,
-    instructor: "Dozent", // defaults for fallback
-    startDate: "01.10.2024",
-    endDate: "31.03.2025",
-    resources: [],
-    credits: fallbackCourse.credits || 5,
-    semester: parseInt(fallbackCourse.semester as string) || 1,
-    color: fallbackCourse.color || "cyan",
-    progress: fallbackCourse.progress || 0
-  } as unknown as Course : null);
+  const course: Course | null =
+    loaderData?.course ||
+    (fallbackCourse
+      ? ({
+          ...fallbackCourse,
+          id: fallbackCourse.id,
+          title: fallbackCourse.title,
+          name: fallbackCourse.title,
+          instructor: "Dozent", // defaults for fallback
+          startDate: "01.10.2024",
+          endDate: "31.03.2025",
+          resources: [],
+          credits: fallbackCourse.credits || 5,
+          semester: parseInt(fallbackCourse.semester as string) || 1,
+          color: fallbackCourse.color || "cyan",
+          progress: fallbackCourse.progress || 0,
+        } as unknown as Course)
+      : null);
 
   useEffect(() => {
     if (course && user_id) {
@@ -475,7 +501,7 @@ export default function CourseDetail() {
           semester: `${course.semester}. Semester`,
           color: course.color || "cyan",
         },
-        user_id
+        user_id,
       );
     }
   }, [course, user_id, studiengangName]);
@@ -493,9 +519,9 @@ export default function CourseDetail() {
       similarity: savedStatus[s.id]?.similarity,
       submittedFileName: savedStatus[s.id]?.fileName,
       submittedFileSize: savedStatus[s.id]?.fileSize,
-    }))
+    })),
   );
-  
+
   // Upload Modal State
   const [showModal, setShowModal] = useState(false);
   const [selectedSubmission, setSelectedSubmission] =
@@ -518,7 +544,7 @@ export default function CourseDetail() {
         similarity: savedStatus[s.id]?.similarity,
         submittedFileName: savedStatus[s.id]?.fileName,
         submittedFileSize: savedStatus[s.id]?.fileSize,
-      }))
+      })),
     );
   }, [courseSubmissions, savedStatus]);
 
@@ -543,7 +569,7 @@ export default function CourseDetail() {
       showErrorToast(
         language === "de"
           ? "Bitte akzeptiere die Eidesstattliche Erklärung und den Datenschutz."
-          : "Please accept the honor and privacy statements."
+          : "Please accept the honor and privacy statements.",
       );
       return;
     }
@@ -551,7 +577,7 @@ export default function CourseDetail() {
       showErrorToast(
         language === "de"
           ? "Bitte lade deine Datei hoch."
-          : "Please upload your file."
+          : "Please upload your file.",
       );
       return;
     }
@@ -568,7 +594,7 @@ export default function CourseDetail() {
               submittedFileName: uploadedFile.name,
               submittedFileSize: uploadedFile.size,
             }
-          : s
+          : s,
       );
       const persisted: Record<
         number,
@@ -610,14 +636,14 @@ export default function CourseDetail() {
       if (typeof window !== "undefined") {
         localStorage.setItem(
           "submissionStatusByCourse",
-          JSON.stringify(persistedByCourse)
+          JSON.stringify(persistedByCourse),
         );
       }
       return updated;
     });
     setShowModal(false);
     showSuccessToast(
-      language === "de" ? "Abgabe gespeichert." : "Submission saved."
+      language === "de" ? "Abgabe gespeichert." : "Submission saved.",
     );
   };
 
@@ -705,14 +731,16 @@ export default function CourseDetail() {
       navigate("/courses");
     }
   }, [course, loaderData?.error, navigate]);
-  
+
   if (!course) {
     return (
       <div className="max-w-4xl mx-auto py-12 px-4">
         <div className="rounded-2xl border border-iu-red/30 bg-iu-red/5 p-6 text-sm text-foreground flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
           <div>
             <p className="font-semibold">
-              {language === "de" ? "Kurs nicht verfügbar" : "Course unavailable"}
+              {language === "de"
+                ? "Kurs nicht verfügbar"
+                : "Course unavailable"}
             </p>
             <p className="text-muted-foreground">
               {language === "de"
@@ -743,7 +771,7 @@ export default function CourseDetail() {
         duration: item.duration,
       },
       course.name || course.title,
-      studiengangName || "IU Studium"
+      studiengangName || "IU Studium",
     );
   };
 
@@ -757,13 +785,13 @@ export default function CourseDetail() {
         duration: video.duration,
       },
       course.name || course.title,
-      studiengangName || "IU Studium"
+      studiengangName || "IU Studium",
     );
     setPlayingVideo(video);
   };
 
   const handleCreateTopicClick = () => {
-      setShowNewTopicModal(true);
+    setShowNewTopicModal(true);
   };
 
   const handleTopicClick = (topic: any) => {
@@ -773,7 +801,7 @@ export default function CourseDetail() {
   };
 
   const handleBackToTopics = () => {
-      setForumView("list");
+    setForumView("list");
   };
 
   const handlePostReply = async (e: React.FormEvent) => {
@@ -803,19 +831,19 @@ export default function CourseDetail() {
 
         setSelectedTopic(updatedTopic);
         setForumTopics(
-          forumTopics.map((t) =>
-            t.id === updatedTopic.id ? updatedTopic : t
-          )
+          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
         );
         setReplyContent("");
         showSuccessToast(
-          language === "de" ? "Antwort gepostet!" : "Reply posted!"
+          language === "de" ? "Antwort gepostet!" : "Reply posted!",
         );
       }
     } catch (e) {
       console.error("Failed to post reply", e);
       showErrorToast(
-        language === "de" ? "Antwort konnte nicht gepostet werden" : "Failed to post reply"
+        language === "de"
+          ? "Antwort konnte nicht gepostet werden"
+          : "Failed to post reply",
       );
     }
   };
@@ -837,12 +865,12 @@ export default function CourseDetail() {
           posts: selectedTopic.posts.map((post: any) =>
             post.id === postId
               ? { ...post, likes: data?.likes ?? (post.likes || 0) + 1 }
-              : post
+              : post,
           ),
         };
         setSelectedTopic(updatedTopic);
         setForumTopics(
-          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t))
+          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
         );
       }
     } catch (error) {
@@ -868,7 +896,7 @@ export default function CourseDetail() {
         };
         setSelectedTopic(updatedTopic);
         setForumTopics(
-          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t))
+          forumTopics.map((t) => (t.id === updatedTopic.id ? updatedTopic : t)),
         );
       }
     } catch (error) {
@@ -877,67 +905,66 @@ export default function CourseDetail() {
   };
 
   const handleCreateTopicSubmit = async (e: React.FormEvent) => {
-      e.preventDefault();
-      if (!newTopicTitle.trim() || !newTopicContent.trim()) {
-        showErrorToast(
-          language === "de"
-            ? "Bitte fülle alle Felder aus"
-            : "Please fill in all fields"
-        );
-        return;
-      }
+    e.preventDefault();
+    if (!newTopicTitle.trim() || !newTopicContent.trim()) {
+      showErrorToast(
+        language === "de"
+          ? "Bitte fülle alle Felder aus"
+          : "Please fill in all fields",
+      );
+      return;
+    }
 
-      try {
-        const res = await fetch("/api/forum", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            courseId: course.id,
-            title: newTopicTitle,
-            content: newTopicContent,
-          }),
-        });
+    try {
+      const res = await fetch("/api/forum", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          courseId: course.id,
+          title: newTopicTitle,
+          content: newTopicContent,
+        }),
+      });
 
-        if (res.ok) {
-          const data = await res.json();
-          setForumTopics([data.topic, ...forumTopics]);
-          setShowNewTopicModal(false);
-          setNewTopicTitle("");
-          setNewTopicContent("");
-          showSuccessToast(
-            language === "de" ? "Thema erstellt!" : "Topic created!"
-          );
-        } else {
-          const error = await res.json();
-          showErrorToast(error.error || "Failed to create topic");
-        }
-      } catch (e) {
-        console.error("Failed to create topic", e);
-        showErrorToast(
-          language === "de"
-            ? "Fehler beim Erstellen der Diskussion"
-            : "Error creating discussion"
+      if (res.ok) {
+        const data = await res.json();
+        setForumTopics([data.topic, ...forumTopics]);
+        setShowNewTopicModal(false);
+        setNewTopicTitle("");
+        setNewTopicContent("");
+        showSuccessToast(
+          language === "de" ? "Thema erstellt!" : "Topic created!",
         );
+      } else {
+        const error = await res.json();
+        showErrorToast(error.error || "Failed to create topic");
       }
+    } catch (e) {
+      console.error("Failed to create topic", e);
+      showErrorToast(
+        language === "de"
+          ? "Fehler beim Erstellen der Diskussion"
+          : "Error creating discussion",
+      );
+    }
   };
-
 
   const handleCopyMessage = (content: string) => {
     navigator.clipboard.writeText(content).then(() => {
       showSuccessToast(
         language === "de"
           ? "In die Zwischenablage kopiert!"
-          : "Copied to clipboard!"
+          : "Copied to clipboard!",
       );
     });
   };
 
   return (
     <div className="pb-20 overflow-x-hidden">
-      <CourseHeader 
-        course={course} 
-        language={language} 
-        onBack={() => navigate("/courses")} 
+      <CourseHeader
+        course={course}
+        language={language}
+        onBack={() => navigate("/courses")}
       />
 
       {loaderData?.error && (
@@ -964,22 +991,22 @@ export default function CourseDetail() {
 
       <CourseTabNavigation
         tabs={[
-            { id: "overview", icon: ClipboardList, label: t.overview },
-            { id: "resources", icon: FolderOpen, label: t.resources },
-            { id: "videos", icon: Video, label: t.videos },
-            { id: "coursefeed", icon: Rss, label: "Course Feed" },
-            {
-              id: "abgabe",
-              icon: PencilLine,
-              label: language === "de" ? "Abgabe" : "Submissions",
-            },
-            {
-              id: "online-tests",
-              icon: ClipboardCheck,
-              label: language === "de" ? "Tests" : "Tests",
-            },
-            { id: "notes", icon: FileText, label: "Notizen" },
-            { id: "forum", icon: MessageSquare, label: t.forum },
+          { id: "overview", icon: ClipboardList, label: t.overview },
+          { id: "resources", icon: FolderOpen, label: t.resources },
+          { id: "videos", icon: Video, label: t.videos },
+          { id: "coursefeed", icon: Rss, label: "Course Feed" },
+          {
+            id: "abgabe",
+            icon: PencilLine,
+            label: language === "de" ? "Abgabe" : "Submissions",
+          },
+          {
+            id: "online-tests",
+            icon: ClipboardCheck,
+            label: language === "de" ? "Tests" : "Tests",
+          },
+          { id: "notes", icon: FileText, label: "Notizen" },
+          { id: "forum", icon: MessageSquare, label: t.forum },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -987,112 +1014,108 @@ export default function CourseDetail() {
 
       <main className="max-w-7xl mx-auto py-2">
         {activeTab === "overview" && (
-            <CourseOverviewTab 
-                course={course} 
-                language={language} 
-                t={t} 
-                submissions={submissions}
-                translate={translate}
-                onTabChange={setActiveTab}
-            />
+          <CourseOverviewTab
+            course={course}
+            language={language}
+            t={t}
+            submissions={submissions}
+            translate={translate}
+            onTabChange={setActiveTab}
+          />
         )}
-        
+
         {activeTab === "resources" && (
-            <CourseResourcesTab
-                course={course}
-                language={language}
-                expandedSections={expandedSections}
-                toggleSection={toggleSection}
-                onFileClick={handleFileClick}
-            />
+          <CourseResourcesTab
+            course={course}
+            language={language}
+            expandedSections={expandedSections}
+            toggleSection={toggleSection}
+            onFileClick={handleFileClick}
+          />
         )}
 
         {activeTab === "videos" && (
-            <CourseVideosTab
-                course={course}
-                language={language}
-                t={t}
-                getThumbnailUrl={getVideoThumbnailUrl}
-                onVideoClick={handleVideoClick}
-            />
+          <CourseVideosTab
+            course={course}
+            language={language}
+            t={t}
+            getThumbnailUrl={getVideoThumbnailUrl}
+            onVideoClick={handleVideoClick}
+          />
         )}
 
-        {activeTab === "coursefeed" && (
-            <CourseFeedTab language={language} />
-        )}
+        {activeTab === "coursefeed" && <CourseFeedTab language={language} />}
 
         {activeTab === "abgabe" && (
-            <CourseSubmissionsTab
-                language={language}
-                t={t}
-                submissions={submissions}
-                translate={translate}
-                openModal={openModal}
-            />
+          <CourseSubmissionsTab
+            language={language}
+            t={t}
+            submissions={submissions}
+            translate={translate}
+            openModal={openModal}
+          />
         )}
 
         {activeTab === "online-tests" && (
-            <CourseOnlineTestsTab course={course} language={language} />
+          <CourseOnlineTestsTab course={course} language={language} />
         )}
 
-        {activeTab === "notes" && (
-            <CourseNotesTab language={language} />
-        )}
+        {activeTab === "notes" && <CourseNotesTab language={language} />}
 
         {activeTab === "forum" && (
-              <CourseForumTab
-                language={language}
-                t={t}
-                forumView={forumView}
-                forumTopics={forumTopics}
-                selectedTopic={selectedTopic}
-                currentUser={currentUser}
-                replyContent={replyContent}
-                onSetReplyContent={setReplyContent}
-                onCreateTopicClick={handleCreateTopicClick}
-                onTopicClick={handleTopicClick}
-                onBackToTopics={handleBackToTopics}
-                onPostReply={handlePostReply}
-                onCopyMessage={handleCopyMessage}
-                onLikePost={handleLikePost}
-                onLikeTopic={handleLikeTopic}
-              />
+          <CourseForumTab
+            language={language}
+            t={t}
+            forumView={forumView}
+            forumTopics={forumTopics}
+            selectedTopic={selectedTopic}
+            currentUser={currentUser}
+            replyContent={replyContent}
+            onSetReplyContent={setReplyContent}
+            onCreateTopicClick={handleCreateTopicClick}
+            onTopicClick={handleTopicClick}
+            onBackToTopics={handleBackToTopics}
+            onPostReply={handlePostReply}
+            onCopyMessage={handleCopyMessage}
+            onLikePost={handleLikePost}
+            onLikeTopic={handleLikeTopic}
+          />
         )}
       </main>
 
       {showModal && (
         <UploadModal
-            language={language}
-            showModal={showModal}
-            selectedSubmission={selectedSubmission}
-            accepted={accepted}
-            uploadedFile={uploadedFile}
-            onClose={() => setShowModal(false)}
-            onAcceptChange={onAcceptChange}
-            onFileChange={handleFileChange}
-            onSubmit={handleSubmit}
+          language={language}
+          showModal={showModal}
+          selectedSubmission={selectedSubmission}
+          accepted={accepted}
+          uploadedFile={uploadedFile}
+          onClose={() => setShowModal(false)}
+          onAcceptChange={onAcceptChange}
+          onFileChange={handleFileChange}
+          onSubmit={handleSubmit}
         />
       )}
 
       {playingVideo && (
         <VideoModal
-            language={language}
-            courseTitle={course.title}
-            playingVideo={playingVideo}
-            onClose={() => setPlayingVideo(null)}
+          language={language}
+          courseTitle={course.title}
+          playingVideo={playingVideo}
+          onClose={() => setPlayingVideo(null)}
         />
       )}
 
       {showNewTopicModal && (
         <NewTopicModal
-            language={language}
-            showModal={showNewTopicModal}
-            newTopicTitle={newTopicTitle}
-            newTopicContent={newTopicContent}
-            onClose={() => setShowNewTopicModal(false)}
-            onTitleChange={setNewTopicTitle}
-            onContentChange={setNewTopicContent}
-            onSubmit={handleCreateTopicSubmit}
+          language={language}
+          showModal={showNewTopicModal}
+          newTopicTitle={newTopicTitle}
+          newTopicContent={newTopicContent}
+          onClose={() => setShowNewTopicModal(false)}
+          onTitleChange={setNewTopicTitle}
+          onContentChange={setNewTopicContent}
+          onSubmit={handleCreateTopicSubmit}
         />
       )}
     </div>

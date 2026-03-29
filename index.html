@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+
+<style>
+
+body{
+    font-family: Calibri, Arial, sans-serif;
+    font-size:14pt;
+    margin:40px;
+}
+
+.wrapper{
+    width:1200px;
+    margin:auto;
+    position:relative;
+}
+
+/* Linie */
+.wrapper::before{
+    content:"";
+    position:absolute;
+    top:26px;
+    left:85px;
+    right:85px;
+    height:3px;
+    background:#B4C6E7;
+}
+
+/* Grid */
+.steps{
+    display:grid;
+    grid-template-columns:repeat(6,1fr);
+    column-gap:35px;
+}
+
+/* Spalte */
+.step{
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+    text-align:left;
+}
+/* Kreis */
+.circle{
+    width:55px;
+    height:55px;
+    border-radius:50%;
+    background:#B4C6E7;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-weight:bold;
+    margin-bottom:10px;
+    margin-left:auto;
+    margin-right:auto;
+    position:relative;
+    z-index:2;
+}
+
+/* Icon */
+.icon{
+    height:90px;
+    margin-bottom:20px;
+    display:flex;
+    align-items:flex-end;
+    justify-content:center;
+}
+
+.icon img{
+    height:90px;
+    max-width:100%;
+    object-fit:contain;
+}
+
+/* Titel */
+.title{
+    font-weight:bold;
+    margin-bottom:8px;
+}
+
+/* Text */
+.text{
+    line-height:1.4;
+    overflow-wrap:break-word;
+    word-break:break-word;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="wrapper">
+
+<div class="steps">
+
+<div class="step">
+<div class="circle">1</div>
+<div class="icon"><img src="icon1.png"></div>
+<div class="title">1. Textarbeit</div>
+<div class="text">
+Texte lesen,
+Memos erstellen,
+Fälle zusammenfassen
+</div>
+</div>
+
+<div class="step">
+<div class="circle">2</div>
+<div class="icon"><img src="icon2.png"></div>
+<div class="title">2. Hauptkategorien</div>
+<div class="text">
+Themen aus dem<br>
+Datenmaterial ableiten
+</div>
+</div>
+
+<div class="step">
+<div class="circle">3</div>
+<div class="icon"><img src="icon3.png"></div>
+<div class="title">3. Erste Codierung</div>
+<div class="text">
+Daten anhand der<br>
+Hauptkategorien codieren<br>
+(1. Codierdurchlauf)
+</div>
+</div>
+
+<div class="step">
+<div class="circle">4</div>
+<div class="icon"><img src="icon4.png"></div>
+<div class="title">4. Subkategorien</div>
+<div class="text">
+Differenzierung der<br>
+Hauptkategorien
+</div>
+</div>
+
+<div class="step">
+<div class="circle">5</div>
+<div class="icon"><img src="icon5.png"></div>
+<div class="title">5. Zweite Codierung</div>
+<div class="text">
+Feinere Codierung<br>
+des Materials<br>
+(2. Codierdurchlauf)
+</div>
+</div>
+
+<div class="step">
+<div class="circle">6</div>
+<div class="icon"><img src="icon6.png"></div>
+<div class="title">6. Analyse</div>
+<div class="text">
+Einfache und komplexe<br>
+Analysen durchführen
+</div>
+</div>
+
+</div>
+
+</div>
+
+</body>
+</html>

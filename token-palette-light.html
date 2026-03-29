@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Token Palette Light</title>
+  <style>
+    :root {
+      --iu-blue: 223 70% 22%;
+      --iu-pink: 312 80% 22%;
+      --iu-orange: 29 90% 22%;
+      --iu-green: 132 55% 20%;
+      --iu-red: 349 85% 23%;
+      --iu-purple: 262 60% 25%;
+      --iu-teal: 190 90% 20%;
+      --iu-indigo: 235 70% 25%;
+      --iu-brown: 20 60% 25%;
+      --iu-gold: 45 100% 22%;
+
+      --apple-dark-grey: 240 3% 12%;
+      --apple-bg: 240 8% 96%;
+      --apple-white: 0 0% 100%;
+
+      --background: var(--apple-bg);
+      --foreground: var(--apple-dark-grey);
+      --card: var(--apple-white);
+      --card-foreground: var(--apple-dark-grey);
+      --popover: var(--apple-white);
+      --popover-foreground: var(--apple-dark-grey);
+      --primary: var(--iu-blue);
+      --primary-foreground: 0 0% 100%;
+      --secondary: 240 4.8% 95.9%;
+      --secondary-foreground: 240 5.9% 10%;
+      --muted: 240 4.8% 95.9%;
+      --muted-foreground: 240 3% 12%;
+      --accent: 240 4.8% 95.9%;
+      --accent-foreground: 240 5.9% 10%;
+      --destructive: var(--iu-red);
+      --destructive-foreground: 0 0% 100%;
+      --border: 240 5.9% 90%;
+      --input: 240 5.9% 90%;
+      --ring: var(--iu-blue);
+    }
+
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: hsl(var(--background));
+      color: hsl(var(--foreground));
+      padding: 24px;
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+    }
+    h1 {
+      margin: 0 0 8px;
+      font-size: 28px;
+    }
+    p {
+      margin: 0 0 24px;
+      color: rgba(30, 30, 32, 0.8);
+    }
+    h2 {
+      margin: 28px 0 12px;
+      font-size: 14px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .token {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding: 10px 12px;
+      border: 1px solid hsl(var(--border));
+      border-radius: 16px;
+      background: hsl(var(--card));
+    }
+    .swatch {
+      width: 44px;
+      height: 44px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      flex: 0 0 auto;
+    }
+    .meta strong {
+      display: block;
+      font-size: 18px;
+      line-height: 1.1;
+    }
+    .meta span {
+      font-family: monospace;
+      font-size: 13px;
+      opacity: 0.78;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>Token Palette Light</h1>
+    <p>Standalone preview using the light values from <code>:root</code>.</p>
+
+    <h2>Base Colors</h2>
+    <div class="grid">
+      <div class="token"><div class="swatch" style="background: rgb(244, 244, 246)"></div><div class="meta"><strong>background</strong><span>rgb(244, 244, 246)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(30, 30, 32)"></div><div class="meta"><strong>foreground</strong><span>rgb(30, 30, 32)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(255, 255, 255)"></div><div class="meta"><strong>card</strong><span>rgb(255, 255, 255)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(30, 30, 32)"></div><div class="meta"><strong>card-foreground</strong><span>rgb(30, 30, 32)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(255, 255, 255)"></div><div class="meta"><strong>popover</strong><span>rgb(255, 255, 255)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(30, 30, 32)"></div><div class="meta"><strong>popover-foreground</strong><span>rgb(30, 30, 32)</span></div></div>
+    </div>
+
+    <h2>Functional Colors</h2>
+    <div class="grid">
+      <div class="token"><div class="swatch" style="background: rgb(17, 39, 95)"></div><div class="meta"><strong>primary</strong><span>rgb(17, 39, 95)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(255, 255, 255)"></div><div class="meta"><strong>primary-foreground</strong><span>rgb(255, 255, 255)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(244, 244, 245)"></div><div class="meta"><strong>secondary</strong><span>rgb(244, 244, 245)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(24, 24, 27)"></div><div class="meta"><strong>secondary-foreground</strong><span>rgb(24, 24, 27)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(244, 244, 245)"></div><div class="meta"><strong>muted</strong><span>rgb(244, 244, 245)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(30, 30, 32)"></div><div class="meta"><strong>muted-foreground</strong><span>rgb(30, 30, 32)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(244, 244, 245)"></div><div class="meta"><strong>accent</strong><span>rgb(244, 244, 245)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(24, 24, 27)"></div><div class="meta"><strong>accent-foreground</strong><span>rgb(24, 24, 27)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(109, 9, 27)"></div><div class="meta"><strong>destructive</strong><span>rgb(109, 9, 27)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(255, 255, 255)"></div><div class="meta"><strong>destructive-foreground</strong><span>rgb(255, 255, 255)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(228, 228, 231)"></div><div class="meta"><strong>border</strong><span>rgb(228, 228, 231)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(228, 228, 231)"></div><div class="meta"><strong>input</strong><span>rgb(228, 228, 231)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(17, 39, 95)"></div><div class="meta"><strong>ring</strong><span>rgb(17, 39, 95)</span></div></div>
+    </div>
+
+    <h2>IU Palette</h2>
+    <div class="grid">
+      <div class="token"><div class="swatch" style="background: rgb(17, 39, 95)"></div><div class="meta"><strong>iu-blue</strong><span>rgb(17, 39, 95)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(101, 11, 83)"></div><div class="meta"><strong>iu-pink</strong><span>rgb(101, 11, 83)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(107, 54, 6)"></div><div class="meta"><strong>iu-orange</strong><span>rgb(107, 54, 6)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(23, 79, 34)"></div><div class="meta"><strong>iu-green</strong><span>rgb(23, 79, 34)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(109, 9, 27)"></div><div class="meta"><strong>iu-red</strong><span>rgb(109, 9, 27)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(54, 26, 102)"></div><div class="meta"><strong>iu-purple</strong><span>rgb(54, 26, 102)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(5, 82, 97)"></div><div class="meta"><strong>iu-teal</strong><span>rgb(5, 82, 97)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(19, 27, 108)"></div><div class="meta"><strong>iu-indigo</strong><span>rgb(19, 27, 108)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(102, 51, 26)"></div><div class="meta"><strong>iu-brown</strong><span>rgb(102, 51, 26)</span></div></div>
+      <div class="token"><div class="swatch" style="background: rgb(112, 84, 0)"></div><div class="meta"><strong>iu-gold</strong><span>rgb(112, 84, 0)</span></div></div>
+    </div>
+  </div>
+</body>
+</html>
