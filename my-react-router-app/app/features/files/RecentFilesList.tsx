@@ -17,7 +17,11 @@ interface RecentFilesListProps {
   filteredFiles: RecentFileEntry[];
 }
 
-export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListProps) {
+export function RecentFilesList({
+  t,
+  language,
+  filteredFiles,
+}: RecentFilesListProps) {
   if (filteredFiles.length === 0) {
     return (
       <div className="bg-white dark:bg-neutral-900 border border-dashed border-neutral-200 dark:border-neutral-800 rounded-2xl sm:rounded-3xl p-6 sm:p-10 text-center">
@@ -69,14 +73,14 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
               {/* Type Icon Container */}
               <div
                 className={`p-3 sm:p-4 rounded-2xl flex-shrink-0 transition-transform group-hover:scale-110 shadow-lg border ${
-                isVideo
-                  ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
-                  : isPodcast
-                    ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
-                    : isTest
-                      ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
-                      : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
-              }`}
+                  isVideo
+                    ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
+                    : isPodcast
+                      ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
+                      : isTest
+                        ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
+                        : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
+                }`}
               >
                 {isVideo ? (
                   <Video className="h-6 w-6 sm:h-7 sm:w-7" />
@@ -98,14 +102,14 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                   {/* Mediatype Badge */}
                   <span
                     className={`text-[9px] sm:text-[10px] px-3 py-1 rounded-full font-black uppercase tracking-widest border ${
-                    isVideo
-                      ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
-                      : isPodcast
-                        ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
-                        : isTest
-                          ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
-                          : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
-                  }`}
+                      isVideo
+                        ? "bg-iu-red/10 dark:bg-iu-red border-iu-red/20 dark:border-iu-red text-iu-red dark:text-white"
+                        : isPodcast
+                          ? "bg-iu-purple/10 dark:bg-iu-purple border-iu-purple/20 dark:border-iu-purple text-iu-purple dark:text-white"
+                          : isTest
+                            ? "bg-iu-orange/10 dark:bg-iu-orange border-iu-orange/20 dark:border-iu-orange text-iu-orange dark:text-white"
+                            : "bg-iu-blue/10 dark:bg-iu-blue border-iu-blue/20 dark:border-iu-blue text-iu-blue dark:text-white"
+                    }`}
                   >
                     {type || "Source"}
                   </span>
@@ -127,7 +131,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                         month: "short",
                         hour: "2-digit",
                         minute: "2-digit",
-                      }
+                      },
                     )}
                   </div>
                 </div>
@@ -144,7 +148,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                       url: f.url,
                     },
                     f.moduleName,
-                    f.studiengang
+                    f.studiengang,
                   );
                   if (f.url && f.url !== "#") {
                     window.open(f.url, "_blank", "noopener,noreferrer");
@@ -152,7 +156,7 @@ export function RecentFilesList({ t, language, filteredFiles }: RecentFilesListP
                     window.location.href = "/courses";
                   }
                 }}
-                className="static sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0 p-3 sm:p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-foreground dark:text-white transition-all shadow-sm border border-border opacity-100 sm:opacity-0 group-hover:opacity-100 group-hover:translate-x-0 sm:translate-x-4 duration-300"
+                className="static sm:absolute sm:right-8 sm:top-1/2 sm:-translate-y-1/2 mt-2 sm:mt-0 p-3 sm:p-4 rounded-2xl bg-muted/50 text-muted-foreground hover:bg-iu-blue hover:text-white dark:bg-slate-800 dark:text-slate-300 dark:hover:bg-iu-blue dark:hover:text-white dark:hover:border-iu-blue transition-all shadow-sm border border-border hover:border-iu-blue opacity-100 sm:opacity-0 group-hover:opacity-100 group-hover:translate-x-0 sm:translate-x-4 duration-300"
               >
                 <ExternalLink className="h-5 w-5 sm:h-6 sm:w-6" />
               </button>
