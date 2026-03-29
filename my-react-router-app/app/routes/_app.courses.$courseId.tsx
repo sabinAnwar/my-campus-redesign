@@ -281,7 +281,75 @@ export const loader = async ({
     }
   }
 
-  // Fetch tasks for this user and this course
+  // Add comprehensive scripts and podcasts for all courses
+  const weeks = 8; // 8 weeks of content per course
+  const sampleResources: CourseResource[] = [];
+
+  // Add comprehensive scripts and podcasts for all courses (only if not from database)
+  const hasExistingVideos = resources.some((r) => r.type === "video");
+  const hasExistingScripts = resources.some((r) => r.type === "script");
+  
+  if (!hasExistingVideos || !hasExistingScripts) {
+    // Generate scripts for each week (only if missing)
+    if (!hasExistingScripts) {
+      for (let w = 1; w <= weeks; w++) {
+        sampleResources.push({
+          id: `script-${typedCourse.id}-${w}`,
+          title: `${typedCourse.name} - Woche ${w} Skript`,
+          url: "/uploads/modulhandbuch-winfo.pdf",
+          type: "script",
+          size: `${(1.2 + Math.random() * 2).toFixed(1)} MB`,
+          date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+        });
+      }
+    }
+
+    // Generate podcasts for each week
+    for (let w = 1; w <= weeks; w++) {
+      const minutes = 35 + Math.floor(Math.random() * 25);
+      const seconds = Math.floor(Math.random() * 60);
+      sampleResources.push({
+        id: `podcast-${typedCourse.id}-${w}`,
+        title: `${typedCourse.name} - Vorlesung Woche ${w}`,
+        url: "https://www.youtube.com/embed/H1elmMBnykA",
+        type: "podcast",
+        size: "MP3",
+        duration: `${minutes}:${seconds.toString().padStart(2, "0")}`,
+        date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+      });
+    }
+
+    // Generate videos for each week (only if missing)
+    if (!hasExistingVideos) {
+      const videoUrls = [
+        "https://www.youtube.com/embed/H1elmMBnykA",
+        "https://www.youtube.com/embed/1Rs2ND1ryYc",
+        "https://www.youtube.com/embed/Zftx68K-1D4",
+        "https://www.youtube.com/embed/3qBXWUpoPHo",
+      ];
+      for (let w = 1; w <= weeks; w++) {
+        const videoMinutes = 20 + Math.floor(Math.random() * 15);
+        const videoSeconds = Math.floor(Math.random() * 60);
+        const videoUrl = videoUrls[(typedCourse.id + w) % videoUrls.length];
+        sampleResources.push({
+          id: `video-${typedCourse.id}-${w}`,
+          title: `${typedCourse.name} - Lektionsvideo Woche ${w}`,
+          url: videoUrl,
+          type: "video",
+          size: "HD",
+          duration: `${videoMinutes}:${videoSeconds.toString().padStart(2, "0")}`,
+          date: formatGermanDate(new Date(Date.now() - (weeks - w) * 7 * 24 * 60 * 60 * 1000)),
+        });
+      }
+    }
+
+    // Add sample resources to all courses
+    const existingIds = new Set(resources.map((r) => r.id));
+    resources = [
+      ...resources,
+      ...sampleResources.filter((r) => !existingIds.has(r.id)),
+    ];
+  }
   const tasks = await withTimeout(
     prisma.studentTask.findMany({
       where: {

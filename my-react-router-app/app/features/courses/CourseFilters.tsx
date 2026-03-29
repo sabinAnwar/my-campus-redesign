@@ -1,5 +1,11 @@
 import React from "react";
-import { Clock, CheckCircle2, XCircle, Filter, type LucideIcon } from "lucide-react";
+import {
+  Clock,
+  CheckCircle2,
+  XCircle,
+  Filter,
+  type LucideIcon,
+} from "lucide-react";
 
 export type FilterType = "current" | "failed" | "completed" | "all";
 
@@ -31,7 +37,7 @@ export function CourseFilters({
       label: t.currentSemesterTab,
       icon: Clock,
       count: coursesWithStatus.filter(
-        (c) => c.semesterNumber === currentSemester
+        (c) => c.semesterNumber === currentSemester,
       ).length,
     },
     {
