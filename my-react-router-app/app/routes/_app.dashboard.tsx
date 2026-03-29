@@ -14,7 +14,12 @@ import {
   GraduationCap,
   GripVertical,
 } from "lucide-react";
-import { STUDY_PLANS, DEFAULT_PALETTE, toISODate } from "~/utils/studyPlans";
+import {
+  STUDY_PLANS,
+  DEFAULT_PALETTE,
+  toISODate,
+  getBlockStatusForDate,
+} from "~/utils/studyPlans";
 import { calculateDaysLeft } from "~/utils/tasksSample";
 import { Prisma } from "@prisma/client";
 import type { PracticalPartner, PracticalHoursTarget } from "@prisma/client";
@@ -717,40 +722,95 @@ function DashboardDeferredContent({
     studiengangName || userCampusArea,
   );
   const today = new Date();
-  const todayIso = toISODate(today);
+  today.setHours(12, 0, 0, 0);
 
-  // Find current block
-  const currentBlock = currentPlan.blocks.find((b) => {
-    return todayIso >= b.start && todayIso <= b.end;
-  });
+  const sortedPlanBlocks = [...currentPlan.blocks].sort((a, b) =>
+    a.start.localeCompare(b.start),
+  );
+  const planStartIso = sortedPlanBlocks[0]?.start;
+  const planEndIso = sortedPlanBlocks[sortedPlanBlocks.length - 1]?.end;
+  const addDays = (date: Date, delta: number) => {
+    const next = new Date(date);
+    next.setDate(next.getDate() + delta);
+    next.setHours(12, 0, 0, 0);
+    return next;
+  };
 
-  const currentStatus = currentBlock?.status || "vorlesung";
+  const getStatusForDate = (date: Date) =>
+    getBlockStatusForDate(currentPlan, date) || "vorlesung";
+
+  const currentStatus = getStatusForDate(today);
   const statusConfig =
     currentPlan.paletteOverrides?.[currentStatus] ||
     DEFAULT_PALETTE[currentStatus];
 
-  // Find next phase
-  const nextBlock = currentPlan.blocks.find(
-    (b) => b.start > todayIso && b.status !== currentStatus,
-  );
+  // Build contiguous segment for the currently active status (day-accurate).
+  let currentSegmentStart = new Date(today);
+  let currentSegmentEnd = new Date(today);
+
+  while (planStartIso) {
+    const prev = addDays(currentSegmentStart, -1);
+    if (toISODate(prev) < planStartIso) break;
+    if (getStatusForDate(prev) !== currentStatus) break;
+    currentSegmentStart = prev;
+  }
+
+  while (planEndIso) {
+    const next = addDays(currentSegmentEnd, 1);
+    if (toISODate(next) > planEndIso) break;
+    if (getStatusForDate(next) !== currentStatus) break;
+    currentSegmentEnd = next;
+  }
+
+  const currentBlock = {
+    start: toISODate(currentSegmentStart),
+    end: toISODate(currentSegmentEnd),
+    status: currentStatus,
+  };
+
+  // Find next contiguous status segment after the current one.
+  let nextBlock: { start: string; end: string; status: string } | undefined =
+    undefined;
+  if (planEndIso) {
+    const cursor = addDays(currentSegmentEnd, 1);
+    if (toISODate(cursor) <= planEndIso) {
+      const nextStatus = getStatusForDate(cursor);
+      let nextSegmentEnd = new Date(cursor);
+      while (toISODate(nextSegmentEnd) < planEndIso) {
+        const probe = addDays(nextSegmentEnd, 1);
+        if (getStatusForDate(probe) !== nextStatus) break;
+        nextSegmentEnd = probe;
+      }
+
+      nextBlock = {
+        start: toISODate(cursor),
+        end: toISODate(nextSegmentEnd),
+        status: nextStatus,
+      };
+    }
+  }
 
   // Calculate progress
   let phaseProgress = 0;
   let phaseDaysLeft = 0;
   let phaseTotalDays = 0;
 
-  if (currentBlock) {
-    const start = new Date(currentBlock.start).getTime();
-    const end = new Date(currentBlock.end).getTime();
-    const now = today.getTime();
-    phaseTotalDays = Math.ceil((end - start) / (1000 * 60 * 60 * 24));
-    const daysPassed = Math.ceil((now - start) / (1000 * 60 * 60 * 24));
-    phaseDaysLeft = Math.max(0, phaseTotalDays - daysPassed);
-    phaseProgress = Math.min(
-      100,
-      Math.max(0, (daysPassed / phaseTotalDays) * 100),
-    );
-  }
+  const start = new Date(currentBlock.start).getTime();
+  const end = new Date(currentBlock.end).getTime();
+  const now = today.getTime();
+  phaseTotalDays = Math.max(
+    1,
+    Math.floor((end - start) / (1000 * 60 * 60 * 24)) + 1,
+  );
+  const daysPassed = Math.max(
+    1,
+    Math.floor((now - start) / (1000 * 60 * 60 * 24)) + 1,
+  );
+  phaseDaysLeft = Math.max(0, phaseTotalDays - daysPassed);
+  phaseProgress = Math.min(
+    100,
+    Math.max(0, (daysPassed / phaseTotalDays) * 100),
+  );
 
   // Dual Student Company Info (from database)
   const companyInfo = praxisPartner

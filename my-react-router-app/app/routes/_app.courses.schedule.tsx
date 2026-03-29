@@ -186,7 +186,9 @@ export default function CourseSchedule() {
     () => getMonthDays(startOfMonth(currentDate)),
     [currentDate],
   );
-  const todayISO = toISODate(new Date());
+  const todayDate = new Date();
+  todayDate.setHours(12, 0, 0, 0);
+  const todayISO = toISODate(todayDate);
 
   // Get the study plan based on user's Studiengang
   const currentPlan = useMemo(() => {
@@ -197,11 +199,10 @@ export default function CourseSchedule() {
     return dbEvents;
   }, [dbEvents]);
 
-  // Get current study phase
-  const currentBlock = currentPlan?.blocks.find(
-    (b) => todayISO >= b.start && todayISO <= b.end,
-  );
-  const currentStatus = currentBlock?.status || "vorlesung";
+  // Get current study phase using day-priority logic (holidays/split days/exams).
+  const currentStatus =
+    (currentPlan ? getBlockStatusForDate(currentPlan, todayDate) : null) ||
+    "vorlesung";
   const statusConfig =
     currentPlan?.paletteOverrides?.[currentStatus] ||
     DEFAULT_PALETTE[currentStatus];
@@ -339,7 +340,10 @@ export default function CourseSchedule() {
       const config =
         plan.paletteOverrides?.[block.status] || DEFAULT_PALETTE[block.status];
 
-      const isActive = todayISO >= block.start && todayISO <= block.end;
+      const isActive =
+        todayISO >= block.start &&
+        todayISO <= block.end &&
+        block.status === currentStatus;
 
       return {
         ...block,
@@ -402,7 +406,9 @@ export default function CourseSchedule() {
                 {/* Week Stats Bar */}
                 <div className="px-4 sm:px-6 py-3 border-b border-border/50 bg-muted/10 flex items-center gap-3 sm:gap-4 text-[10px] sm:text-xs font-bold text-muted-foreground">
                   <Sparkles size={14} className="text-iu-blue shrink-0" />
-                  <span>{language === "de" ? "Diese Woche:" : "This week:"}</span>
+                  <span>
+                    {language === "de" ? "Diese Woche:" : "This week:"}
+                  </span>
                   <span className="text-foreground">
                     {weekDates.reduce(
                       (sum, d) => sum + getEventsForDate(d).length,
@@ -434,199 +440,201 @@ export default function CourseSchedule() {
                 {/* Week Header */}
                 <div className="grid grid-cols-[100px_repeat(5,1fr)] border-b border-border bg-muted/20">
                   <div className="p-4 sm:p-6" />
-              {weekDates.map((date, idx) => {
-                const dateStr = toISODate(date);
-                const isToday = dateStr === todayISO;
+                  {weekDates.map((date, idx) => {
+                    const dateStr = toISODate(date);
+                    const isToday = dateStr === todayISO;
 
-                const status = currentPlan
-                  ? getBlockStatusForDate(currentPlan, date)
-                  : null;
-                const phaseConfig = status
-                  ? currentPlan?.paletteOverrides?.[status] ||
-                    DEFAULT_PALETTE[status]
-                  : null;
+                    const status = currentPlan
+                      ? getBlockStatusForDate(currentPlan, date)
+                      : null;
+                    const phaseConfig = status
+                      ? currentPlan?.paletteOverrides?.[status] ||
+                        DEFAULT_PALETTE[status]
+                      : null;
 
-                return (
-                  <div
-                    key={idx}
-                    className={`p-6 text-center border-l border-border ${isToday ? "bg-iu-blue/5" : ""}`}
-                  >
-                    <div
-                      className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
-                    >
-                      {dayNames[idx]}
-                    </div>
-                    <div
-                      className={`text-2xl font-bold w-12 h-12 flex items-center justify-center mx-auto rounded-2xl transition-all ${
-                        isToday
-                          ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110"
-                          : "text-foreground"
-                      }`}
-                    >
-                      {date.getDate()}
-                    </div>
-                    {phaseConfig && (
+                    return (
                       <div
-                        className={`text-[10px] font-bold mt-2 uppercase tracking-widest inline-flex items-center gap-1 ${status === "feiertag" ? "text-iu-gold" : phaseConfig.text.replace("text-white", "text-iu-blue dark:text-white")}`}
+                        key={idx}
+                        className={`p-6 text-center border-l border-border ${isToday ? "bg-iu-blue/5" : ""}`}
                       >
-                        {status === "feiertag" && <Flag className="h-3 w-3" />}
-                        {phaseConfig.label.split(" ")[0]}
+                        <div
+                          className={`text-[10px] font-bold uppercase tracking-[0.2em] mb-2 ${isToday ? "text-iu-blue dark:text-white" : "text-muted-foreground"}`}
+                        >
+                          {dayNames[idx]}
+                        </div>
+                        <div
+                          className={`text-2xl font-bold w-12 h-12 flex items-center justify-center mx-auto rounded-2xl transition-all ${
+                            isToday
+                              ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110"
+                              : "text-foreground"
+                          }`}
+                        >
+                          {date.getDate()}
+                        </div>
+                        {phaseConfig && (
+                          <div
+                            className={`text-[10px] font-bold mt-2 uppercase tracking-widest inline-flex items-center gap-1 ${status === "feiertag" ? "text-iu-gold" : phaseConfig.text.replace("text-white", "text-iu-blue dark:text-white")}`}
+                          >
+                            {status === "feiertag" && (
+                              <Flag className="h-3 w-3" />
+                            )}
+                            {phaseConfig.label.split(" ")[0]}
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
-                );
-              })}
-            </div>
+                    );
+                  })}
+                </div>
 
                 {/* Week Grid */}
                 <div className="grid grid-cols-[100px_repeat(5,1fr)] relative">
-              {/* Time Labels */}
-              <div className="border-r border-border bg-muted/10">
-                {TIME_SLOTS.map((time) => (
-                  <div
-                    key={time}
-                    className="h-[100px] flex items-start justify-end pr-6 pt-3 text-[10px] text-foreground/70 font-bold uppercase tracking-widest"
-                  >
-                    {time}
-                  </div>
-                ))}
-              </div>
-
-              {/* Day Columns */}
-              {weekDates.map((date, dayIdx) => {
-                const dateStr = toISODate(date);
-                const events = getEventsForDate(date);
-                const isToday = dateStr === todayISO;
-
-                // Calculate current time line position
-                const nowH = now.getHours();
-                const nowM = now.getMinutes();
-                const startH = 8; // Calendar starts at 08:00
-                const minutesSinceStart = (nowH - startH) * 60 + nowM;
-                const timeLineTop = (minutesSinceStart / 60) * 100;
-
-                return (
-                  <div
-                    key={dayIdx}
-                    className={`relative border-l border-border ${isToday ? "bg-iu-blue/[0.02]" : ""}`}
-                    style={{ height: `${TIME_SLOTS.length * 100}px` }}
-                  >
-                    {TIME_SLOTS.map((_, idx) => (
+                  {/* Time Labels */}
+                  <div className="border-r border-border bg-muted/10">
+                    {TIME_SLOTS.map((time) => (
                       <div
-                        key={idx}
-                        className="absolute w-full border-t border-border"
-                        style={{ top: `${idx * 100}px` }}
-                      />
+                        key={time}
+                        className="h-[100px] flex items-start justify-end pr-6 pt-3 text-[10px] text-foreground/70 font-bold uppercase tracking-widest"
+                      >
+                        {time}
+                      </div>
                     ))}
+                  </div>
 
-                    {/* Current Time Line */}
-                    {isToday &&
-                      timeLineTop >= 0 &&
-                      timeLineTop <= TIME_SLOTS.length * 100 && (
-                        <div
-                          className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
-                          style={{ top: `${timeLineTop}px` }}
-                        >
-                          <div className="w-3 h-3 rounded-full bg-iu-red -ml-1.5 shadow-lg shadow-rose-500/50 ring-4 ring-iu-red/20 animate-pulse" />
-                          <div className="flex-1 h-[2px] bg-gradient-to-r from-iu-red to-iu-red/30" />
-                        </div>
-                      )}
+                  {/* Day Columns */}
+                  {weekDates.map((date, dayIdx) => {
+                    const dateStr = toISODate(date);
+                    const events = getEventsForDate(date);
+                    const isToday = dateStr === todayISO;
 
-                    {events.map((event) => {
-                      const isLive = isEventLive(event);
-                      const typeColors =
-                        EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
-                      // Calculate phase config for this specific day
-                      const eventDate = new Date(event.date);
-                      const status = currentPlan
-                        ? getBlockStatusForDate(currentPlan, eventDate)
-                        : null;
-                      const phaseConfig = status
-                        ? currentPlan?.paletteOverrides?.[status] ||
-                          DEFAULT_PALETTE[status]
-                        : null;
+                    // Calculate current time line position
+                    const nowH = now.getHours();
+                    const nowM = now.getMinutes();
+                    const startH = 8; // Calendar starts at 08:00
+                    const minutesSinceStart = (nowH - startH) * 60 + nowM;
+                    const timeLineTop = (minutesSinceStart / 60) * 100;
 
-                      // Use Legend Colors strictly for the card
-                      const colors = {
-                        bg: `${typeColors.bg}/15 dark:bg-white/5`, // Slightly tone down dark mode background tint for higher text contrast
-                        text: "text-slate-900 dark:text-white", // AAA High Contrast Text
-                        border: typeColors.border,
-                      };
+                    return (
+                      <div
+                        key={dayIdx}
+                        className={`relative border-l border-border ${isToday ? "bg-iu-blue/[0.02]" : ""}`}
+                        style={{ height: `${TIME_SLOTS.length * 100}px` }}
+                      >
+                        {TIME_SLOTS.map((_, idx) => (
+                          <div
+                            key={idx}
+                            className="absolute w-full border-t border-border"
+                            style={{ top: `${idx * 100}px` }}
+                          />
+                        ))}
 
-                      const style = getEventStyle(event);
-                      const adjustedStyle = {
-                        ...style,
-                        top: `${(parseFloat(style.top) / 60) * 100}px`,
-                        height: `${(parseFloat(style.height) / 60) * 100}px`,
-                      };
-
-                      return (
-                        <div
-                          key={event.id}
-                          onClick={() => setSelectedEvent(event)}
-                          className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group ${colors.text} ${
-                            isLive
-                              ? "ring-2 ring-iu-blue ring-offset-2 ring-offset-background z-10"
-                              : ""
-                          }`}
-                          style={adjustedStyle}
-                        >
-                          {isLive && (
-                            <div className="absolute top-2 right-2 flex h-2 w-2">
-                              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-iu-blue opacity-75"></span>
-                              <span className="relative inline-flex rounded-full h-2 w-2 bg-iu-blue"></span>
+                        {/* Current Time Line */}
+                        {isToday &&
+                          timeLineTop >= 0 &&
+                          timeLineTop <= TIME_SLOTS.length * 100 && (
+                            <div
+                              className="absolute left-0 right-0 z-20 flex items-center pointer-events-none"
+                              style={{ top: `${timeLineTop}px` }}
+                            >
+                              <div className="w-3 h-3 rounded-full bg-iu-red -ml-1.5 shadow-lg shadow-rose-500/50 ring-4 ring-iu-red/20 animate-pulse" />
+                              <div className="flex-1 h-[2px] bg-gradient-to-r from-iu-red to-iu-red/30" />
                             </div>
                           )}
-                          <div className="flex flex-col h-full">
-                            <div className="flex items-start gap-2 mb-1">
-                              <div
-                                className={`p-1.5 rounded-lg bg-white/50 dark:bg-black/20 ${colors.text} group-hover:scale-110 transition-transform shrink-0`}
-                              >
-                                <EventIcon
-                                  type={event.type}
-                                  className="h-3.5 w-3.5"
-                                />
-                              </div>
-                              <div className="min-w-0 flex-1">
-                                <div
-                                  className={`text-[10px] font-black uppercase tracking-wider ${colors.text} opacity-70 leading-none mb-1`}
-                                >
-                                  {event.startTime} – {event.endTime}
-                                </div>
-                                <div
-                                  className={`font-bold text-xs leading-tight truncate ${colors.text}`}
-                                >
-                                  {event.title}
-                                </div>
-                              </div>
-                            </div>
 
-                            <div className="mt-auto flex items-center gap-2 opacity-100 transition-opacity">
-                              <div
-                                className={`flex items-center gap-1 text-[9px] font-bold ${colors.text}`}
-                              >
-                                {event.isOnline ? (
-                                  <Video size={10} />
-                                ) : (
-                                  <MapPin size={10} />
-                                )}
-                                <span className="truncate">
-                                  {event.isOnline ? "Zoom" : event.location}
-                                </span>
+                        {events.map((event) => {
+                          const isLive = isEventLive(event);
+                          const typeColors =
+                            EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
+                          // Calculate phase config for this specific day
+                          const eventDate = new Date(event.date);
+                          const status = currentPlan
+                            ? getBlockStatusForDate(currentPlan, eventDate)
+                            : null;
+                          const phaseConfig = status
+                            ? currentPlan?.paletteOverrides?.[status] ||
+                              DEFAULT_PALETTE[status]
+                            : null;
+
+                          // Use Legend Colors strictly for the card
+                          const colors = {
+                            bg: `${typeColors.bg}/15 dark:bg-white/5`, // Slightly tone down dark mode background tint for higher text contrast
+                            text: "text-slate-900 dark:text-white", // AAA High Contrast Text
+                            border: typeColors.border,
+                          };
+
+                          const style = getEventStyle(event);
+                          const adjustedStyle = {
+                            ...style,
+                            top: `${(parseFloat(style.top) / 60) * 100}px`,
+                            height: `${(parseFloat(style.height) / 60) * 100}px`,
+                          };
+
+                          return (
+                            <div
+                              key={event.id}
+                              onClick={() => setSelectedEvent(event)}
+                              className={`absolute left-2 right-2 ${colors.bg} ${colors.border} border-l-4 rounded-2xl p-4 cursor-pointer hover:shadow-xl hover:scale-[1.02] transition-all duration-300 overflow-hidden group ${colors.text} ${
+                                isLive
+                                  ? "ring-2 ring-iu-blue ring-offset-2 ring-offset-background z-10"
+                                  : ""
+                              }`}
+                              style={adjustedStyle}
+                            >
+                              {isLive && (
+                                <div className="absolute top-2 right-2 flex h-2 w-2">
+                                  <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-iu-blue opacity-75"></span>
+                                  <span className="relative inline-flex rounded-full h-2 w-2 bg-iu-blue"></span>
+                                </div>
+                              )}
+                              <div className="flex flex-col h-full">
+                                <div className="flex items-start gap-2 mb-1">
+                                  <div
+                                    className={`p-1.5 rounded-lg bg-white/50 dark:bg-black/20 ${colors.text} group-hover:scale-110 transition-transform shrink-0`}
+                                  >
+                                    <EventIcon
+                                      type={event.type}
+                                      className="h-3.5 w-3.5"
+                                    />
+                                  </div>
+                                  <div className="min-w-0 flex-1">
+                                    <div
+                                      className={`text-[10px] font-black uppercase tracking-wider ${colors.text} opacity-70 leading-none mb-1`}
+                                    >
+                                      {event.startTime} – {event.endTime}
+                                    </div>
+                                    <div
+                                      className={`font-bold text-xs leading-tight truncate ${colors.text}`}
+                                    >
+                                      {event.title}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div className="mt-auto flex items-center gap-2 opacity-100 transition-opacity">
+                                  <div
+                                    className={`flex items-center gap-1 text-[9px] font-bold ${colors.text}`}
+                                  >
+                                    {event.isOnline ? (
+                                      <Video size={10} />
+                                    ) : (
+                                      <MapPin size={10} />
+                                    )}
+                                    <span className="truncate">
+                                      {event.isOnline ? "Zoom" : event.location}
+                                    </span>
+                                  </div>
+                                </div>
                               </div>
                             </div>
-                          </div>
-                        </div>
-                      );
-                    })}
-                  </div>
-                );
-              })}
+                          );
+                        })}
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
             </div>
           </div>
-        </div>
-      </div>
-    ) : (
+        ) : (
           <div className="rounded-[1.5rem] sm:rounded-[2.5rem] border border-border bg-card/50 backdrop-blur-xl shadow-2xl shadow-iu-blue/5 overflow-hidden">
             <div className="overflow-x-auto custom-scrollbar touch-scroll">
               <div className="min-w-[800px]">
@@ -644,138 +652,143 @@ export default function CourseSchedule() {
                     </div>
                   ))}
                 </div>
-    
+
                 {/* Month Grid */}
                 <div className="grid grid-cols-7">
-              {Array.from({ length: (monthDays[0].getDay() + 6) % 7 }).map(
-                (_, idx) => (
-                  <div
-                    key={`empty-${idx}`}
-                    className="min-h-[180px] p-4 border-b border-r border-border/50 bg-muted/5"
-                  />
-                ),
-              )}
+                  {Array.from({ length: (monthDays[0].getDay() + 6) % 7 }).map(
+                    (_, idx) => (
+                      <div
+                        key={`empty-${idx}`}
+                        className="min-h-[180px] p-4 border-b border-r border-border/50 bg-muted/5"
+                      />
+                    ),
+                  )}
 
-              {monthDays.map((date) => {
-                const dateStr = toISODate(date);
-                const isToday = dateStr === todayISO;
-                const dayEvents = getEventsForDate(date);
-                const isWeekend = date.getDay() === 0 || date.getDay() === 6;
+                  {monthDays.map((date) => {
+                    const dateStr = toISODate(date);
+                    const isToday = dateStr === todayISO;
+                    const dayEvents = getEventsForDate(date);
+                    const isWeekend =
+                      date.getDay() === 0 || date.getDay() === 6;
 
-                const status = currentPlan
-                  ? getBlockStatusForDate(currentPlan, date)
-                  : null;
-                const phaseConfig = status
-                  ? currentPlan?.paletteOverrides?.[status] ||
-                    DEFAULT_PALETTE[status]
-                  : null;
+                    const status = currentPlan
+                      ? getBlockStatusForDate(currentPlan, date)
+                      : null;
+                    const phaseConfig = status
+                      ? currentPlan?.paletteOverrides?.[status] ||
+                        DEFAULT_PALETTE[status]
+                      : null;
 
-                const isPraxis = status === "praxis";
-                const isHoliday = status === "feiertag";
+                    const isPraxis = status === "praxis";
+                    const isHoliday = status === "feiertag";
 
-                return (
-                  <div
-                    key={dateStr}
-                    className={`min-h-[180px] p-3 sm:p-4 border-b border-r border-border/50 transition-all group relative overflow-hidden ${
-                      isToday
-                        ? "bg-iu-blue/[0.04] ring-2 ring-inset ring-iu-blue/20"
-                        : isHoliday
-                          ? "bg-amber-50/50 dark:bg-amber-900/5"
-                          : isPraxis
-                            ? "bg-emerald-50/40 dark:bg-emerald-900/5"
-                            : isWeekend
-                              ? "bg-muted/10 opacity-60"
-                              : "hover:bg-iu-blue/[0.03]"
-                    }`}
-                  >
-                    <div className="flex flex-wrap items-start justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
-                      <div className="flex items-center gap-2">
-                        <span
-                          className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
-                            isToday
-                              ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110 animate-pulse"
-                              : isWeekend
-                                ? "text-muted-foreground"
-                                : "text-foreground group-hover:bg-muted/20"
-                          }`}
-                        >
-                          {date.getDate()}
-                        </span>
-                        {/* Event count dot */}
-                        {dayEvents.length > 0 && !isToday && (
-                          <span className="inline-flex items-center justify-center w-5 h-5 text-[9px] font-black rounded-full bg-iu-blue/10 text-iu-blue dark:bg-iu-blue/20 dark:text-white">
-                            {dayEvents.length}
-                          </span>
-                        )}
-                      </div>
-                      {isHoliday ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold/10 text-iu-gold border border-iu-gold/20">
-                          <Flag className="h-3 w-3" />
-                          {language === "de" ? "Frei" : "Off"}
-                        </span>
-                      ) : isPraxis ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
-                          <Briefcase className="h-3 w-3" />
-                          {language === "de" ? "Praxis" : "Practice"}
-                        </span>
-                      ) : status === "klausurphase" ||
-                        status === "nachpruefung" ? (
-                        <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-red/10 text-iu-red border border-iu-red/20">
-                          <FileCheck className="h-3 w-3" />
-                          {language === "de" ? "Prüfung" : "Exam"}
-                        </span>
-                      ) : null}
-                    </div>
-
-                    <div className="space-y-1.5">
-                      {dayEvents.slice(0, 3).map((event) => {
-                        const typeColors =
-                          EVENT_COLORS[event.type] || EVENT_COLORS.Integriert;
-
-                        return (
-                          <div
-                            key={event.id}
-                            onClick={() => setSelectedEvent(event)}
-                            className={`text-[9px] sm:text-[10px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-r-xl rounded-l-sm cursor-pointer ${typeColors.bg}/10 dark:bg-white/5 text-slate-900 dark:text-white font-bold border-l-[3px] sm:border-l-[4px] ${typeColors.border} hover:shadow-md hover:scale-[1.02] hover:-translate-y-px transition-all truncate flex items-center gap-1.5 sm:gap-2 backdrop-blur-sm`}
-                          >
-                            <span className="opacity-70 shrink-0 tabular-nums">
-                              {event.startTime}
+                    return (
+                      <div
+                        key={dateStr}
+                        className={`min-h-[180px] p-3 sm:p-4 border-b border-r border-border/50 transition-all group relative overflow-hidden ${
+                          isToday
+                            ? "bg-iu-blue/[0.04] ring-2 ring-inset ring-iu-blue/20"
+                            : isHoliday
+                              ? "bg-amber-50/50 dark:bg-amber-900/5"
+                              : isPraxis
+                                ? "bg-emerald-50/40 dark:bg-emerald-900/5"
+                                : isWeekend
+                                  ? "bg-muted/10 opacity-60"
+                                  : "hover:bg-iu-blue/[0.03]"
+                        }`}
+                      >
+                        <div className="flex flex-wrap items-start justify-between gap-1 sm:gap-2 mb-2 sm:mb-3">
+                          <div className="flex items-center gap-2">
+                            <span
+                              className={`inline-flex items-center justify-center w-10 h-10 text-lg font-bold rounded-2xl transition-all ${
+                                isToday
+                                  ? "bg-iu-blue text-white shadow-lg shadow-iu-blue/20 scale-110 animate-pulse"
+                                  : isWeekend
+                                    ? "text-muted-foreground"
+                                    : "text-foreground group-hover:bg-muted/20"
+                              }`}
+                            >
+                              {date.getDate()}
                             </span>
-                            <span className="truncate">{event.title}</span>
-                          </div>
-                        );
-                      })}
-                      {dayEvents.length > 3 && (
-                        <div className="text-[10px] text-iu-blue dark:text-white font-bold text-center py-1.5 bg-iu-blue/5 dark:bg-white/5 rounded-xl border border-iu-blue/10 dark:border-white/10 cursor-pointer hover:bg-iu-blue/10 transition-colors">
-                          +{dayEvents.length - 3}{" "}
-                          {language === "de" ? "weitere" : "more"}
-                        </div>
-                      )}
-                      {/* Empty day visual for praxis/holiday */}
-                      {dayEvents.length === 0 &&
-                        !isWeekend &&
-                        (isPraxis || isHoliday) && (
-                          <div className="flex flex-col items-center justify-center py-6 opacity-40">
-                            {isHoliday ? (
-                              <Sun size={24} className="text-iu-gold" />
-                            ) : (
-                              <Coffee size={24} className="text-emerald-500" />
+                            {/* Event count dot */}
+                            {dayEvents.length > 0 && !isToday && (
+                              <span className="inline-flex items-center justify-center w-5 h-5 text-[9px] font-black rounded-full bg-iu-blue/10 text-iu-blue dark:bg-iu-blue/20 dark:text-white">
+                                {dayEvents.length}
+                              </span>
                             )}
-                            <span className="text-[9px] font-bold mt-2 text-muted-foreground uppercase tracking-widest">
-                              {isHoliday
-                                ? language === "de"
-                                  ? "Feiertag"
-                                  : "Holiday"
-                                : language === "de"
-                                  ? "Praxistag"
-                                  : "Practice"}
-                            </span>
                           </div>
-                        )}
-                    </div>
-                  </div>
-                );
-              })}
+                          {isHoliday ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-gold/10 text-iu-gold border border-iu-gold/20">
+                              <Flag className="h-3 w-3" />
+                              {language === "de" ? "Frei" : "Off"}
+                            </span>
+                          ) : isPraxis ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+                              <Briefcase className="h-3 w-3" />
+                              {language === "de" ? "Praxis" : "Practice"}
+                            </span>
+                          ) : status === "klausurphase" ||
+                            status === "nachpruefung" ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-1 rounded-full text-[9px] font-black uppercase tracking-widest bg-iu-red/10 text-iu-red border border-iu-red/20">
+                              <FileCheck className="h-3 w-3" />
+                              {language === "de" ? "Prüfung" : "Exam"}
+                            </span>
+                          ) : null}
+                        </div>
+
+                        <div className="space-y-1.5">
+                          {dayEvents.slice(0, 3).map((event) => {
+                            const typeColors =
+                              EVENT_COLORS[event.type] ||
+                              EVENT_COLORS.Integriert;
+
+                            return (
+                              <div
+                                key={event.id}
+                                onClick={() => setSelectedEvent(event)}
+                                className={`text-[9px] sm:text-[10px] px-2 sm:px-3 py-1.5 sm:py-2 rounded-r-xl rounded-l-sm cursor-pointer ${typeColors.bg}/10 dark:bg-white/5 text-slate-900 dark:text-white font-bold border-l-[3px] sm:border-l-[4px] ${typeColors.border} hover:shadow-md hover:scale-[1.02] hover:-translate-y-px transition-all truncate flex items-center gap-1.5 sm:gap-2 backdrop-blur-sm`}
+                              >
+                                <span className="opacity-70 shrink-0 tabular-nums">
+                                  {event.startTime}
+                                </span>
+                                <span className="truncate">{event.title}</span>
+                              </div>
+                            );
+                          })}
+                          {dayEvents.length > 3 && (
+                            <div className="text-[10px] text-iu-blue dark:text-white font-bold text-center py-1.5 bg-iu-blue/5 dark:bg-white/5 rounded-xl border border-iu-blue/10 dark:border-white/10 cursor-pointer hover:bg-iu-blue/10 transition-colors">
+                              +{dayEvents.length - 3}{" "}
+                              {language === "de" ? "weitere" : "more"}
+                            </div>
+                          )}
+                          {/* Empty day visual for praxis/holiday */}
+                          {dayEvents.length === 0 &&
+                            !isWeekend &&
+                            (isPraxis || isHoliday) && (
+                              <div className="flex flex-col items-center justify-center py-6 opacity-40">
+                                {isHoliday ? (
+                                  <Sun size={24} className="text-iu-gold" />
+                                ) : (
+                                  <Coffee
+                                    size={24}
+                                    className="text-emerald-500"
+                                  />
+                                )}
+                                <span className="text-[9px] font-bold mt-2 text-muted-foreground uppercase tracking-widest">
+                                  {isHoliday
+                                    ? language === "de"
+                                      ? "Feiertag"
+                                      : "Holiday"
+                                    : language === "de"
+                                      ? "Praxistag"
+                                      : "Practice"}
+                                </span>
+                              </div>
+                            )}
+                        </div>
+                      </div>
+                    );
+                  })}
                 </div>
               </div>
             </div>
