@@ -2,6 +2,9 @@
 
 A modern, accessible, and feature-rich student Plattform redesign built with React Router 7, demonstrating best practices in agentic software engineering and user experience design.
 
+![GitHub commit activity](https://img.shields.io/github/commit-activity/t/sabinAnwar/my-campus-redesign?label=commits)
+![GitHub pull requests](https://img.shields.io/github/issues-pr-closed-raw/sabinAnwar/my-campus-redesign?label=pull%20requests&color=blue)
+
 <img width="1004" height="577" alt="image" src="https://github.com/user-attachments/assets/cff4ac5f-8f2e-4380-93a8-8a4eba1216c7" />
 
 ## Overview
